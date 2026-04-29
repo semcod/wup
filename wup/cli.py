@@ -440,6 +440,34 @@ def map_deps(
 
 
 @app.command()
+def assistant(
+    quick: bool = typer.Option(False, "--quick", "-q", help="Non-interactive mode with auto-detected values"),
+    template: Optional[str] = typer.Option(None, "--template", "-t", help="Framework template (fastapi, flask, django, express)"),
+    project: str = typer.Argument(".", help="Path to the project root directory"),
+):
+    """
+    Interactive configuration assistant for wup.yaml.
+    
+    Guides you through setting up services, file watching, TestQL integration,
+    web dashboard, and visual diff with intelligent suggestions.
+    
+    Examples:
+        wup assistant                    # Interactive mode
+        wup assistant --quick            # Auto-detect and save
+        wup assistant --template fastapi # Use FastAPI defaults
+    """
+    from .assistant import WupAssistant
+    
+    project_path = Path(project).resolve()
+    if not project_path.exists():
+        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+        raise typer.Exit(1)
+    
+    assistant = WupAssistant(str(project_path))
+    assistant.run(quick=quick, template=template)
+
+
+@app.command()
 def version():
     """Show WUP version."""
     from . import __version__

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-04-29
+
+### Docs
+- Update README.md
+
+### Other
+- Update wup/cli.py
+
 ## [0.1.4] - 2026-04-29
 
 ### Docs

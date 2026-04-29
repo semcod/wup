@@ -4,10 +4,10 @@
 ## AI Cost Tracking
 
 ![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.15-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-6.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.30-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-6.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $3.1500 (21 commits)
-- 👤 **Human dev:** ~$598 (6.0h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $3.3000 (22 commits)
+- 👤 **Human dev:** ~$600 (6.0h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
@@ -48,16 +48,19 @@ pip install -e ".[dev]"
 ## Quick Start
 
 ```bash
-# 1. Initialize configuration (optional)
-wup init
+# 1. Interactive configuration (recommended)
+wup assistant
 
-# 2. Build dependency map (one-time setup)
+# 2. Or quick auto-setup
+wup assistant --quick --template fastapi
+
+# 3. Build dependency map (one-time setup)
 wup map-deps ./my-project
 
-# 3. Start watching for changes
+# 4. Start watching for changes
 wup watch ./my-project
 
-# 4. Start with live dashboard
+# 5. Start with live dashboard
 wup watch ./my-project --dashboard
 ```
 
@@ -434,6 +437,29 @@ python3 examples/webhook_notifications.py
 ```bash
 python -m build
 ```
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+- **[Configuration Assistant](docs/WUP_ASSISTANT.md)** - Interactive setup guide for `wup.yaml`
+  - `wup assistant` - Interactive configuration wizard
+  - Auto-detects framework and services
+  - Intelligent suggestions and validation
+
+- **[Anomaly Detection](docs/ANOMALY_DETECTION.md)** - Fast alternatives to Playwright
+  - Hash-based change detection (~1ms per file)
+  - YAML structure analysis
+  - Python AST diff for API changes
+  - Configure with `anomaly_detection:` in wup.yaml
+
+- **[Browser Notifications](docs/NOTIFICATIONS.md)** - Real-time alerts in wupbro
+  - 7 notification types (regressions, status changes, recoveries)
+  - Configurable per-type with cooldown
+  - Server-Sent Events for instant delivery
+  - Browser Notifications API integration
+
+- **[TestQL Integration](docs/TESTQL_INTEGRATION.md)** - TestQL scenario support
 
 ## License
 
