@@ -3,13 +3,12 @@ requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wup-web"
-version = "0.1.0"
-description = "WUP Web Dashboard — FastAPI backend for WUP regression watcher"
+name = "wupbro"
+version = "0.1.1"
+description = "WUP Browser Dashboard — FastAPI backend for WUP regression watcher"
 readme = "README.md"
 requires-python = ">=3.9"
-license = "Apache-2.0"
-authors = [{ name = "WUP contributors" }]
+authors = [{ name = "WUP contributors" }, {name = "Tom Sapletta",email = "tom@sapletta.com"}]
 dependencies = [
     "fastapi>=0.110",
     "uvicorn[standard]>=0.27",
@@ -17,6 +16,9 @@ dependencies = [
     "pydantic>=2.0",
     "jinja2>=3.1",
 ]
+
+[project.license]
+text = "Apache-2.0"
 
 [project.optional-dependencies]
 dev = [
@@ -29,14 +31,14 @@ dev = [
 ]
 
 [project.scripts]
-wup-web = "wup_web.__main__:main"
+wupbro = "wupbro.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["wup_web*"]
+include = ["wupbro*"]
 
 [tool.setuptools.package-data]
-"wup_web" = ["templates/*.html", "static/*"]
+"wupbro" = ["templates/*.html", "static/*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

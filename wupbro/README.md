@@ -1,4 +1,4 @@
-# wup-web
+# wupbro
 
 FastAPI backend + minimal HTML dashboard for the WUP regression watcher.
 
@@ -6,7 +6,7 @@ FastAPI backend + minimal HTML dashboard for the WUP regression watcher.
 
 ```
 ┌──────────────────────┐   POST /events    ┌──────────────────────┐
-│  WUP agent (shell)   │ ───────────────▶  │  wup-web (FastAPI)   │
+│  WUP agent (shell)   │ ───────────────▶  │  wupbro (FastAPI)   │
 │  - file watcher      │                   │  - /events (sink)    │
 │  - testql runner     │                   │  - /drivers/*        │
 │  - visual diff       │                   │  - /dashboard (UI)   │
@@ -60,13 +60,13 @@ Extra fields are preserved via `model_config = {"extra": "allow"}`.
 
 ```bash
 # Install
-pip install -e wup-web/
+pip install -e wupbro/
 
 # Dev server (auto-reload)
-wup-web --reload --port 8000
+wupbro --reload --port 8000
 
 # Or directly
-uvicorn wup_web.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn wupbro.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Dashboard: <http://localhost:8000/>
@@ -117,16 +117,16 @@ curl -X POST http://localhost:8000/drivers/browserless/screenshot \
 
 ## Storage
 
-Events are kept in an in-memory ring buffer (capacity 1000) and persisted to `.wup-web/events.jsonl` for restart durability.
+Events are kept in an in-memory ring buffer (capacity 1000) and persisted to `.wupbro/events.jsonl` for restart durability.
 
 ## Tests
 
 ```bash
-PYTHONPATH=wup-web python3 -m pytest wup-web/tests/ -v
+PYTHONPATH=wupbro python3 -m pytest wupbro/tests/ -v
 ```
 
 17 tests covering events router, drivers (anomaly, browserless, dom-diff, health), dashboard HTML, OpenAPI schema.
 
 ## License
 
-Apache-2.0
+Licensed under Apache-2.0.

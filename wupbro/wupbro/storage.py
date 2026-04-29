@@ -101,7 +101,7 @@ _default_store: Optional[EventStore] = None
 def get_default_store() -> EventStore:
     global _default_store
     if _default_store is None:
-        _default_store = EventStore(jsonl_path=Path(".wup-web/events.jsonl"))
+        _default_store = EventStore(jsonl_path=Path(".wupbro/events.jsonl"))
     return _default_store
 
 

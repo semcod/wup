@@ -3,7 +3,7 @@ WUP Web Client.
 
 Lightweight async HTTP client used by WUP agents to push events
 (REGRESSION, ANOMALY, PASS, VISUAL_DIFF, HEALTH_TRANSITION) to the
-optional `wup-web` FastAPI backend.
+optional `wupbro` FastAPI backend.
 
 Design constraints:
   - **Soft-fail**: any network/HTTP error must NOT break the watcher.
@@ -65,7 +65,7 @@ def _normalize(payload: Any) -> Any:
 
 class WebClient:
     """
-    Async event sink for the wup-web backend.
+    Async event sink for the wupbro backend.
 
     Usage::
 
@@ -92,7 +92,7 @@ class WebClient:
         return bool(self.cfg.enabled and self.endpoint and _httpx_available())
 
     def _headers(self) -> Dict[str, str]:
-        h = {"Content-Type": "application/json", "User-Agent": "wup-web-client"}
+        h = {"Content-Type": "application/json", "User-Agent": "wupbro-client"}
         if self.cfg.api_key:
             h["Authorization"] = f"Bearer {self.cfg.api_key}"
         return h

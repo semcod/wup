@@ -166,7 +166,7 @@ class TestQLWatcher(WupWatcher):
             }
         )
 
-        # Fire-and-forget: forward event to wup-web backend if active
+        # Fire-and-forget: forward event to wupbro backend if active
         if self.web_client.is_active:
             try:
                 asyncio.ensure_future(

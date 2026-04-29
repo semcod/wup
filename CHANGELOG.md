@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **New Examples**: Added comprehensive usage examples
+  - `c2004_monorepo_demo.py`: Large monorepo analysis (21 connect-* modules)
+  - `ci_cd_integration.py`: CI/CD pipeline integration patterns (GitHub Actions, GitLab CI)
+  - `webhook_notifications.py`: Slack, Teams, Discord notifications
+- **c2004 Integration**: Tested and verified with c2004 project at `/home/tom/github/maskservice/c2004`
+
+### Docs
+- Updated README.md with new examples
+
 ## [0.2.16] - 2026-04-29
 
 ### Docs

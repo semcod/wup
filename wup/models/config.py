@@ -85,7 +85,7 @@ class VisualDiffConfig:
 
 @dataclass
 class WebConfig:
-    """Configuration for sending events to wup-web backend."""
+    """Configuration for sending events to wupbro backend."""
     enabled: bool = False
     endpoint: str = ""              # e.g. "http://localhost:8000/events"
     endpoint_env: str = "WUP_WEB_ENDPOINT"

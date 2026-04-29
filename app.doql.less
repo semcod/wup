@@ -2,11 +2,37 @@
 
 app {
   name: wup;
-  version: 0.2.15;
+  version: 0.2.16;
 }
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
+}
+
+entity[name="Event"] {
+  type: EventType!;
+  service: string;
+  file: string;
+  endpoint: string;
+  url: string;
+  status: string;
+  stage: string;
+  reason: string;
+  diff: Dict[str, Any];
+  timestamp: int!;
+}
+
+entity[name="EventList"] {
+  items: List[Event]!;
+  total: int!;
+}
+
+entity[name="AnomalyReport"] {
+  service: string!;
+  metric: string!;
+  value: float!;
+  threshold: float!;
+  timestamp: int!;
 }
 
 interface[type="api"] {

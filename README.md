@@ -3,11 +3,11 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.16-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.55-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-4.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.70-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-5.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.5500 (17 commits)
-- 👤 **Human dev:** ~$445 (4.5h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.7000 (18 commits)
+- 👤 **Human dev:** ~$553 (5.5h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
@@ -307,15 +307,15 @@ Visible in `wup status` as a "Visual DOM diffs" section.
 
 If Playwright is not installed, the visual diff module logs a warning and skips scanning — it does **not** break the watcher.
 
-## Web Dashboard (wup-web)
+## Web Dashboard (wupbro)
 
 Optional FastAPI backend that receives events from WUP agents and renders a live dashboard.
 
 ### Run
 
 ```bash
-pip install -e wup-web/
-wup-web --reload --port 8000
+pip install -e wupbro/
+wupbro --reload --port 8000
 ```
 
 Open <http://localhost:8000/> to see regressions, passes, anomalies, visual diffs, and health transitions in real time.
@@ -338,7 +338,7 @@ export WUP_WEB_ENDPOINT=http://localhost:8000
 
 The agent fire-and-forgets `REGRESSION`, `PASS`, `ANOMALY`, `VISUAL_DIFF`, and `HEALTH_TRANSITION` events. Network errors never break the watcher (soft-fail).
 
-See `wup-web/README.md` for full API reference and driver endpoints (DOM diff, browserless, anomaly).
+See `wupbro/README.md` for full API reference and driver endpoints (DOM diff, browserless, anomaly).
 
 ## Project Structure
 
@@ -353,12 +353,12 @@ wup/
 │   ├── testql_discovery.py    # TestQLEndpointDiscovery: scenario parsing
 │   ├── testql_watcher.py      # TestQLWatcher: scenario runner + health tracking
 │   ├── visual_diff.py         # VisualDiffer: Playwright DOM snapshot + diff engine
-│   ├── web_client.py          # WebClient: async HTTP event sink → wup-web
+│   ├── web_client.py          # WebClient: async HTTP event sink → wupbro
 │   └── models/
 │       ├── __init__.py
 │       └── config.py          # Dataclasses: WupConfig, VisualDiffConfig, WebConfig...
-├── wup-web/                   # Optional FastAPI dashboard (separate package)
-│   ├── wup_web/
+├── wupbro/                   # Optional FastAPI dashboard (separate package)
+│   ├── wupbro/
 │   │   ├── main.py            # FastAPI app
 │   │   ├── routers/           # events, drivers, dashboard
 │   │   ├── storage.py         # EventStore (in-memory + JSONL)
@@ -410,6 +410,18 @@ python3 examples/visual_diff_demo.py http://localhost:8100/health
 
 # TestQL + visual diff integration
 python3 examples/testql_integration.py /path/to/project
+
+# Monorepo analysis (c2004-style large projects)
+python3 examples/c2004_monorepo_demo.py /path/to/monorepo
+
+# CI/CD integration patterns
+python3 examples/ci_cd_integration.py
+
+# Generate GitHub Actions workflow
+python3 examples/ci_cd_integration.py --generate-github-actions
+
+# Webhook notifications (Slack, Teams, Discord)
+python3 examples/webhook_notifications.py
 ```
 
 ### Building & Publishing

@@ -1,43 +1,56 @@
-# code2llm | 51f 5900L | python:24,yaml:15,txt:5,json:2,shell:1,yml:1,toml:1 | 2026-04-29
-# CC̄=2.9 | critical:3/174 | dups:0 | cycles:2
+# code2llm | 62f 7005L | python:34,yaml:15,txt:5,json:2,toml:2,shell:1,yml:1 | 2026-04-29
+# CC̄=2.5 | critical:3/229 | dups:0 | cycles:4
 
 HEALTH[4]:
-  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_testql_analysis -> examples.testql_demo.simulate_with_mock_data. This indicates high coupling and may lead to infinite recursion or initialization issues.
+  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_with_mock_data -> examples.testql_demo.simulate_testql_analysis. This indicates high coupling and may lead to infinite recursion or initialization issues.
   🟡 CC    detect_service_coincidences CC=19 (limit:15)
   🟡 CC    _select_scenarios_for_service CC=15 (limit:15)
   🟡 CC    run_quick_test CC=15 (limit:15)
 
 REFACTOR[2]:
   1. split 3 high-CC methods  (CC>15)
-  2. break 2 circular dependencies
+  2. break 4 circular dependencies
 
-PIPELINES[113]:
-  [1] Src [__init__]: __init__
+PIPELINES[137]:
+  [1] Src [watch]: watch → load_config → _load_dotenv
       PURITY: 100% pure
-  [2] Src [build_from_codebase]: build_from_codebase
+  [2] Src [map_deps]: map_deps
       PURITY: 100% pure
-  [3] Src [_detect_framework]: _detect_framework
+  [3] Src [status]: status → load_config → _load_dotenv
       PURITY: 100% pure
-  [4] Src [_search_codebase]: _search_codebase
+  [4] Src [init]: init → get_default_config
       PURITY: 100% pure
-  [5] Src [_scan_endpoints]: _scan_endpoints
+  [5] Src [testql_endpoints]: testql_endpoints
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.4    ←in:3  →out:7
+  wup/                            CC̄=4.2    ←in:5  →out:8  !! split
   │ !! core                       604L  2C   24m  CC=19     ←0
-  │ !! testql_watcher             461L  2C   18m  CC=15     ←0
+  │ !! testql_watcher             477L  2C   18m  CC=15     ←0
   │ cli                        450L  0C    6m  CC=6      ←0
-  │ config                     350L  0C    6m  CC=10     ←0
+  │ config                     350L  0C    6m  CC=10     ←4
   │ visual_diff                333L  1C   16m  CC=11     ←1
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
+  │ web_client                 178L  1C   10m  CC=6      ←0
   │ config                     112L  10C    0m  CC=0.0    ←0
   │ __init__                    39L  0C    0m  CC=0.0    ←0
   │ __init__                    21L  0C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.1    ←in:1  →out:5
-  │ visual_diff_demo           271L  0C    9m  CC=6      ←1
+  wupbro/                        CC̄=2.2    ←in:0  →out:0
+  │ drivers                    129L  0C    5m  CC=3      ←0
+  │ storage                    110L  1C    8m  CC=7      ←6
+  │ pyproject.toml              72L  0C    0m  CC=0.0    ←0
+  │ models                      59L  5C    0m  CC=0.0    ←0
+  │ events                      48L  0C    5m  CC=1      ←0
+  │ main                        44L  0C    1m  CC=1      ←0
+  │ dashboard                   24L  0C    2m  CC=1      ←0
+  │ __main__                    21L  0C    1m  CC=1      ←0
+  │ __init__                     7L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
+  │
+  examples/                       CC̄=2.1    ←in:0  →out:5
+  │ visual_diff_demo           271L  0C    9m  CC=6      ←0
   │ testql_integration         267L  1C    6m  CC=6      ←0
   │ testql_demo                192L  0C    2m  CC=11     ←0
   │ routes                      38L  1C    5m  CC=1      ←0
@@ -64,19 +77,19 @@ LAYERS:
   │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
   │
   project/                        CC̄=0.0    ←in:0  →out:0
-  │ calls.yaml                 270L  0C    0m  CC=0.0    ←0
-  │ map.toon.yaml              169L  0C   36m  CC=0.0    ←4
-  │ analysis.toon.yaml          95L  0C    0m  CC=0.0    ←0
-  │ evolution.toon.yaml         56L  0C    0m  CC=0.0    ←0
-  │ calls.toon.yaml             56L  0C    0m  CC=0.0    ←0
-  │ project.toon.yaml           56L  0C    0m  CC=0.0    ←0
+  │ !! calls.yaml                 542L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              208L  0C   59m  CC=0.0    ←1
+  │ calls.toon.yaml            122L  0C    0m  CC=0.0    ←0
+  │ analysis.toon.yaml         103L  0C    0m  CC=0.0    ←0
+  │ project.toon.yaml           54L  0C    0m  CC=0.0    ←0
+  │ evolution.toon.yaml         52L  0C    0m  CC=0.0    ←0
   │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
-  │ duplication.toon.yaml       29L  0C    0m  CC=0.0    ←0
+  │ duplication.toon.yaml       43L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ tree.txt                    96L  0C    0m  CC=0.0    ←0
+  │ tree.txt                    99L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              71L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
@@ -91,12 +104,15 @@ LAYERS:
      examples/multi-service/payments-service/Dockerfile  0L
 
 COUPLING:
-                       wup  project.map     examples
-          wup           ──            6            1
-  project.map           ←6           ──           ←2  hub
-     examples            3            2           ──
-  CYCLES: 2
-  HUB: project.map/ (fan-in=8)
+                               wup  wupbro.wupbro         examples      project.map
+              wup               ──                6               ←5                2  hub
+  wupbro.wupbro               ←6               ──                                    hub
+         examples                5                                ──                 
+      project.map               ←2                                                 ──
+  CYCLES: 4
+  HUB: wupbro.wupbro/ (fan-in=6)
+  HUB: wup/ (fan-in=5)
+  SMELL: wup/ fan-out=8 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

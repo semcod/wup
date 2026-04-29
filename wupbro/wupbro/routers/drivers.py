@@ -1,4 +1,4 @@
-"""Driver endpoints exposed by wup-web.
+"""Driver endpoints exposed by wupbro.
 
   - /drivers/dom-diff/capture  → uses wup.visual_diff.VisualDiffer (Playwright)
   - /drivers/browserless/screenshot → proxies a browserless container

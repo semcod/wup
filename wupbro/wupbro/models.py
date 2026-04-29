@@ -1,4 +1,4 @@
-"""Pydantic models for wup-web events and driver requests."""
+"""Pydantic models for wupbro events and driver requests."""
 
 from __future__ import annotations
 

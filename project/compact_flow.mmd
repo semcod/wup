@@ -1,13 +1,22 @@
 flowchart TD
     examples__visual_diff_demo["examples.visual_diff_demo<br/>9 funcs"]
-    project__map["project.map<br/>36 funcs"]
+    project__map["project.map<br/>59 funcs"]
+    wupbro__wupbro["wupbro.wupbro<br/>22 funcs"]
     wup__cli["wup.cli<br/>6 funcs"]
+    wup__config["wup.config<br/>6 funcs"]
     wup__core["wup.core<br/>24 funcs"]
+    wup__dependency_mapper["wup.dependency_mapper<br/>16 funcs"]
+    wup__testql_discovery["wup.testql_discovery<br/>7 funcs"]
     wup__testql_watcher["wup.testql_watcher<br/>18 funcs"]
     wup__visual_diff["wup.visual_diff<br/>16 funcs"]
-    wup__cli ==>|4| project__map
+    wup__web_client["wup.web_client<br/>10 funcs"]
+    wup__cli ==>|4| wup__config
     examples__visual_diff_demo -->|3| wup__visual_diff
-    examples__visual_diff_demo -->|2| project__map
-    wup__core -->|1| project__map
-    wup__visual_diff -->|1| examples__visual_diff_demo
-    wup__testql_watcher -->|1| project__map
+    wup__testql_discovery -->|2| wupbro__wupbro
+    examples__visual_diff_demo -->|2| wup__config
+    wup__web_client -->|2| project__map
+    wup__testql_watcher -->|2| wupbro__wupbro
+    wup__dependency_mapper -->|1| wupbro__wupbro
+    wup__core -->|1| wup__config
+    wup__visual_diff -->|1| wupbro__wupbro
+    wup__testql_watcher -->|1| wup__config

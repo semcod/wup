@@ -21,7 +21,7 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.15`
+- **version**: `0.2.16`
 - **python_requires**: `>=3.9`
 - **license**: {'text': 'Apache-2.0'}
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -41,11 +41,37 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.15;
+  version: 0.2.16;
 }
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
+}
+
+entity[name="Event"] {
+  type: EventType!;
+  service: string;
+  file: string;
+  endpoint: string;
+  url: string;
+  status: string;
+  stage: string;
+  reason: string;
+  diff: Dict[str, Any];
+  timestamp: int!;
+}
+
+entity[name="EventList"] {
+  items: List[Event]!;
+  total: int!;
+}
+
+entity[name="AnomalyReport"] {
+  service: string!;
+  metric: string!;
+  value: float!;
+  threshold: float!;
+  timestamp: int!;
 }
 
 interface[type="api"] {
@@ -207,7 +233,7 @@ ASSERT[72]{field, operator, expected}:
 ```yaml
 project:
   name: wup
-  version: 0.2.15
+  version: 0.2.16
   env: local
 ```
 
@@ -261,14 +287,14 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 34f 6506L | python:31,shell:2,less:1 | 2026-04-29
-# stats: 75 func | 35 cls | 34 mod | CC̄=2.8 | critical:4 | cycles:0
-# alerts[5]: CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_process_changed_file_creates_track_on_failure=7
+# wup | 49f 7376L | python:46,shell:2,less:1 | 2026-04-29
+# stats: 123 func | 42 cls | 49 mod | CC̄=2.7 | critical:4 | cycles:0
+# alerts[5]: CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_send_event_posts_to_recorder=9
 # hotspots[5]: status fan=31; testql_endpoints fan=19; map_deps fan=18; demo_snapshot_persistence fan=17; validate_config fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[34]:
-  app.doql.less,33
+M[49]:
+  app.doql.less,59
   examples/fastapi-app/app/__init__.py,1
   examples/fastapi-app/app/users/__init__.py,1
   examples/fastapi-app/app/users/routes.py,39
@@ -289,6 +315,7 @@ M[34]:
   project.sh,49
   tests/test_e2e.py,517
   tests/test_testql_watcher.py,256
+  tests/test_web_client.py,168
   tests/test_wup.py,1624
   tree.sh,2
   wup/__init__.py,40
@@ -299,9 +326,23 @@ M[34]:
   wup/models/__init__.py,22
   wup/models/config.py,113
   wup/testql_discovery.py,230
-  wup/testql_watcher.py,462
+  wup/testql_watcher.py,478
   wup/visual_diff.py,334
   wup/web_client.py,179
+  wupbro/tests/__init__.py,1
+  wupbro/tests/conftest.py,24
+  wupbro/tests/test_dashboard.py,36
+  wupbro/tests/test_drivers.py,51
+  wupbro/tests/test_events.py,96
+  wupbro/wupbro/__init__.py,8
+  wupbro/wupbro/__main__.py,22
+  wupbro/wupbro/main.py,45
+  wupbro/wupbro/models.py,60
+  wupbro/wupbro/routers/__init__.py,2
+  wupbro/wupbro/routers/dashboard.py,25
+  wupbro/wupbro/routers/drivers.py,130
+  wupbro/wupbro/routers/events.py,49
+  wupbro/wupbro/storage.py,111
 D:
   examples/fastapi-app/app/__init__.py:
   examples/fastapi-app/app/users/__init__.py:
@@ -393,6 +434,22 @@ D:
     test_service_health_transitions_are_persisted()
     test_visual_differ_disabled_by_default()
     test_visual_differ_initialized_when_enabled()
+  tests/test_web_client.py:
+    e: _make_handler,recorder_server,test_resolve_endpoint_from_config,test_resolve_endpoint_from_env,test_resolve_endpoint_empty,test_is_active_false_when_disabled,test_is_active_false_when_no_endpoint,test_send_event_disabled_returns_false,test_send_event_posts_to_recorder,test_send_event_with_api_key,test_send_event_swallows_connection_error,test_send_regression_helper,test_send_health_transition_helper,_Recorder
+    _Recorder: __init__(0)
+    _make_handler(recorder;status)
+    recorder_server()
+    test_resolve_endpoint_from_config()
+    test_resolve_endpoint_from_env(monkeypatch)
+    test_resolve_endpoint_empty(monkeypatch)
+    test_is_active_false_when_disabled()
+    test_is_active_false_when_no_endpoint()
+    test_send_event_disabled_returns_false()
+    test_send_event_posts_to_recorder(recorder_server)
+    test_send_event_with_api_key(recorder_server)
+    test_send_event_swallows_connection_error()
+    test_send_regression_helper(recorder_server)
+    test_send_health_transition_helper(recorder_server)
   tests/test_wup.py:
     e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestVisualDiffer,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
     TestDependencyMapper: test_init(0),test_infer_service_from_path(0),test_build_from_codebase_empty(0),test_build_from_codebase_with_fastapi(0),test_save_and_load(0),test_infer_service_from_path_edge_cases(0),test_get_service_for_file_empty_mapper(0),test_get_endpoints_for_service_empty_mapper(0),test_build_from_codebase_with_flask(0),test_service_to_files_tracking(0),test_build_from_codebase_nonexistent_directory(0)  # Tests for the DependencyMapper class.
@@ -440,7 +497,7 @@ D:
     TestStrategyConfig:  # Global test strategy configuration.
     TestQLConfig:  # TestQL-specific configuration.
     VisualDiffConfig:  # Configuration for visual DOM diff after file changes.
-    WebConfig:  # Configuration for sending events to wup-web backend.
+    WebConfig:  # Configuration for sending events to wupbro backend.
     ProjectConfig:  # Project metadata.
     WupConfig:  # Main WUP configuration.
   wup/testql_discovery.py:
@@ -465,10 +522,76 @@ D:
     _resolve_base_url(cfg)
   wup/web_client.py:
     e: _httpx_available,resolve_endpoint,_normalize,WebClient
-    WebClient: __init__(1),is_active(0),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wup-web backend.
+    WebClient: __init__(1),is_active(0),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wupbro backend.
     _httpx_available()
     resolve_endpoint(cfg)
     _normalize(payload)
+  wupbro/tests/__init__.py:
+  wupbro/tests/conftest.py:
+    e: fresh_store,client
+    fresh_store()
+    client(fresh_store)
+  wupbro/tests/test_dashboard.py:
+    e: test_root_serves_dashboard,test_dashboard_alias,test_healthz,test_openapi_schema_includes_routes
+    test_root_serves_dashboard(client)
+    test_dashboard_alias(client)
+    test_healthz(client)
+    test_openapi_schema_includes_routes(client)
+  wupbro/tests/test_drivers.py:
+    e: test_anomaly_report_creates_event,test_driver_health_reports_capabilities,test_browserless_unreachable_returns_503,test_dom_diff_endpoint_exists
+    test_anomaly_report_creates_event(client)
+    test_driver_health_reports_capabilities(client)
+    test_browserless_unreachable_returns_503(client;monkeypatch)
+    test_dom_diff_endpoint_exists(client)
+  wupbro/tests/test_events.py:
+    e: test_post_event_accepted,test_post_event_invalid_type_rejected,test_list_events_returns_recent,test_list_events_filter_by_type,test_list_events_filter_by_service,test_list_events_limit,test_event_stats,test_clear_events,test_event_extra_fields_preserved
+    test_post_event_accepted(client)
+    test_post_event_invalid_type_rejected(client)
+    test_list_events_returns_recent(client)
+    test_list_events_filter_by_type(client)
+    test_list_events_filter_by_service(client)
+    test_list_events_limit(client)
+    test_event_stats(client)
+    test_clear_events(client)
+    test_event_extra_fields_preserved(client)
+  wupbro/wupbro/__init__.py:
+  wupbro/wupbro/__main__.py:
+    e: main
+    main()
+  wupbro/wupbro/main.py:
+    e: create_app
+    create_app()
+  wupbro/wupbro/models.py:
+    e: Event,EventList,DomDiffRequest,ScreenshotRequest,AnomalyReport
+    Event:  # Generic WUP event posted by an agent.
+    EventList:
+    DomDiffRequest:
+    ScreenshotRequest:
+    AnomalyReport:
+  wupbro/wupbro/routers/__init__.py:
+  wupbro/wupbro/routers/dashboard.py:
+    e: root,dashboard
+    root(request)
+    dashboard(request)
+  wupbro/wupbro/routers/drivers.py:
+    e: _store,dom_diff_capture,browserless_screenshot,anomaly_report,driver_health
+    _store()
+    dom_diff_capture(req;store)
+    browserless_screenshot(req)
+    anomaly_report(report;store)
+    driver_health()
+  wupbro/wupbro/routers/events.py:
+    e: _store,post_event,list_events,event_stats,clear_events
+    _store()
+    post_event(event;store)
+    list_events(type;service;limit;store)
+    event_stats(store)
+    clear_events(store)
+  wupbro/wupbro/storage.py:
+    e: get_default_store,set_default_store,EventStore
+    EventStore: __init__(2),_load_existing(0),add(1),list(3),clear(0),stats(0)  # Thread-safe ring buffer + JSONL persistence.
+    get_default_store()
+    set_default_store(store)
 ```
 
 ## Source Map
@@ -510,13 +633,13 @@ class WupEventHandler:  # File system event handler for WUP watcher.
 
 ```python
 class BrowserNotifier:  # Send watcher events to browser-facing service and local file
-    def __init__(service_url, events_file)  # CC=10 ⚠
+    def __init__(service_url, events_file)  # CC=12 ⚠
     def notify(payload)  # CC=3
 class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
-    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=10 ⚠
+    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=12 ⚠
     def _load_service_health()  # CC=4
     def _save_service_health()  # CC=1
-    def _record_health_transition()  # CC=4
+    def _record_health_transition()  # CC=6
     def _tokenize_service(service)  # CC=3
     def _get_config_endpoints_for_service(service)  # CC=5
     def _resolve_base_url()  # CC=5
@@ -581,7 +704,7 @@ class VisualDiffer:  # Triggered by TestQLWatcher after a file change.
 def _httpx_available()  # CC=4, fan=1
 def resolve_endpoint(cfg)  # CC=3, fan=2
 def _normalize(payload)  # CC=6, fan=5
-class WebClient:  # Async event sink for the wup-web backend.
+class WebClient:  # Async event sink for the wupbro backend.
     def __init__(cfg)  # CC=2
     def is_active()  # CC=3
     def _headers()  # CC=2
@@ -594,7 +717,7 @@ class WebClient:  # Async event sink for the wup-web backend.
 
 ## Call Graph
 
-*35 nodes · 32 edges · 8 modules · CC̄=2.9*
+*47 nodes · 42 edges · 14 modules · CC̄=2.5*
 
 ### Hubs (by degree)
 
@@ -604,15 +727,15 @@ class WebClient:  # Async event sink for the wup-web backend.
 | `validate_config` *(in wup.config)* | 7 | 1 | 82 | **83** |
 | `simulate_testql_analysis` *(in examples.testql_demo)* | 11 ⚠ | 1 | 80 | **81** |
 | `demo_snapshot_persistence` *(in examples.visual_diff_demo)* | 3 | 1 | 26 | **27** |
-| `_diff_snapshots` *(in wup.visual_diff)* | 11 ⚠ | 2 | 15 | **17** |
-| `demo_config_yaml_round_trip` *(in examples.visual_diff_demo)* | 6 | 1 | 16 | **17** |
-| `demo_diff_algorithm` *(in examples.visual_diff_demo)* | 3 | 1 | 16 | **17** |
+| `run_quick_test` *(in wup.testql_watcher.TestQLWatcher)* | 15 ⚠ | 0 | 23 | **23** |
+| `run_detail_test` *(in wup.testql_watcher.TestQLWatcher)* | 9 | 0 | 20 | **20** |
 | `__init__` *(in wup.core.WupWatcher)* | 7 | 0 | 17 | **17** |
+| `demo_config_yaml_round_trip` *(in examples.visual_diff_demo)* | 6 | 1 | 16 | **17** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
-# nodes: 35 | edges: 32 | modules: 8
-# CC̄=2.9
+# nodes: 47 | edges: 42 | modules: 14
+# CC̄=2.5
 
 HUBS[20]:
   wup.cli.status
@@ -623,46 +746,45 @@ HUBS[20]:
     CC=11  in:1  out:80  total:81
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
-  wup.visual_diff._diff_snapshots
-    CC=11  in:2  out:15  total:17
+  wup.testql_watcher.TestQLWatcher.run_quick_test
+    CC=15  in:0  out:23  total:23
+  wup.testql_watcher.TestQLWatcher.run_detail_test
+    CC=9  in:0  out:20  total:20
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:17  total:17
+  wup.visual_diff._diff_snapshots
+    CC=11  in:2  out:15  total:17
   wup.cli.init
     CC=3  in:0  out:16  total:16
+  wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
+    CC=11  in:0  out:16  total:16
   examples.visual_diff_demo.main
     CC=2  in:0  out:15  total:15
   examples.visual_diff_demo.demo_live_page
     CC=3  in:1  out:14  total:15
+  wup.config.load_config
+    CC=5  in:5  out:8  total:13
   examples.visual_diff_demo.demo_disabled_is_noop
     CC=2  in:1  out:11  total:12
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=12  in:0  out:12  total:12
+  wupbro.wupbro.storage.EventStore.list
+    CC=7  in:7  out:5  total:12
   wup.config._load_dotenv
     CC=10  in:1  out:10  total:11
   wup.visual_diff._fetch_dom_snapshot
     CC=3  in:1  out:9  total:10
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=10  in:0  out:9  total:9
-  wup.visual_diff._flatten
-    CC=4  in:3  out:5  total:8
-  wup.config.load_config
-    CC=5  in:0  out:8  total:8
-  examples.visual_diff_demo.demo_page_slug
-    CC=2  in:1  out:6  total:7
-  wup.visual_diff.VisualDiffer._check_page
-    CC=2  in:0  out:7  total:7
-  examples.visual_diff_demo._make_dom
-    CC=2  in:5  out:1  total:6
 
 MODULES:
   examples.testql_demo  [2 funcs]
     simulate_testql_analysis  CC=11  out:80
     simulate_with_mock_data  CC=1  out:3
-  examples.visual_diff_demo  [9 funcs]
+  examples.visual_diff_demo  [8 funcs]
     _make_dom  CC=2  out:1
-    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -670,26 +792,41 @@ MODULES:
     demo_page_slug  CC=2  out:6
     demo_snapshot_persistence  CC=3  out:26
     main  CC=2  out:15
-  project.map.toon  [3 funcs]
-    get_default_config  CC=0  out:0
-    load_config  CC=0  out:0
-    save_config  CC=0  out:0
+  project.map.toon  [2 funcs]
+    _normalize  CC=0  out:0
+    resolve_endpoint  CC=0  out:0
+  wupbro.wupbro.routers.drivers  [1 funcs]
+    _store  CC=1  out:1
+  wupbro.wupbro.routers.events  [1 funcs]
+    _store  CC=1  out:1
+  wupbro.wupbro.storage  [2 funcs]
+    list  CC=7  out:5
+    get_default_store  CC=2  out:2
   wup.cli  [2 funcs]
     init  CC=3  out:16
     status  CC=5  out:97
-  wup.config  [5 funcs]
+  wup.config  [6 funcs]
     _load_dotenv  CC=10  out:10
     find_config_file  CC=3  out:1
     get_default_config  CC=1  out:5
     load_config  CC=5  out:8
+    save_config  CC=2  out:3
     validate_config  CC=7  out:82
   wup.core  [1 funcs]
     __init__  CC=7  out:17
-  wup.testql_watcher  [1 funcs]
-    __init__  CC=10  out:9
-  wup.visual_diff  [12 funcs]
+  wup.dependency_mapper  [1 funcs]
+    to_dict  CC=2  out:7
+  wup.testql_discovery  [2 funcs]
+    discover_all_endpoints  CC=6  out:9
+    parse_scenario_endpoints  CC=11  out:16
+  wup.testql_watcher  [3 funcs]
+    __init__  CC=12  out:12
+    run_detail_test  CC=9  out:20
+    run_quick_test  CC=15  out:23
+  wup.visual_diff  [14 funcs]
     __init__  CC=1  out:2
     _check_page  CC=2  out:7
+    _pages_for_service  CC=8  out:6
     _write_diff_event  CC=1  out:6
     _diff_snapshots  CC=11  out:15
     _fetch_dom_snapshot  CC=3  out:9
@@ -697,41 +834,53 @@ MODULES:
     _load_snapshot  CC=3  out:3
     _node_signature  CC=3  out:4
     _page_slug  CC=2  out:3
-    _playwright_available  CC=3  out:0
+  wup.web_client  [2 funcs]
+    __init__  CC=2  out:2
+    send_event  CC=4  out:9
 
 EDGES:
-  wup.core.WupWatcher.__init__ → project.map.toon.load_config
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
   wup.config.load_config → wup.config._load_dotenv
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
+  wup.cli.status → wup.config.load_config
+  wup.cli.init → wup.config.get_default_config
+  wup.cli.init → wup.config.save_config
+  wup.dependency_mapper.DependencyMapper.to_dict → wupbro.wupbro.storage.EventStore.list
+  wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints → wupbro.wupbro.storage.EventStore.list
+  wup.testql_discovery.TestQLEndpointDiscovery.discover_all_endpoints → wupbro.wupbro.storage.EventStore.list
+  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
+  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
+  wup.visual_diff._flatten → wup.visual_diff._node_signature
+  wup.visual_diff._diff_snapshots → wup.visual_diff._flatten
+  wup.visual_diff.VisualDiffer.__init__ → wup.visual_diff._resolve_base_url
+  wup.visual_diff.VisualDiffer._pages_for_service → wupbro.wupbro.storage.EventStore.list
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._snapshot_path
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._load_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._diff_snapshots
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._save_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._fetch_dom_snapshot
+  wup.visual_diff.VisualDiffer._write_diff_event → wup.visual_diff._page_slug
   examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
   examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
   examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
-  examples.visual_diff_demo.demo_config_yaml_round_trip → project.map.toon.save_config
-  examples.visual_diff_demo.demo_config_yaml_round_trip → project.map.toon.load_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
   examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
-  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
-  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
-  wup.visual_diff._flatten → wup.visual_diff._node_signature
-  wup.visual_diff._diff_snapshots → wup.visual_diff._flatten
-  wup.visual_diff.VisualDiffer.__init__ → wup.visual_diff._resolve_base_url
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._snapshot_path
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._load_snapshot
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._diff_snapshots
-  wup.visual_diff.VisualDiffer._check_page → examples.visual_diff_demo._save_snapshot
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._fetch_dom_snapshot
-  wup.visual_diff.VisualDiffer._write_diff_event → wup.visual_diff._page_slug
-  wup.cli.status → project.map.toon.load_config
-  wup.cli.init → project.map.toon.get_default_config
-  wup.cli.init → project.map.toon.save_config
-  wup.testql_watcher.TestQLWatcher.__init__ → project.map.toon.load_config
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
+  wup.web_client.WebClient.__init__ → project.map.toon.resolve_endpoint
+  wup.web_client.WebClient.send_event → project.map.toon._normalize
+  wupbro.wupbro.routers.drivers._store → wupbro.wupbro.storage.get_default_store
+  wupbro.wupbro.routers.events._store → wupbro.wupbro.storage.get_default_store
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
+  wup.testql_watcher.TestQLWatcher.run_quick_test → wupbro.wupbro.storage.EventStore.list
+  wup.testql_watcher.TestQLWatcher.run_detail_test → wupbro.wupbro.storage.EventStore.list
 ```
 
 ## Test Contracts

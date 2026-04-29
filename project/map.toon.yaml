@@ -1,11 +1,11 @@
-# wup | 34f 6506L | python:31,shell:2,less:1 | 2026-04-29
-# stats: 75 func | 35 cls | 34 mod | CC̄=2.8 | critical:4 | cycles:0
-# alerts[5]: CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_process_changed_file_creates_track_on_failure=7
+# wup | 49f 7376L | python:46,shell:2,less:1 | 2026-04-29
+# stats: 123 func | 42 cls | 49 mod | CC̄=2.7 | critical:4 | cycles:0
+# alerts[5]: CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_send_event_posts_to_recorder=9
 # hotspots[5]: status fan=31; testql_endpoints fan=19; map_deps fan=18; demo_snapshot_persistence fan=17; validate_config fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[34]:
-  app.doql.less,33
+M[49]:
+  app.doql.less,59
   examples/fastapi-app/app/__init__.py,1
   examples/fastapi-app/app/users/__init__.py,1
   examples/fastapi-app/app/users/routes.py,39
@@ -26,6 +26,7 @@ M[34]:
   project.sh,49
   tests/test_e2e.py,517
   tests/test_testql_watcher.py,256
+  tests/test_web_client.py,168
   tests/test_wup.py,1624
   tree.sh,2
   wup/__init__.py,40
@@ -36,9 +37,23 @@ M[34]:
   wup/models/__init__.py,22
   wup/models/config.py,113
   wup/testql_discovery.py,230
-  wup/testql_watcher.py,462
+  wup/testql_watcher.py,478
   wup/visual_diff.py,334
   wup/web_client.py,179
+  wupbro/tests/__init__.py,1
+  wupbro/tests/conftest.py,24
+  wupbro/tests/test_dashboard.py,36
+  wupbro/tests/test_drivers.py,51
+  wupbro/tests/test_events.py,96
+  wupbro/wupbro/__init__.py,8
+  wupbro/wupbro/__main__.py,22
+  wupbro/wupbro/main.py,45
+  wupbro/wupbro/models.py,60
+  wupbro/wupbro/routers/__init__.py,2
+  wupbro/wupbro/routers/dashboard.py,25
+  wupbro/wupbro/routers/drivers.py,130
+  wupbro/wupbro/routers/events.py,49
+  wupbro/wupbro/storage.py,111
 D:
   examples/fastapi-app/app/__init__.py:
   examples/fastapi-app/app/users/__init__.py:
@@ -130,6 +145,22 @@ D:
     test_service_health_transitions_are_persisted()
     test_visual_differ_disabled_by_default()
     test_visual_differ_initialized_when_enabled()
+  tests/test_web_client.py:
+    e: _make_handler,recorder_server,test_resolve_endpoint_from_config,test_resolve_endpoint_from_env,test_resolve_endpoint_empty,test_is_active_false_when_disabled,test_is_active_false_when_no_endpoint,test_send_event_disabled_returns_false,test_send_event_posts_to_recorder,test_send_event_with_api_key,test_send_event_swallows_connection_error,test_send_regression_helper,test_send_health_transition_helper,_Recorder
+    _Recorder: __init__(0)
+    _make_handler(recorder;status)
+    recorder_server()
+    test_resolve_endpoint_from_config()
+    test_resolve_endpoint_from_env(monkeypatch)
+    test_resolve_endpoint_empty(monkeypatch)
+    test_is_active_false_when_disabled()
+    test_is_active_false_when_no_endpoint()
+    test_send_event_disabled_returns_false()
+    test_send_event_posts_to_recorder(recorder_server)
+    test_send_event_with_api_key(recorder_server)
+    test_send_event_swallows_connection_error()
+    test_send_regression_helper(recorder_server)
+    test_send_health_transition_helper(recorder_server)
   tests/test_wup.py:
     e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestVisualDiffer,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
     TestDependencyMapper: test_init(0),test_infer_service_from_path(0),test_build_from_codebase_empty(0),test_build_from_codebase_with_fastapi(0),test_save_and_load(0),test_infer_service_from_path_edge_cases(0),test_get_service_for_file_empty_mapper(0),test_get_endpoints_for_service_empty_mapper(0),test_build_from_codebase_with_flask(0),test_service_to_files_tracking(0),test_build_from_codebase_nonexistent_directory(0)  # Tests for the DependencyMapper class.
@@ -177,7 +208,7 @@ D:
     TestStrategyConfig:  # Global test strategy configuration.
     TestQLConfig:  # TestQL-specific configuration.
     VisualDiffConfig:  # Configuration for visual DOM diff after file changes.
-    WebConfig:  # Configuration for sending events to wup-web backend.
+    WebConfig:  # Configuration for sending events to wupbro backend.
     ProjectConfig:  # Project metadata.
     WupConfig:  # Main WUP configuration.
   wup/testql_discovery.py:
@@ -202,7 +233,73 @@ D:
     _resolve_base_url(cfg)
   wup/web_client.py:
     e: _httpx_available,resolve_endpoint,_normalize,WebClient
-    WebClient: __init__(1),is_active(0),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wup-web backend.
+    WebClient: __init__(1),is_active(0),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wupbro backend.
     _httpx_available()
     resolve_endpoint(cfg)
     _normalize(payload)
+  wupbro/tests/__init__.py:
+  wupbro/tests/conftest.py:
+    e: fresh_store,client
+    fresh_store()
+    client(fresh_store)
+  wupbro/tests/test_dashboard.py:
+    e: test_root_serves_dashboard,test_dashboard_alias,test_healthz,test_openapi_schema_includes_routes
+    test_root_serves_dashboard(client)
+    test_dashboard_alias(client)
+    test_healthz(client)
+    test_openapi_schema_includes_routes(client)
+  wupbro/tests/test_drivers.py:
+    e: test_anomaly_report_creates_event,test_driver_health_reports_capabilities,test_browserless_unreachable_returns_503,test_dom_diff_endpoint_exists
+    test_anomaly_report_creates_event(client)
+    test_driver_health_reports_capabilities(client)
+    test_browserless_unreachable_returns_503(client;monkeypatch)
+    test_dom_diff_endpoint_exists(client)
+  wupbro/tests/test_events.py:
+    e: test_post_event_accepted,test_post_event_invalid_type_rejected,test_list_events_returns_recent,test_list_events_filter_by_type,test_list_events_filter_by_service,test_list_events_limit,test_event_stats,test_clear_events,test_event_extra_fields_preserved
+    test_post_event_accepted(client)
+    test_post_event_invalid_type_rejected(client)
+    test_list_events_returns_recent(client)
+    test_list_events_filter_by_type(client)
+    test_list_events_filter_by_service(client)
+    test_list_events_limit(client)
+    test_event_stats(client)
+    test_clear_events(client)
+    test_event_extra_fields_preserved(client)
+  wupbro/wupbro/__init__.py:
+  wupbro/wupbro/__main__.py:
+    e: main
+    main()
+  wupbro/wupbro/main.py:
+    e: create_app
+    create_app()
+  wupbro/wupbro/models.py:
+    e: Event,EventList,DomDiffRequest,ScreenshotRequest,AnomalyReport
+    Event:  # Generic WUP event posted by an agent.
+    EventList:
+    DomDiffRequest:
+    ScreenshotRequest:
+    AnomalyReport:
+  wupbro/wupbro/routers/__init__.py:
+  wupbro/wupbro/routers/dashboard.py:
+    e: root,dashboard
+    root(request)
+    dashboard(request)
+  wupbro/wupbro/routers/drivers.py:
+    e: _store,dom_diff_capture,browserless_screenshot,anomaly_report,driver_health
+    _store()
+    dom_diff_capture(req;store)
+    browserless_screenshot(req)
+    anomaly_report(report;store)
+    driver_health()
+  wupbro/wupbro/routers/events.py:
+    e: _store,post_event,list_events,event_stats,clear_events
+    _store()
+    post_event(event;store)
+    list_events(type;service;limit;store)
+    event_stats(store)
+    clear_events(store)
+  wupbro/wupbro/storage.py:
+    e: get_default_store,set_default_store,EventStore
+    EventStore: __init__(2),_load_existing(0),add(1),list(3),clear(0),stats(0)  # Thread-safe ring buffer + JSONL persistence.
+    get_default_store()
+    set_default_store(store)

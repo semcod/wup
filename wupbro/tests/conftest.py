@@ -1,12 +1,12 @@
-"""Shared fixtures for wup-web tests."""
+"""Shared fixtures for wupbro tests."""
 
 from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
 
-from wup_web.main import create_app
-from wup_web.storage import EventStore, set_default_store
+from wupbro.main import create_app
+from wupbro.storage import EventStore, set_default_store
 
 
 @pytest.fixture

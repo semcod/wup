@@ -1,4 +1,4 @@
-"""FastAPI entry-point for wup-web."""
+"""FastAPI entry-point for wupbro."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .routers import dashboard, drivers, events
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="WUP Web Dashboard",
+        title="WUP Browser Dashboard",
         version=__version__,
         description=(
             "Backend for the WUP regression watcher. Receives events from "
@@ -40,5 +40,5 @@ def create_app() -> FastAPI:
     return app
 
 
-# Module-level instance for `uvicorn wup_web.main:app`
+# Module-level instance for `uvicorn wupbro.main:app`
 app = create_app()
