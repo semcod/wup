@@ -85,7 +85,7 @@ flowchart TD
     subgraph wup__cli
         wup__cli__watch["watch"]
         wup__cli__map_deps["map_deps"]
-        wup__cli__status("status CC=11")
+        wup__cli__status{{status CC=32}}
         wup__cli__init["init"]
         wup__cli__testql_endpoints["testql_endpoints"]
         wup__cli__version["version"]
@@ -100,7 +100,7 @@ flowchart TD
     subgraph wup__core
         wup__core__WupWatcher____init__["__init__"]
         wup__core__WupWatcher___to_relative_path["_to_relative_path"]
-        wup__core__WupWatcher__infer_service("infer_service CC=10")
+        wup__core__WupWatcher__infer_service("infer_service CC=12")
         wup__core__WupWatcher__detect_service_coincidences{{detect_service_coincidences CC=19}}
         wup__core__WupWatcher___services_share_domain["_services_share_domain"]
         wup__core__WupWatcher__get_service_config["get_service_config"]
@@ -153,7 +153,10 @@ flowchart TD
     subgraph wup__testql_watcher
         wup__testql_watcher__BrowserNotifier____init__["__init__"]
         wup__testql_watcher__BrowserNotifier__notify["notify"]
-        wup__testql_watcher__TestQLWatcher____init__["__init__"]
+        wup__testql_watcher__TestQLWatcher____init__("__init__ CC=8")
+        wup__testql_watcher__TestQLWatcher___load_service_health["_load_service_health"]
+        wup__testql_watcher__TestQLWatcher___save_service_health["_save_service_health"]
+        wup__testql_watcher__TestQLWatcher___record_health_transition["_record_health_transition"]
         wup__testql_watcher__TestQLWatcher___tokenize_service["_tokenize_service"]
         wup__testql_watcher__TestQLWatcher___get_config_endpoints_for_service["_get_config_endpoints_for_service"]
         wup__testql_watcher__TestQLWatcher___resolve_base_url["_resolve_base_url"]
@@ -163,21 +166,21 @@ flowchart TD
         wup__testql_watcher__TestQLWatcher___select_scenarios_for_service{{_select_scenarios_for_service CC=15}}
         wup__testql_watcher__TestQLWatcher___run_testql["_run_testql"]
         wup__testql_watcher__TestQLWatcher___write_track("_write_track CC=11")
-        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=11")
+        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=13")
         wup__testql_watcher__TestQLWatcher__run_detail_test("run_detail_test CC=9")
         wup__testql_watcher__TestQLWatcher__process_changed_file_once["process_changed_file_once"]
     end
     wup__config__load_config --> wup__config__validate_config
     wup__config__load_config --> wup__config__find_config_file
     wup__config__load_config --> wup__config__get_default_config
+    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
     wup__cli__status --> wup__config__load_config
     wup__cli__init --> wup__config__get_default_config
     wup__cli__init --> wup__config__save_config
     wup__core__WupWatcher____init__ --> wup__config__load_config
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
-    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class wup__core__WupWatcher__detect_service_coincidences,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service highCC
-    class wup__cli__status,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,examples__testql_demo__simulate_testql_analysis medCC
+    class wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__cli__status,wup__core__WupWatcher__detect_service_coincidences highCC
+    class wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,examples__testql_demo__simulate_testql_analysis,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching medCC

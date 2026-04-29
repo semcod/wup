@@ -21,9 +21,9 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.9`
+- **version**: `0.2.11`
 - **python_requires**: `>=3.9`
-- **license**: Apache-2.0
+- **license**: {'text': 'Apache-2.0'}
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
 - **generated_from**: pyproject.toml, testql(2), app.doql.less, goal.yaml, .env.example, src(6 mod), project/(2 analysis files)
@@ -41,11 +41,11 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.9;
+  version: 0.2.11;
 }
 
 dependencies {
-  runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0";
+  runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
 }
 
 interface[type="api"] {
@@ -205,7 +205,7 @@ ASSERT[72]{field, operator, expected}:
 ```yaml
 project:
   name: wup
-  version: 0.2.9
+  version: 0.2.11
   env: local
 ```
 
@@ -218,6 +218,7 @@ watchdog>=4.0.0
 psutil>=5.9.0
 rich>=13.0.0
 typer>=0.9.0
+pyyaml>=6.0
 ```
 
 ## Deployment
@@ -258,10 +259,10 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 31f 5009L | python:28,shell:2,less:1 | 2026-04-29
-# stats: 49 func | 30 cls | 31 mod | CC̄=2.3 | critical:2 | cycles:0
-# alerts[5]: CC simulate_testql_analysis=11; CC status=11; CC test_process_changed_file_creates_track_on_failure=7; CC watch=6; CC main=5
-# hotspots[5]: testql_endpoints fan=19; map_deps fan=18; watch fan=16; test_process_changed_file_creates_track_on_failure fan=15; status fan=15
+# wup | 31f 5235L | python:28,shell:2,less:1 | 2026-04-29
+# stats: 50 func | 30 cls | 31 mod | CC̄=2.9 | critical:3 | cycles:0
+# alerts[5]: CC status=32; CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC test_process_changed_file_creates_track_on_failure=7; CC watch=6
+# hotspots[5]: status fan=22; testql_endpoints fan=19; map_deps fan=18; test_process_changed_file_creates_track_on_failure fan=16; watch fan=16
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[31]:
@@ -284,18 +285,18 @@ M[31]:
   examples/testql_integration.py,238
   project.sh,49
   tests/test_e2e.py,517
-  tests/test_testql_watcher.py,149
+  tests/test_testql_watcher.py,202
   tests/test_wup.py,1346
   tree.sh,2
   wup/__init__.py,40
-  wup/cli.py,382
+  wup/cli.py,459
   wup/config.py,255
-  wup/core.py,597
+  wup/core.py,605
   wup/dependency_mapper.py,285
   wup/models/__init__.py,22
   wup/models/config.py,83
   wup/testql_discovery.py,230
-  wup/testql_watcher.py,368
+  wup/testql_watcher.py,456
 D:
   examples/fastapi-app/app/__init__.py:
   examples/fastapi-app/app/users/__init__.py:
@@ -368,11 +369,12 @@ D:
     TestE2EConfigScenarios: test_config_with_multiple_services(0),test_config_with_service_coincidence(0)  # End-to-end tests for configuration scenarios.
     run_wup_command(args;cwd;timeout;capture_output;text)
   tests/test_testql_watcher.py:
-    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing
+    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing,test_service_health_transitions_are_persisted
     test_process_changed_file_creates_track_on_failure()
     test_browser_event_file_is_written_without_service_url()
     test_config_endpoints_use_base_url_from_yaml_config()
     test_config_endpoints_use_base_url_from_env_when_yaml_missing()
+    test_service_health_transitions_are_persisted()
   tests/test_wup.py:
     e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
     TestDependencyMapper: test_init(0),test_infer_service_from_path(0),test_build_from_codebase_empty(0),test_build_from_codebase_with_fastapi(0),test_save_and_load(0),test_infer_service_from_path_edge_cases(0),test_get_service_for_file_empty_mapper(0),test_get_endpoints_for_service_empty_mapper(0),test_build_from_codebase_with_flask(0),test_service_to_files_tracking(0),test_build_from_codebase_nonexistent_directory(0)  # Tests for the DependencyMapper class.
@@ -389,7 +391,7 @@ D:
     e: watch,map_deps,status,init,testql_endpoints,map_deps,version
     watch(project;deps_file;cpu_throttle;debounce;cooldown;dashboard;mode;scenarios_dir;testql_bin;browser_service_url;track_dir;quick_limit;config)
     map_deps(project;output;framework;config)
-    status(deps_file;config)
+    status(deps_file;config;delta_seconds;failed_only)
     init(project;output)
     testql_endpoints(scenarios_dir;output;testql_bin)
     map_deps(project;output;framework)
@@ -425,7 +427,7 @@ D:
   wup/testql_watcher.py:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file
-    TestQLWatcher: __init__(7),_tokenize_service(1),_get_config_endpoints_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),run_quick_test(2),run_detail_test(2),process_changed_file_once(1)  # WUP watcher running selective TestQL scenarios for changed s
+    TestQLWatcher: __init__(7),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),run_quick_test(2),run_detail_test(2),process_changed_file_once(1)  # WUP watcher running selective TestQL scenarios for changed s
 ```
 
 ## Source Map
@@ -438,7 +440,7 @@ D:
 class WupWatcher:  # Intelligent file watcher for regression testing.
     def __init__(project_root, deps_file, cpu_throttle, debounce_seconds, test_cooldown_seconds, config)  # CC=1
     def _to_relative_path(file_path)  # CC=2
-    def infer_service(file_path)  # CC=10 ⚠
+    def infer_service(file_path)  # CC=12 ⚠
     def detect_service_coincidences(changed_service)  # CC=19 ⚠
     def _services_share_domain(service1, service2)  # CC=1
     def get_service_config(service_name)  # CC=3
@@ -463,6 +465,31 @@ class WupEventHandler:  # File system event handler for WUP watcher.
     def on_deleted(event)  # CC=2
 ```
 
+### `wup.testql_watcher` (`wup/testql_watcher.py`)
+
+```python
+class BrowserNotifier:  # Send watcher events to browser-facing service and local file
+    def __init__(service_url, events_file)  # CC=8
+    def notify(payload)  # CC=3
+class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
+    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=8
+    def _load_service_health()  # CC=4
+    def _save_service_health()  # CC=1
+    def _record_health_transition()  # CC=4
+    def _tokenize_service(service)  # CC=3
+    def _get_config_endpoints_for_service(service)  # CC=5
+    def _resolve_base_url()  # CC=5
+    def _to_full_url(endpoint)  # CC=5
+    def _discover_scenarios()  # CC=2
+    def get_service_config(service_name)  # CC=3
+    def _select_scenarios_for_service(service)  # CC=15 ⚠
+    def _run_testql(args, timeout)  # CC=2
+    def _write_track()  # CC=11 ⚠
+    def run_quick_test(service, endpoints)  # CC=13 ⚠
+    def run_detail_test(service, endpoints)  # CC=9
+    def process_changed_file_once(file_path)  # CC=4
+```
+
 ### `wup.dependency_mapper` (`wup/dependency_mapper.py`)
 
 ```python
@@ -485,34 +512,12 @@ class DependencyMapper:  # Maps project dependencies for intelligent testing.
     def build_from_testql_scenarios(scenarios_dir, testql_bin)  # CC=3
 ```
 
-### `wup.testql_watcher` (`wup/testql_watcher.py`)
-
-```python
-class BrowserNotifier:  # Send watcher events to browser-facing service and local file
-    def __init__(service_url, events_file)  # CC=7
-    def notify(payload)  # CC=3
-class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
-    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=7
-    def _tokenize_service(service)  # CC=3
-    def _get_config_endpoints_for_service(service)  # CC=5
-    def _resolve_base_url()  # CC=5
-    def _to_full_url(endpoint)  # CC=5
-    def _discover_scenarios()  # CC=2
-    def get_service_config(service_name)  # CC=3
-    def _select_scenarios_for_service(service)  # CC=15 ⚠
-    def _run_testql(args, timeout)  # CC=2
-    def _write_track()  # CC=11 ⚠
-    def run_quick_test(service, endpoints)  # CC=11 ⚠
-    def run_detail_test(service, endpoints)  # CC=9
-    def process_changed_file_once(file_path)  # CC=4
-```
-
 ### `wup.cli` (`wup/cli.py`)
 
 ```python
 def watch(project, deps_file, cpu_throttle, debounce, cooldown, dashboard, mode, scenarios_dir, testql_bin, browser_service_url, track_dir, quick_limit, config)  # CC=6, fan=16
 def map_deps(project, output, framework, config)  # CC=2, fan=18
-def status(deps_file, config)  # CC=11, fan=15 ⚠
+def status(deps_file, config, delta_seconds, failed_only)  # CC=32, fan=22 ⚠
 def init(project, output)  # CC=3, fan=10
 def testql_endpoints(scenarios_dir, output, testql_bin)  # CC=3, fan=19
 def map_deps(project, output, framework)  # CC=2, fan=15
@@ -534,31 +539,31 @@ class TestQLEndpointDiscovery:  # Discover endpoints from TestQL scenario files.
 
 ## Call Graph
 
-*11 nodes · 9 edges · 5 modules · CC̄=2.7*
+*11 nodes · 9 edges · 5 modules · CC̄=2.9*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
+| `status` *(in wup.cli)* | 32 ⚠ | 0 | 97 | **97** |
 | `simulate_testql_analysis` *(in examples.testql_demo)* | 11 ⚠ | 1 | 80 | **81** |
-| `status` *(in wup.cli)* | 11 ⚠ | 0 | 53 | **53** |
 | `validate_config` *(in wup.config)* | 4 | 1 | 47 | **48** |
 | `__init__` *(in wup.core.WupWatcher)* | 7 | 0 | 17 | **17** |
 | `init` *(in wup.cli)* | 3 | 0 | 16 | **16** |
 | `load_config` *(in wup.config)* | 5 | 4 | 7 | **11** |
+| `__init__` *(in wup.testql_watcher.TestQLWatcher)* | 8 | 0 | 8 | **8** |
 | `get_default_config` *(in wup.config)* | 1 | 2 | 5 | **7** |
-| `__init__` *(in wup.testql_watcher.TestQLWatcher)* | 7 | 0 | 6 | **6** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # nodes: 11 | edges: 9 | modules: 5
-# CC̄=2.7
+# CC̄=2.9
 
 HUBS[20]:
+  wup.cli.status
+    CC=32  in:0  out:97  total:97
   examples.testql_demo.simulate_testql_analysis
     CC=11  in:1  out:80  total:81
-  wup.cli.status
-    CC=11  in:0  out:53  total:53
   wup.config.validate_config
     CC=4  in:1  out:47  total:48
   wup.core.WupWatcher.__init__
@@ -567,10 +572,10 @@ HUBS[20]:
     CC=3  in:0  out:16  total:16
   wup.config.load_config
     CC=5  in:4  out:7  total:11
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=8  in:0  out:8  total:8
   wup.config.get_default_config
     CC=1  in:2  out:5  total:7
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=7  in:0  out:6  total:6
   examples.testql_demo.simulate_with_mock_data
     CC=1  in:1  out:3  total:4
   wup.config.save_config
@@ -584,7 +589,7 @@ MODULES:
     simulate_with_mock_data  CC=1  out:3
   wup.cli  [2 funcs]
     init  CC=3  out:16
-    status  CC=11  out:53
+    status  CC=32  out:97
   wup.config  [5 funcs]
     find_config_file  CC=3  out:1
     get_default_config  CC=1  out:5
@@ -594,18 +599,18 @@ MODULES:
   wup.core  [1 funcs]
     __init__  CC=7  out:17
   wup.testql_watcher  [1 funcs]
-    __init__  CC=7  out:6
+    __init__  CC=8  out:8
 
 EDGES:
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
   wup.cli.status → wup.config.load_config
   wup.cli.init → wup.config.get_default_config
   wup.cli.init → wup.config.save_config
   wup.core.WupWatcher.__init__ → wup.config.load_config
-  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
 ```
 
 ## Test Contracts

@@ -4,12 +4,12 @@
 
 - **Project**: /home/tom/github/semcod/wup
 - **Primary Language**: python
-- **Languages**: python: 22, yaml: 15, txt: 4, json: 2, shell: 2
+- **Languages**: python: 22, yaml: 15, txt: 5, json: 2, yml: 1
 - **Analysis Mode**: static
-- **Total Functions**: 144
+- **Total Functions**: 147
 - **Total Classes**: 16
 - **Modules**: 49
-- **Entry Points**: 137
+- **Entry Points**: 140
 
 ## Architecture by Module
 
@@ -22,24 +22,24 @@
 - **Classes**: 2
 - **File**: `core.py`
 
+### wup.testql_watcher
+- **Functions**: 18
+- **Classes**: 2
+- **File**: `testql_watcher.py`
+
 ### wup.dependency_mapper
 - **Functions**: 16
 - **Classes**: 1
 - **File**: `dependency_mapper.py`
 
-### wup.testql_watcher
-- **Functions**: 15
-- **Classes**: 2
-- **File**: `testql_watcher.py`
-
-### wup.cli
-- **Functions**: 7
-- **File**: `cli.py`
-
 ### wup.testql_discovery
 - **Functions**: 7
 - **Classes**: 1
 - **File**: `testql_discovery.py`
+
+### wup.cli
+- **Functions**: 7
+- **File**: `cli.py`
 
 ### examples.testql_integration
 - **Functions**: 6
@@ -106,7 +106,7 @@ Main execution flows into the system:
 
 ### wup.cli.status
 > Show dependency map status and configuration.
-- **Calls**: app.command, typer.Option, typer.Option, None.resolve, wup.config.load_config, console.print, console.print, console.print
+- **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, None.resolve, wup.config.load_config, console.print
 
 ### wup.cli.watch
 > Watch project for file changes and run intelligent regression tests.
@@ -128,6 +128,9 @@ Uses a 3-layer approach:
 > Build dependency map from codebase.
 - **Calls**: app.command, typer.Argument, typer.Option, typer.Option, None.resolve, console.print, console.print, console.print
 
+### wup.testql_watcher.TestQLWatcher.run_quick_test
+- **Calls**: list, self._get_config_endpoints_for_service, self._select_scenarios_for_service, self.get_service_config, self.console.print, self._record_health_transition, self.console.print, self.console.print
+
 ### wup.testql_watcher.TestQLWatcher.run_detail_test
 - **Calls**: list, self._get_config_endpoints_for_service, self._select_scenarios_for_service, self.console.print, len, len, self._run_testql, None.append
 
@@ -139,10 +142,6 @@ Args:
     deps_file: Path to the dependency map JSON file
     cpu_th
 - **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, None.exists, wup.config.load_config
-
-### wup.cli.init
-> Initialize a new wup.yaml configuration file.
-- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
 
 ### wup.dependency_mapper.DependencyMapper._scan_python_endpoints
 > Scan Python files for endpoint definitions.
@@ -158,8 +157,18 @@ Returns:
     List of endpoint paths found in the s
 - **Calls**: list, re.compile, api_pattern.findall, set, open, f.read, endpoints.append, yaml.safe_load
 
-### wup.testql_watcher.TestQLWatcher.run_quick_test
-- **Calls**: list, self._get_config_endpoints_for_service, self._select_scenarios_for_service, self.get_service_config, self.console.print, self.console.print, self.console.print, self._run_testql
+### wup.cli.init
+> Initialize a new wup.yaml configuration file.
+- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
+
+### wup.testql_watcher.TestQLWatcher._write_track
+- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
+
+### wup.core.WupWatcher.infer_service
+> Infer service name from file path.
+
+Uses config services first, then dependency mapper, then heuristics.
+- **Calls**: self._to_relative_path, self.dependency_mapper.get_service_for_file, _re.match, len, None.is_file, None.join, None.lower, svc.name.lower
 
 ### wup.core.WupWatcher.start_watching
 > Start watching for file changes.
@@ -172,14 +181,9 @@ Args:
 > Run watcher with live dashboard.
 - **Calls**: self.build_watched_paths, WupEventHandler, Observer, observer.start, observer.join, observer.schedule, Live, None.exists
 
-### wup.testql_watcher.TestQLWatcher._write_track
-- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
-
-### wup.core.WupWatcher.infer_service
-> Infer service name from file path.
-
-Uses config services first, then dependency mapper, then heuristics.
-- **Calls**: self._to_relative_path, self.dependency_mapper.get_service_for_file, len, None.is_file, None.join, None.lower, svc.name.lower, re.search
+### examples.testql_integration.TestQLWatcher.run_detail_test
+> Run detailed TestQL test with full coverage and blame reporting.
+- **Calls**: self.console.print, self._find_scenarios_for_service, len, subprocess.run, self._generate_blame_report, self.console.print, self.console.print, self.console.print
 
 ### wup.core.WupWatcher.create_status_table
 > Create a status table for the dashboard.
@@ -187,10 +191,6 @@ Uses config services first, then dependency mapper, then heuristics.
 Returns:
     Rich Table object with current status
 - **Calls**: Table, table.add_column, table.add_column, table.add_column, table.add_column, sorted, self.last_test_times.get, self.dependency_mapper.get_endpoints_for_service
-
-### examples.testql_integration.TestQLWatcher.run_detail_test
-> Run detailed TestQL test with full coverage and blame reporting.
-- **Calls**: self.console.print, self._find_scenarios_for_service, len, subprocess.run, self._generate_blame_report, self.console.print, self.console.print, self.console.print
 
 ### wup.core.WupWatcher.on_file_change
 > Handle file change event.
@@ -255,6 +255,9 @@ Returns:
             "e
 - **Calls**: self.discover_scenarios, self.parse_scenario_endpoints, self.infer_service_from_scenario, None.update, None.append, set, sorted, list
 
+### wup.testql_watcher.TestQLWatcher._record_health_transition
+- **Calls**: int, self.service_health.get, previous.get, self._save_service_health, self.browser_notifier.notify, time.time, self.health_events_path.open, handle.write
+
 ### wup.core.WupWatcher.build_watched_paths
 > Build list of paths to watch from config.
 
@@ -262,26 +265,14 @@ Returns:
     List of absolute paths to watch
 - **Calls**: str, str, str, pattern.startswith, str, None.exists, pattern.replace, watch_paths.append
 
-### wup.core.WupWatcher.run_detail_test
-> Run a detailed test for a service with blame report.
-
-Args:
-    service: Service name
-    endpoints: List of endpoints to test
-    
-Returns:
-    Dicti
-- **Calls**: self.console.print, asyncio.sleep, len, self.console.print, self.console.print, self.console.print, len, len
-
 ### wup.testql_watcher.BrowserNotifier.notify
 - **Calls**: self.events_file.write_text, None.encode, request.Request, int, json.dumps, time.time, json.dumps, request.urlopen
 
+### wup.testql_watcher.TestQLWatcher.__init__
+- **Calls**: None.__init__, self.track_dir.mkdir, BrowserNotifier, self.health_state_path.parent.mkdir, self._load_service_health, wup.config.load_config, Path, super
+
 ### wup.testql_watcher.TestQLWatcher._select_scenarios_for_service
 - **Calls**: self._discover_scenarios, self._tokenize_service, scored.sort, self.get_service_config, scenario.name.lower, any, scored.append, len
-
-### wup.dependency_mapper.DependencyMapper._scan_js_endpoints
-> Scan JavaScript/TypeScript files for endpoint definitions.
-- **Calls**: self.project_root.rglob, js_file.read_text, str, re.findall, js_file.relative_to, endpoints.append, method.upper
 
 ## Process Flows
 
@@ -290,9 +281,6 @@ Key execution flows identified:
 ### Flow 1: status
 ```
 status [wup.cli]
-  └─ →> load_config
-      └─> validate_config
-      └─> find_config_file
 ```
 
 ### Flow 2: watch
@@ -315,19 +303,19 @@ main [examples.testql_integration]
 map_deps [wup.cli]
 ```
 
-### Flow 6: run_detail_test
+### Flow 6: run_quick_test
+```
+run_quick_test [wup.testql_watcher.TestQLWatcher]
+```
+
+### Flow 7: run_detail_test
 ```
 run_detail_test [wup.testql_watcher.TestQLWatcher]
 ```
 
-### Flow 7: __init__
+### Flow 8: __init__
 ```
 __init__ [wup.core.WupWatcher]
-```
-
-### Flow 8: init
-```
-init [wup.cli]
 ```
 
 ### Flow 9: _scan_python_endpoints
@@ -357,8 +345,8 @@ Implements 3-layer testing:
 
 ### wup.testql_watcher.TestQLWatcher
 > WUP watcher running selective TestQL scenarios for changed services.
-- **Methods**: 13
-- **Key Methods**: wup.testql_watcher.TestQLWatcher.__init__, wup.testql_watcher.TestQLWatcher._tokenize_service, wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service, wup.testql_watcher.TestQLWatcher._resolve_base_url, wup.testql_watcher.TestQLWatcher._to_full_url, wup.testql_watcher.TestQLWatcher._discover_scenarios, wup.testql_watcher.TestQLWatcher.get_service_config, wup.testql_watcher.TestQLWatcher._select_scenarios_for_service, wup.testql_watcher.TestQLWatcher._run_testql, wup.testql_watcher.TestQLWatcher._write_track
+- **Methods**: 16
+- **Key Methods**: wup.testql_watcher.TestQLWatcher.__init__, wup.testql_watcher.TestQLWatcher._load_service_health, wup.testql_watcher.TestQLWatcher._save_service_health, wup.testql_watcher.TestQLWatcher._record_health_transition, wup.testql_watcher.TestQLWatcher._tokenize_service, wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service, wup.testql_watcher.TestQLWatcher._resolve_base_url, wup.testql_watcher.TestQLWatcher._to_full_url, wup.testql_watcher.TestQLWatcher._discover_scenarios, wup.testql_watcher.TestQLWatcher.get_service_config
 - **Inherits**: WupWatcher
 
 ### wup.testql_discovery.TestQLEndpointDiscovery
@@ -441,36 +429,36 @@ Args:
 
 - **Output to**: list, re.compile, api_pattern.findall, set, open
 
-### wup.core.WupWatcher.process_test_queue_once
-- **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
+### project.map.toon.test_process_changed_file_creates_track_on_failure
+
+### project.map.toon.validate_config
 
 ### wup.testql_watcher.TestQLWatcher.process_changed_file_once
 - **Output to**: self.on_file_change, len, self.process_test_queue_once, asyncio.sleep, str
 
-### project.map.toon.test_process_changed_file_creates_track_on_failure
-
-### project.map.toon.validate_config
+### wup.core.WupWatcher.process_test_queue_once
+- **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
 
 ## Public API Surface
 
 Functions exposed as public API (no underscore prefix):
 
+- `wup.cli.status` - 97 calls
 - `examples.testql_demo.simulate_testql_analysis` - 80 calls
-- `wup.cli.status` - 53 calls
 - `wup.config.validate_config` - 47 calls
 - `wup.cli.watch` - 40 calls
 - `wup.cli.testql_endpoints` - 40 calls
 - `examples.testql_integration.main` - 26 calls
 - `wup.cli.map_deps` - 25 calls
+- `wup.testql_watcher.TestQLWatcher.run_quick_test` - 21 calls
 - `wup.testql_watcher.TestQLWatcher.run_detail_test` - 20 calls
-- `wup.cli.init` - 16 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints` - 16 calls
-- `wup.testql_watcher.TestQLWatcher.run_quick_test` - 16 calls
+- `wup.cli.init` - 16 calls
+- `wup.core.WupWatcher.infer_service` - 15 calls
 - `wup.core.WupWatcher.start_watching` - 15 calls
 - `wup.core.WupWatcher.run_with_dashboard` - 15 calls
-- `wup.core.WupWatcher.infer_service` - 14 calls
-- `wup.core.WupWatcher.create_status_table` - 13 calls
 - `examples.testql_integration.TestQLWatcher.run_detail_test` - 13 calls
+- `wup.core.WupWatcher.create_status_table` - 13 calls
 - `wup.core.WupWatcher.on_file_change` - 11 calls
 - `wup.dependency_mapper.DependencyMapper.build_from_testql_scenarios` - 10 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.discover_via_testql_cli` - 10 calls
@@ -479,21 +467,21 @@ Functions exposed as public API (no underscore prefix):
 - `wup.dependency_mapper.DependencyMapper.load` - 9 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.discover_all_endpoints` - 9 calls
 - `wup.core.WupWatcher.build_watched_paths` - 9 calls
-- `wup.core.WupWatcher.run_detail_test` - 8 calls
 - `wup.testql_watcher.BrowserNotifier.notify` - 8 calls
+- `wup.core.WupWatcher.run_detail_test` - 8 calls
 - `wup.config.load_config` - 7 calls
 - `wup.dependency_mapper.DependencyMapper.to_dict` - 7 calls
 - `wup.core.WupWatcher.process_test_queue_once` - 6 calls
 - `wup.core.WupWatcher.run_quick_test` - 6 calls
 - `wup.config.get_default_config` - 5 calls
 - `wup.dependency_mapper.DependencyMapper.get_service_for_file` - 5 calls
-- `wup.core.WupWatcher.should_watch_file` - 5 calls
 - `wup.testql_watcher.TestQLWatcher.process_changed_file_once` - 5 calls
+- `wup.core.WupWatcher.should_watch_file` - 5 calls
 - `wup.dependency_mapper.DependencyMapper.get_endpoints_for_file` - 4 calls
-- `wup.core.WupWatcher.detect_service_coincidences` - 4 calls
-- `wup.core.WupWatcher.schedule_quick_test` - 4 calls
 - `examples.flask-app.app.auth.routes.login` - 4 calls
 - `examples.flask-app.app.auth.routes.register` - 4 calls
+- `wup.core.WupWatcher.detect_service_coincidences` - 4 calls
+- `wup.core.WupWatcher.schedule_quick_test` - 4 calls
 - `wup.config.save_config` - 3 calls
 
 ## System Interactions
@@ -504,8 +492,6 @@ How components interact:
 graph TD
     status --> command
     status --> Option
-    status --> resolve
-    status --> load_config
     watch --> command
     watch --> Argument
     watch --> Option
@@ -519,6 +505,11 @@ graph TD
     map_deps --> Argument
     map_deps --> Option
     map_deps --> resolve
+    run_quick_test --> list
+    run_quick_test --> _get_config_endpoint
+    run_quick_test --> _select_scenarios_fo
+    run_quick_test --> get_service_config
+    run_quick_test --> print
     run_detail_test --> list
     run_detail_test --> _get_config_endpoint
     run_detail_test --> _select_scenarios_fo
@@ -529,9 +520,6 @@ graph TD
     __init__ --> set
     __init__ --> deque
     __init__ --> defaultdict
-    init --> command
-    init --> Argument
-    init --> Option
 ```
 
 ## Reverse Engineering Guidelines

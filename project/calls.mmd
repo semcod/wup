@@ -1,18 +1,18 @@
 flowchart LR
     subgraph examples__testql_demo
-        examples__testql_demo__simulate_with_mock_data["simulate_with_mock_data"]
         examples__testql_demo__simulate_testql_analysis["simulate_testql_analysis"]
+        examples__testql_demo__simulate_with_mock_data["simulate_with_mock_data"]
     end
     subgraph wup__cli
         wup__cli__init["init"]
         wup__cli__status["status"]
     end
     subgraph wup__config
+        wup__config__load_config["load_config"]
         wup__config__save_config["save_config"]
         wup__config__get_default_config["get_default_config"]
-        wup__config__find_config_file["find_config_file"]
-        wup__config__load_config["load_config"]
         wup__config__validate_config["validate_config"]
+        wup__config__find_config_file["find_config_file"]
     end
     subgraph wup__core
         wup__core__WupWatcher____init__["__init__"]
@@ -23,9 +23,9 @@ flowchart LR
     wup__config__load_config --> wup__config__validate_config
     wup__config__load_config --> wup__config__find_config_file
     wup__config__load_config --> wup__config__get_default_config
+    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
     wup__cli__status --> wup__config__load_config
     wup__cli__init --> wup__config__get_default_config
     wup__cli__init --> wup__config__save_config
     wup__core__WupWatcher____init__ --> wup__config__load_config
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
-    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis

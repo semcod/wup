@@ -70,6 +70,7 @@
 │   └── test_wup.py
 ├── tree.sh
 ├── tree.txt
+├── uv.lock
 ├── VERSION
 ├── wup
 │   ├── cli.py
@@ -92,4 +93,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-23 directories, 70 files
+23 directories, 71 files

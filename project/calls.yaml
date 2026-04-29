@@ -5,13 +5,6 @@ stats:
   total_edges: 9
   modules_count: 5
 nodes:
-  examples.testql_demo.simulate_with_mock_data:
-    name: simulate_with_mock_data
-    module: examples.testql_demo
-    line: 179
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
   examples.testql_demo.simulate_testql_analysis:
     name: simulate_testql_analysis
     module: examples.testql_demo
@@ -19,45 +12,10 @@ nodes:
     cyclomatic_complexity: 11
     calls_out: 80
     calls_in: 1
-  wup.config.save_config:
-    name: save_config
-    module: wup.config
-    line: 196
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 1
-  wup.testql_watcher.TestQLWatcher.__init__:
-    name: __init__
-    module: wup.testql_watcher
-    line: 54
-    cyclomatic_complexity: 7
-    calls_out: 6
-    calls_in: 0
-  wup.config.get_default_config:
-    name: get_default_config
-    module: wup.config
-    line: 169
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 2
-  wup.core.WupWatcher.__init__:
-    name: __init__
-    module: wup.core
-    line: 35
-    cyclomatic_complexity: 7
-    calls_out: 17
-    calls_in: 0
-  wup.config.find_config_file:
-    name: find_config_file
-    module: wup.config
-    line: 24
-    cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 1
   wup.cli.init:
     name: init
     module: wup.cli
-    line: 248
+    line: 325
     cyclomatic_complexity: 3
     calls_out: 16
     calls_in: 0
@@ -68,13 +26,41 @@ nodes:
     cyclomatic_complexity: 5
     calls_out: 7
     calls_in: 4
+  examples.testql_demo.simulate_with_mock_data:
+    name: simulate_with_mock_data
+    module: examples.testql_demo
+    line: 179
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  wup.config.save_config:
+    name: save_config
+    module: wup.config
+    line: 196
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  wup.core.WupWatcher.__init__:
+    name: __init__
+    module: wup.core
+    line: 35
+    cyclomatic_complexity: 7
+    calls_out: 17
+    calls_in: 0
   wup.cli.status:
     name: status
     module: wup.cli
     line: 171
-    cyclomatic_complexity: 11
-    calls_out: 53
+    cyclomatic_complexity: 32
+    calls_out: 97
     calls_in: 0
+  wup.config.get_default_config:
+    name: get_default_config
+    module: wup.config
+    line: 169
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 2
   wup.config.validate_config:
     name: validate_config
     module: wup.config
@@ -82,6 +68,20 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 47
     calls_in: 1
+  wup.config.find_config_file:
+    name: find_config_file
+    module: wup.config
+    line: 24
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  wup.testql_watcher.TestQLWatcher.__init__:
+    name: __init__
+    module: wup.testql_watcher
+    line: 56
+    cyclomatic_complexity: 8
+    calls_out: 8
+    calls_in: 0
 edges:
 - caller: wup.config.load_config
   callee: wup.config.validate_config
@@ -91,6 +91,12 @@ edges:
   call_type: resolved
 - caller: wup.config.load_config
   callee: wup.config.get_default_config
+  call_type: resolved
+- caller: examples.testql_demo.simulate_with_mock_data
+  callee: examples.testql_demo.simulate_testql_analysis
+  call_type: resolved
+- caller: wup.testql_watcher.TestQLWatcher.__init__
+  callee: wup.config.load_config
   call_type: resolved
 - caller: wup.cli.status
   callee: wup.config.load_config
@@ -103,12 +109,6 @@ edges:
   call_type: resolved
 - caller: wup.core.WupWatcher.__init__
   callee: wup.config.load_config
-  call_type: resolved
-- caller: wup.testql_watcher.TestQLWatcher.__init__
-  callee: wup.config.load_config
-  call_type: resolved
-- caller: examples.testql_demo.simulate_with_mock_data
-  callee: examples.testql_demo.simulate_testql_analysis
   call_type: resolved
 modules:
   examples.testql_demo:
@@ -255,8 +255,11 @@ entry_points:
 - wup.testql_watcher.TestQLWatcher.__init__
 - wup.testql_watcher.TestQLWatcher._discover_scenarios
 - wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service
+- wup.testql_watcher.TestQLWatcher._load_service_health
+- wup.testql_watcher.TestQLWatcher._record_health_transition
 - wup.testql_watcher.TestQLWatcher._resolve_base_url
 - wup.testql_watcher.TestQLWatcher._run_testql
+- wup.testql_watcher.TestQLWatcher._save_service_health
 - wup.testql_watcher.TestQLWatcher._select_scenarios_for_service
 - wup.testql_watcher.TestQLWatcher._to_full_url
 - wup.testql_watcher.TestQLWatcher._tokenize_service

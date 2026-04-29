@@ -173,152 +173,122 @@ def status(
     config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
     delta_seconds: int = typer.Option(0, "--delta-seconds", help="Show only service health transitions from last N seconds"),
     failed_only: bool = typer.Option(False, "--failed-only", help="Show only currently failing services"),
+    watch: bool = typer.Option(False, "--watch", "-w", help="Live mode: refresh display in real time"),
+    interval: int = typer.Option(5, "--interval", "-i", help="Refresh interval in seconds for --watch mode"),
 ):
     """
     Show dependency map status and configuration.
     """
+    import json
+    import time
+
     project_path = Path(".").resolve()
-    
-    # Load configuration
     config_path = Path(config) if config else None
     wup_config = load_config(project_path, config_path)
-    
-    console.print(f"[bold cyan]📊 WUP Status[/bold cyan]")
-    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
-    console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
-    console.print()
-    
-    # Show watch configuration
-    console.print("[bold]Watch Configuration:[/bold]")
-    console.print(f"  Paths: {', '.join(wup_config.watch.paths) if wup_config.watch.paths else 'default'}")
-    console.print(f"  Excludes: {', '.join(wup_config.watch.exclude_patterns)}")
-    console.print()
-    
-    # Show services
-    if wup_config.services:
-        console.print(f"[bold]Services ({len(wup_config.services)}):[/bold]")
-        for svc in wup_config.services:
-            console.print(f"  [cyan]{svc.name}[/cyan]")
-            console.print(f"    Root: {svc.root}")
-            console.print(f"    Quick: scope={svc.quick_tests.scope}, max={svc.quick_tests.max_endpoints}")
-            console.print(f"    Detail: scope={svc.detail_tests.scope}, max={svc.detail_tests.max_endpoints}")
-        console.print()
-    
-    # Show dependency map status
-    deps_path = Path(deps_file)
-    
-    if not deps_path.exists():
-        console.print(f"[yellow]Warning: Dependency file '{deps_file}' does not exist[/yellow]")
-        console.print(f"[dim]Run 'wup map-deps' to create it[/dim]")
-        console.print()
-        return
-    
-    import json
-    with open(deps_file) as f:
-        deps = json.load(f)
-    
-    services = deps.get("services", {})
-    files = deps.get("files", {})
-    
-    console.print(f"[bold]Dependency Map:[/bold]")
-    console.print(f"  Services: {len(services)}")
-    console.print(f"  Files: {len(files)}")
-    console.print()
-    
-    if services:
-        console.print("[bold]Service Details:[/bold]")
-        for service, info in sorted(services.items()):
-            # Handle both dict format (new) and list format (legacy)
-            if isinstance(info, dict):
-                endpoints = info.get("endpoints", [])
-                service_files = info.get("files", [])
-            elif isinstance(info, list):
-                endpoints = info
-                service_files = []
-            else:
-                endpoints = []
-                service_files = []
-            
-            console.print(f"  [cyan]{service}[/cyan]")
-            console.print(f"    Endpoints: {len(endpoints)}")
-            console.print(f"    Files: {len(service_files)}")
-            if endpoints:
-                console.print(f"    Sample endpoints: {', '.join(endpoints[:3])}")
-
-    # Show service health state and recent transitions (TestQL watcher)
     health_state_path = project_path / ".wup" / "service-health.json"
     health_events_path = project_path / ".wup" / "service-health-events.jsonl"
 
-    health_state = {}
-    if health_state_path.exists():
-        import json
+    deps_path = Path(deps_file)
 
-        try:
-            payload = json.loads(health_state_path.read_text(encoding="utf-8"))
-            if isinstance(payload, dict):
-                health_state = payload
-        except json.JSONDecodeError:
-            health_state = {}
+    def _build_panel(ts: float) -> "Group":
+        from rich.console import Group
+        from rich.text import Text
+        from rich.padding import Padding
+        lines: list = []
 
-    if failed_only:
-        failing = [
-            (svc, data)
-            for svc, data in sorted(health_state.items())
-            if isinstance(data, dict) and data.get("status") == "down"
-        ]
-        console.print()
-        console.print("[bold]Currently failing services:[/bold]")
-        if not failing:
-            console.print("  [green]None[/green]")
-        else:
-            for svc, data in failing:
-                updated_at = data.get("updated_at", 0)
-                track_file = data.get("track_file", "")
-                stage = data.get("stage", "")
-                message = data.get("message", "")
-                console.print(f"  [red]{svc}[/red] stage={stage} updated_at={updated_at}")
-                if track_file:
-                    console.print(f"    track: {track_file}")
-                if message:
-                    console.print(f"    message: {message}")
+        # header
+        lines.append(Text.from_markup(
+            f"[bold cyan]📊 WUP Status[/bold cyan]  "
+            f"[dim]{wup_config.project.name}[/dim]  "
+            f"[dim]updated {time.strftime('%H:%M:%S', time.localtime(ts))}[/dim]"
+        ))
 
-    if delta_seconds > 0:
-        import json
-        import time
+        # --- failing services ---
+        health_state: dict = {}
+        if health_state_path.exists():
+            try:
+                payload = json.loads(health_state_path.read_text(encoding="utf-8"))
+                if isinstance(payload, dict):
+                    health_state = payload
+            except json.JSONDecodeError:
+                pass
 
-        cutoff = int(time.time()) - delta_seconds
-        recent_events = []
-        if health_events_path.exists():
-            with health_events_path.open("r", encoding="utf-8") as handle:
-                for line in handle:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        event = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    if int(event.get("timestamp", 0)) >= cutoff:
-                        recent_events.append(event)
+        if failed_only or watch:
+            failing = [
+                (svc, data)
+                for svc, data in sorted(health_state.items())
+                if isinstance(data, dict) and data.get("status") == "down"
+            ]
+            lines.append(Text(""))
+            lines.append(Text.from_markup("[bold]Currently failing services:[/bold]"))
+            if not failing:
+                lines.append(Text.from_markup("  [green]✓ None[/green]"))
+            else:
+                for svc, data in failing:
+                    stage = data.get("stage", "")
+                    message = data.get("message", "")
+                    track_file = data.get("track_file", "")
+                    lines.append(Text.from_markup(f"  [red]✗ {svc}[/red]  [dim]{stage}[/dim]"))
+                    if message:
+                        lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
+                    if track_file:
+                        lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
 
-        console.print()
-        console.print(f"[bold]Service health delta (last {delta_seconds}s):[/bold]")
-        if not recent_events:
-            console.print("  [yellow]No health transitions in selected window[/yellow]")
-        else:
-            recent_events.sort(key=lambda item: int(item.get("timestamp", 0)), reverse=True)
-            for event in recent_events:
-                svc = event.get("service", "unknown")
-                prev = event.get("previous_status", "unknown")
-                curr = event.get("status", "unknown")
-                stage = event.get("stage", "")
-                message = event.get("message", "")
-                track_file = event.get("track_file", "")
-                console.print(f"  [cyan]{svc}[/cyan]: {prev} -> {curr} ({stage})")
-                if message:
-                    console.print(f"    message: {message}")
-                if track_file:
-                    console.print(f"    track: {track_file}")
+        # --- delta ---
+        effective_delta = delta_seconds if delta_seconds > 0 else (30 if watch else 0)
+        if effective_delta > 0:
+            cutoff = int(ts) - effective_delta
+            recent_events: list = []
+            if health_events_path.exists():
+                with health_events_path.open("r", encoding="utf-8") as handle:
+                    for line in handle:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            event = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        if int(event.get("timestamp", 0)) >= cutoff:
+                            recent_events.append(event)
+
+            lines.append(Text(""))
+            lines.append(Text.from_markup(f"[bold]Service health delta (last {effective_delta}s):[/bold]"))
+            if not recent_events:
+                lines.append(Text.from_markup("  [yellow]No health transitions in selected window[/yellow]"))
+            else:
+                recent_events.sort(key=lambda e: int(e.get("timestamp", 0)), reverse=True)
+                for event in recent_events:
+                    svc = event.get("service", "unknown")
+                    prev = event.get("previous_status", "unknown")
+                    curr = event.get("status", "unknown")
+                    stage = event.get("stage", "")
+                    message = event.get("message", "")
+                    track_file = event.get("track_file", "")
+                    arrow_color = "green" if curr == "up" else "red"
+                    lines.append(Text.from_markup(
+                        f"  [cyan]{svc}[/cyan]: {prev} [bold {arrow_color}]→ {curr}[/bold {arrow_color}] [dim]({stage})[/dim]"
+                    ))
+                    if message:
+                        lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
+                    if track_file:
+                        lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
+
+        return Group(*lines)
+
+    if not watch:
+        console.print(_build_panel(time.time()))
+        return
+
+    # --- live / watch mode ---
+    from rich.live import Live
+    try:
+        with Live(_build_panel(time.time()), refresh_per_second=1, console=console) as live:
+            while True:
+                time.sleep(interval)
+                live.update(_build_panel(time.time()))
+    except KeyboardInterrupt:
+        pass
 
 
 @app.command()

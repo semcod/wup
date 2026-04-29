@@ -1,32 +1,33 @@
-# code2llm | 49f 4825L | python:22,yaml:15,txt:4,json:2,shell:2,toml:1,yml:1 | 2026-04-29
-# CC̄=2.7 | critical:2/144 | dups:0 | cycles:1
+# code2llm | 49f 5132L | python:22,yaml:15,txt:5,json:2,yml:1,toml:1,shell:1 | 2026-04-29
+# CC̄=2.9 | critical:3/147 | dups:0 | cycles:1
 
-HEALTH[3]:
-  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_with_mock_data -> examples.testql_demo.simulate_testql_analysis. This indicates high coupling and may lead to infinite recursion or initialization issues.
-  🟡 CC    detect_service_coincidences CC=19 (limit:15)
+HEALTH[4]:
+  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_testql_analysis -> examples.testql_demo.simulate_with_mock_data. This indicates high coupling and may lead to infinite recursion or initialization issues.
   🟡 CC    _select_scenarios_for_service CC=15 (limit:15)
+  🟡 CC    status CC=32 (limit:15)
+  🟡 CC    detect_service_coincidences CC=19 (limit:15)
 
 REFACTOR[2]:
-  1. split 2 high-CC methods  (CC>15)
+  1. split 3 high-CC methods  (CC>15)
   2. break 1 circular dependencies
 
-PIPELINES[100]:
-  [1] Src [watch]: watch → load_config → validate_config
+PIPELINES[103]:
+  [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [map_deps]: map_deps
+  [2] Src [build_from_codebase]: build_from_codebase
       PURITY: 100% pure
-  [3] Src [status]: status → load_config → validate_config
+  [3] Src [_detect_framework]: _detect_framework
       PURITY: 100% pure
-  [4] Src [init]: init → get_default_config
+  [4] Src [_search_codebase]: _search_codebase
       PURITY: 100% pure
-  [5] Src [testql_endpoints]: testql_endpoints
+  [5] Src [_scan_endpoints]: _scan_endpoints
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.4    ←in:0  →out:0
-  │ !! core                       596L  2C   24m  CC=19     ←0
-  │ cli                        381L  0C    6m  CC=11     ←0
-  │ !! testql_watcher             367L  2C   15m  CC=15     ←0
+  wup/                            CC̄=4.7    ←in:0  →out:0
+  │ !! core                       604L  2C   24m  CC=19     ←0
+  │ !! cli                        458L  0C    6m  CC=32     ←0
+  │ !! testql_watcher             455L  2C   18m  CC=15     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ config                     254L  0C    5m  CC=5      ←3
   │ testql_discovery           229L  1C    7m  CC=11     ←0
@@ -61,22 +62,22 @@ LAYERS:
   │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
   │
   project/                        CC̄=0.0    ←in:0  →out:0
-  │ calls.yaml                 232L  0C    0m  CC=0.0    ←0
-  │ map.toon.yaml              167L  0C   35m  CC=0.0    ←0
-  │ analysis.toon.yaml          93L  0C    0m  CC=0.0    ←0
+  │ calls.yaml                 267L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              168L  0C   35m  CC=0.0    ←0
+  │ analysis.toon.yaml          94L  0C    0m  CC=0.0    ←0
   │ calls.toon.yaml             56L  0C    0m  CC=0.0    ←0
   │ project.toon.yaml           56L  0C    0m  CC=0.0    ←0
   │ evolution.toon.yaml         52L  0C    0m  CC=0.0    ←0
-  │ prompt.txt                  49L  0C    0m  CC=0.0    ←0
+  │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
   │ duplication.toon.yaml       29L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              66L  0C    0m  CC=0.0    ←0
+  │ tree.txt                    95L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              71L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
-  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0

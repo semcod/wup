@@ -16,9 +16,9 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.9`
+- **version**: `0.2.11`
 - **python_requires**: `>=3.9`
-- **license**: Apache-2.0
+- **license**: {'text': 'Apache-2.0'}
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
 - **generated_from**: pyproject.toml, testql(2), app.doql.less, goal.yaml, .env.example, src(6 mod), project/(5 analysis files)
@@ -36,11 +36,11 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.9;
+  version: 0.2.11;
 }
 
 dependencies {
-  runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0";
+  runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
 }
 
 interface[type="api"] {
@@ -84,6 +84,7 @@ watchdog>=4.0.0
 psutil>=5.9.0
 rich>=13.0.0
 typer>=0.9.0
+pyyaml>=6.0
 ```
 
 ## Source Map
@@ -96,7 +97,7 @@ typer>=0.9.0
 class WupWatcher:  # Intelligent file watcher for regression testing.
     def __init__(project_root, deps_file, cpu_throttle, debounce_seconds, test_cooldown_seconds, config)  # CC=1
     def _to_relative_path(file_path)  # CC=2
-    def infer_service(file_path)  # CC=10 ⚠
+    def infer_service(file_path)  # CC=12 ⚠
     def detect_service_coincidences(changed_service)  # CC=19 ⚠
     def _services_share_domain(service1, service2)  # CC=1
     def get_service_config(service_name)  # CC=3
@@ -121,6 +122,31 @@ class WupEventHandler:  # File system event handler for WUP watcher.
     def on_deleted(event)  # CC=2
 ```
 
+### `wup.testql_watcher` (`wup/testql_watcher.py`)
+
+```python
+class BrowserNotifier:  # Send watcher events to browser-facing service and local file
+    def __init__(service_url, events_file)  # CC=8
+    def notify(payload)  # CC=3
+class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
+    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=8
+    def _load_service_health()  # CC=4
+    def _save_service_health()  # CC=1
+    def _record_health_transition()  # CC=4
+    def _tokenize_service(service)  # CC=3
+    def _get_config_endpoints_for_service(service)  # CC=5
+    def _resolve_base_url()  # CC=5
+    def _to_full_url(endpoint)  # CC=5
+    def _discover_scenarios()  # CC=2
+    def get_service_config(service_name)  # CC=3
+    def _select_scenarios_for_service(service)  # CC=15 ⚠
+    def _run_testql(args, timeout)  # CC=2
+    def _write_track()  # CC=11 ⚠
+    def run_quick_test(service, endpoints)  # CC=13 ⚠
+    def run_detail_test(service, endpoints)  # CC=9
+    def process_changed_file_once(file_path)  # CC=4
+```
+
 ### `wup.dependency_mapper` (`wup/dependency_mapper.py`)
 
 ```python
@@ -143,34 +169,12 @@ class DependencyMapper:  # Maps project dependencies for intelligent testing.
     def build_from_testql_scenarios(scenarios_dir, testql_bin)  # CC=3
 ```
 
-### `wup.testql_watcher` (`wup/testql_watcher.py`)
-
-```python
-class BrowserNotifier:  # Send watcher events to browser-facing service and local file
-    def __init__(service_url, events_file)  # CC=7
-    def notify(payload)  # CC=3
-class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
-    def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=7
-    def _tokenize_service(service)  # CC=3
-    def _get_config_endpoints_for_service(service)  # CC=5
-    def _resolve_base_url()  # CC=5
-    def _to_full_url(endpoint)  # CC=5
-    def _discover_scenarios()  # CC=2
-    def get_service_config(service_name)  # CC=3
-    def _select_scenarios_for_service(service)  # CC=15 ⚠
-    def _run_testql(args, timeout)  # CC=2
-    def _write_track()  # CC=11 ⚠
-    def run_quick_test(service, endpoints)  # CC=11 ⚠
-    def run_detail_test(service, endpoints)  # CC=9
-    def process_changed_file_once(file_path)  # CC=4
-```
-
 ### `wup.cli` (`wup/cli.py`)
 
 ```python
 def watch(project, deps_file, cpu_throttle, debounce, cooldown, dashboard, mode, scenarios_dir, testql_bin, browser_service_url, track_dir, quick_limit, config)  # CC=6, fan=16
 def map_deps(project, output, framework, config)  # CC=2, fan=18
-def status(deps_file, config)  # CC=11, fan=15 ⚠
+def status(deps_file, config, delta_seconds, failed_only)  # CC=32, fan=22 ⚠
 def init(project, output)  # CC=3, fan=10
 def testql_endpoints(scenarios_dir, output, testql_bin)  # CC=3, fan=19
 def map_deps(project, output, framework)  # CC=2, fan=15
@@ -192,31 +196,31 @@ class TestQLEndpointDiscovery:  # Discover endpoints from TestQL scenario files.
 
 ## Call Graph
 
-*11 nodes · 9 edges · 5 modules · CC̄=2.7*
+*11 nodes · 9 edges · 5 modules · CC̄=2.9*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
+| `status` *(in wup.cli)* | 32 ⚠ | 0 | 97 | **97** |
 | `simulate_testql_analysis` *(in examples.testql_demo)* | 11 ⚠ | 1 | 80 | **81** |
-| `status` *(in wup.cli)* | 11 ⚠ | 0 | 53 | **53** |
 | `validate_config` *(in wup.config)* | 4 | 1 | 47 | **48** |
 | `__init__` *(in wup.core.WupWatcher)* | 7 | 0 | 17 | **17** |
 | `init` *(in wup.cli)* | 3 | 0 | 16 | **16** |
 | `load_config` *(in wup.config)* | 5 | 4 | 7 | **11** |
+| `__init__` *(in wup.testql_watcher.TestQLWatcher)* | 8 | 0 | 8 | **8** |
 | `get_default_config` *(in wup.config)* | 1 | 2 | 5 | **7** |
-| `__init__` *(in wup.testql_watcher.TestQLWatcher)* | 7 | 0 | 6 | **6** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # nodes: 11 | edges: 9 | modules: 5
-# CC̄=2.7
+# CC̄=2.9
 
 HUBS[20]:
+  wup.cli.status
+    CC=32  in:0  out:97  total:97
   examples.testql_demo.simulate_testql_analysis
     CC=11  in:1  out:80  total:81
-  wup.cli.status
-    CC=11  in:0  out:53  total:53
   wup.config.validate_config
     CC=4  in:1  out:47  total:48
   wup.core.WupWatcher.__init__
@@ -225,10 +229,10 @@ HUBS[20]:
     CC=3  in:0  out:16  total:16
   wup.config.load_config
     CC=5  in:4  out:7  total:11
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=8  in:0  out:8  total:8
   wup.config.get_default_config
     CC=1  in:2  out:5  total:7
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=7  in:0  out:6  total:6
   examples.testql_demo.simulate_with_mock_data
     CC=1  in:1  out:3  total:4
   wup.config.save_config
@@ -242,7 +246,7 @@ MODULES:
     simulate_with_mock_data  CC=1  out:3
   wup.cli  [2 funcs]
     init  CC=3  out:16
-    status  CC=11  out:53
+    status  CC=32  out:97
   wup.config  [5 funcs]
     find_config_file  CC=3  out:1
     get_default_config  CC=1  out:5
@@ -252,18 +256,18 @@ MODULES:
   wup.core  [1 funcs]
     __init__  CC=7  out:17
   wup.testql_watcher  [1 funcs]
-    __init__  CC=7  out:6
+    __init__  CC=8  out:8
 
 EDGES:
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
   wup.cli.status → wup.config.load_config
   wup.cli.init → wup.config.get_default_config
   wup.cli.init → wup.config.save_config
   wup.core.WupWatcher.__init__ → wup.config.load_config
-  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
 ```
 
 ## Test Contracts
@@ -290,13 +294,13 @@ EDGES:
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # nodes: 11 | edges: 9 | modules: 5
-# CC̄=2.7
+# CC̄=2.9
 
 HUBS[20]:
+  wup.cli.status
+    CC=32  in:0  out:97  total:97
   examples.testql_demo.simulate_testql_analysis
     CC=11  in:1  out:80  total:81
-  wup.cli.status
-    CC=11  in:0  out:53  total:53
   wup.config.validate_config
     CC=4  in:1  out:47  total:48
   wup.core.WupWatcher.__init__
@@ -305,10 +309,10 @@ HUBS[20]:
     CC=3  in:0  out:16  total:16
   wup.config.load_config
     CC=5  in:4  out:7  total:11
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=8  in:0  out:8  total:8
   wup.config.get_default_config
     CC=1  in:2  out:5  total:7
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=7  in:0  out:6  total:6
   examples.testql_demo.simulate_with_mock_data
     CC=1  in:1  out:3  total:4
   wup.config.save_config
@@ -322,7 +326,7 @@ MODULES:
     simulate_with_mock_data  CC=1  out:3
   wup.cli  [2 funcs]
     init  CC=3  out:16
-    status  CC=11  out:53
+    status  CC=32  out:97
   wup.config  [5 funcs]
     find_config_file  CC=3  out:1
     get_default_config  CC=1  out:5
@@ -332,52 +336,53 @@ MODULES:
   wup.core  [1 funcs]
     __init__  CC=7  out:17
   wup.testql_watcher  [1 funcs]
-    __init__  CC=7  out:6
+    __init__  CC=8  out:8
 
 EDGES:
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
   wup.cli.status → wup.config.load_config
   wup.cli.init → wup.config.get_default_config
   wup.cli.init → wup.config.save_config
   wup.core.WupWatcher.__init__ → wup.config.load_config
-  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 49f 4825L | python:22,yaml:15,txt:4,json:2,shell:2,toml:1,yml:1 | 2026-04-29
-# CC̄=2.7 | critical:2/144 | dups:0 | cycles:1
+# code2llm | 49f 5132L | python:22,yaml:15,txt:5,json:2,yml:1,toml:1,shell:1 | 2026-04-29
+# CC̄=2.9 | critical:3/147 | dups:0 | cycles:1
 
-HEALTH[3]:
-  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_with_mock_data -> examples.testql_demo.simulate_testql_analysis. This indicates high coupling and may lead to infinite recursion or initialization issues.
-  🟡 CC    detect_service_coincidences CC=19 (limit:15)
+HEALTH[4]:
+  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_testql_analysis -> examples.testql_demo.simulate_with_mock_data. This indicates high coupling and may lead to infinite recursion or initialization issues.
   🟡 CC    _select_scenarios_for_service CC=15 (limit:15)
+  🟡 CC    status CC=32 (limit:15)
+  🟡 CC    detect_service_coincidences CC=19 (limit:15)
 
 REFACTOR[2]:
-  1. split 2 high-CC methods  (CC>15)
+  1. split 3 high-CC methods  (CC>15)
   2. break 1 circular dependencies
 
-PIPELINES[100]:
-  [1] Src [watch]: watch → load_config → validate_config
+PIPELINES[103]:
+  [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [map_deps]: map_deps
+  [2] Src [build_from_codebase]: build_from_codebase
       PURITY: 100% pure
-  [3] Src [status]: status → load_config → validate_config
+  [3] Src [_detect_framework]: _detect_framework
       PURITY: 100% pure
-  [4] Src [init]: init → get_default_config
+  [4] Src [_search_codebase]: _search_codebase
       PURITY: 100% pure
-  [5] Src [testql_endpoints]: testql_endpoints
+  [5] Src [_scan_endpoints]: _scan_endpoints
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.4    ←in:0  →out:0
-  │ !! core                       596L  2C   24m  CC=19     ←0
-  │ cli                        381L  0C    6m  CC=11     ←0
-  │ !! testql_watcher             367L  2C   15m  CC=15     ←0
+  wup/                            CC̄=4.7    ←in:0  →out:0
+  │ !! core                       604L  2C   24m  CC=19     ←0
+  │ !! cli                        458L  0C    6m  CC=32     ←0
+  │ !! testql_watcher             455L  2C   18m  CC=15     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ config                     254L  0C    5m  CC=5      ←3
   │ testql_discovery           229L  1C    7m  CC=11     ←0
@@ -412,22 +417,22 @@ LAYERS:
   │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
   │
   project/                        CC̄=0.0    ←in:0  →out:0
-  │ calls.yaml                 232L  0C    0m  CC=0.0    ←0
-  │ map.toon.yaml              167L  0C   35m  CC=0.0    ←0
-  │ analysis.toon.yaml          93L  0C    0m  CC=0.0    ←0
+  │ calls.yaml                 267L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              168L  0C   35m  CC=0.0    ←0
+  │ analysis.toon.yaml          94L  0C    0m  CC=0.0    ←0
   │ calls.toon.yaml             56L  0C    0m  CC=0.0    ←0
   │ project.toon.yaml           56L  0C    0m  CC=0.0    ←0
   │ evolution.toon.yaml         52L  0C    0m  CC=0.0    ←0
-  │ prompt.txt                  49L  0C    0m  CC=0.0    ←0
+  │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
   │ duplication.toon.yaml       29L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              66L  0C    0m  CC=0.0    ←0
+  │ tree.txt                    95L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              71L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
-  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
@@ -448,15 +453,15 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 1 groups | 21f 1863L | 2026-04-29
+# redup/duplication | 1 groups | 21f 1948L | 2026-04-29
 
 SUMMARY:
   files_scanned: 21
-  total_lines:   1863
+  total_lines:   1948
   dup_groups:    1
   dup_fragments: 2
   saved_lines:   3
-  scan_ms:       4263
+  scan_ms:       2778
 
 HOTSPOTS[1] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.3%)
@@ -482,18 +487,22 @@ METRICS-TARGET:
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 108 func | 7f | 2026-04-29
+# code2llm/evolution | 111 func | 7f | 2026-04-29
 
-NEXT[3] (ranked by impact):
+NEXT[4] (ranked by impact):
   [1] !! SPLIT           wup/core.py
-      WHY: 596L, 2 classes, max CC=19
-      EFFORT: ~4h  IMPACT: 11324
+      WHY: 604L, 2 classes, max CC=19
+      EFFORT: ~4h  IMPACT: 11476
 
-  [2] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=15  fan=8
+  [2] !! SPLIT-FUNC      status  CC=32  fan=30
+      WHY: CC=32 exceeds 15
+      EFFORT: ~1h  IMPACT: 960
+
+  [3] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=15  fan=8
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 120
 
-  [3] !  SPLIT-FUNC      WupWatcher.detect_service_coincidences  CC=19  fan=2
+  [4] !  SPLIT-FUNC      WupWatcher.detect_service_coincidences  CC=19  fan=2
       WHY: CC=19 exceeds 15
       EFFORT: ~1h  IMPACT: 38
 
@@ -502,10 +511,10 @@ RISKS[1]:
   ⚠ Splitting wup/core.py may break 24 import paths
 
 METRICS-TARGET:
-  CC̄:          3.0 → ≤2.1
-  max-CC:      19 → ≤9
+  CC̄:          3.2 → ≤2.2
+  max-CC:      32 → ≤16
   god-modules: 1 → 0
-  high-CC(≥15): 2 → ≤1
+  high-CC(≥15): 3 → ≤1
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -533,7 +542,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.4 → now CC̄=3.0
+  prev CC̄=3.0 → now CC̄=3.2
 ```
 
 ## Intent
