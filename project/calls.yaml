@@ -1,0 +1,267 @@
+project: /home/tom/github/semcod/wup
+generated_from: code2llm call graph analysis
+stats:
+  total_nodes: 11
+  total_edges: 9
+  modules_count: 5
+nodes:
+  examples.testql_demo.simulate_with_mock_data:
+    name: simulate_with_mock_data
+    module: examples.testql_demo
+    line: 179
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  examples.testql_demo.simulate_testql_analysis:
+    name: simulate_testql_analysis
+    module: examples.testql_demo
+    line: 17
+    cyclomatic_complexity: 11
+    calls_out: 80
+    calls_in: 1
+  wup.config.save_config:
+    name: save_config
+    module: wup.config
+    line: 196
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  wup.testql_watcher.TestQLWatcher.__init__:
+    name: __init__
+    module: wup.testql_watcher
+    line: 54
+    cyclomatic_complexity: 7
+    calls_out: 6
+    calls_in: 0
+  wup.config.get_default_config:
+    name: get_default_config
+    module: wup.config
+    line: 169
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 2
+  wup.core.WupWatcher.__init__:
+    name: __init__
+    module: wup.core
+    line: 35
+    cyclomatic_complexity: 7
+    calls_out: 17
+    calls_in: 0
+  wup.config.find_config_file:
+    name: find_config_file
+    module: wup.config
+    line: 24
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  wup.cli.init:
+    name: init
+    module: wup.cli
+    line: 248
+    cyclomatic_complexity: 3
+    calls_out: 16
+    calls_in: 0
+  wup.config.load_config:
+    name: load_config
+    module: wup.config
+    line: 44
+    cyclomatic_complexity: 5
+    calls_out: 7
+    calls_in: 4
+  wup.cli.status:
+    name: status
+    module: wup.cli
+    line: 171
+    cyclomatic_complexity: 11
+    calls_out: 53
+    calls_in: 0
+  wup.config.validate_config:
+    name: validate_config
+    module: wup.config
+    line: 75
+    cyclomatic_complexity: 4
+    calls_out: 47
+    calls_in: 1
+edges:
+- caller: wup.config.load_config
+  callee: wup.config.validate_config
+  call_type: resolved
+- caller: wup.config.load_config
+  callee: wup.config.find_config_file
+  call_type: resolved
+- caller: wup.config.load_config
+  callee: wup.config.get_default_config
+  call_type: resolved
+- caller: wup.cli.status
+  callee: wup.config.load_config
+  call_type: resolved
+- caller: wup.cli.init
+  callee: wup.config.get_default_config
+  call_type: resolved
+- caller: wup.cli.init
+  callee: wup.config.save_config
+  call_type: resolved
+- caller: wup.core.WupWatcher.__init__
+  callee: wup.config.load_config
+  call_type: resolved
+- caller: wup.testql_watcher.TestQLWatcher.__init__
+  callee: wup.config.load_config
+  call_type: resolved
+- caller: examples.testql_demo.simulate_with_mock_data
+  callee: examples.testql_demo.simulate_testql_analysis
+  call_type: resolved
+modules:
+  examples.testql_demo:
+  - examples.testql_demo.simulate_testql_analysis
+  - examples.testql_demo.simulate_with_mock_data
+  wup.cli:
+  - wup.cli.init
+  - wup.cli.status
+  wup.config:
+  - wup.config.find_config_file
+  - wup.config.get_default_config
+  - wup.config.load_config
+  - wup.config.save_config
+  - wup.config.validate_config
+  wup.core:
+  - wup.core.WupWatcher.__init__
+  wup.testql_watcher:
+  - wup.testql_watcher.TestQLWatcher.__init__
+entry_points:
+- examples.fastapi-app.app.users.routes.create_user
+- examples.fastapi-app.app.users.routes.delete_user
+- examples.fastapi-app.app.users.routes.get_user
+- examples.fastapi-app.app.users.routes.list_users
+- examples.fastapi-app.app.users.routes.update_user
+- examples.fastapi-app.main.health
+- examples.fastapi-app.main.root
+- examples.flask-app.app.auth.routes.change_password
+- examples.flask-app.app.auth.routes.login
+- examples.flask-app.app.auth.routes.logout
+- examples.flask-app.app.auth.routes.profile
+- examples.flask-app.app.auth.routes.register
+- examples.flask-app.main.health
+- examples.flask-app.main.root
+- examples.multi-service.auth-service.app.auth.routes.login
+- examples.multi-service.auth-service.app.auth.routes.register
+- examples.multi-service.auth-service.main.health
+- examples.multi-service.auth-service.main.root
+- examples.multi-service.payments-service.app.payments.routes.create_payment
+- examples.multi-service.payments-service.app.payments.routes.get_payment
+- examples.multi-service.payments-service.app.payments.routes.list_payments
+- examples.multi-service.payments-service.main.health
+- examples.multi-service.payments-service.main.root
+- examples.multi-service.users-service.app.users.routes.create_user
+- examples.multi-service.users-service.app.users.routes.get_user
+- examples.multi-service.users-service.app.users.routes.list_users
+- examples.multi-service.users-service.main.health
+- examples.multi-service.users-service.main.root
+- examples.testql_integration.TestQLWatcher.__init__
+- examples.testql_integration.TestQLWatcher._find_scenarios_for_service
+- examples.testql_integration.TestQLWatcher._generate_blame_report
+- examples.testql_integration.TestQLWatcher.run_detail_test
+- examples.testql_integration.TestQLWatcher.run_quick_test
+- examples.testql_integration.main
+- project.map.toon.change_password
+- project.map.toon.create_payment
+- project.map.toon.create_user
+- project.map.toon.delete_user
+- project.map.toon.find_config_file
+- project.map.toon.get_default_config
+- project.map.toon.get_payment
+- project.map.toon.get_user
+- project.map.toon.health
+- project.map.toon.init
+- project.map.toon.list_payments
+- project.map.toon.list_users
+- project.map.toon.load_config
+- project.map.toon.login
+- project.map.toon.logout
+- project.map.toon.main
+- project.map.toon.map_deps
+- project.map.toon.profile
+- project.map.toon.register
+- project.map.toon.root
+- project.map.toon.run_wup_command
+- project.map.toon.save_config
+- project.map.toon.simulate_testql_analysis
+- project.map.toon.simulate_with_mock_data
+- project.map.toon.status
+- project.map.toon.test_browser_event_file_is_written_without_service_url
+- project.map.toon.test_config_endpoints_use_base_url_from_env_when_yaml_missing
+- project.map.toon.test_config_endpoints_use_base_url_from_yaml_config
+- project.map.toon.test_import
+- project.map.toon.test_process_changed_file_creates_track_on_failure
+- project.map.toon.testql_endpoints
+- project.map.toon.update_user
+- project.map.toon.validate_config
+- project.map.toon.version
+- project.map.toon.watch
+- wup.cli.init
+- wup.cli.map_deps
+- wup.cli.status
+- wup.cli.testql_endpoints
+- wup.cli.version
+- wup.cli.watch
+- wup.core.WupEventHandler.__init__
+- wup.core.WupEventHandler.on_created
+- wup.core.WupEventHandler.on_deleted
+- wup.core.WupEventHandler.on_modified
+- wup.core.WupWatcher.__init__
+- wup.core.WupWatcher._services_share_domain
+- wup.core.WupWatcher._to_relative_path
+- wup.core.WupWatcher.build_watched_paths
+- wup.core.WupWatcher.cpu_ok
+- wup.core.WupWatcher.create_status_table
+- wup.core.WupWatcher.detect_service_coincidences
+- wup.core.WupWatcher.get_service_config
+- wup.core.WupWatcher.infer_service
+- wup.core.WupWatcher.on_file_change
+- wup.core.WupWatcher.process_test_queue_once
+- wup.core.WupWatcher.run_detail_test
+- wup.core.WupWatcher.run_quick_test
+- wup.core.WupWatcher.run_with_dashboard
+- wup.core.WupWatcher.schedule_detail_test
+- wup.core.WupWatcher.schedule_quick_test
+- wup.core.WupWatcher.should_test
+- wup.core.WupWatcher.should_watch_file
+- wup.core.WupWatcher.start_watching
+- wup.core.WupWatcher.test_loop
+- wup.dependency_mapper.DependencyMapper.__init__
+- wup.dependency_mapper.DependencyMapper._detect_framework
+- wup.dependency_mapper.DependencyMapper._infer_service
+- wup.dependency_mapper.DependencyMapper._scan_endpoints
+- wup.dependency_mapper.DependencyMapper._scan_js_endpoints
+- wup.dependency_mapper.DependencyMapper._scan_python_endpoints
+- wup.dependency_mapper.DependencyMapper._search_codebase
+- wup.dependency_mapper.DependencyMapper.build_from_codebase
+- wup.dependency_mapper.DependencyMapper.build_from_testql_scenarios
+- wup.dependency_mapper.DependencyMapper.get_endpoints_for_file
+- wup.dependency_mapper.DependencyMapper.get_endpoints_for_service
+- wup.dependency_mapper.DependencyMapper.get_files_for_service
+- wup.dependency_mapper.DependencyMapper.get_service_for_file
+- wup.dependency_mapper.DependencyMapper.load
+- wup.dependency_mapper.DependencyMapper.save
+- wup.dependency_mapper.DependencyMapper.to_dict
+- wup.testql_discovery.TestQLEndpointDiscovery.__init__
+- wup.testql_discovery.TestQLEndpointDiscovery.discover_all_endpoints
+- wup.testql_discovery.TestQLEndpointDiscovery.discover_scenarios
+- wup.testql_discovery.TestQLEndpointDiscovery.discover_via_testql_cli
+- wup.testql_discovery.TestQLEndpointDiscovery.infer_service_from_scenario
+- wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
+- wup.testql_discovery.TestQLEndpointDiscovery.to_dependency_map
+- wup.testql_watcher.BrowserNotifier.__init__
+- wup.testql_watcher.BrowserNotifier.notify
+- wup.testql_watcher.TestQLWatcher.__init__
+- wup.testql_watcher.TestQLWatcher._discover_scenarios
+- wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service
+- wup.testql_watcher.TestQLWatcher._resolve_base_url
+- wup.testql_watcher.TestQLWatcher._run_testql
+- wup.testql_watcher.TestQLWatcher._select_scenarios_for_service
+- wup.testql_watcher.TestQLWatcher._to_full_url
+- wup.testql_watcher.TestQLWatcher._tokenize_service
+- wup.testql_watcher.TestQLWatcher._write_track
+- wup.testql_watcher.TestQLWatcher.get_service_config
+- wup.testql_watcher.TestQLWatcher.process_changed_file_once
+- wup.testql_watcher.TestQLWatcher.run_detail_test
+- wup.testql_watcher.TestQLWatcher.run_quick_test

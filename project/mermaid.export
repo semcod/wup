@@ -1,0 +1,183 @@
+flowchart TD
+    subgraph examples__fastapi_app
+        examples__fastapi_app__main__root["root"]
+        examples__fastapi_app__main__health["health"]
+        examples__fastapi_app__app__users__routes__list_users["list_users"]
+        examples__fastapi_app__app__users__routes__get_user["get_user"]
+        examples__fastapi_app__app__users__routes__create_user["create_user"]
+        examples__fastapi_app__app__users__routes__update_user["update_user"]
+        examples__fastapi_app__app__users__routes__delete_user["delete_user"]
+    end
+    subgraph examples__flask_app
+        examples__flask_app__main__root["root"]
+        examples__flask_app__main__health["health"]
+        examples__flask_app__app__auth__routes__login["login"]
+        examples__flask_app__app__auth__routes__logout["logout"]
+        examples__flask_app__app__auth__routes__register["register"]
+        examples__flask_app__app__auth__routes__profile["profile"]
+        examples__flask_app__app__auth__routes__change_password["change_password"]
+    end
+    subgraph examples__multi_service
+        examples__multi_service__payments_service__main__root["root"]
+        examples__multi_service__payments_service__main__health["health"]
+        examples__multi_service__payments_service__app__payments__routes__list_payments["list_payments"]
+        examples__multi_service__payments_service__app__payments__routes__get_payment["get_payment"]
+        examples__multi_service__payments_service__app__payments__routes__create_payment["create_payment"]
+        examples__multi_service__auth_service__main__root["root"]
+        examples__multi_service__auth_service__main__health["health"]
+        examples__multi_service__auth_service__app__auth__routes__login["login"]
+        examples__multi_service__auth_service__app__auth__routes__register["register"]
+        examples__multi_service__users_service__main__root["root"]
+        examples__multi_service__users_service__main__health["health"]
+        examples__multi_service__users_service__app__users__routes__list_users["list_users"]
+        examples__multi_service__users_service__app__users__routes__get_user["get_user"]
+        examples__multi_service__users_service__app__users__routes__create_user["create_user"]
+    end
+    subgraph examples__testql_demo
+        examples__testql_demo__simulate_testql_analysis("simulate_testql_analysis CC=11")
+        examples__testql_demo__simulate_with_mock_data["simulate_with_mock_data"]
+    end
+    subgraph examples__testql_integration
+        examples__testql_integration__TestQLWatcher____init__["__init__"]
+        examples__testql_integration__TestQLWatcher__run_quick_test["run_quick_test"]
+        examples__testql_integration__TestQLWatcher__run_detail_test["run_detail_test"]
+        examples__testql_integration__TestQLWatcher___find_scenarios_for_service["_find_scenarios_for_service"]
+        examples__testql_integration__TestQLWatcher___generate_blame_report["_generate_blame_report"]
+        examples__testql_integration__main["main"]
+    end
+    subgraph project__map
+        project__map__toon__list_users["list_users"]
+        project__map__toon__get_user["get_user"]
+        project__map__toon__create_user["create_user"]
+        project__map__toon__update_user["update_user"]
+        project__map__toon__delete_user["delete_user"]
+        project__map__toon__root["root"]
+        project__map__toon__health["health"]
+        project__map__toon__login["login"]
+        project__map__toon__logout["logout"]
+        project__map__toon__register["register"]
+        project__map__toon__profile["profile"]
+        project__map__toon__change_password["change_password"]
+        project__map__toon__list_payments["list_payments"]
+        project__map__toon__get_payment["get_payment"]
+        project__map__toon__create_payment["create_payment"]
+        project__map__toon__simulate_testql_analysis["simulate_testql_analysis"]
+        project__map__toon__simulate_with_mock_data["simulate_with_mock_data"]
+        project__map__toon__main["main"]
+        project__map__toon__run_wup_command["run_wup_command"]
+        project__map__toon__test_process_changed_file_creates_track_on_failure["test_process_changed_file_creates_t"]
+        project__map__toon__test_browser_event_file_is_written_without_service_url["test_browser_event_file_is_written_"]
+        project__map__toon__test_config_endpoints_use_base_url_from_yaml_config["test_config_endpoints_use_base_url_"]
+        project__map__toon__test_config_endpoints_use_base_url_from_env_when_yaml_missing["test_config_endpoints_use_base_url_"]
+        project__map__toon__test_import["test_import"]
+        project__map__toon__watch["watch"]
+        project__map__toon__map_deps["map_deps"]
+        project__map__toon__status["status"]
+        project__map__toon__init["init"]
+        project__map__toon__testql_endpoints["testql_endpoints"]
+        project__map__toon__version["version"]
+        project__map__toon__find_config_file["find_config_file"]
+        project__map__toon__load_config["load_config"]
+        project__map__toon__validate_config["validate_config"]
+        project__map__toon__get_default_config["get_default_config"]
+        project__map__toon__save_config["save_config"]
+    end
+    subgraph wup__cli
+        wup__cli__watch["watch"]
+        wup__cli__map_deps["map_deps"]
+        wup__cli__status("status CC=11")
+        wup__cli__init["init"]
+        wup__cli__testql_endpoints["testql_endpoints"]
+        wup__cli__version["version"]
+    end
+    subgraph wup__config
+        wup__config__find_config_file["find_config_file"]
+        wup__config__load_config["load_config"]
+        wup__config__validate_config["validate_config"]
+        wup__config__get_default_config["get_default_config"]
+        wup__config__save_config["save_config"]
+    end
+    subgraph wup__core
+        wup__core__WupWatcher____init__["__init__"]
+        wup__core__WupWatcher___to_relative_path["_to_relative_path"]
+        wup__core__WupWatcher__infer_service("infer_service CC=10")
+        wup__core__WupWatcher__detect_service_coincidences{{detect_service_coincidences CC=19}}
+        wup__core__WupWatcher___services_share_domain["_services_share_domain"]
+        wup__core__WupWatcher__get_service_config["get_service_config"]
+        wup__core__WupWatcher__should_test["should_test"]
+        wup__core__WupWatcher__schedule_quick_test["schedule_quick_test"]
+        wup__core__WupWatcher__schedule_detail_test["schedule_detail_test"]
+        wup__core__WupWatcher__process_test_queue_once["process_test_queue_once"]
+        wup__core__WupWatcher__cpu_ok["cpu_ok"]
+        wup__core__WupWatcher__run_quick_test["run_quick_test"]
+        wup__core__WupWatcher__run_detail_test["run_detail_test"]
+        wup__core__WupWatcher__test_loop["test_loop"]
+        wup__core__WupWatcher__should_watch_file["should_watch_file"]
+        wup__core__WupWatcher__on_file_change("on_file_change CC=14")
+        wup__core__WupWatcher__build_watched_paths["build_watched_paths"]
+        wup__core__WupWatcher__start_watching("start_watching CC=8")
+        wup__core__WupWatcher__create_status_table["create_status_table"]
+        wup__core__WupWatcher__run_with_dashboard["run_with_dashboard"]
+        wup__core__WupEventHandler____init__["__init__"]
+        wup__core__WupEventHandler__on_modified["on_modified"]
+        wup__core__WupEventHandler__on_created["on_created"]
+        wup__core__WupEventHandler__on_deleted["on_deleted"]
+    end
+    subgraph wup__dependency_mapper
+        wup__dependency_mapper__DependencyMapper____init__["__init__"]
+        wup__dependency_mapper__DependencyMapper__build_from_codebase["build_from_codebase"]
+        wup__dependency_mapper__DependencyMapper___detect_framework["_detect_framework"]
+        wup__dependency_mapper__DependencyMapper___search_codebase["_search_codebase"]
+        wup__dependency_mapper__DependencyMapper___scan_endpoints["_scan_endpoints"]
+        wup__dependency_mapper__DependencyMapper___scan_python_endpoints("_scan_python_endpoints CC=10")
+        wup__dependency_mapper__DependencyMapper___scan_js_endpoints["_scan_js_endpoints"]
+        wup__dependency_mapper__DependencyMapper___infer_service["_infer_service"]
+        wup__dependency_mapper__DependencyMapper__get_endpoints_for_file["get_endpoints_for_file"]
+        wup__dependency_mapper__DependencyMapper__get_endpoints_for_service["get_endpoints_for_service"]
+        wup__dependency_mapper__DependencyMapper__get_files_for_service["get_files_for_service"]
+        wup__dependency_mapper__DependencyMapper__get_service_for_file["get_service_for_file"]
+        wup__dependency_mapper__DependencyMapper__to_dict["to_dict"]
+        wup__dependency_mapper__DependencyMapper__save["save"]
+        wup__dependency_mapper__DependencyMapper__load["load"]
+        wup__dependency_mapper__DependencyMapper__build_from_testql_scenarios["build_from_testql_scenarios"]
+    end
+    subgraph wup__testql_discovery
+        wup__testql_discovery__TestQLEndpointDiscovery____init__["__init__"]
+        wup__testql_discovery__TestQLEndpointDiscovery__discover_scenarios["discover_scenarios"]
+        wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints("parse_scenario_endpoints CC=11")
+        wup__testql_discovery__TestQLEndpointDiscovery__infer_service_from_scenario["infer_service_from_scenario"]
+        wup__testql_discovery__TestQLEndpointDiscovery__discover_all_endpoints["discover_all_endpoints"]
+        wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli("discover_via_testql_cli CC=8")
+        wup__testql_discovery__TestQLEndpointDiscovery__to_dependency_map["to_dependency_map"]
+    end
+    subgraph wup__testql_watcher
+        wup__testql_watcher__BrowserNotifier____init__["__init__"]
+        wup__testql_watcher__BrowserNotifier__notify["notify"]
+        wup__testql_watcher__TestQLWatcher____init__["__init__"]
+        wup__testql_watcher__TestQLWatcher___tokenize_service["_tokenize_service"]
+        wup__testql_watcher__TestQLWatcher___get_config_endpoints_for_service["_get_config_endpoints_for_service"]
+        wup__testql_watcher__TestQLWatcher___resolve_base_url["_resolve_base_url"]
+        wup__testql_watcher__TestQLWatcher___to_full_url["_to_full_url"]
+        wup__testql_watcher__TestQLWatcher___discover_scenarios["_discover_scenarios"]
+        wup__testql_watcher__TestQLWatcher__get_service_config["get_service_config"]
+        wup__testql_watcher__TestQLWatcher___select_scenarios_for_service{{_select_scenarios_for_service CC=15}}
+        wup__testql_watcher__TestQLWatcher___run_testql["_run_testql"]
+        wup__testql_watcher__TestQLWatcher___write_track("_write_track CC=11")
+        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=11")
+        wup__testql_watcher__TestQLWatcher__run_detail_test("run_detail_test CC=9")
+        wup__testql_watcher__TestQLWatcher__process_changed_file_once["process_changed_file_once"]
+    end
+    wup__config__load_config --> wup__config__validate_config
+    wup__config__load_config --> wup__config__find_config_file
+    wup__config__load_config --> wup__config__get_default_config
+    wup__cli__status --> wup__config__load_config
+    wup__cli__init --> wup__config__get_default_config
+    wup__cli__init --> wup__config__save_config
+    wup__core__WupWatcher____init__ --> wup__config__load_config
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
+    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
+
+    classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
+    class wup__core__WupWatcher__detect_service_coincidences,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service highCC
+    class wup__cli__status,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,examples__testql_demo__simulate_testql_analysis medCC

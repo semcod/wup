@@ -1,0 +1,94 @@
+# code2llm | 49f 4825L | python:22,yaml:15,txt:4,json:2,shell:2,toml:1,yml:1 | 2026-04-29
+# CC̄=2.7 | critical:2/144 | dups:0 | cycles:1
+
+HEALTH[3]:
+  🔴 CYCLE Circular dependency detected: examples.testql_demo.simulate_with_mock_data -> examples.testql_demo.simulate_testql_analysis. This indicates high coupling and may lead to infinite recursion or initialization issues.
+  🟡 CC    detect_service_coincidences CC=19 (limit:15)
+  🟡 CC    _select_scenarios_for_service CC=15 (limit:15)
+
+REFACTOR[2]:
+  1. split 2 high-CC methods  (CC>15)
+  2. break 1 circular dependencies
+
+PIPELINES[100]:
+  [1] Src [watch]: watch → load_config → validate_config
+      PURITY: 100% pure
+  [2] Src [map_deps]: map_deps
+      PURITY: 100% pure
+  [3] Src [status]: status → load_config → validate_config
+      PURITY: 100% pure
+  [4] Src [init]: init → get_default_config
+      PURITY: 100% pure
+  [5] Src [testql_endpoints]: testql_endpoints
+      PURITY: 100% pure
+
+LAYERS:
+  wup/                            CC̄=4.4    ←in:0  →out:0
+  │ !! core                       596L  2C   24m  CC=19     ←0
+  │ cli                        381L  0C    6m  CC=11     ←0
+  │ !! testql_watcher             367L  2C   15m  CC=15     ←0
+  │ dependency_mapper          284L  1C   16m  CC=10     ←0
+  │ config                     254L  0C    5m  CC=5      ←3
+  │ testql_discovery           229L  1C    7m  CC=11     ←0
+  │ config                      82L  8C    0m  CC=0.0    ←0
+  │ __init__                    39L  0C    0m  CC=0.0    ←0
+  │ __init__                    21L  0C    0m  CC=0.0    ←0
+  │
+  examples/                       CC̄=1.9    ←in:0  →out:0
+  │ testql_integration         237L  1C    6m  CC=5      ←0
+  │ testql_demo                192L  0C    2m  CC=11     ←0
+  │ routes                      38L  1C    5m  CC=1      ←0
+  │ docker-compose.yml          33L  0C    0m  CC=0.0    ←0
+  │ routes                      31L  0C    5m  CC=2      ←0
+  │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
+  │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
+  │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
+  │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
+  │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
+  │ main                        20L  0C    2m  CC=1      ←0
+  │ main                        20L  0C    2m  CC=1      ←0
+  │ routes                      18L  0C    3m  CC=1      ←0
+  │ routes                      18L  0C    3m  CC=1      ←0
+  │ main                        16L  0C    2m  CC=1      ←0
+  │ main                        16L  0C    2m  CC=1      ←0
+  │ main                        16L  0C    2m  CC=1      ←0
+  │ routes                      13L  0C    2m  CC=1      ←0
+  │ requirements.txt             3L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             2L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
+  │
+  project/                        CC̄=0.0    ←in:0  →out:0
+  │ calls.yaml                 232L  0C    0m  CC=0.0    ←0
+  │ map.toon.yaml              167L  0C   35m  CC=0.0    ←0
+  │ analysis.toon.yaml          93L  0C    0m  CC=0.0    ←0
+  │ calls.toon.yaml             56L  0C    0m  CC=0.0    ←0
+  │ project.toon.yaml           56L  0C    0m  CC=0.0    ←0
+  │ evolution.toon.yaml         52L  0C    0m  CC=0.0    ←0
+  │ prompt.txt                  49L  0C    0m  CC=0.0    ←0
+  │ duplication.toon.yaml       29L  0C    0m  CC=0.0    ←0
+  │
+  ./                              CC̄=0.0    ←in:0  →out:0
+  │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
+  │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              66L  0C    0m  CC=0.0    ←0
+  │ project.sh                  49L  0C    0m  CC=0.0    ←0
+  │ deps.json                    4L  0C    0m  CC=0.0    ←0
+  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
+  │
+  testql-scenarios/               CC̄=0.0    ←in:0  →out:0
+  │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
+  │ generated-cli-tests.testql.toon.yaml    20L  0C    0m  CC=0.0    ←0
+  │
+  ── zero ──
+     examples/flask-app/Dockerfile             0L
+     examples/flask-app/app/__init__.py        0L
+     examples/multi-service/payments-service/Dockerfile  0L
+
+COUPLING: no cross-package imports detected
+
+EXTERNAL:
+  validation: run `vallm batch .` → validation.toon
+  duplication: run `redup scan .` → duplication.toon

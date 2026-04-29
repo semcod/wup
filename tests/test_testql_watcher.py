@@ -1,11 +1,12 @@
 import asyncio
 import json
+import os
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 
 from wup.testql_watcher import TestQLWatcher
-from wup.models.config import WupConfig, ProjectConfig
+from wup.models.config import WupConfig, ProjectConfig, TestQLConfig
 
 
 def test_process_changed_file_creates_track_on_failure():
@@ -21,11 +22,12 @@ def test_process_changed_file_creates_track_on_failure():
         failing_scenario.write_text("name: failing\n", encoding="utf-8")
 
         # Pass empty config to prevent loading from temp dir
-        from wup.models.config import TestQLConfig
+        from wup.models.config import TestQLConfig, WatchConfig
         empty_config = WupConfig(
             project=ProjectConfig(name="test"),
             services=[],
             test_strategy=None,
+            watch=WatchConfig(),  # Add watch config to avoid file filtering issues
             testql=TestQLConfig(scenario_dir="testql-scenarios")
         )
         watcher = TestQLWatcher(
@@ -88,3 +90,60 @@ def test_browser_event_file_is_written_without_service_url():
         event_payload = json.loads(event_file.read_text(encoding="utf-8"))
         assert event_payload["type"] == "wup_testql_error"
         assert event_payload["service"] == "app/users"
+
+
+def test_config_endpoints_use_base_url_from_yaml_config():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            testql=TestQLConfig(
+                base_url="http://localhost:8100",
+                explicit_endpoints=["/connect-config"],
+                endpoints_by_service={"connect-config": ["/connect-config-sitemap"]},
+            ),
+        )
+
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+
+        endpoints = watcher._get_config_endpoints_for_service("connect-config")
+        assert "http://localhost:8100/connect-config" in endpoints
+        assert "http://localhost:8100/connect-config-sitemap" in endpoints
+
+
+def test_config_endpoints_use_base_url_from_env_when_yaml_missing():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            testql=TestQLConfig(
+                base_url="",
+                base_url_env="WUP_BASE_URL",
+                explicit_endpoints=["/connect-data"],
+            ),
+        )
+
+        old_value = os.environ.get("WUP_BASE_URL")
+        os.environ["WUP_BASE_URL"] = "http://localhost:8100"
+        try:
+            watcher = TestQLWatcher(
+                project_root=str(root),
+                deps_file=str(root / "deps.json"),
+                scenarios_dir="testql-scenarios",
+                track_dir=".wup/tracks",
+                config=cfg,
+            )
+
+            endpoints = watcher._get_config_endpoints_for_service("connect-data")
+            assert "http://localhost:8100/connect-data" in endpoints
+        finally:
+            if old_value is None:
+                os.environ.pop("WUP_BASE_URL", None)
+            else:
+                os.environ["WUP_BASE_URL"] = old_value

@@ -1,0 +1,168 @@
+# wup | 31f 5009L | python:28,shell:2,less:1 | 2026-04-29
+# stats: 49 func | 30 cls | 31 mod | CC̄=2.3 | critical:2 | cycles:0
+# alerts[5]: CC simulate_testql_analysis=11; CC status=11; CC test_process_changed_file_creates_track_on_failure=7; CC watch=6; CC main=5
+# hotspots[5]: testql_endpoints fan=19; map_deps fan=18; watch fan=16; test_process_changed_file_creates_track_on_failure fan=15; status fan=15
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[31]:
+  app.doql.less,33
+  examples/fastapi-app/app/__init__.py,1
+  examples/fastapi-app/app/users/__init__.py,1
+  examples/fastapi-app/app/users/routes.py,39
+  examples/fastapi-app/main.py,17
+  examples/flask-app/app/__init__.py,1
+  examples/flask-app/app/auth/__init__.py,1
+  examples/flask-app/app/auth/routes.py,32
+  examples/flask-app/main.py,21
+  examples/multi-service/auth-service/app/auth/routes.py,14
+  examples/multi-service/auth-service/main.py,21
+  examples/multi-service/payments-service/app/payments/routes.py,19
+  examples/multi-service/payments-service/main.py,17
+  examples/multi-service/users-service/app/users/routes.py,19
+  examples/multi-service/users-service/main.py,17
+  examples/testql_demo.py,193
+  examples/testql_integration.py,238
+  project.sh,49
+  tests/test_e2e.py,517
+  tests/test_testql_watcher.py,149
+  tests/test_wup.py,1346
+  tree.sh,2
+  wup/__init__.py,40
+  wup/cli.py,382
+  wup/config.py,255
+  wup/core.py,597
+  wup/dependency_mapper.py,285
+  wup/models/__init__.py,22
+  wup/models/config.py,83
+  wup/testql_discovery.py,230
+  wup/testql_watcher.py,368
+D:
+  examples/fastapi-app/app/__init__.py:
+  examples/fastapi-app/app/users/__init__.py:
+  examples/fastapi-app/app/users/routes.py:
+    e: list_users,get_user,create_user,update_user,delete_user,User
+    User:
+    list_users()
+    get_user(user_id)
+    create_user(user)
+    update_user(user_id;user)
+    delete_user(user_id)
+  examples/fastapi-app/main.py:
+    e: root,health
+    root()
+    health()
+  examples/flask-app/app/__init__.py:
+  examples/flask-app/app/auth/__init__.py:
+  examples/flask-app/app/auth/routes.py:
+    e: login,logout,register,profile,change_password
+    login()
+    logout()
+    register()
+    profile()
+    change_password()
+  examples/flask-app/main.py:
+    e: root,health
+    root()
+    health()
+  examples/multi-service/auth-service/app/auth/routes.py:
+    e: login,register
+    login()
+    register()
+  examples/multi-service/auth-service/main.py:
+    e: root,health
+    root()
+    health()
+  examples/multi-service/payments-service/app/payments/routes.py:
+    e: list_payments,get_payment,create_payment
+    list_payments()
+    get_payment(payment_id)
+    create_payment()
+  examples/multi-service/payments-service/main.py:
+    e: root,health
+    root()
+    health()
+  examples/multi-service/users-service/app/users/routes.py:
+    e: list_users,get_user,create_user
+    list_users()
+    get_user(user_id)
+    create_user()
+  examples/multi-service/users-service/main.py:
+    e: root,health
+    root()
+    health()
+  examples/testql_demo.py:
+    e: simulate_testql_analysis,simulate_with_mock_data
+    simulate_testql_analysis(testql_path)
+    simulate_with_mock_data()
+  examples/testql_integration.py:
+    e: main,TestQLWatcher
+    TestQLWatcher: __init__(1),run_quick_test(2),run_detail_test(2),_find_scenarios_for_service(1),_generate_blame_report(2)  # Custom WUP watcher integrated with TestQL test framework.
+    main()
+  tests/test_e2e.py:
+    e: run_wup_command,TestE2ECLI,TestE2EWorkflow,TestE2EIntegration,TestE2EErrorHandling,TestE2EPerformance,TestE2EConfigScenarios
+    TestE2ECLI: test_cli_init_creates_config_file(0),test_cli_init_default_location(0),test_cli_map_deps_creates_dependency_file(0),test_cli_status_shows_dependency_info(0)  # End-to-end tests for CLI commands.
+    TestE2EWorkflow: test_full_workflow_with_config(0),test_workflow_with_custom_config(0),test_workflow_with_file_type_filtering(0)  # End-to-end tests for complete workflows.
+    TestE2EIntegration: test_integration_with_testql_scenarios(0),test_integration_with_multiple_frameworks(0)  # End-to-end integration tests with external tools.
+    TestE2EErrorHandling: test_cli_handles_invalid_config(0),test_cli_handles_missing_project(0),test_cli_handles_empty_project(0)  # End-to-end tests for error handling.
+    TestE2EPerformance: test_map_deps_performance_on_small_project(0),test_init_performance(0)  # End-to-end tests for performance characteristics.
+    TestE2EConfigScenarios: test_config_with_multiple_services(0),test_config_with_service_coincidence(0)  # End-to-end tests for configuration scenarios.
+    run_wup_command(args;cwd;timeout;capture_output;text)
+  tests/test_testql_watcher.py:
+    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing
+    test_process_changed_file_creates_track_on_failure()
+    test_browser_event_file_is_written_without_service_url()
+    test_config_endpoints_use_base_url_from_yaml_config()
+    test_config_endpoints_use_base_url_from_env_when_yaml_missing()
+  tests/test_wup.py:
+    e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
+    TestDependencyMapper: test_init(0),test_infer_service_from_path(0),test_build_from_codebase_empty(0),test_build_from_codebase_with_fastapi(0),test_save_and_load(0),test_infer_service_from_path_edge_cases(0),test_get_service_for_file_empty_mapper(0),test_get_endpoints_for_service_empty_mapper(0),test_build_from_codebase_with_flask(0),test_service_to_files_tracking(0),test_build_from_codebase_nonexistent_directory(0)  # Tests for the DependencyMapper class.
+    TestWupWatcher: test_init(0),test_init_with_custom_params(0),test_infer_service(0),test_infer_service_with_auto_detection(0),test_infer_service_with_explicit_paths(0),test_infer_service_priority_config_over_mapper(0),test_infer_service_fallback_to_heuristics(0),test_should_test_cooldown(0),test_schedule_quick_test(0),test_schedule_detail_test(0),test_on_file_change_skip_dirs(0),test_detect_service_coincidences_shell_web(0),test_detect_service_coincidences_auto_type(0),test_detect_service_coincidences_no_config(0),test_detect_service_coincidences_unknown_service(0),test_services_share_domain(0),test_on_file_change_filters_by_file_type(0),test_on_file_change_no_file_type_filter(0)  # Tests for the WupWatcher class.
+    TestIntegrationWorkflow: test_full_workflow_file_change_to_test_scheduling(0),test_workflow_with_file_type_filtering(0),test_workflow_with_service_coincidence(0),test_workflow_with_multiple_file_changes(0),test_workflow_with_auto_detection_and_explicit_paths(0)  # Integration tests for complete workflows.
+    TestFileFiltering: test_should_watch_file_with_config(0),test_should_watch_file_without_config(0)  # Tests for file type filtering.
+    TestConfigModels: test_project_config(0),test_notify_config(0),test_service_test_config(0),test_service_config(0),test_watch_config(0),test_test_strategy_config(0),test_testql_config(0),test_wup_config(0)  # Tests for configuration dataclasses.
+    TestConfigLoader: test_get_default_config(0),test_save_and_load_config(0),test_load_config_from_yaml(0),test_load_config_auto_detect(0),test_load_config_no_file_returns_default(0),test_load_config_invalid_yaml(0),test_load_config_missing_project_name(0)  # Tests for configuration loading and saving.
+    TestConfigIntegration: test_watcher_with_config(0),test_watcher_uses_config_debounce(0),test_watcher_build_watched_paths_from_config(0),test_watcher_infer_service_from_config(0),test_watcher_get_service_config(0),test_watcher_schedule_quick_test_uses_config_limit(0),test_watcher_on_file_change_uses_exclude_patterns(0)  # Tests for configuration integration with WupWatcher.
+    TestTestQLWatcherConfig: test_testql_watcher_with_config(0),test_testql_watcher_uses_config_scenarios_dir(0),test_testql_watcher_get_service_config(0),test_testql_watcher_select_scenarios_uses_config_limit(0),test_testql_watcher_uses_config_timeout(0),test_testql_watcher_without_config_loads_default(0)  # Tests for TestQLWatcher configuration integration.
+    test_import()
+  wup/__init__.py:
+  wup/cli.py:
+    e: watch,map_deps,status,init,testql_endpoints,map_deps,version
+    watch(project;deps_file;cpu_throttle;debounce;cooldown;dashboard;mode;scenarios_dir;testql_bin;browser_service_url;track_dir;quick_limit;config)
+    map_deps(project;output;framework;config)
+    status(deps_file;config)
+    init(project;output)
+    testql_endpoints(scenarios_dir;output;testql_bin)
+    map_deps(project;output;framework)
+    version()
+  wup/config.py:
+    e: find_config_file,load_config,validate_config,get_default_config,save_config
+    find_config_file(project_root)
+    load_config(project_root;config_path)
+    validate_config(raw)
+    get_default_config(project_root)
+    save_config(config;output_path)
+  wup/core.py:
+    e: WupWatcher,WupEventHandler
+    WupWatcher: __init__(6),_to_relative_path(1),infer_service(1),detect_service_coincidences(1),_services_share_domain(2),get_service_config(1),should_test(1),schedule_quick_test(1),schedule_detail_test(1),process_test_queue_once(0),cpu_ok(0),run_quick_test(2),run_detail_test(2),test_loop(0),should_watch_file(1),on_file_change(1),build_watched_paths(0),start_watching(1),create_status_table(0),run_with_dashboard(0)  # Intelligent file watcher for regression testing.
+    WupEventHandler: __init__(1),on_modified(1),on_created(1),on_deleted(1)  # File system event handler for WUP watcher.
+  wup/dependency_mapper.py:
+    e: DependencyMapper
+    DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_search_codebase(1),_scan_endpoints(1),_scan_python_endpoints(1),_scan_js_endpoints(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing.
+  wup/models/__init__.py:
+  wup/models/config.py:
+    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,ProjectConfig,WupConfig
+    NotifyConfig:  # Notification configuration for a service.
+    ServiceTestConfig:  # Test configuration for a service (quick or detail).
+    ServiceConfig:  # Configuration for a single service.
+    WatchConfig:  # Configuration for file watching.
+    TestStrategyConfig:  # Global test strategy configuration.
+    TestQLConfig:  # TestQL-specific configuration.
+    ProjectConfig:  # Project metadata.
+    WupConfig:  # Main WUP configuration.
+  wup/testql_discovery.py:
+    e: TestQLEndpointDiscovery
+    TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files.
+  wup/testql_watcher.py:
+    e: BrowserNotifier,TestQLWatcher
+    BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file
+    TestQLWatcher: __init__(7),_tokenize_service(1),_get_config_endpoints_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),run_quick_test(2),run_detail_test(2),process_changed_file_once(1)  # WUP watcher running selective TestQL scenarios for changed s

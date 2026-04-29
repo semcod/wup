@@ -1,0 +1,56 @@
+# code2llm call graph | /home/tom/github/semcod/wup
+# nodes: 11 | edges: 9 | modules: 5
+# CC̄=2.7
+
+HUBS[20]:
+  examples.testql_demo.simulate_testql_analysis
+    CC=11  in:1  out:80  total:81
+  wup.cli.status
+    CC=11  in:0  out:53  total:53
+  wup.config.validate_config
+    CC=4  in:1  out:47  total:48
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
+  wup.cli.init
+    CC=3  in:0  out:16  total:16
+  wup.config.load_config
+    CC=5  in:4  out:7  total:11
+  wup.config.get_default_config
+    CC=1  in:2  out:5  total:7
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=7  in:0  out:6  total:6
+  examples.testql_demo.simulate_with_mock_data
+    CC=1  in:1  out:3  total:4
+  wup.config.save_config
+    CC=2  in:1  out:3  total:4
+  wup.config.find_config_file
+    CC=3  in:1  out:1  total:2
+
+MODULES:
+  examples.testql_demo  [2 funcs]
+    simulate_testql_analysis  CC=11  out:80
+    simulate_with_mock_data  CC=1  out:3
+  wup.cli  [2 funcs]
+    init  CC=3  out:16
+    status  CC=11  out:53
+  wup.config  [5 funcs]
+    find_config_file  CC=3  out:1
+    get_default_config  CC=1  out:5
+    load_config  CC=5  out:7
+    save_config  CC=2  out:3
+    validate_config  CC=4  out:47
+  wup.core  [1 funcs]
+    __init__  CC=7  out:17
+  wup.testql_watcher  [1 funcs]
+    __init__  CC=7  out:6
+
+EDGES:
+  wup.config.load_config → wup.config.validate_config
+  wup.config.load_config → wup.config.find_config_file
+  wup.config.load_config → wup.config.get_default_config
+  wup.cli.status → wup.config.load_config
+  wup.cli.init → wup.config.get_default_config
+  wup.cli.init → wup.config.save_config
+  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis

@@ -1,0 +1,95 @@
+.
+├── app.doql.less
+├── CHANGELOG.md
+├── deps.json
+├── examples
+│   ├── fastapi-app
+│   │   ├── app
+│   │   │   ├── __init__.py
+│   │   │   └── users
+│   │   │       ├── __init__.py
+│   │   │       └── routes.py
+│   │   ├── Dockerfile
+│   │   ├── main.py
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   └── wup.yaml
+│   ├── flask-app
+│   │   ├── app
+│   │   │   ├── auth
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── routes.py
+│   │   │   └── __init__.py
+│   │   ├── Dockerfile
+│   │   ├── main.py
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   └── wup.yaml
+│   ├── multi-service
+│   │   ├── auth-service
+│   │   │   ├── app
+│   │   │   │   └── auth
+│   │   │   │       └── routes.py
+│   │   │   ├── Dockerfile
+│   │   │   ├── main.py
+│   │   │   ├── requirements.txt
+│   │   │   └── wup.yaml
+│   │   ├── docker-compose.yml
+│   │   ├── payments-service
+│   │   │   ├── app
+│   │   │   │   └── payments
+│   │   │   │       └── routes.py
+│   │   │   ├── Dockerfile
+│   │   │   ├── main.py
+│   │   │   ├── requirements.txt
+│   │   │   └── wup.yaml
+│   │   └── users-service
+│   │       ├── app
+│   │       │   └── users
+│   │       │       └── routes.py
+│   │       ├── Dockerfile
+│   │       ├── main.py
+│   │       ├── requirements.txt
+│   │       └── wup.yaml
+│   ├── testql_demo.py
+│   └── testql_integration.py
+├── goal.yaml
+├── LICENSE
+├── project.sh
+├── pyproject.toml
+├── README.md
+├── SUMD.md
+├── SUMR.md
+├── testql-deps.json
+├── testql-scenarios
+│   ├── generated-cli-tests.testql.toon.yaml
+│   └── generated-from-pytests.testql.toon.yaml
+├── tests
+│   ├── test_e2e.py
+│   ├── test_testql_watcher.py
+│   └── test_wup.py
+├── tree.sh
+├── tree.txt
+├── VERSION
+├── wup
+│   ├── cli.py
+│   ├── config.py
+│   ├── core.py
+│   ├── dependency_mapper.py
+│   ├── __init__.py
+│   ├── models
+│   │   ├── config.py
+│   │   └── __init__.py
+│   ├── testql_discovery.py
+│   └── testql_watcher.py
+├── wup.egg-info
+│   ├── dependency_links.txt
+│   ├── entry_points.txt
+│   ├── PKG-INFO
+│   ├── requires.txt
+│   ├── SOURCES.txt
+│   └── top_level.txt
+├── wup.yaml
+└── wup.yaml.example
+
+23 directories, 70 files

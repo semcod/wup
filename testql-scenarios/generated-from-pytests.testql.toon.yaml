@@ -1,0 +1,82 @@
+# SCENARIO: Auto-generated from Python Tests
+# TYPE: integration
+# GENERATED: true
+
+CONFIG[2]{key, value}:
+  base_url, ${api_url:-http://localhost:8101}
+  timeout_ms, 10000
+
+# Converted 72 assertions from pytest
+ASSERT[72]{field, operator, expected}:
+  len(watcher.test_queue), ==, 1
+  test_type, ==, "quick"
+  service_name, ==, "users"
+  len(endpoints), ==, 3  # Limited by quick_tests.max_endpoints
+  len(watcher.changed_services), ==, 1
+  inferred1, ==, "users-shell"
+  inferred2, ==, "payments"
+  config.type, ==, "http+file"
+  config.url, ==, "http://localhost:8001"
+  config.file, ==, "notify.json"
+  watcher.config.project.name, ==, "test"
+  len(watcher.config.watch.paths), ==, 1
+  watcher.debounce_seconds, ==, 5
+  len(paths), ==, 2
+  inferred, ==, "users"
+  svc_config.name, ==, "users"
+  svc_config.quick_tests.max_endpoints, ==, 5
+  len(endpoints), ==, 5  # Config limit
+  len(watcher.changed_services), ==, 0
+  config.type, ==, "http+file"
+  config.url, ==, "http://localhost:8001"
+  config.file, ==, "notify.json"
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, !=, 0
+  result.returncode, !=, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  len(watcher.test_queue), ==, 1
+  test_type, ==, "quick"
+  service_name, ==, "users"
+  len(endpoints), ==, 3  # Limited by quick_tests.max_endpoints
+  len(watcher.changed_services), ==, 1
+  inferred1, ==, "users-shell"
+  inferred2, ==, "payments"
+  config.type, ==, "http+file"
+  config.url, ==, "http://localhost:8001"
+  config.file, ==, "notify.json"
+  watcher.config.project.name, ==, "test"
+  len(watcher.config.watch.paths), ==, 1
+  watcher.debounce_seconds, ==, 5
+  len(paths), ==, 2
+  inferred, ==, "users"
+  svc_config.name, ==, "users"
+  svc_config.quick_tests.max_endpoints, ==, 5
+  len(endpoints), ==, 5  # Config limit
+  len(watcher.changed_services), ==, 0
+  config.type, ==, "http+file"
+  config.url, ==, "http://localhost:8001"
+  config.file, ==, "notify.json"
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, !=, 0
+  result.returncode, !=, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0
+  result.returncode, ==, 0

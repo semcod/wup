@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
 import subprocess
 import time
@@ -84,7 +85,78 @@ class TestQLWatcher(WupWatcher):
             events_file=self.project_root / ".wup" / "browser-events" / "latest.json",
         )
         self.last_track_path: Optional[Path] = None
+        self.health_state_path = self.project_root / ".wup" / "service-health.json"
+        self.health_events_path = self.project_root / ".wup" / "service-health-events.jsonl"
+        self.health_state_path.parent.mkdir(parents=True, exist_ok=True)
+        self.service_health = self._load_service_health()
         self.config = config
+
+    def _load_service_health(self) -> Dict[str, Dict]:
+        if not self.health_state_path.exists():
+            return {}
+        try:
+            payload = json.loads(self.health_state_path.read_text(encoding="utf-8"))
+            if isinstance(payload, dict):
+                return payload
+        except (json.JSONDecodeError, OSError):
+            return {}
+        return {}
+
+    def _save_service_health(self) -> None:
+        self.health_state_path.write_text(
+            json.dumps(self.service_health, indent=2),
+            encoding="utf-8",
+        )
+
+    def _record_health_transition(
+        self,
+        *,
+        service: str,
+        status: str,
+        stage: str,
+        message: str = "",
+        track_file: Optional[str] = None,
+    ) -> None:
+        now = int(time.time())
+        previous = self.service_health.get(service, {})
+        previous_status = previous.get("status", "unknown")
+
+        self.service_health[service] = {
+            "status": status,
+            "updated_at": now,
+            "stage": stage,
+            "message": message,
+            "track_file": track_file or "",
+        }
+        self._save_service_health()
+
+        changed = previous_status != status
+        if not changed:
+            return
+
+        event = {
+            "timestamp": now,
+            "service": service,
+            "status": status,
+            "previous_status": previous_status,
+            "stage": stage,
+            "message": message,
+            "track_file": track_file or "",
+        }
+        with self.health_events_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(event) + "\n")
+
+        self.browser_notifier.notify(
+            {
+                "type": "wup_service_health_change",
+                "service": service,
+                "status": status,
+                "previous_status": previous_status,
+                "stage": stage,
+                "message": message,
+                "track_file": track_file,
+            }
+        )
 
     def _tokenize_service(self, service: str) -> List[str]:
         raw_tokens = re.split(r"[^a-zA-Z0-9]+", service.lower())
@@ -97,9 +169,34 @@ class TestQLWatcher(WupWatcher):
         service_specific = by_service.get(service, [])
         merged: List[str] = []
         for endpoint in [*service_specific, *explicit]:
-            if endpoint not in merged:
-                merged.append(endpoint)
+            endpoint_url = self._to_full_url(endpoint)
+            if endpoint_url not in merged:
+                merged.append(endpoint_url)
         return merged
+
+    def _resolve_base_url(self) -> str:
+        base_url = (self.config.testql.base_url or "").strip()
+        if base_url:
+            return base_url.rstrip("/")
+
+        env_key = (self.config.testql.base_url_env or "WUP_BASE_URL").strip()
+        env_url = os.getenv(env_key, "").strip()
+        if env_url:
+            return env_url.rstrip("/")
+
+        return ""
+
+    def _to_full_url(self, endpoint: str) -> str:
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
+            return endpoint
+
+        base_url = self._resolve_base_url()
+        if not base_url:
+            return endpoint
+
+        if endpoint.startswith("/"):
+            return f"{base_url}{endpoint}"
+        return f"{base_url}/{endpoint}"
 
     def _discover_scenarios(self) -> List[Path]:
         if not self.scenarios_dir.exists():
@@ -259,11 +356,24 @@ class TestQLWatcher(WupWatcher):
                     scenario=scenario,
                     result=result,
                 )
+                self._record_health_transition(
+                    service=service,
+                    status="down",
+                    stage="quick",
+                    message=result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed",
+                    track_file=str(track_path),
+                )
                 self.console.print(
                     f"[red]✗ Quick failed: {scenario.name} | track: {track_path}[/red]"
                 )
                 return False
 
+        self._record_health_transition(
+            service=service,
+            status="up",
+            stage="quick",
+            message="Quick TestQL passed",
+        )
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
         return True
 

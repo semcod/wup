@@ -1,0 +1,32 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: wup;
+  version: 0.2.9;
+}
+
+dependencies {
+  runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0";
+}
+
+interface[type="api"] {
+  type: rest;
+  framework: fastapi;
+}
+
+interface[type="cli"] {
+  framework: argparse;
+}
+interface[type="cli"] page[name="wup"] {
+
+}
+
+deploy {
+  target: docker;
+}
+
+environment[name="local"] {
+  runtime: docker-compose;
+  env_file: .env;
+  python_version: >=3.9;
+}
