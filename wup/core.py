@@ -67,6 +67,13 @@ class WupWatcher:
             self.console.print(f"[yellow]Building dependency map...[/yellow]")
             self.dependency_mapper.build_from_codebase()
             self.dependency_mapper.save(deps_file)
+
+    def _to_relative_path(self, file_path: str) -> Path:
+        file_path_obj = Path(file_path)
+        try:
+            return file_path_obj.relative_to(self.project_root)
+        except ValueError:
+            return file_path_obj
     
     def infer_service(self, file_path: str) -> Optional[str]:
         """
@@ -76,7 +83,7 @@ class WupWatcher:
             app/users/routes.py → "app/users"
             src/components/auth.ts → "src/components"
         """
-        rel_path = Path(file_path).relative_to(self.project_root)
+        rel_path = self._to_relative_path(file_path)
         parts = rel_path.parts
         
         # Use dependency mapper if available
@@ -112,10 +119,8 @@ class WupWatcher:
             service: Service name to test
         """
         endpoints = self.dependency_mapper.get_endpoints_for_service(service)
-        if endpoints:
-            # Limit to 3 endpoints for quick test
-            self.test_queue.append(("quick", service, endpoints[:3]))
-            self.last_test_times[service] = time.time()
+        self.test_queue.append(("quick", service, endpoints[:3]))
+        self.last_test_times[service] = time.time()
     
     def schedule_detail_test(self, service: str):
         """
@@ -125,8 +130,23 @@ class WupWatcher:
             service: Service name to test
         """
         endpoints = self.dependency_mapper.get_endpoints_for_service(service)
-        if endpoints:
-            self.test_queue.appendleft(("detail", service, endpoints))
+        self.test_queue.appendleft(("detail", service, endpoints))
+
+    async def process_test_queue_once(self):
+        if not self.test_queue or not await self.cpu_ok():
+            return
+
+        test_type, service, endpoints = self.test_queue.popleft()
+
+        try:
+            if test_type == "quick":
+                passed = await self.run_quick_test(service, endpoints)
+                if not passed:
+                    self.schedule_detail_test(service)
+            elif test_type == "detail":
+                await self.run_detail_test(service, endpoints)
+        except Exception as e:
+            self.console.print(f"[red]Error testing {service}: {e}[/red]")
     
     async def cpu_ok(self) -> bool:
         """
@@ -212,20 +232,7 @@ class WupWatcher:
     async def test_loop(self):
         """Main test execution loop."""
         while True:
-            if self.test_queue and await self.cpu_ok():
-                test_type, service, endpoints = self.test_queue.popleft()
-                
-                try:
-                    if test_type == "quick":
-                        passed = await self.run_quick_test(service, endpoints)
-                        if not passed:
-                            # Escalate to detail test
-                            self.schedule_detail_test(service)
-                    elif test_type == "detail":
-                        await self.run_detail_test(service, endpoints)
-                except Exception as e:
-                    self.console.print(f"[red]Error testing {service}: {e}[/red]")
-            
+            await self.process_test_queue_once()
             await asyncio.sleep(self.debounce_seconds)
     
     def on_file_change(self, file_path: str):
@@ -236,7 +243,7 @@ class WupWatcher:
             file_path: Path to the changed file
         """
         # Only watch relevant directories
-        rel_path = Path(file_path).relative_to(self.project_root)
+        rel_path = self._to_relative_path(file_path)
         parts = rel_path.parts
         
         # Skip certain directories
@@ -284,6 +291,7 @@ class WupWatcher:
         
         try:
             while True:
+                asyncio.run(self.process_test_queue_once())
                 time.sleep(1)
         except KeyboardInterrupt:
             observer.stop()
@@ -343,16 +351,7 @@ class WupWatcher:
         with Live(self.create_status_table(), refresh_per_second=1) as live:
             try:
                 while True:
-                    # Run test loop
-                    if self.test_queue and await self.cpu_ok():
-                        test_type, service, endpoints = self.test_queue.popleft()
-                        
-                        if test_type == "quick":
-                            passed = await self.run_quick_test(service, endpoints)
-                            if not passed:
-                                self.schedule_detail_test(service)
-                        elif test_type == "detail":
-                            await self.run_detail_test(service, endpoints)
+                    await self.process_test_queue_once()
                     
                     live.update(self.create_status_table())
                     await asyncio.sleep(1)

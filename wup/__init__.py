@@ -7,7 +7,7 @@ WUP monitors file changes and runs intelligent regression tests using a 3-layer 
 3. Detail Layer: Full tests with blame reports (only on failure)
 """
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 __author__ = "Tom Sapletta"
 
 from .core import WupWatcher
