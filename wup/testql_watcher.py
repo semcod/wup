@@ -51,10 +51,12 @@ class TestQLWatcher(WupWatcher):
 
     __test__ = False
 
+    _UNSET = object()
+
     def __init__(
         self,
         project_root: str,
-        scenarios_dir: str = "testql-scenarios",
+        scenarios_dir=_UNSET,
         testql_bin: str = "testql",
         track_dir: str = ".wup/tracks",
         browser_service_url: Optional[str] = None,
@@ -69,11 +71,13 @@ class TestQLWatcher(WupWatcher):
         # Pass config to parent class
         super().__init__(project_root=project_root, config=config, **kwargs)
         
-        # Use config scenario_dir if available, otherwise use parameter default
-        if config and config.testql and config.testql.scenario_dir:
+        # Explicit constructor arg wins; otherwise use config; final fallback default
+        if scenarios_dir is not self._UNSET:
+            self.scenarios_dir = self.project_root / scenarios_dir
+        elif config and config.testql and config.testql.scenario_dir:
             self.scenarios_dir = self.project_root / config.testql.scenario_dir
         else:
-            self.scenarios_dir = self.project_root / scenarios_dir
+            self.scenarios_dir = self.project_root / "testql-scenarios"
         self.testql_bin = testql_bin
         self.testql_extra_args = config.testql.extra_args if config and config.testql else []
         

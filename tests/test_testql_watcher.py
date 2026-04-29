@@ -147,3 +147,55 @@ def test_config_endpoints_use_base_url_from_env_when_yaml_missing():
                 os.environ.pop("WUP_BASE_URL", None)
             else:
                 os.environ["WUP_BASE_URL"] = old_value
+
+
+def test_service_health_transitions_are_persisted():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        scenario_dir = root / "testql-scenarios"
+        scenario_dir.mkdir(parents=True, exist_ok=True)
+        scenario_file = scenario_dir / "connect-config-smoke.testql.toon.yaml"
+        scenario_file.write_text("name: smoke\n", encoding="utf-8")
+
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+        )
+
+        # 1) First quick run fails -> service goes down
+        def failing_run(args, timeout):
+            return CompletedProcess(args=args, returncode=1, stdout="", stderr="down")
+
+        watcher._run_testql = failing_run  # type: ignore[method-assign]
+        failed = asyncio.run(watcher.run_quick_test("connect-config", []))
+        assert failed is False
+
+        health_state_path = root / ".wup" / "service-health.json"
+        health_events_path = root / ".wup" / "service-health-events.jsonl"
+        assert health_state_path.exists()
+        assert health_events_path.exists()
+
+        state = json.loads(health_state_path.read_text(encoding="utf-8"))
+        assert state["connect-config"]["status"] == "down"
+
+        # 2) Next quick run succeeds -> service goes up
+        def passing_run(args, timeout):
+            return CompletedProcess(args=args, returncode=0, stdout="ok", stderr="")
+
+        watcher._run_testql = passing_run  # type: ignore[method-assign]
+        passed = asyncio.run(watcher.run_quick_test("connect-config", []))
+        assert passed is True
+
+        state = json.loads(health_state_path.read_text(encoding="utf-8"))
+        assert state["connect-config"]["status"] == "up"
+
+        events = []
+        with health_events_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                events.append(json.loads(line))
+
+        statuses = [event.get("status") for event in events if event.get("service") == "connect-config"]
+        assert "down" in statuses
+        assert "up" in statuses

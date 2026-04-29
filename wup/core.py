@@ -132,11 +132,19 @@ class WupWatcher:
                     if re.search(pattern, path_lower):
                         return svc.name
         
+        # Heuristic: if top-level directory matches known prefix patterns (e.g. connect-*)
+        # use it directly as the service name — takes priority over stale deps.json
+        if parts:
+            top = parts[0]
+            import re as _re
+            if _re.match(r'^(connect|backend|frontend|api|app|worker|service)[-_]', top):
+                return top
+
         # Use dependency mapper if available
         service = self.dependency_mapper.get_service_for_file(file_path)
         if service:
             return service
-        
+
         # Fallback: use first two meaningful parts (only if file exists)
         if len(parts) >= 2:
             # Check if file exists (absolute path)
