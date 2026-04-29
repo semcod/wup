@@ -224,7 +224,7 @@ def validate_config(raw: dict) -> WupConfig:
     web = WebConfig(
         enabled=web_raw.get("enabled", False),
         endpoint=web_raw.get("endpoint", ""),
-        endpoint_env=web_raw.get("endpoint_env", "WUP_WEB_ENDPOINT"),
+        endpoint_env=web_raw.get("endpoint_env", "WUPBRO_ENDPOINT"),
         timeout_s=float(web_raw.get("timeout_s", 2.0)),
         api_key=web_raw.get("api_key", ""),
     )

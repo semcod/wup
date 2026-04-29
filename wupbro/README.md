@@ -81,7 +81,7 @@ In your `wup.yaml`:
 web:
   enabled: true
   endpoint: "http://localhost:8000"
-  endpoint_env: "WUP_WEB_ENDPOINT"   # fallback if endpoint is empty
+  endpoint_env: "WUPBRO_ENDPOINT"   # fallback if endpoint is empty
   timeout_s: 2.0                     # short — must not block watcher
   api_key: ""                        # optional bearer token
 ```
@@ -89,7 +89,7 @@ web:
 Or via environment variable:
 
 ```bash
-export WUP_WEB_ENDPOINT=http://localhost:8000
+export WUPBRO_ENDPOINT=http://localhost:8000
 wup watch . --mode testql
 ```
 

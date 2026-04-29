@@ -4,6 +4,7 @@
     <content url="file://$MODULE_DIR$/wupbro">
       <excludeFolder url="file://$MODULE_DIR$/wupbro/.venv" />
     </content>
+    <orderEntry type="jdk" jdkName="Python 3.13 (wupbro)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

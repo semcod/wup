@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-29
+
+### Docs
+- Update README.md
+- Update wupbro/README.md
+
+### Other
+- Update .idea/wupbro.iml
+- Update examples/ci_cd_integration.py
+- Update wup/config.py
+- Update wup/models/config.py
+- Update wup/web_client.py
+- Update wupbro/wupbro/__main__.py
+
 ## [0.1.1] - 2026-04-29
 
 ### Docs

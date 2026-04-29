@@ -88,7 +88,7 @@ class WebConfig:
     """Configuration for sending events to wupbro backend."""
     enabled: bool = False
     endpoint: str = ""              # e.g. "http://localhost:8000/events"
-    endpoint_env: str = "WUP_WEB_ENDPOINT"
+    endpoint_env: str = "WUPBRO_ENDPOINT"
     timeout_s: float = 2.0          # short — must not block watcher
     api_key: str = ""               # optional bearer token
 

@@ -306,7 +306,7 @@ def show_ci_cd_demo():
     print("   WUP_DEBOUNCE=1            # Fast feedback in CI")
     print("   WUP_TIMEOUT=30            # Shorter timeouts")
     print("   WUP_BASE_URL=http://...   # Test server URL")
-    print("   WUP_WEB_ENDPOINT=http://... # Dashboard endpoint")
+    print("   WUPBRO_ENDPOINT=http://... # Dashboard endpoint")
     print()
     
     print("=" * 70)

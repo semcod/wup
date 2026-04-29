@@ -48,7 +48,7 @@ def resolve_endpoint(cfg: WebConfig) -> str:
     """Return endpoint URL from cfg or env, with trailing slash stripped."""
     if cfg.endpoint:
         return cfg.endpoint.rstrip("/")
-    env_var = cfg.endpoint_env or "WUP_WEB_ENDPOINT"
+    env_var = cfg.endpoint_env or "WUPBRO_ENDPOINT"
     return os.environ.get(env_var, "").rstrip("/")
 
 
