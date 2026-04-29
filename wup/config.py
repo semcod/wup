@@ -4,6 +4,7 @@ Configuration loader for WUP.
 Handles loading and validation of wup.yaml configuration files.
 """
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -18,6 +19,7 @@ from .models.config import (
     ProjectConfig,
     NotifyConfig,
     ServiceTestConfig,
+    VisualDiffConfig,
 )
 
 
@@ -41,6 +43,26 @@ def find_config_file(project_root: Path) -> Optional[Path]:
     return None
 
 
+def _load_dotenv(project_root: Path) -> None:
+    """Load .env and .wup.env files into os.environ (existing vars are NOT overwritten)."""
+    for env_file in (".wup.env", ".env"):
+        env_path = project_root / env_file
+        if not env_path.exists():
+            continue
+        try:
+            for line in env_path.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = value
+        except OSError:
+            pass
+
+
 def load_config(project_root: Path, config_path: Optional[Path] = None) -> WupConfig:
     """
     Load and validate wup.yaml configuration.
@@ -56,6 +78,8 @@ def load_config(project_root: Path, config_path: Optional[Path] = None) -> WupCo
         FileNotFoundError: If config file not found
         ValueError: If config is invalid
     """
+    _load_dotenv(project_root)
+
     if config_path is None:
         config_path = find_config_file(project_root)
     
@@ -156,13 +180,32 @@ def validate_config(raw: dict) -> WupConfig:
         explicit_endpoints=testql_raw.get("explicit_endpoints", []),
         endpoints_by_service=testql_raw.get("endpoints_by_service", {})
     )
-    
+
+    # Parse visual_diff config
+    vd_raw = raw.get("visual_diff", {})
+    visual_diff = VisualDiffConfig(
+        enabled=vd_raw.get("enabled", False),
+        base_url=vd_raw.get("base_url", ""),
+        base_url_env=vd_raw.get("base_url_env", "WUP_BASE_URL"),
+        delay_seconds=float(vd_raw.get("delay_seconds", 5.0)),
+        max_depth=int(vd_raw.get("max_depth", 10)),
+        snapshot_dir=vd_raw.get("snapshot_dir", ".wup/visual-snapshots"),
+        diff_dir=vd_raw.get("diff_dir", ".wup/visual-diffs"),
+        pages=vd_raw.get("pages", []),
+        pages_from_endpoints=vd_raw.get("pages_from_endpoints", True),
+        threshold_added=int(vd_raw.get("threshold_added", 3)),
+        threshold_removed=int(vd_raw.get("threshold_removed", 3)),
+        threshold_changed=int(vd_raw.get("threshold_changed", 5)),
+        headless=vd_raw.get("headless", True),
+    )
+
     return WupConfig(
         project=project,
         watch=watch,
         services=services,
         test_strategy=test_strategy,
-        testql=testql
+        testql=testql,
+        visual_diff=visual_diff,
     )
 
 
@@ -225,6 +268,21 @@ def save_config(config: WupConfig, output_path: Path):
             "base_url_env": config.testql.base_url_env,
             "explicit_endpoints": config.testql.explicit_endpoints,
             "endpoints_by_service": config.testql.endpoints_by_service,
+        },
+        "visual_diff": {
+            "enabled": config.visual_diff.enabled,
+            "base_url": config.visual_diff.base_url,
+            "base_url_env": config.visual_diff.base_url_env,
+            "delay_seconds": config.visual_diff.delay_seconds,
+            "max_depth": config.visual_diff.max_depth,
+            "snapshot_dir": config.visual_diff.snapshot_dir,
+            "diff_dir": config.visual_diff.diff_dir,
+            "pages": config.visual_diff.pages,
+            "pages_from_endpoints": config.visual_diff.pages_from_endpoints,
+            "threshold_added": config.visual_diff.threshold_added,
+            "threshold_removed": config.visual_diff.threshold_removed,
+            "threshold_changed": config.visual_diff.threshold_changed,
+            "headless": config.visual_diff.headless,
         }
     }
     

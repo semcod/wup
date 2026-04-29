@@ -274,6 +274,28 @@ def status(
                     if track_file:
                         lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
 
+        # --- visual diff section ---
+        if wup_config.visual_diff and wup_config.visual_diff.enabled:
+            from .visual_diff import VisualDiffer
+            differ = VisualDiffer(str(project_path), wup_config.visual_diff)
+            vd_seconds = effective_delta if effective_delta > 0 else 300
+            recent_vd = differ.get_recent_diffs(vd_seconds)
+            lines.append(Text(""))
+            lines.append(Text.from_markup(f"[bold]Visual DOM diffs (last {vd_seconds}s):[/bold]"))
+            if not recent_vd:
+                lines.append(Text.from_markup("  [dim]No DOM changes detected[/dim]"))
+            else:
+                for entry in recent_vd[:10]:
+                    url = entry.get("url", "?")
+                    diff = entry.get("diff", {})
+                    counts = diff.get("counts", {})
+                    status = diff.get("status", "?")
+                    color = "yellow" if status == "changed" else "dim green"
+                    lines.append(Text.from_markup(
+                        f"  [{color}]{url}[/{color}]  "
+                        f"+{counts.get('added', 0)} -{counts.get('removed', 0)} ~{counts.get('changed_attrs', 0)}"
+                    ))
+
         return Group(*lines)
 
     if not watch:

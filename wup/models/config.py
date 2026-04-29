@@ -66,6 +66,24 @@ class TestQLConfig:
 
 
 @dataclass
+class VisualDiffConfig:
+    """Configuration for visual DOM diff after file changes."""
+    enabled: bool = False
+    base_url: str = ""
+    base_url_env: str = "WUP_BASE_URL"
+    delay_seconds: float = 5.0       # wait after file change before scanning
+    max_depth: int = 10              # DOM depth for snapshot
+    snapshot_dir: str = ".wup/visual-snapshots"
+    diff_dir: str = ".wup/visual-diffs"
+    pages: List[str] = field(default_factory=list)  # explicit page paths to scan
+    pages_from_endpoints: bool = True  # infer pages from explicit_endpoints
+    threshold_added: int = 3         # min added nodes to report
+    threshold_removed: int = 3       # min removed nodes to report
+    threshold_changed: int = 5       # min changed attrs to report
+    headless: bool = True
+
+
+@dataclass
 class ProjectConfig:
     """Project metadata."""
     name: str
@@ -80,3 +98,4 @@ class WupConfig:
     services: List[ServiceConfig] = field(default_factory=list)
     test_strategy: TestStrategyConfig = field(default_factory=TestStrategyConfig)
     testql: TestQLConfig = field(default_factory=TestQLConfig)
+    visual_diff: VisualDiffConfig = field(default_factory=VisualDiffConfig)

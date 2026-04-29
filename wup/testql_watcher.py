@@ -15,6 +15,7 @@ from urllib import error, request
 from .config import load_config
 from .core import WupWatcher
 from .models.config import WupConfig, ServiceConfig
+from .visual_diff import VisualDiffer
 
 
 class BrowserNotifier:
@@ -94,6 +95,7 @@ class TestQLWatcher(WupWatcher):
         self.health_state_path.parent.mkdir(parents=True, exist_ok=True)
         self.service_health = self._load_service_health()
         self.config = config
+        self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
 
     def _load_service_health(self) -> Dict[str, Dict]:
         if not self.health_state_path.exists():
@@ -379,6 +381,10 @@ class TestQLWatcher(WupWatcher):
             message="Quick TestQL passed",
         )
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
+        if self.visual_differ and self.visual_differ.cfg.enabled:
+            asyncio.ensure_future(
+                self.visual_differ.run_for_service(service, merged_endpoints)
+            )
         return True
 
     async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
