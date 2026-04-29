@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 from urllib import error, request
 
+from .config import load_config
 from .core import WupWatcher
+from .models.config import WupConfig, ServiceConfig
 
 
 class BrowserNotifier:
@@ -46,6 +48,8 @@ class BrowserNotifier:
 class TestQLWatcher(WupWatcher):
     """WUP watcher running selective TestQL scenarios for changed services."""
 
+    __test__ = False
+
     def __init__(
         self,
         project_root: str,
@@ -54,11 +58,27 @@ class TestQLWatcher(WupWatcher):
         track_dir: str = ".wup/tracks",
         browser_service_url: Optional[str] = None,
         quick_limit: int = 3,
+        config: Optional[WupConfig] = None,
         **kwargs,
     ):
-        super().__init__(project_root=project_root, **kwargs)
-        self.scenarios_dir = self.project_root / scenarios_dir
-        self.testql_bin = testql_bin
+        # Load config if not provided
+        if config is None:
+            config = load_config(Path(project_root))
+        
+        # Pass config to parent class
+        super().__init__(project_root=project_root, config=config, **kwargs)
+        
+        # Use config values if available, otherwise use parameters
+        if config.testql:
+            self.scenarios_dir = self.project_root / config.testql.scenario_dir
+            self.testql_bin = testql_bin  # CLI parameter takes precedence
+            # Use extra_args from config if needed
+            self.testql_extra_args = config.testql.extra_args
+        else:
+            self.scenarios_dir = self.project_root / scenarios_dir
+            self.testql_bin = testql_bin
+            self.testql_extra_args = []
+        
         self.quick_limit = quick_limit
         self.track_dir = self.project_root / track_dir
         self.track_dir.mkdir(parents=True, exist_ok=True)
@@ -67,6 +87,7 @@ class TestQLWatcher(WupWatcher):
             events_file=self.project_root / ".wup" / "browser-events" / "latest.json",
         )
         self.last_track_path: Optional[Path] = None
+        self.config = config
 
     def _tokenize_service(self, service: str) -> List[str]:
         raw_tokens = re.split(r"[^a-zA-Z0-9]+", service.lower())
@@ -77,6 +98,21 @@ class TestQLWatcher(WupWatcher):
             return []
         return sorted(self.scenarios_dir.rglob("*.testql.toon.yaml"))
 
+    def get_service_config(self, service_name: str) -> Optional[ServiceConfig]:
+        """
+        Get service configuration by name.
+        
+        Args:
+            service_name: Name of the service
+            
+        Returns:
+            ServiceConfig if found, None otherwise
+        """
+        for svc in self.config.services:
+            if svc.name == service_name:
+                return svc
+        return None
+    
     def _select_scenarios_for_service(self, service: str) -> List[Path]:
         all_scenarios = self._discover_scenarios()
         if not all_scenarios:
@@ -102,7 +138,18 @@ class TestQLWatcher(WupWatcher):
         if selected:
             return selected
 
-        return all_scenarios[: self.quick_limit]
+        # Fallback: return all scenarios up to limit if no matches found
+        # Use service config for quick_limit if available
+        svc_config = self.get_service_config(service)
+        limit = self.quick_limit
+        if svc_config and svc_config.quick_tests:
+            limit = svc_config.quick_tests.max_endpoints
+        
+        # Return all scenarios if limit is larger than available scenarios
+        if limit >= len(all_scenarios):
+            return all_scenarios
+        
+        return all_scenarios[: limit]
 
     def _run_testql(self, args: Sequence[str], timeout: int) -> subprocess.CompletedProcess:
         cmd = [self.testql_bin, *args]
@@ -163,7 +210,15 @@ class TestQLWatcher(WupWatcher):
         return track_path
 
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
-        scenarios = self._select_scenarios_for_service(service)[: self.quick_limit]
+        scenarios = self._select_scenarios_for_service(service)
+        
+        # Apply service-specific quick limit
+        svc_config = self.get_service_config(service)
+        if svc_config and svc_config.quick_tests:
+            scenarios = scenarios[: svc_config.quick_tests.max_endpoints]
+        else:
+            scenarios = scenarios[: self.quick_limit]
+        
         if not scenarios:
             self.console.print(f"[yellow]⚠ No TestQL scenarios found for {service}[/yellow]")
             return True
@@ -173,7 +228,17 @@ class TestQLWatcher(WupWatcher):
         )
 
         for scenario in scenarios:
-            result = self._run_testql(["run", str(scenario), "--dry-run"], timeout=60)
+            # Build args from config if available
+            args = ["run", str(scenario), "--dry-run"]
+            if self.testql_extra_args:
+                args.extend(self.testql_extra_args)
+            
+            # Use timeout from config if available
+            timeout = 60
+            if self.config.test_strategy and self.config.test_strategy.quick:
+                timeout = self.config.test_strategy.quick.get("timeout_s", 60)
+            
+            result = self._run_testql(args, timeout=timeout)
             if result.returncode != 0:
                 track_path = self._write_track(
                     service=service,
@@ -205,7 +270,17 @@ class TestQLWatcher(WupWatcher):
         )
 
         for scenario in scenarios:
-            result = self._run_testql(["run", str(scenario), "--output", "json"], timeout=180)
+            # Build args from config if available
+            args = ["run", str(scenario), "--output", "json"]
+            if self.testql_extra_args:
+                args.extend(self.testql_extra_args)
+            
+            # Use timeout from config if available
+            timeout = 180
+            if self.config.test_strategy and self.config.test_strategy.detail:
+                timeout = self.config.test_strategy.detail.get("timeout_s", 180)
+            
+            result = self._run_testql(args, timeout=timeout)
             if result.returncode == 0:
                 results["passed"] += 1
                 continue

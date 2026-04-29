@@ -6,8 +6,20 @@ from pathlib import Path
 
 import pytest
 
-from wup.dependency_mapper import DependencyMapper
+from wup.config import load_config, save_config, get_default_config
 from wup.core import WupWatcher
+from wup.dependency_mapper import DependencyMapper
+from wup.models.config import (
+    WupConfig,
+    WatchConfig,
+    ServiceConfig,
+    TestStrategyConfig,
+    TestQLConfig,
+    NotifyConfig,
+    ServiceTestConfig,
+    ProjectConfig,
+)
+from wup.testql_watcher import TestQLWatcher
 
 
 class TestDependencyMapper:
@@ -108,11 +120,24 @@ class TestWupWatcher:
     def test_init_with_custom_params(self):
         """Test initialization with custom parameters."""
         with tempfile.TemporaryDirectory() as tmpdir:
+            # Create config with custom debounce setting
+            strategy = TestStrategyConfig(
+                quick={"debounce_s": 5, "max_queue": 5, "timeout_s": 10},
+                detail={"debounce_s": 10, "max_queue": 1, "timeout_s": 30}
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=strategy,
+                testql=TestQLConfig()
+            )
+            
             watcher = WupWatcher(
                 tmpdir,
                 cpu_throttle=0.5,
-                debounce_seconds=5,
-                test_cooldown_seconds=600
+                test_cooldown_seconds=600,
+                config=config
             )
             assert watcher.cpu_throttle == 0.5
             assert watcher.debounce_seconds == 5
@@ -205,3 +230,517 @@ def test_import():
     """Verify the main package can be imported."""
     import wup  # noqa: F401
     from wup import WupWatcher, DependencyMapper  # noqa: F401
+
+
+class TestConfigModels:
+    """Tests for configuration dataclasses."""
+    
+    def test_project_config(self):
+        """Test ProjectConfig dataclass."""
+        config = ProjectConfig(name="test-project", description="Test project")
+        assert config.name == "test-project"
+        assert config.description == "Test project"
+    
+    def test_notify_config(self):
+        """Test NotifyConfig dataclass."""
+        config = NotifyConfig(type="http+file", url="http://localhost:8001", file="notify.json")
+        assert config.type == "http+file"
+        assert config.url == "http://localhost:8001"
+        assert config.file == "notify.json"
+    
+    def test_service_test_config(self):
+        """Test ServiceTestConfig dataclass."""
+        config = ServiceTestConfig(scope="read,write", max_endpoints=5)
+        assert config.scope == "read,write"
+        assert config.max_endpoints == 5
+    
+    def test_service_config(self):
+        """Test ServiceConfig dataclass."""
+        notify = NotifyConfig(type="file", file="notify.json")
+        quick = ServiceTestConfig(scope="read", max_endpoints=3)
+        detail = ServiceTestConfig(scope="all", max_endpoints=10)
+        
+        config = ServiceConfig(
+            name="users",
+            root="app/users",
+            paths=["app/users/**", "routes/users/**"],
+            quick_tests=quick,
+            detail_tests=detail,
+            cpu_throttle=0.7,
+            notify=notify
+        )
+        assert config.name == "users"
+        assert config.root == "app/users"
+        assert len(config.paths) == 2
+        assert config.cpu_throttle == 0.7
+    
+    def test_watch_config(self):
+        """Test WatchConfig dataclass."""
+        config = WatchConfig(
+            paths=["app/**", "src/**"],
+            exclude_patterns=["*.md", "tests/**"]
+        )
+        assert len(config.paths) == 2
+        assert len(config.exclude_patterns) == 2
+    
+    def test_test_strategy_config(self):
+        """Test TestStrategyConfig dataclass."""
+        config = TestStrategyConfig(
+            quick={"debounce_s": 2, "max_queue": 5, "timeout_s": 10},
+            detail={"debounce_s": 10, "max_queue": 1, "timeout_s": 30}
+        )
+        assert config.quick["debounce_s"] == 2
+        assert config.detail["timeout_s"] == 30
+    
+    def test_testql_config(self):
+        """Test TestQLConfig dataclass."""
+        config = TestQLConfig(
+            scenario_dir="scenarios/tests",
+            smoke_scenario="smoke.testql.toon.yaml",
+            output_format="json",
+            extra_args=["--timeout 10s"]
+        )
+        assert config.scenario_dir == "scenarios/tests"
+        assert config.output_format == "json"
+        assert len(config.extra_args) == 1
+    
+    def test_wup_config(self):
+        """Test WupConfig dataclass."""
+        project = ProjectConfig(name="test", description="Test")
+        watch = WatchConfig(paths=["app/**"])
+        service = ServiceConfig(name="users", root="app/users")
+        strategy = TestStrategyConfig()
+        testql = TestQLConfig()
+        
+        config = WupConfig(
+            project=project,
+            watch=watch,
+            services=[service],
+            test_strategy=strategy,
+            testql=testql
+        )
+        assert config.project.name == "test"
+        assert len(config.services) == 1
+        assert config.services[0].name == "users"
+
+
+class TestConfigLoader:
+    """Tests for configuration loading and saving."""
+    
+    def test_get_default_config(self):
+        """Test getting default configuration."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = get_default_config(Path(tmpdir))
+            assert isinstance(config, WupConfig)
+            assert config.project.name == Path(tmpdir).name
+            assert len(config.watch.paths) > 0
+            assert len(config.watch.exclude_patterns) > 0
+    
+    def test_save_and_load_config(self):
+        """Test saving and loading configuration."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create a config
+            project = ProjectConfig(name="test-project", description="Test")
+            watch = WatchConfig(paths=["app/**"], exclude_patterns=["*.md"])
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**"]
+            )
+            config = WupConfig(
+                project=project,
+                watch=watch,
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            # Save it
+            config_path = Path(tmpdir) / "wup.yaml"
+            save_config(config, config_path)
+            assert config_path.exists()
+            
+            # Load it
+            loaded_config = load_config(Path(tmpdir), config_path)
+            assert loaded_config.project.name == "test-project"
+            assert len(loaded_config.services) == 1
+            assert loaded_config.services[0].name == "users"
+    
+    def test_load_config_from_yaml(self):
+        """Test loading configuration from YAML file."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create a YAML config file
+            config_content = """
+project:
+  name: "test-project"
+  description: "Test project from YAML"
+
+watch:
+  paths:
+    - "app/**"
+    - "src/**"
+  exclude_patterns:
+    - "*.md"
+    - "tests/**"
+
+services:
+  - name: "users"
+    root: "app/users"
+    paths:
+      - "app/users/**"
+    quick_tests:
+      scope: "read,write"
+      max_endpoints: 3
+    detail_tests:
+      scope: "all"
+      max_endpoints: 10
+    cpu_throttle: 0.7
+    notify:
+      type: "file"
+      file: "wup/notify-users.json"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
+    timeout_s: 10
+  detail:
+    debounce_s: 10
+    max_queue: 1
+    timeout_s: 30
+
+testql:
+  scenario_dir: "scenarios/tests"
+  smoke_scenario: "smoke.testql.toon.yaml"
+  output_format: "json"
+  extra_args:
+    - "--timeout 10s"
+"""
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(config_content)
+            
+            # Load it
+            config = load_config(Path(tmpdir), config_path)
+            assert config.project.name == "test-project"
+            assert len(config.watch.paths) == 2
+            assert len(config.services) == 1
+            assert config.services[0].name == "users"
+            assert config.services[0].quick_tests.scope == "read,write"
+            assert config.services[0].quick_tests.max_endpoints == 3
+            assert config.test_strategy.quick["debounce_s"] == 2
+            assert config.testql.scenario_dir == "scenarios/tests"
+    
+    def test_load_config_auto_detect(self):
+        """Test auto-detection of config file."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create wup.yaml
+            config_content = """
+project:
+  name: "test"
+"""
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(config_content)
+            
+            # Load without specifying path
+            config = load_config(Path(tmpdir))
+            assert config.project.name == "test"
+    
+    def test_load_config_no_file_returns_default(self):
+        """Test that missing config file returns default config."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = load_config(Path(tmpdir))
+            assert isinstance(config, WupConfig)
+            assert config.project.name == Path(tmpdir).name
+    
+    def test_load_config_invalid_yaml(self):
+        """Test loading invalid YAML raises error."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text("invalid: yaml: content: [")
+            
+            with pytest.raises(Exception):
+                load_config(Path(tmpdir), config_path)
+    
+    def test_load_config_missing_project_name(self):
+        """Test that missing project.name raises error."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_content = """
+project:
+  description: "Test"
+"""
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(config_content)
+            
+            with pytest.raises(ValueError, match="project.name"):
+                load_config(Path(tmpdir), config_path)
+
+
+class TestConfigIntegration:
+    """Tests for configuration integration with WupWatcher."""
+    
+    def test_watcher_with_config(self):
+        """Test WupWatcher initialization with config."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            project = ProjectConfig(name="test", description="Test")
+            watch = WatchConfig(paths=["app/**"])
+            config = WupConfig(
+                project=project,
+                watch=watch,
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            assert watcher.config.project.name == "test"
+            assert len(watcher.config.watch.paths) == 1
+    
+    def test_watcher_uses_config_debounce(self):
+        """Test that watcher uses config debounce settings."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            strategy = TestStrategyConfig(
+                quick={"debounce_s": 5, "max_queue": 5, "timeout_s": 10},
+                detail={"debounce_s": 15, "max_queue": 1, "timeout_s": 30}
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=strategy,
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            assert watcher.debounce_seconds == 5
+    
+    def test_watcher_build_watched_paths_from_config(self):
+        """Test build_watched_paths uses config."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create directories
+            (Path(tmpdir) / "app").mkdir()
+            (Path(tmpdir) / "src").mkdir()
+            
+            watch = WatchConfig(paths=["app/**", "src/**"])
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=watch,
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            paths = watcher.build_watched_paths()
+            assert len(paths) == 2
+            assert any("app" in p for p in paths)
+            assert any("src" in p for p in paths)
+    
+    def test_watcher_infer_service_from_config(self):
+        """Test service inference uses configured service paths."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**", "routes/users/**"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "users" / "routes.py"))
+            assert inferred == "users"
+    
+    def test_watcher_get_service_config(self):
+        """Test getting service configuration by name."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                quick_tests=ServiceTestConfig(scope="read", max_endpoints=5)
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            svc_config = watcher.get_service_config("users")
+            assert svc_config is not None
+            assert svc_config.name == "users"
+            assert svc_config.quick_tests.max_endpoints == 5
+            
+            # Test non-existent service
+            assert watcher.get_service_config("nonexistent") is None
+    
+    def test_watcher_schedule_quick_test_uses_config_limit(self):
+        """Test that quick test scheduling uses config max_endpoints."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                quick_tests=ServiceTestConfig(scope="all", max_endpoints=5)
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            watcher.dependency_mapper.service_to_endpoints["users"] = [
+                f"/api/endpoint{i}" for i in range(10)
+            ]
+            
+            watcher.schedule_quick_test("users")
+            test_type, service_name, endpoints = watcher.test_queue[0]
+            assert len(endpoints) == 5  # Config limit
+    
+    def test_watcher_on_file_change_uses_exclude_patterns(self):
+        """Test that file change respects config exclude patterns."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            watch = WatchConfig(
+                paths=["app/**"],
+                exclude_patterns=["*.md", "*.txt"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=watch,
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Test with excluded file
+            md_file = str(Path(tmpdir) / "app" / "test.md")
+            watcher.on_file_change(md_file)
+            
+            # Should not trigger any service changes
+            assert len(watcher.changed_services) == 0
+
+
+class TestTestQLWatcherConfig:
+    """Tests for TestQLWatcher configuration integration."""
+    
+    def test_testql_watcher_with_config(self):
+        """Test TestQLWatcher initialization with config."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            testql_config = TestQLConfig(
+                scenario_dir="scenarios/tests",
+                smoke_scenario="smoke.testql.toon.yaml",
+                extra_args=["--timeout 10s"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=testql_config
+            )
+            
+            watcher = TestQLWatcher(tmpdir, config=config)
+            assert watcher.config.project.name == "test"
+            assert watcher.testql_extra_args == ["--timeout 10s"]
+    
+    def test_testql_watcher_uses_config_scenarios_dir(self):
+        """Test that TestQLWatcher uses config scenario directory."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            testql_config = TestQLConfig(scenario_dir="custom/scenarios")
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=testql_config
+            )
+            
+            watcher = TestQLWatcher(tmpdir, config=config)
+            assert "custom/scenarios" in str(watcher.scenarios_dir)
+    
+    def test_testql_watcher_get_service_config(self):
+        """Test getting service configuration in TestQLWatcher."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                quick_tests=ServiceTestConfig(scope="read", max_endpoints=5)
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = TestQLWatcher(tmpdir, config=config)
+            svc_config = watcher.get_service_config("users")
+            assert svc_config is not None
+            assert svc_config.name == "users"
+            assert svc_config.quick_tests.max_endpoints == 5
+    
+    def test_testql_watcher_select_scenarios_uses_config_limit(self):
+        """Test that scenario selection uses config max_endpoints."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create some dummy scenario files
+            scenarios_dir = Path(tmpdir) / "testql-scenarios"
+            scenarios_dir.mkdir()
+            for i in range(5):
+                (scenarios_dir / f"test{i}.testql.toon.yaml").write_text("# test")
+            
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                quick_tests=ServiceTestConfig(scope="all", max_endpoints=2)
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = TestQLWatcher(tmpdir, scenarios_dir="testql-scenarios", config=config)
+            scenarios = watcher._select_scenarios_for_service("users")
+            # Should be limited by config when no matching scenarios found
+            assert len(scenarios) <= 2
+    
+    def test_testql_watcher_uses_config_timeout(self):
+        """Test that TestQLWatcher uses config timeout settings."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            strategy = TestStrategyConfig(
+                quick={"debounce_s": 2, "max_queue": 5, "timeout_s": 30},
+                detail={"debounce_s": 10, "max_queue": 1, "timeout_s": 60}
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=strategy,
+                testql=TestQLConfig()
+            )
+            
+            watcher = TestQLWatcher(tmpdir, config=config)
+            assert watcher.config.test_strategy.quick["timeout_s"] == 30
+            assert watcher.config.test_strategy.detail["timeout_s"] == 60
+    
+    def test_testql_watcher_without_config_loads_default(self):
+        """Test that TestQLWatcher loads default config when not provided."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            watcher = TestQLWatcher(tmpdir)
+            assert watcher.config is not None
+            assert watcher.config.project.name == Path(tmpdir).name

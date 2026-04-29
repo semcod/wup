@@ -17,7 +17,9 @@ from rich.table import Table
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+from .config import load_config
 from .dependency_mapper import DependencyMapper
+from .models.config import WupConfig, ServiceConfig
 
 
 class WupWatcher:
@@ -36,7 +38,8 @@ class WupWatcher:
         deps_file: str = "deps.json",
         cpu_throttle: float = 0.8,
         debounce_seconds: int = 2,
-        test_cooldown_seconds: int = 300
+        test_cooldown_seconds: int = 300,
+        config: Optional[WupConfig] = None
     ):
         """
         Initialize the WUP watcher.
@@ -47,12 +50,37 @@ class WupWatcher:
             cpu_throttle: Maximum CPU usage threshold (0.0-1.0)
             debounce_seconds: Debounce time for file changes
             test_cooldown_seconds: Minimum time between tests for same service
+            config: Optional WupConfig object (loaded from wup.yaml if not provided)
         """
         self.project_root = Path(project_root)
         self.deps_file = deps_file
-        self.cpu_throttle = cpu_throttle
-        self.debounce_seconds = debounce_seconds
-        self.test_cooldown_seconds = test_cooldown_seconds
+        
+        # Load config if not provided
+        if config is None:
+            self.config = load_config(self.project_root)
+        else:
+            self.config = config
+        
+        # Use explicit parameters, fall back to config values if not explicitly set
+        # Check if parameters were explicitly provided (not default values)
+        # For now, use config values only if explicit parameters weren't provided
+        # We'll use config as fallback for default values
+        final_cpu_throttle = cpu_throttle
+        final_debounce_seconds = debounce_seconds
+        final_test_cooldown_seconds = test_cooldown_seconds
+        
+        if self.config.test_strategy:
+            # Only use config values if parameters are at their defaults
+            if cpu_throttle == 0.8:  # default value
+                final_cpu_throttle = self.config.test_strategy.quick.get("cpu_throttle", cpu_throttle)
+            if debounce_seconds == 2:  # default value
+                final_debounce_seconds = self.config.test_strategy.quick.get("debounce_s", debounce_seconds)
+            if test_cooldown_seconds == 300:  # default value
+                final_test_cooldown_seconds = self.config.test_strategy.quick.get("cooldown_s", test_cooldown_seconds)
+        
+        self.cpu_throttle = final_cpu_throttle
+        self.debounce_seconds = final_debounce_seconds
+        self.test_cooldown_seconds = final_test_cooldown_seconds
         
         self.dependency_mapper = DependencyMapper(str(self.project_root))
         self.changed_services: Set[str] = set()
@@ -86,6 +114,14 @@ class WupWatcher:
         rel_path = self._to_relative_path(file_path)
         parts = rel_path.parts
         
+        # Try to match against configured services first
+        if self.config.services:
+            for svc in self.config.services:
+                for svc_path in svc.paths:
+                    # Convert glob pattern to simple check
+                    if str(rel_path).startswith(svc_path.replace("**", "")):
+                        return svc.name
+        
         # Use dependency mapper if available
         service = self.dependency_mapper.get_service_for_file(file_path)
         if service:
@@ -95,6 +131,21 @@ class WupWatcher:
         if len(parts) >= 2:
             return "/".join(parts[:2])
         
+        return None
+    
+    def get_service_config(self, service_name: str) -> Optional[ServiceConfig]:
+        """
+        Get service configuration by name.
+        
+        Args:
+            service_name: Name of the service
+            
+        Returns:
+            ServiceConfig if found, None otherwise
+        """
+        for svc in self.config.services:
+            if svc.name == service_name:
+                return svc
         return None
     
     def should_test(self, service: str) -> bool:
@@ -119,7 +170,14 @@ class WupWatcher:
             service: Service name to test
         """
         endpoints = self.dependency_mapper.get_endpoints_for_service(service)
-        self.test_queue.append(("quick", service, endpoints[:3]))
+        
+        # Use service config for max_endpoints if available
+        svc_config = self.get_service_config(service)
+        max_endpoints = 3
+        if svc_config and svc_config.quick_tests:
+            max_endpoints = svc_config.quick_tests.max_endpoints
+        
+        self.test_queue.append(("quick", service, endpoints[:max_endpoints]))
         self.last_test_times[service] = time.time()
     
     def schedule_detail_test(self, service: str):
@@ -251,6 +309,13 @@ class WupWatcher:
         if any(part in skip_dirs for part in parts):
             return
         
+        # Check exclude patterns from config
+        for pattern in self.config.watch.exclude_patterns:
+            if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
+                return
+            if pattern in str(rel_path):
+                return
+        
         # Infer service from file path
         service = self.infer_service(file_path)
         
@@ -259,19 +324,47 @@ class WupWatcher:
             self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {service}[/yellow]")
             self.schedule_quick_test(service)
     
+    def build_watched_paths(self) -> List[str]:
+        """
+        Build list of paths to watch from config.
+        
+        Returns:
+            List of absolute paths to watch
+        """
+        if self.config.watch.paths:
+            # Use paths from config
+            watch_paths = []
+            for pattern in self.config.watch.paths:
+                # Handle exclusion patterns (starting with !)
+                if pattern.startswith("!"):
+                    continue
+                # Convert to absolute path
+                if "**" in pattern:
+                    base_path = pattern.replace("**", "")
+                else:
+                    base_path = pattern
+                
+                abs_path = str(self.project_root / base_path)
+                if Path(abs_path).exists():
+                    watch_paths.append(abs_path)
+            return watch_paths
+        
+        # Fallback to default paths
+        return [
+            str(self.project_root / "app"),
+            str(self.project_root / "src"),
+            str(self.project_root / "tests"),
+        ]
+    
     def start_watching(self, watch_paths: Optional[List[str]] = None):
         """
         Start watching for file changes.
         
         Args:
-            watch_paths: List of paths to watch (default: common source directories)
+            watch_paths: List of paths to watch (default: from config or common source directories)
         """
         if watch_paths is None:
-            watch_paths = [
-                str(self.project_root / "app"),
-                str(self.project_root / "src"),
-                str(self.project_root / "tests"),
-            ]
+            watch_paths = self.build_watched_paths()
         
         # Filter to existing paths
         watch_paths = [p for p in watch_paths if Path(p).exists()]
@@ -333,11 +426,7 @@ class WupWatcher:
         """Run watcher with live dashboard."""
         from watchdog.observers import Observer
         
-        watch_paths = [
-            str(self.project_root / "app"),
-            str(self.project_root / "src"),
-            str(self.project_root / "tests"),
-        ]
+        watch_paths = self.build_watched_paths()
         watch_paths = [p for p in watch_paths if Path(p).exists()]
         
         event_handler = WupEventHandler(self)

@@ -1,0 +1,77 @@
+# WUP Configuration File
+# Copy this file to wup.yaml or .wup.yaml in your project root
+
+project:
+  name: "my-project"
+  description: "Example project configuration"
+
+watch:
+  # Folders to watch (supports glob patterns)
+  paths:
+    - "app/**"
+    - "src/**"
+    - "routes/**"
+    - "schema/**"
+    # Exclude specific patterns
+    - "!tests/**"
+    - "!node_modules/**"
+
+  # Global exclude patterns
+  exclude_patterns:
+    - "*.md"
+    - "*.txt"
+    - "migrations/**"
+    - "__pycache__/**"
+
+services:
+  # Service configurations
+  - name: "users"
+    root: "app/users"
+    paths:
+      - "app/users/**"
+      - "routes/users/**"
+      - "schema/users/**"
+    quick_tests:
+      scope: "read,write"
+      max_endpoints: 3
+    detail_tests:
+      scope: "all"
+      max_endpoints: 10
+    cpu_throttle: 0.7
+    notify:
+      type: "http+file"
+      url: "http://localhost:8001/notify"
+      file: "wup/notify-users.json"
+
+  - name: "auth"
+    root: "app/auth"
+    paths:
+      - "app/auth/**"
+    quick_tests:
+      scope: "auth"
+      max_endpoints: 3
+    detail_tests:
+      scope: "auth,read"
+      max_endpoints: 5
+    cpu_throttle: 0.8
+    notify:
+      type: "file"
+      file: "wup/notify-auth.json"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
+    timeout_s: 10
+  detail:
+    debounce_s: 10
+    max_queue: 1
+    timeout_s: 30
+
+testql:
+  # TestQL-specific configuration
+  scenario_dir: "scenarios/tests"
+  smoke_scenario: "smoke.testql.toon.yaml"
+  output_format: "json"
+  extra_args:
+    - "--timeout 10s"

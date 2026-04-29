@@ -9,8 +9,11 @@ from typing import Optional
 import typer
 from rich.console import Console
 
+from .config import load_config
 from .core import WupWatcher
 from .dependency_mapper import DependencyMapper
+from .models.config import WupConfig
+from .testql_watcher import TestQLWatcher
 
 app = typer.Typer(
     name="wup",
@@ -28,6 +31,13 @@ def watch(
     debounce: int = typer.Option(2, "--debounce", "-b", help="Debounce time in seconds"),
     cooldown: int = typer.Option(300, "--cooldown", "-t", help="Test cooldown in seconds"),
     dashboard: bool = typer.Option(False, "--dashboard", help="Enable live dashboard"),
+    mode: str = typer.Option("default", "--mode", help="Watcher mode: default or testql"),
+    scenarios_dir: str = typer.Option("testql-scenarios", "--scenarios-dir", help="Directory with TestQL scenario files"),
+    testql_bin: str = typer.Option("testql", "--testql-bin", help="TestQL executable name/path"),
+    browser_service_url: Optional[str] = typer.Option(None, "--browser-service-url", help="HTTP endpoint for browser notifications"),
+    track_dir: str = typer.Option(".wup/tracks", "--track-dir", help="Directory where error track JSON files are written"),
+    quick_limit: int = typer.Option(3, "--quick-limit", help="Maximum TestQL scenarios used in quick pass"),
+    config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
     Watch project for file changes and run intelligent regression tests.
@@ -43,20 +53,43 @@ def watch(
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
     
+    # Load configuration
+    config_path = Path(config) if config else None
+    wup_config = load_config(project_path, config_path)
+    
     console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
-    console.print(f"[dim]Project: {project_path}[/dim]")
+    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
+    console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
     console.print(f"[dim]CPU Throttle: {cpu_throttle * 100}%[/dim]")
     console.print(f"[dim]Debounce: {debounce}s[/dim]")
     console.print(f"[dim]Cooldown: {cooldown}s[/dim]")
+    console.print(f"[dim]Config: {config_path or 'auto-detected'}[/dim]")
     console.print()
     
-    watcher = WupWatcher(
-        project_root=str(project_path),
-        deps_file=deps_file,
-        cpu_throttle=cpu_throttle,
-        debounce_seconds=debounce,
-        test_cooldown_seconds=cooldown
-    )
+    if mode.lower() == "testql":
+        watcher = TestQLWatcher(
+            project_root=str(project_path),
+            deps_file=deps_file,
+            cpu_throttle=cpu_throttle,
+            debounce_seconds=debounce,
+            test_cooldown_seconds=cooldown,
+            scenarios_dir=scenarios_dir,
+            testql_bin=testql_bin,
+            browser_service_url=browser_service_url,
+            track_dir=track_dir,
+            quick_limit=quick_limit,
+            config=wup_config,
+        )
+        console.print("[green]TestQL mode enabled[/green]")
+    else:
+        watcher = WupWatcher(
+            project_root=str(project_path),
+            deps_file=deps_file,
+            cpu_throttle=cpu_throttle,
+            debounce_seconds=debounce,
+            test_cooldown_seconds=cooldown,
+            config=wup_config,
+        )
     
     if dashboard:
         console.print("[green]Starting watcher with live dashboard...[/green]")
@@ -71,6 +104,7 @@ def map_deps(
     project: str = typer.Argument(".", help="Path to the project root directory"),
     output: str = typer.Option("deps.json", "--output", "-o", help="Output file path"),
     framework: str = typer.Option("auto", "--framework", "-f", help="Framework to detect (auto, fastapi, flask, django, express)"),
+    config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
     Build dependency map by scanning the codebase.
@@ -83,13 +117,39 @@ def map_deps(
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
     
+    # Load configuration
+    config_path = Path(config) if config else None
+    wup_config = load_config(project_path, config_path)
+    
     console.print(f"[bold cyan]🔍 Building dependency map[/bold cyan]")
-    console.print(f"[dim]Project: {project_path}[/dim]")
+    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
     console.print(f"[dim]Framework: {framework}[/dim]")
+    if wup_config.services:
+        console.print(f"[dim]Services from config: {len(wup_config.services)}[/dim]")
     console.print()
     
     mapper = DependencyMapper(str(project_path))
     deps = mapper.build_from_codebase(framework)
+    
+    # Enhance deps with service information from config
+    if wup_config.services:
+        for svc in wup_config.services:
+            if svc.name not in deps.get("services", {}):
+                deps.setdefault("services", {})[svc.name] = {
+                    "endpoints": [],
+                    "files": svc.paths,
+                    "config": {
+                        "quick_tests": {
+                            "scope": svc.quick_tests.scope,
+                            "max_endpoints": svc.quick_tests.max_endpoints
+                        },
+                        "detail_tests": {
+                            "scope": svc.detail_tests.scope,
+                            "max_endpoints": svc.detail_tests.max_endpoints
+                        }
+                    }
+                }
+    
     mapper.save(output)
     
     # Print summary
@@ -110,16 +170,46 @@ def map_deps(
 @app.command()
 def status(
     deps_file: str = typer.Option("deps.json", "--deps", "-d", help="Path to dependency map file"),
+    config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
-    Show dependency map status.
+    Show dependency map status and configuration.
     """
+    project_path = Path(".").resolve()
+    
+    # Load configuration
+    config_path = Path(config) if config else None
+    wup_config = load_config(project_path, config_path)
+    
+    console.print(f"[bold cyan]📊 WUP Status[/bold cyan]")
+    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
+    console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
+    console.print()
+    
+    # Show watch configuration
+    console.print("[bold]Watch Configuration:[/bold]")
+    console.print(f"  Paths: {', '.join(wup_config.watch.paths) if wup_config.watch.paths else 'default'}")
+    console.print(f"  Excludes: {', '.join(wup_config.watch.exclude_patterns)}")
+    console.print()
+    
+    # Show services
+    if wup_config.services:
+        console.print(f"[bold]Services ({len(wup_config.services)}):[/bold]")
+        for svc in wup_config.services:
+            console.print(f"  [cyan]{svc.name}[/cyan]")
+            console.print(f"    Root: {svc.root}")
+            console.print(f"    Quick: scope={svc.quick_tests.scope}, max={svc.quick_tests.max_endpoints}")
+            console.print(f"    Detail: scope={svc.detail_tests.scope}, max={svc.detail_tests.max_endpoints}")
+        console.print()
+    
+    # Show dependency map status
     deps_path = Path(deps_file)
     
     if not deps_path.exists():
-        console.print(f"[red]Error: Dependency file '{deps_file}' does not exist[/red]")
+        console.print(f"[yellow]Warning: Dependency file '{deps_file}' does not exist[/yellow]")
         console.print(f"[dim]Run 'wup map-deps' to create it[/dim]")
-        raise typer.Exit(1)
+        console.print()
+        return
     
     import json
     with open(deps_file) as f:
@@ -128,11 +218,9 @@ def status(
     services = deps.get("services", {})
     files = deps.get("files", {})
     
-    console.print(f"[bold cyan]📊 Dependency Map Status[/bold cyan]")
-    console.print(f"[dim]File: {deps_file}[/dim]")
-    console.print()
-    console.print(f"[bold]Services:[/bold] {len(services)}")
-    console.print(f"[bold]Files:[/bold] {len(files)}")
+    console.print(f"[bold]Dependency Map:[/bold]")
+    console.print(f"  Services: {len(services)}")
+    console.print(f"  Files: {len(files)}")
     console.print()
     
     if services:
@@ -145,6 +233,34 @@ def status(
             console.print(f"    Files: {len(service_files)}")
             if endpoints:
                 console.print(f"    Sample endpoints: {', '.join(endpoints[:3])}")
+
+
+@app.command()
+def init(
+    project: str = typer.Argument(".", help="Path to the project root directory"),
+    output: str = typer.Option("wup.yaml", "--output", "-o", help="Output config file path"),
+):
+    """
+    Initialize a new wup.yaml configuration file.
+    """
+    from .config import save_config, get_default_config
+    
+    project_path = Path(project).resolve()
+    
+    if not project_path.exists():
+        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+        raise typer.Exit(1)
+    
+    output_path = Path(output)
+    if output_path.exists():
+        console.print(f"[red]Error: Config file '{output}' already exists[/red]")
+        raise typer.Exit(1)
+    
+    config = get_default_config(project_path)
+    save_config(config, output_path)
+    
+    console.print(f"[green]✓ Created wup.yaml configuration at {output_path}[/green]")
+    console.print(f"[dim]Edit this file to customize your WUP setup[/dim]")
 
 
 @app.command()
