@@ -352,7 +352,10 @@ class TestQLWatcher(WupWatcher):
             scenarios = scenarios[: self.quick_limit]
         
         if not scenarios:
-            self.console.print(f"[yellow]⚠ No TestQL scenarios found for {service}[/yellow]")
+            self.console.print(f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]")
+            if self.visual_differ and self.visual_differ.cfg.enabled:
+                visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
+                await self._publish_visual_events(service, visual_results)
             return True
 
         self.console.print(
