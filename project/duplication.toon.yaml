@@ -1,19 +1,28 @@
-# redup/duplication | 2 groups | 33f 3291L | 2026-04-29
+# redup/duplication | 4 groups | 40f 6271L | 2026-04-29
 
 SUMMARY:
-  files_scanned: 33
-  total_lines:   3291
-  dup_groups:    2
-  dup_fragments: 4
-  saved_lines:   6
-  scan_ms:       4604
+  files_scanned: 40
+  total_lines:   6271
+  dup_groups:    4
+  dup_fragments: 10
+  saved_lines:   20
+  scan_ms:       5405
 
-HOTSPOTS[3] (files with most duplication):
-  examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.2%)
-  examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.1%)
-  wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.1%)
+HOTSPOTS[4] (files with most duplication):
+  wup/anomaly_detector.py  dup=20L  groups=2  frags=6  (0.3%)
+  examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.1%)
+  examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.0%)
+  wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.0%)
 
-DUPLICATES[2] (ranked by impact):
+DUPLICATES[4] (ranked by impact):
+  [8575900946923f44]   STRU  _snapshot_path  L=4 N=3 saved=8 sim=1.00
+      wup/anomaly_detector.py:78-81  (_snapshot_path)
+      wup/anomaly_detector.py:175-178  (_snapshot_path)
+      wup/anomaly_detector.py:344-346  (_snapshot_path)
+  [b5eae728fdce70c7]   STRU  __init__  L=3 N=3 saved=6 sim=1.00
+      wup/anomaly_detector.py:70-72  (__init__)
+      wup/anomaly_detector.py:140-142  (__init__)
+      wup/anomaly_detector.py:303-305  (__init__)
   [e86dae8501b38602]   STRU  login  L=3 N=2 saved=3 sim=1.00
       examples/flask-app/app/auth/routes.py:7-9  (login)
       examples/flask-app/app/auth/routes.py:18-20  (register)
@@ -21,23 +30,37 @@ DUPLICATES[2] (ranked by impact):
       examples/visual_diff_demo.py:55-57  (_save_snapshot)
       wup/visual_diff.py:125-127  (_save_snapshot)
 
-REFACTOR[2] (ranked by priority):
-  [1] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
+REFACTOR[4] (ranked by priority):
+  [1] ○ extract_function   → wup/utils/_snapshot_path.py
+      WHY: 3 occurrences of 4-line block across 1 files — saves 8 lines
+      FILES: wup/anomaly_detector.py
+  [2] ○ extract_function   → wup/utils/__init__.py
+      WHY: 3 occurrences of 3-line block across 1 files — saves 6 lines
+      FILES: wup/anomaly_detector.py
+  [3] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: examples/flask-app/app/auth/routes.py
-  [2] ○ extract_function   → utils/_save_snapshot.py
+  [4] ○ extract_function   → utils/_save_snapshot.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: examples/visual_diff_demo.py, wup/visual_diff.py
+
+QUICK_WINS[2] (low risk, high savings — do first):
+  [1] extract_function   saved=8L  → wup/utils/_snapshot_path.py
+      FILES: anomaly_detector.py
+  [2] extract_function   saved=6L  → wup/utils/__init__.py
+      FILES: anomaly_detector.py
 
 DEPENDENCY_RISK[1] (duplicates spanning multiple packages):
   _save_snapshot  packages=2  files=2
       examples/visual_diff_demo.py
       wup/visual_diff.py
 
-EFFORT_ESTIMATE (total ≈ 0.3h):
+EFFORT_ESTIMATE (total ≈ 0.8h):
+  easy   _snapshot_path                      saved=8L  ~16min
+  easy   __init__                            saved=6L  ~12min
   easy   login                               saved=3L  ~6min
   easy   _save_snapshot                      saved=3L  ~12min
 
 METRICS-TARGET:
-  dup_groups:  2 → 0
-  saved_lines: 6 lines recoverable
+  dup_groups:  4 → 0
+  saved_lines: 20 lines recoverable

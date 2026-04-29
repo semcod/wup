@@ -2,7 +2,7 @@
 
 app {
   name: wup;
-  version: 0.2.16;
+  version: 0.2.17;
 }
 
 dependencies {
@@ -33,6 +33,29 @@ entity[name="AnomalyReport"] {
   value: float!;
   threshold: float!;
   timestamp: int!;
+}
+
+entity[name="NotificationConfig"] {
+  enabled: bool!;
+  regression_new: bool!;
+  regression_diff: bool!;
+  regression_diff_seconds: int!;
+  status_transition: bool!;
+  status_transition_type: StatusTransitionType!;
+  anomaly_new: bool!;
+  visual_diff_new: bool!;
+  health_change: bool!;
+  pass_recovery: bool!;
+  cooldown_seconds: int!;
+  services_include: List[str]!;
+  services_exclude: List[str]!;
+}
+
+entity[name="NotificationSubscription"] {
+  subscription_id: string!;
+  config: NotificationConfig!;
+  created_at: int!;
+  last_notification_at: int;
 }
 
 interface[type="api"] {

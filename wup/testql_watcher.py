@@ -372,6 +372,7 @@ class TestQLWatcher(WupWatcher):
             
             result = self._run_testql(args, timeout=timeout)
             if result.returncode != 0:
+                reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
                 track_path = self._write_track(
                     service=service,
                     stage="quick",
@@ -382,9 +383,18 @@ class TestQLWatcher(WupWatcher):
                     service=service,
                     status="down",
                     stage="quick",
-                    message=result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed",
+                    message=reason,
                     track_file=str(track_path),
                 )
+                if self.web_client.is_active:
+                    endpoint = merged_endpoints[0] if merged_endpoints else f"/{service}"
+                    await self.web_client.send_regression(
+                        service=service,
+                        file="",
+                        endpoint=endpoint,
+                        reason=reason,
+                        stage="quick",
+                    )
                 self.console.print(
                     f"[red]✗ Quick failed: {scenario.name} | track: {track_path}[/red]"
                 )
@@ -396,12 +406,45 @@ class TestQLWatcher(WupWatcher):
             stage="quick",
             message="Quick TestQL passed",
         )
+        if self.web_client.is_active:
+            await self.web_client.send_pass(service=service, stage="quick")
+
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
         if self.visual_differ and self.visual_differ.cfg.enabled:
-            asyncio.ensure_future(
-                self.visual_differ.run_for_service(service, merged_endpoints)
-            )
+            visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
+            await self._publish_visual_events(service, visual_results)
         return True
+
+    async def _publish_visual_events(self, service: str, visual_results: List[Dict]) -> None:
+        """Forward visual diff and page-issue findings to wupbro backend."""
+        if not self.web_client.is_active:
+            return
+
+        for item in visual_results:
+            url = item.get("url", "")
+            diff = item.get("diff", {})
+            status = diff.get("status")
+
+            if status in {"changed", "issue"}:
+                await self.web_client.send_visual_diff(
+                    service=service,
+                    url=url,
+                    diff=diff,
+                )
+
+            if status == "issue":
+                issues = diff.get("issues", [])
+                await self.web_client.send_event(
+                    {
+                        "type": "ANOMALY",
+                        "service": service,
+                        "url": url,
+                        "status": "fail",
+                        "reason": "; ".join(issues) if issues else "visual page issue",
+                        "stage": "visual",
+                        "diff": diff,
+                    }
+                )
 
     async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
         merged_endpoints = list(endpoints)

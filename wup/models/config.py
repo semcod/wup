@@ -82,6 +82,14 @@ class VisualDiffConfig:
     threshold_added: int = 3         # min added nodes to report
     threshold_removed: int = 3       # min removed nodes to report
     threshold_changed: int = 5       # min changed attrs to report
+    min_text_length: int = 200       # anomaly if rendered text is too short
+    min_dom_nodes: int = 20          # anomaly if DOM is suspiciously tiny
+    error_selectors: List[str] = field(default_factory=lambda: [
+        "#error-container",
+        ".error-container",
+        "[data-testid='error-container']",
+        "[class*='error'][class*='container']",
+    ])
     headless: bool = True
 
 

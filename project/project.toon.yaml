@@ -1,37 +1,37 @@
-# wup | 229 func | 28f | 13860L | python | 2026-04-29
+# wup | 363 func | 35f | 18692L | python | 2026-04-29
 
 HEALTH:
-  CC̄=2.5  critical=12 (limit:10)  dup=1  cycles=4
+  CC̄=2.7  critical=23 (limit:10)  dup=1  cycles=4
 
 ALERTS[20]:
   !!! high_fan_out     status = 38 (limit:10)
   !!! high_fan_out     validate_config = 28 (limit:10)
+  !!! high_fan_out     analyze_monorepo = 21 (limit:10)
   !!! high_fan_out     testql_endpoints = 20 (limit:10)
+  !!  cc_exceeded      analyze_monorepo = 22 (limit:15)
+  !!  high_fan_out     ASTDetector.detect = 19 (limit:10)
   !!  high_fan_out     demo_snapshot_persistence = 17 (limit:10)
   !!  high_fan_out     TestQLWatcher.run_quick_test = 17 (limit:10)
-  !!  high_fan_out     watch = 16 (limit:10)
-  !!  high_fan_out     map_deps = 15 (limit:10)
-  !   cc_exceeded      WupWatcher.detect_service_coincidences = 19 (limit:15)
-  !   cc_exceeded      TestQLWatcher._select_scenarios_for_service = 15 (limit:15)
-  !   cc_exceeded      TestQLWatcher.run_quick_test = 15 (limit:15)
+  !!  high_fan_out     WupAssistant.run = 17 (limit:10)
+  !!  high_fan_out     show_webhook_demo = 16 (limit:10)
 
-MODULES[62] (top by size):
+MODULES[69] (top by size):
+  M[project/calls.yaml] 724L C:0 F:0 CC↑0 D:0 (yaml)
+  M[wup/assistant.py] 692L C:1 F:23 CC↑16 D:0 (python)
   M[wup/core.py] 604L C:2 F:24 CC↑19 D:0 (python)
-  M[project/calls.yaml] 542L C:0 F:0 CC↑0 D:0 (yaml)
+  M[wup/anomaly_detector.py] 593L C:6 F:23 CC↑16 D:0 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
+  M[wup/cli.py] 478L C:0 F:7 CC↑6 D:0 (python)
   M[wup/testql_watcher.py] 477L C:2 F:18 CC↑15 D:0 (python)
-  M[wup/cli.py] 450L C:0 F:6 CC↑6 D:0 (python)
-  M[wup/config.py] 350L C:0 F:6 CC↑10 D:4 (python)
+  M[examples/webhook_notifications.py] 427L C:1 F:10 CC↑6 D:0 (python)
+  M[wup/config.py] 394L C:0 F:6 CC↑10 D:0 (python)
+  M[examples/ci_cd_integration.py] 337L C:0 F:4 CC↑3 D:0 (python)
   M[wup/visual_diff.py] 333L C:1 F:16 CC↑11 D:1 (python)
   M[testql-deps.json] 311L C:0 F:0 CC↑0 D:0 (json)
+  M[project/map.toon.yaml] 305L C:0 F:104 CC↑0 D:5 (yaml)
   M[wup/dependency_mapper.py] 284L C:1 F:16 CC↑10 D:0 (python)
-  M[examples/visual_diff_demo.py] 271L C:0 F:9 CC↑6 D:0 (python)
-  M[examples/testql_integration.py] 267L C:1 F:6 CC↑6 D:0 (python)
-  M[wup/testql_discovery.py] 229L C:1 F:7 CC↑11 D:0 (python)
-  M[project/map.toon.yaml] 208L C:0 F:59 CC↑0 D:1 (yaml)
-  M[examples/testql_demo.py] 192L C:0 F:2 CC↑11 D:0 (python)
-  M[wup/web_client.py] 178L C:1 F:10 CC↑6 D:0 (python)
-  LANGS: python:34/yaml:15/txt:5/json:2/other:2/toml:2/yml:1/shell:1
+  M[wupbro/wupbro/notifications.py] 283L C:1 F:15 CC↑14 D:2 (python)
+  LANGS: python:41/yaml:15/txt:5/json:2/other:2/toml:2/yml:1/shell:1
 
 HOTSPOTS[10]:
   ★ status fan=38  // Show dependency map status and configuration.
@@ -39,16 +39,16 @@ HOTSPOTS[10]:
 
 Args:
     raw: Raw co
+  ★ analyze_monorepo fan=21  // Analysis pipeline, 21 stages
   ★ testql_endpoints fan=20  // Discover endpoints from TestQL scenario files and build dependency map.
-  ★ demo_snapshot_persistence fan=17  // Orchestrates 17 calls
-  ★ TestQLWatcher.run_quick_test fan=17  // Orchestrates 17 calls
+  ★ ASTDetector.detect fan=19  // Detect changes in Python file structure.
 
-REFACTOR[12]:
+REFACTOR[15]:
   [1] H/H Split god module wup/core.py (604L, 2 classes)
-  [2] H/H Split god module goal.yaml (512L, 0 classes)
-  [3] H/H Split god module project/calls.yaml (542L, 0 classes)
-  [4] M/L Split WupWatcher.detect_service_coincidences (CC=19)
-  [5] M/L Split TestQLWatcher._select_scenarios_for_service (CC=15)
+  [2] H/H Split god module wup/anomaly_detector.py (593L, 6 classes)
+  [3] H/H Split god module wup/assistant.py (692L, 1 classes)
+  [4] H/H Split god module goal.yaml (512L, 0 classes)
+  [5] H/H Split god module project/calls.yaml (724L, 0 classes)
 
 EVOLUTION:
-  2026-04-29 CC̄=2.5 crit=12 13860L // Automated analysis
+  2026-04-29 CC̄=2.7 crit=23 18692L // Automated analysis

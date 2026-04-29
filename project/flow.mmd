@@ -4,12 +4,6 @@ flowchart TD
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
-        wup__cli__watch["watch"]
-        wup__cli__map_deps["map_deps"]
-        wup__cli__status["status"]
-        wup__cli__init["init"]
-        wup__cli__testql_endpoints["testql_endpoints"]
-        wup__cli__version["version"]
         wup__web_client___httpx_available["_httpx_available"]
         wup__web_client__resolve_endpoint["resolve_endpoint"]
         wup__web_client___normalize["_normalize"]
@@ -19,6 +13,13 @@ flowchart TD
         wup__web_client__WebClient__send_pass["send_pass"]
         wup__web_client__WebClient__send_health_transition["send_health_transition"]
         wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
+        wup__cli__watch["watch"]
+        wup__cli__map_deps["map_deps"]
+        wup__cli__status["status"]
+        wup__cli__init["init"]
+        wup__cli__testql_endpoints["testql_endpoints"]
+        wup__cli__assistant["assistant"]
+        ...["+1 more"]
     end
 
     subgraph Core
@@ -37,7 +38,7 @@ flowchart TD
         wup__dependency_mapper__DependencyMapper__save["save"]
         wup__dependency_mapper__DependencyMapper__load["load"]
         wup__dependency_mapper__DependencyMapper__build_from_testql_scenarios["build_from_testql_scenarios"]
-        ...["+128 more"]
+        ...["+238 more"]
     end
 
-    class wup__cli__watch,wup__cli__map_deps,wup__cli__status,wup__cli__init,wup__cli__testql_endpoints,wup__cli__version,wup__dependency_mapper__DependencyMapper__build_from_codebase,wup__dependency_mapper__DependencyMapper___detect_framework,wup__dependency_mapper__DependencyMapper___search_codebase,wup__dependency_mapper__DependencyMapper___scan_endpoints entry
+    class wup__dependency_mapper__DependencyMapper__build_from_codebase,wup__dependency_mapper__DependencyMapper___detect_framework,wup__dependency_mapper__DependencyMapper___search_codebase,wup__dependency_mapper__DependencyMapper___scan_endpoints,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__dependency_mapper__DependencyMapper___scan_js_endpoints,wup__dependency_mapper__DependencyMapper___infer_service,wup__dependency_mapper__DependencyMapper__get_endpoints_for_file,wup__dependency_mapper__DependencyMapper__get_endpoints_for_service,wup__dependency_mapper__DependencyMapper__get_files_for_service entry

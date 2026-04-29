@@ -1,4 +1,15 @@
 flowchart TD
+    subgraph examples__c2004_monorepo_demo
+        examples__c2004_monorepo_demo__analyze_monorepo{{analyze_monorepo CC=22}}
+        examples__c2004_monorepo_demo__simulate_monorepo["simulate_monorepo"]
+        examples__c2004_monorepo_demo__main["main"]
+    end
+    subgraph examples__ci_cd_integration
+        examples__ci_cd_integration__generate_github_actions["generate_github_actions"]
+        examples__ci_cd_integration__generate_gitlab_ci["generate_gitlab_ci"]
+        examples__ci_cd_integration__show_ci_cd_demo["show_ci_cd_demo"]
+        examples__ci_cd_integration__main["main"]
+    end
     subgraph examples__fastapi_app
         examples__fastapi_app__main__root["root"]
         examples__fastapi_app__main__health["health"]
@@ -56,6 +67,18 @@ flowchart TD
         examples__visual_diff_demo__demo_live_page["demo_live_page"]
         examples__visual_diff_demo__main["main"]
     end
+    subgraph examples__webhook_notifications
+        examples__webhook_notifications__create_slack_payload["create_slack_payload"]
+        examples__webhook_notifications__create_teams_payload["create_teams_payload"]
+        examples__webhook_notifications__create_discord_payload["create_discord_payload"]
+        examples__webhook_notifications__NotificationRouter____init__["__init__"]
+        examples__webhook_notifications__NotificationRouter__add_slack["add_slack"]
+        examples__webhook_notifications__NotificationRouter__add_teams["add_teams"]
+        examples__webhook_notifications__NotificationRouter__add_discord["add_discord"]
+        examples__webhook_notifications__NotificationRouter__send["send"]
+        examples__webhook_notifications__show_webhook_demo["show_webhook_demo"]
+        examples__webhook_notifications__main["main"]
+    end
     subgraph project__map
         project__map__toon__list_users["list_users"]
         project__map__toon__get_user["get_user"]
@@ -91,6 +114,19 @@ flowchart TD
         project__map__toon__test_service_health_transitions_are_persisted["test_service_health_transitions_are"]
         project__map__toon__test_visual_differ_disabled_by_default["test_visual_differ_disabled_by_defa"]
         project__map__toon__test_visual_differ_initialized_when_enabled["test_visual_differ_initialized_when"]
+        project__map__toon___make_handler["_make_handler"]
+        project__map__toon__recorder_server["recorder_server"]
+        project__map__toon__test_resolve_endpoint_from_config["test_resolve_endpoint_from_config"]
+        project__map__toon__test_resolve_endpoint_from_env["test_resolve_endpoint_from_env"]
+        project__map__toon__test_resolve_endpoint_empty["test_resolve_endpoint_empty"]
+        project__map__toon__test_is_active_false_when_disabled["test_is_active_false_when_disabled"]
+        project__map__toon__test_is_active_false_when_no_endpoint["test_is_active_false_when_no_endpoi"]
+        project__map__toon__test_send_event_disabled_returns_false["test_send_event_disabled_returns_fa"]
+        project__map__toon__test_send_event_posts_to_recorder["test_send_event_posts_to_recorder"]
+        project__map__toon__test_send_event_with_api_key["test_send_event_with_api_key"]
+        project__map__toon__test_send_event_swallows_connection_error["test_send_event_swallows_connection"]
+        project__map__toon__test_send_regression_helper["test_send_regression_helper"]
+        project__map__toon__test_send_health_transition_helper["test_send_health_transition_helper"]
         project__map__toon__test_import["test_import"]
         project__map__toon__watch["watch"]
         project__map__toon__map_deps["map_deps"]
@@ -104,42 +140,56 @@ flowchart TD
         project__map__toon__validate_config["validate_config"]
         project__map__toon__get_default_config["get_default_config"]
         project__map__toon__save_config["save_config"]
-        project__map__toon___playwright_available["_playwright_available"]
-        project__map__toon___fetch_dom_snapshot["_fetch_dom_snapshot"]
-        project__map__toon___page_slug["_page_slug"]
-        project__map__toon___snapshot_path["_snapshot_path"]
-        project__map__toon___load_snapshot["_load_snapshot"]
-        project__map__toon___node_signature["_node_signature"]
-        project__map__toon___flatten["_flatten"]
-        project__map__toon___diff_snapshots["_diff_snapshots"]
-        project__map__toon___resolve_base_url["_resolve_base_url"]
-        project__map__toon___httpx_available["_httpx_available"]
-        project__map__toon__resolve_endpoint["resolve_endpoint"]
-        project__map__toon___normalize["_normalize"]
     end
-    subgraph wupbro__wupbro
-        wupbro__wupbro__routers__drivers___store["_store"]
-        wupbro__wupbro__routers__drivers__dom_diff_capture["dom_diff_capture"]
-        wupbro__wupbro__routers__drivers__browserless_screenshot["browserless_screenshot"]
-        wupbro__wupbro__routers__drivers__anomaly_report["anomaly_report"]
-        wupbro__wupbro__routers__drivers__driver_health["driver_health"]
-        wupbro__wupbro__routers__dashboard__root["root"]
-        wupbro__wupbro__routers__dashboard__dashboard["dashboard"]
-        wupbro__wupbro__main__create_app["create_app"]
-        wupbro__wupbro__routers__events___store["_store"]
-        wupbro__wupbro__routers__events__post_event["post_event"]
-        wupbro__wupbro__routers__events__list_events["list_events"]
-        wupbro__wupbro__routers__events__event_stats["event_stats"]
-        wupbro__wupbro__routers__events__clear_events["clear_events"]
-        wupbro__wupbro____main____main["main"]
-        wupbro__wupbro__storage__EventStore____init__["__init__"]
-        wupbro__wupbro__storage__EventStore___load_existing["_load_existing"]
-        wupbro__wupbro__storage__EventStore__add["add"]
-        wupbro__wupbro__storage__EventStore__list["list"]
-        wupbro__wupbro__storage__EventStore__clear["clear"]
-        wupbro__wupbro__storage__EventStore__stats["stats"]
-        wupbro__wupbro__storage__get_default_store["get_default_store"]
-        wupbro__wupbro__storage__set_default_store["set_default_store"]
+    subgraph wup__anomaly_detector
+        wup__anomaly_detector__HashDetector____init__["__init__"]
+        wup__anomaly_detector__HashDetector___compute_hash["_compute_hash"]
+        wup__anomaly_detector__HashDetector___snapshot_path["_snapshot_path"]
+        wup__anomaly_detector__HashDetector__detect["detect"]
+        wup__anomaly_detector__YAMLStructureDetector____init__["__init__"]
+        wup__anomaly_detector__YAMLStructureDetector___load_yaml["_load_yaml"]
+        wup__anomaly_detector__YAMLStructureDetector___extract_structure["_extract_structure"]
+        wup__anomaly_detector__YAMLStructureDetector___snapshot_path["_snapshot_path"]
+        wup__anomaly_detector__YAMLStructureDetector___compare_structures{{_compare_structures CC=15}}
+        wup__anomaly_detector__YAMLStructureDetector__detect("detect CC=8")
+        wup__anomaly_detector__YAMLStructureDetector___generate_suggestions["_generate_suggestions"]
+        wup__anomaly_detector__ASTDetector____init__["__init__"]
+        wup__anomaly_detector__ASTDetector___extract_ast_info{{_extract_ast_info CC=16}}
+        wup__anomaly_detector__ASTDetector___snapshot_path["_snapshot_path"]
+        wup__anomaly_detector__ASTDetector__detect{{detect CC=16}}
+        wup__anomaly_detector__AnomalyDetector____init__["__init__"]
+        wup__anomaly_detector__AnomalyDetector___should_scan["_should_scan"]
+        wup__anomaly_detector__AnomalyDetector__scan_file["scan_file"]
+        wup__anomaly_detector__AnomalyDetector__scan_directory["scan_directory"]
+        wup__anomaly_detector__AnomalyDetector__get_summary["get_summary"]
+        wup__anomaly_detector__AnomalyDetector__print_report["print_report"]
+        wup__anomaly_detector__quick_scan["quick_scan"]
+        wup__anomaly_detector__scan_yaml_changes["scan_yaml_changes"]
+    end
+    subgraph wup__assistant
+        wup__assistant__WupAssistant____init__["__init__"]
+        wup__assistant__WupAssistant__run{{run CC=16}}
+        wup__assistant__WupAssistant___init_project["_init_project"]
+        wup__assistant__WupAssistant___detect_framework["_detect_framework"]
+        wup__assistant__WupAssistant___auto_detect_services["_auto_detect_services"]
+        wup__assistant__WupAssistant___detect_service_type("_detect_service_type CC=10")
+        wup__assistant__WupAssistant___configure_services("_configure_services CC=14")
+        wup__assistant__WupAssistant___add_service_interactive("_add_service_interactive CC=11")
+        wup__assistant__WupAssistant___edit_service["_edit_service"]
+        wup__assistant__WupAssistant___setup_watch["_setup_watch"]
+        wup__assistant__WupAssistant___configure_testql["_configure_testql"]
+        wup__assistant__WupAssistant___setup_web_dashboard["_setup_web_dashboard"]
+        wup__assistant__WupAssistant___setup_visual_diff["_setup_visual_diff"]
+        wup__assistant__WupAssistant___setup_anomaly_detection("_setup_anomaly_detection CC=8")
+        wup__assistant__WupAssistant___review_and_validate("_review_and_validate CC=11")
+        wup__assistant__WupAssistant___validate_config("_validate_config CC=9")
+        wup__assistant__WupAssistant___generate_suggestions["_generate_suggestions"]
+        wup__assistant__WupAssistant___save_configuration["_save_configuration"]
+        wup__assistant__WupAssistant___save_draft["_save_draft"]
+        wup__assistant__WupAssistant___load_draft["_load_draft"]
+        wup__assistant__WupAssistant___config_to_dict["_config_to_dict"]
+        wup__assistant__WupAssistant___quick_setup["_quick_setup"]
+        wup__assistant__main["main"]
     end
     subgraph wup__cli
         wup__cli__watch["watch"]
@@ -147,6 +197,7 @@ flowchart TD
         wup__cli__status["status"]
         wup__cli__init["init"]
         wup__cli__testql_endpoints["testql_endpoints"]
+        wup__cli__assistant["assistant"]
         wup__cli__version["version"]
     end
     subgraph wup__config
@@ -260,17 +311,59 @@ flowchart TD
         wup__web_client__WebClient__send_health_transition["send_health_transition"]
         wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
     end
-    wup__config__load_config --> wup__config___load_dotenv
-    wup__config__load_config --> wup__config__validate_config
-    wup__config__load_config --> wup__config__find_config_file
-    wup__config__load_config --> wup__config__get_default_config
-    wup__cli__status --> wup__config__load_config
-    wup__cli__init --> wup__config__get_default_config
-    wup__cli__init --> wup__config__save_config
+    subgraph wupbro__wupbro
+        wupbro__wupbro____main____main["main"]
+        wupbro__wupbro__routers__dashboard__root["root"]
+        wupbro__wupbro__routers__dashboard__dashboard["dashboard"]
+        wupbro__wupbro__main__create_app["create_app"]
+        wupbro__wupbro__routers__events___store["_store"]
+        wupbro__wupbro__routers__events__post_event["post_event"]
+        wupbro__wupbro__routers__events__list_events["list_events"]
+        wupbro__wupbro__routers__events__event_stats["event_stats"]
+        wupbro__wupbro__routers__events__clear_events["clear_events"]
+        wupbro__wupbro__storage__EventStore____init__["__init__"]
+        wupbro__wupbro__storage__EventStore___load_existing["_load_existing"]
+        wupbro__wupbro__storage__EventStore__add["add"]
+        wupbro__wupbro__storage__EventStore__list["list"]
+        wupbro__wupbro__storage__EventStore__clear["clear"]
+        wupbro__wupbro__storage__EventStore__stats["stats"]
+        wupbro__wupbro__storage__get_default_store["get_default_store"]
+        wupbro__wupbro__storage__set_default_store["set_default_store"]
+        wupbro__wupbro__routers__drivers___store["_store"]
+        wupbro__wupbro__routers__drivers__dom_diff_capture["dom_diff_capture"]
+        wupbro__wupbro__routers__drivers__browserless_screenshot["browserless_screenshot"]
+        wupbro__wupbro__routers__drivers__anomaly_report["anomaly_report"]
+        wupbro__wupbro__routers__drivers__driver_health["driver_health"]
+        wupbro__wupbro__notifications__NotificationManager____init__["__init__"]
+        wupbro__wupbro__notifications__NotificationManager__subscribe["subscribe"]
+        wupbro__wupbro__notifications__NotificationManager__unsubscribe["unsubscribe"]
+        wupbro__wupbro__notifications__NotificationManager__get_subscription["get_subscription"]
+        wupbro__wupbro__notifications__NotificationManager__list_subscriptions["list_subscriptions"]
+        wupbro__wupbro__notifications__NotificationManager__update_config["update_config"]
+        wupbro__wupbro__notifications__NotificationManager__process_event("process_event CC=12")
+        wupbro__wupbro__notifications__NotificationManager___detect_notification_types("_detect_notification_types CC=14")
+        wupbro__wupbro__notifications__NotificationManager___should_notify("_should_notify CC=8")
+        wupbro__wupbro__notifications__NotificationManager___create_payload["_create_payload"]
+        wupbro__wupbro__notifications__NotificationManager__register_sse_client["register_sse_client"]
+        wupbro__wupbro__notifications__NotificationManager__unregister_sse_client["unregister_sse_client"]
+        wupbro__wupbro__notifications__NotificationManager__push_to_sse["push_to_sse"]
+        wupbro__wupbro__notifications__get_notification_manager["get_notification_manager"]
+        wupbro__wupbro__notifications__set_notification_manager["set_notification_manager"]
+        wupbro__wupbro__routers__notifications__subscribe["subscribe"]
+        wupbro__wupbro__routers__notifications__list_subscriptions["list_subscriptions"]
+        wupbro__wupbro__routers__notifications__get_subscription["get_subscription"]
+        wupbro__wupbro__routers__notifications__update_subscription["update_subscription"]
+        wupbro__wupbro__routers__notifications__unsubscribe["unsubscribe"]
+        wupbro__wupbro__routers__notifications__get_default_config["get_default_config"]
+        wupbro__wupbro__routers__notifications__get_notification_types["get_notification_types"]
+        wupbro__wupbro__routers__notifications__get_status_transition_types["get_status_transition_types"]
+        wupbro__wupbro__routers__notifications__notification_stream["notification_stream"]
+        wupbro__wupbro__routers__notifications__send_test_notification["send_test_notification"]
+    end
     wup__dependency_mapper__DependencyMapper__to_dict --> wupbro__wupbro__storage__EventStore__list
     wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints --> wupbro__wupbro__storage__EventStore__list
     wup__testql_discovery__TestQLEndpointDiscovery__discover_all_endpoints --> wupbro__wupbro__storage__EventStore__list
-    wup__core__WupWatcher____init__ --> wup__config__load_config
+    wup__core__WupWatcher____init__ --> project__map__toon__load_config
     wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
     wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
     wup__visual_diff___flatten --> wup__visual_diff___node_signature
@@ -287,8 +380,8 @@ flowchart TD
     examples__visual_diff_demo__demo_diff_algorithm --> wup__visual_diff___diff_snapshots
     examples__visual_diff_demo__demo_page_slug --> wup__visual_diff___page_slug
     examples__visual_diff_demo__demo_snapshot_persistence --> examples__visual_diff_demo___save_snapshot
-    examples__visual_diff_demo__demo_config_yaml_round_trip --> wup__config__save_config
-    examples__visual_diff_demo__demo_config_yaml_round_trip --> wup__config__load_config
+    examples__visual_diff_demo__demo_config_yaml_round_trip --> project__map__toon__save_config
+    examples__visual_diff_demo__demo_config_yaml_round_trip --> project__map__toon__load_config
     examples__visual_diff_demo__demo_live_page --> wup__visual_diff___playwright_available
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_diff_algorithm
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_page_slug
@@ -297,15 +390,42 @@ flowchart TD
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_disabled_is_noop
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_live_page
     examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
-    wup__web_client__WebClient____init__ --> project__map__toon__resolve_endpoint
-    wup__web_client__WebClient__send_event --> project__map__toon___normalize
-    wupbro__wupbro__routers__drivers___store --> wupbro__wupbro__storage__get_default_store
+    wup__web_client__WebClient____init__ --> wup__web_client__resolve_endpoint
+    wup__web_client__WebClient__send_event --> wup__web_client___normalize
     wupbro__wupbro__routers__events___store --> wupbro__wupbro__storage__get_default_store
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
+    wupbro__wupbro__routers__events__post_event --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__drivers___store --> wupbro__wupbro__storage__get_default_store
+    wupbro__wupbro__notifications__NotificationManager__list_subscriptions --> wupbro__wupbro__storage__EventStore__list
+    wupbro__wupbro__notifications__get_notification_manager --> wupbro__wupbro__storage__get_default_store
+    wupbro__wupbro__routers__notifications__subscribe --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__list_subscriptions --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__get_subscription --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__update_subscription --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__unsubscribe --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__notification_stream --> wupbro__wupbro__notifications__get_notification_manager
+    wupbro__wupbro__routers__notifications__send_test_notification --> wupbro__wupbro__notifications__get_notification_manager
+    examples__webhook_notifications__main --> examples__webhook_notifications__show_webhook_demo
+    examples__c2004_monorepo_demo__analyze_monorepo --> project__map__toon__load_config
+    examples__c2004_monorepo_demo__main --> examples__c2004_monorepo_demo__analyze_monorepo
+    wup__config__load_config --> wup__config___load_dotenv
+    wup__config__load_config --> wup__config__validate_config
+    wup__config__load_config --> wup__config__find_config_file
+    wup__config__load_config --> wup__config__get_default_config
+    wup__testql_watcher__TestQLWatcher____init__ --> project__map__toon__load_config
     wup__testql_watcher__TestQLWatcher__run_quick_test --> wupbro__wupbro__storage__EventStore__list
     wup__testql_watcher__TestQLWatcher__run_detail_test --> wupbro__wupbro__storage__EventStore__list
+    wup__cli__status --> project__map__toon__load_config
+    wup__cli__init --> project__map__toon__get_default_config
+    wup__cli__init --> project__map__toon__save_config
+    examples__ci_cd_integration__main --> examples__ci_cd_integration__generate_github_actions
+    examples__ci_cd_integration__main --> examples__ci_cd_integration__generate_gitlab_ci
+    examples__ci_cd_integration__main --> examples__ci_cd_integration__show_ci_cd_demo
+    wup__assistant__WupAssistant___detect_service_type --> wupbro__wupbro__storage__EventStore__list
+    wup__assistant__WupAssistant___configure_testql --> wupbro__wupbro__storage__EventStore__list
+    wup__anomaly_detector__YAMLStructureDetector___extract_structure --> wupbro__wupbro__storage__EventStore__list
+    wup__anomaly_detector__AnomalyDetector__scan_directory --> wupbro__wupbro__storage__EventStore__list
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class wup__core__WupWatcher__detect_service_coincidences,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher__run_quick_test highCC
-    class wup__config___load_dotenv,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service,examples__testql_demo__simulate_testql_analysis,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_detail_test medCC
+    class wup__core__WupWatcher__detect_service_coincidences,examples__c2004_monorepo_demo__analyze_monorepo,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__assistant__WupAssistant__run,wup__anomaly_detector__YAMLStructureDetector___compare_structures,wup__anomaly_detector__ASTDetector___extract_ast_info,wup__anomaly_detector__ASTDetector__detect highCC
+    class wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service,examples__testql_demo__simulate_testql_analysis,wupbro__wupbro__notifications__NotificationManager__process_event,wupbro__wupbro__notifications__NotificationManager___detect_notification_types,wupbro__wupbro__notifications__NotificationManager___should_notify,wup__config___load_dotenv,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__assistant__WupAssistant___detect_service_type,wup__assistant__WupAssistant___configure_services,wup__assistant__WupAssistant___add_service_interactive,wup__assistant__WupAssistant___setup_anomaly_detection,wup__assistant__WupAssistant___review_and_validate,wup__assistant__WupAssistant___validate_config,wup__anomaly_detector__YAMLStructureDetector__detect medCC

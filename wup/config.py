@@ -216,6 +216,14 @@ def validate_config(raw: dict) -> WupConfig:
         threshold_added=int(vd_raw.get("threshold_added", 3)),
         threshold_removed=int(vd_raw.get("threshold_removed", 3)),
         threshold_changed=int(vd_raw.get("threshold_changed", 5)),
+        min_text_length=int(vd_raw.get("min_text_length", 200)),
+        min_dom_nodes=int(vd_raw.get("min_dom_nodes", 20)),
+        error_selectors=vd_raw.get("error_selectors", [
+            "#error-container",
+            ".error-container",
+            "[data-testid='error-container']",
+            "[class*='error'][class*='container']",
+        ]),
         headless=vd_raw.get("headless", True),
     )
 
@@ -338,6 +346,9 @@ def save_config(config: WupConfig, output_path: Path):
             "threshold_added": config.visual_diff.threshold_added,
             "threshold_removed": config.visual_diff.threshold_removed,
             "threshold_changed": config.visual_diff.threshold_changed,
+            "min_text_length": config.visual_diff.min_text_length,
+            "min_dom_nodes": config.visual_diff.min_dom_nodes,
+            "error_selectors": config.visual_diff.error_selectors,
             "headless": config.visual_diff.headless,
         },
         "web": {

@@ -77,7 +77,12 @@ _DOM_SNAPSHOT_JS = """
 """
 
 
-async def _fetch_dom_snapshot(url: str, max_depth: int, headless: bool) -> Optional[Dict]:
+async def _fetch_dom_snapshot(
+    url: str,
+    max_depth: int,
+    headless: bool,
+    error_selectors: List[str],
+) -> Optional[Dict]:
     """Return a DOM structure dict for *url* using Playwright."""
     if not _playwright_available():
         console.print("[yellow]visual_diff: playwright not installed — skipping DOM scan[/yellow]")
@@ -90,12 +95,46 @@ async def _fetch_dom_snapshot(url: str, max_depth: int, headless: bool) -> Optio
             try:
                 await page.goto(url, wait_until="networkidle", timeout=15_000)
                 snapshot = await page.evaluate(_DOM_SNAPSHOT_JS, max_depth)
+                text_length = await page.evaluate("() => (document.body?.innerText || '').trim().length")
+                dom_nodes = await page.evaluate("() => document.querySelectorAll('*').length")
+                matched_error_selectors = []
+                for selector in error_selectors:
+                    try:
+                        count = await page.locator(selector).count()
+                        if count > 0:
+                            matched_error_selectors.append(selector)
+                    except Exception:
+                        continue
+
+                if isinstance(snapshot, dict):
+                    snapshot["meta"] = {
+                        "text_length": int(text_length or 0),
+                        "dom_nodes": int(dom_nodes or 0),
+                        "matched_error_selectors": matched_error_selectors,
+                    }
             finally:
                 await browser.close()
         return snapshot
     except Exception as exc:
         console.print(f"[yellow]visual_diff: error fetching {url}: {exc}[/yellow]")
         return None
+
+
+def _detect_content_issues(snapshot: Dict, cfg: VisualDiffConfig) -> List[str]:
+    """Detect known runtime page issues from snapshot metadata."""
+    meta = snapshot.get("meta", {}) if isinstance(snapshot, dict) else {}
+    text_length = int(meta.get("text_length", 0))
+    dom_nodes = int(meta.get("dom_nodes", 0))
+    matched_error_selectors = meta.get("matched_error_selectors", []) or []
+
+    issues: List[str] = []
+    if matched_error_selectors:
+        issues.append(f"error_container_detected:{','.join(matched_error_selectors)}")
+    if text_length < cfg.min_text_length:
+        issues.append(f"too_little_content:text_length={text_length}<min={cfg.min_text_length}")
+    if dom_nodes < cfg.min_dom_nodes:
+        issues.append(f"too_small_dom:nodes={dom_nodes}<min={cfg.min_dom_nodes}")
+    return issues
 
 
 # ---------------------------------------------------------------------------
@@ -266,14 +305,20 @@ class VisualDiffer:
         for url in pages:
             result = await self._check_page(service, url)
             results.append(result)
-            if result["diff"]["status"] == "changed":
+            if result["diff"]["status"] in {"changed", "issue"}:
                 self._write_diff_event(service, url, result)
-                console.print(
-                    f"[bold yellow]🔍 Visual diff: {service} {url}[/bold yellow]  "
-                    f"+{result['diff']['counts']['added']} "
-                    f"-{result['diff']['counts']['removed']} "
-                    f"~{result['diff']['counts']['changed_attrs']}"
-                )
+                if result["diff"]["status"] == "issue":
+                    console.print(
+                        f"[bold red]🚨 Page issue: {service} {url}[/bold red]  "
+                        f"{'; '.join(result['diff'].get('issues', []))}"
+                    )
+                else:
+                    console.print(
+                        f"[bold yellow]🔍 Visual diff: {service} {url}[/bold yellow]  "
+                        f"+{result['diff']['counts']['added']} "
+                        f"-{result['diff']['counts']['removed']} "
+                        f"~{result['diff']['counts']['changed_attrs']}"
+                    )
             elif result["diff"]["status"] == "new":
                 console.print(f"[dim]📷 Baseline snapshot: {url}[/dim]")
             else:
@@ -285,7 +330,12 @@ class VisualDiffer:
         snap_path = _snapshot_path(self.snapshot_dir, service, url)
         old_snapshot = _load_snapshot(snap_path)
 
-        new_snapshot = await _fetch_dom_snapshot(url, self.cfg.max_depth, self.cfg.headless)
+        new_snapshot = await _fetch_dom_snapshot(
+            url,
+            self.cfg.max_depth,
+            self.cfg.headless,
+            self.cfg.error_selectors,
+        )
 
         if new_snapshot is None:
             return {"url": url, "diff": {"status": "error", "message": "Failed to fetch page"}}
@@ -298,6 +348,11 @@ class VisualDiffer:
             self.cfg.threshold_removed,
             self.cfg.threshold_changed,
         )
+
+        issues = _detect_content_issues(new_snapshot, self.cfg)
+        if issues:
+            diff["status"] = "issue"
+            diff["issues"] = issues
 
         # always update snapshot (new baseline)
         _save_snapshot(snap_path, new_snapshot)

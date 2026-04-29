@@ -1,50 +1,58 @@
 # code2llm call graph | /home/tom/github/semcod/wup
-# nodes: 47 | edges: 42 | modules: 14
-# CC̄=2.5
+# nodes: 71 | edges: 61 | modules: 21
+# CC̄=2.7
 
 HUBS[20]:
   wup.cli.status
     CC=5  in:0  out:97  total:97
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=22  in:1  out:94  total:95
   wup.config.validate_config
     CC=7  in:1  out:82  total:83
   examples.testql_demo.simulate_testql_analysis
     CC=11  in:1  out:80  total:81
+  examples.ci_cd_integration.show_ci_cd_demo
+    CC=2  in:1  out:69  total:70
+  examples.webhook_notifications.show_webhook_demo
+    CC=4  in:1  out:68  total:69
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
   wup.testql_watcher.TestQLWatcher.run_quick_test
     CC=15  in:0  out:23  total:23
+  wupbro.wupbro.storage.EventStore.list
+    CC=7  in:17  out:5  total:22
   wup.testql_watcher.TestQLWatcher.run_detail_test
     CC=9  in:0  out:20  total:20
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:17  total:17
+  wup.visual_diff._diff_snapshots
+    CC=11  in:2  out:15  total:17
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
-  wup.visual_diff._diff_snapshots
-    CC=11  in:2  out:15  total:17
-  wup.cli.init
-    CC=3  in:0  out:16  total:16
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
   wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
     CC=11  in:0  out:16  total:16
-  examples.visual_diff_demo.main
-    CC=2  in:0  out:15  total:15
+  wup.cli.init
+    CC=3  in:0  out:16  total:16
+  wup.anomaly_detector.AnomalyDetector.scan_directory
+    CC=6  in:0  out:16  total:16
   examples.visual_diff_demo.demo_live_page
     CC=3  in:1  out:14  total:15
-  wup.config.load_config
-    CC=5  in:5  out:8  total:13
-  examples.visual_diff_demo.demo_disabled_is_noop
-    CC=2  in:1  out:11  total:12
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=12  in:0  out:12  total:12
-  wupbro.wupbro.storage.EventStore.list
-    CC=7  in:7  out:5  total:12
-  wup.config._load_dotenv
-    CC=10  in:1  out:10  total:11
-  wup.visual_diff._fetch_dom_snapshot
-    CC=3  in:1  out:9  total:10
+  examples.visual_diff_demo.main
+    CC=2  in:0  out:15  total:15
+  wupbro.wupbro.routers.notifications.notification_stream
+    CC=2  in:0  out:14  total:14
 
 MODULES:
+  examples.c2004_monorepo_demo  [2 funcs]
+    analyze_monorepo  CC=22  out:94
+    main  CC=2  out:2
+  examples.ci_cd_integration  [4 funcs]
+    generate_github_actions  CC=1  out:9
+    generate_gitlab_ci  CC=3  out:10
+    main  CC=3  out:7
+    show_ci_cd_demo  CC=2  out:69
   examples.testql_demo  [2 funcs]
     simulate_testql_analysis  CC=11  out:80
     simulate_with_mock_data  CC=1  out:3
@@ -57,25 +65,27 @@ MODULES:
     demo_page_slug  CC=2  out:6
     demo_snapshot_persistence  CC=3  out:26
     main  CC=2  out:15
-  project.map.toon  [2 funcs]
-    _normalize  CC=0  out:0
-    resolve_endpoint  CC=0  out:0
-  wupbro.wupbro.routers.drivers  [1 funcs]
-    _store  CC=1  out:1
-  wupbro.wupbro.routers.events  [1 funcs]
-    _store  CC=1  out:1
-  wupbro.wupbro.storage  [2 funcs]
-    list  CC=7  out:5
-    get_default_store  CC=2  out:2
+  examples.webhook_notifications  [2 funcs]
+    main  CC=3  out:7
+    show_webhook_demo  CC=4  out:68
+  project.map.toon  [3 funcs]
+    get_default_config  CC=0  out:0
+    load_config  CC=0  out:0
+    save_config  CC=0  out:0
+  wup.anomaly_detector  [2 funcs]
+    scan_directory  CC=6  out:16
+    _extract_structure  CC=6  out:9
+  wup.assistant  [2 funcs]
+    _configure_testql  CC=3  out:12
+    _detect_service_type  CC=10  out:9
   wup.cli  [2 funcs]
     init  CC=3  out:16
     status  CC=5  out:97
-  wup.config  [6 funcs]
+  wup.config  [5 funcs]
     _load_dotenv  CC=10  out:10
     find_config_file  CC=3  out:1
     get_default_config  CC=1  out:5
     load_config  CC=5  out:8
-    save_config  CC=2  out:3
     validate_config  CC=7  out:82
   wup.core  [1 funcs]
     __init__  CC=7  out:17
@@ -99,22 +109,36 @@ MODULES:
     _load_snapshot  CC=3  out:3
     _node_signature  CC=3  out:4
     _page_slug  CC=2  out:3
-  wup.web_client  [2 funcs]
+  wup.web_client  [4 funcs]
     __init__  CC=2  out:2
     send_event  CC=4  out:9
+    _normalize  CC=6  out:7
+    resolve_endpoint  CC=3  out:3
+  wupbro.wupbro.notifications  [2 funcs]
+    list_subscriptions  CC=1  out:2
+    get_notification_manager  CC=3  out:2
+  wupbro.wupbro.routers.drivers  [1 funcs]
+    _store  CC=1  out:1
+  wupbro.wupbro.routers.events  [2 funcs]
+    _store  CC=1  out:1
+    post_event  CC=2  out:7
+  wupbro.wupbro.routers.notifications  [7 funcs]
+    get_subscription  CC=2  out:4
+    list_subscriptions  CC=1  out:3
+    notification_stream  CC=2  out:14
+    send_test_notification  CC=2  out:6
+    subscribe  CC=2  out:6
+    unsubscribe  CC=2  out:4
+    update_subscription  CC=2  out:4
+  wupbro.wupbro.storage  [2 funcs]
+    list  CC=7  out:5
+    get_default_store  CC=2  out:2
 
 EDGES:
-  wup.config.load_config → wup.config._load_dotenv
-  wup.config.load_config → wup.config.validate_config
-  wup.config.load_config → wup.config.find_config_file
-  wup.config.load_config → wup.config.get_default_config
-  wup.cli.status → wup.config.load_config
-  wup.cli.init → wup.config.get_default_config
-  wup.cli.init → wup.config.save_config
   wup.dependency_mapper.DependencyMapper.to_dict → wupbro.wupbro.storage.EventStore.list
   wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints → wupbro.wupbro.storage.EventStore.list
   wup.testql_discovery.TestQLEndpointDiscovery.discover_all_endpoints → wupbro.wupbro.storage.EventStore.list
-  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.core.WupWatcher.__init__ → project.map.toon.load_config
   wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
   wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
   wup.visual_diff._flatten → wup.visual_diff._node_signature
@@ -130,8 +154,8 @@ EDGES:
   examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
   examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
   examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → project.map.toon.save_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → project.map.toon.load_config
   examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
@@ -139,10 +163,25 @@ EDGES:
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
   examples.testql_demo.simulate_with_mock_data → examples.testql_demo.simulate_testql_analysis
-  wup.web_client.WebClient.__init__ → project.map.toon.resolve_endpoint
-  wup.web_client.WebClient.send_event → project.map.toon._normalize
-  wupbro.wupbro.routers.drivers._store → wupbro.wupbro.storage.get_default_store
+  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
+  wup.web_client.WebClient.send_event → wup.web_client._normalize
   wupbro.wupbro.routers.events._store → wupbro.wupbro.storage.get_default_store
-  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
+  wupbro.wupbro.routers.events.post_event → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.drivers._store → wupbro.wupbro.storage.get_default_store
+  wupbro.wupbro.notifications.NotificationManager.list_subscriptions → wupbro.wupbro.storage.EventStore.list
+  wupbro.wupbro.notifications.get_notification_manager → wupbro.wupbro.storage.get_default_store
+  wupbro.wupbro.routers.notifications.subscribe → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.list_subscriptions → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.get_subscription → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.update_subscription → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.unsubscribe → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.notification_stream → wupbro.wupbro.notifications.get_notification_manager
+  wupbro.wupbro.routers.notifications.send_test_notification → wupbro.wupbro.notifications.get_notification_manager
+  examples.webhook_notifications.main → examples.webhook_notifications.show_webhook_demo
+  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
+  wup.config.load_config → wup.config._load_dotenv
+  wup.config.load_config → wup.config.validate_config
+  wup.config.load_config → wup.config.find_config_file
+  wup.config.load_config → wup.config.get_default_config
+  wup.testql_watcher.TestQLWatcher.__init__ → project.map.toon.load_config
   wup.testql_watcher.TestQLWatcher.run_quick_test → wupbro.wupbro.storage.EventStore.list
-  wup.testql_watcher.TestQLWatcher.run_detail_test → wupbro.wupbro.storage.EventStore.list
