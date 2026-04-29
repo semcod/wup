@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-04-29
+
+### Docs
+- Update README.md
+- Update docs/1.md
+- Update docs/TESTQL_INTEGRATION.md
+
+### Test
+- Update tests/test_wup.py
+
+### Other
+- Update .gitignore
+- Update deps.json
+- Update examples/testql_demo.py
+- Update examples/testql_integration.py
+- Update wup/__init__.py
+- Update wup/cli.py
+- Update wup/core.py
+- Update wup/dependency_mapper.py
+
 ## [0.1.6] - 2026-04-29
 
 ### Docs

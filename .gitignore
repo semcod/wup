@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+.idea/pyProjectModel.xml
+.idea/wup.iml
 .idea/inspectionProfiles/Project_Default.xml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/misc.xml
