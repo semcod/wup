@@ -52,7 +52,8 @@
 │   │       ├── requirements.txt
 │   │       └── wup.yaml
 │   ├── testql_demo.py
-│   └── testql_integration.py
+│   ├── testql_integration.py
+│   └── visual_diff_demo.py
 ├── goal.yaml
 ├── LICENSE
 ├── project.sh
@@ -82,7 +83,9 @@
 │   │   ├── config.py
 │   │   └── __init__.py
 │   ├── testql_discovery.py
-│   └── testql_watcher.py
+│   ├── testql_watcher.py
+│   ├── visual_diff.py
+│   └── web_client.py
 ├── wup.egg-info
 │   ├── dependency_links.txt
 │   ├── entry_points.txt
@@ -93,4 +96,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-23 directories, 71 files
+23 directories, 74 files

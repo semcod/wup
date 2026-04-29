@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.15-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.40-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-4.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.16-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.55-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-4.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.4000 (16 commits)
-- 👤 **Human dev:** ~$411 (4.1h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.5500 (17 commits)
+- 👤 **Human dev:** ~$445 (4.5h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.15-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.16-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -307,6 +307,39 @@ Visible in `wup status` as a "Visual DOM diffs" section.
 
 If Playwright is not installed, the visual diff module logs a warning and skips scanning — it does **not** break the watcher.
 
+## Web Dashboard (wup-web)
+
+Optional FastAPI backend that receives events from WUP agents and renders a live dashboard.
+
+### Run
+
+```bash
+pip install -e wup-web/
+wup-web --reload --port 8000
+```
+
+Open <http://localhost:8000/> to see regressions, passes, anomalies, visual diffs, and health transitions in real time.
+
+### Configure agent → backend
+
+```yaml
+# wup.yaml
+web:
+  enabled: true
+  endpoint: "http://localhost:8000"
+  timeout_s: 2.0
+```
+
+Or via env:
+
+```bash
+export WUP_WEB_ENDPOINT=http://localhost:8000
+```
+
+The agent fire-and-forgets `REGRESSION`, `PASS`, `ANOMALY`, `VISUAL_DIFF`, and `HEALTH_TRANSITION` events. Network errors never break the watcher (soft-fail).
+
+See `wup-web/README.md` for full API reference and driver endpoints (DOM diff, browserless, anomaly).
+
 ## Project Structure
 
 ```
@@ -320,12 +353,21 @@ wup/
 │   ├── testql_discovery.py    # TestQLEndpointDiscovery: scenario parsing
 │   ├── testql_watcher.py      # TestQLWatcher: scenario runner + health tracking
 │   ├── visual_diff.py         # VisualDiffer: Playwright DOM snapshot + diff engine
+│   ├── web_client.py          # WebClient: async HTTP event sink → wup-web
 │   └── models/
 │       ├── __init__.py
-│       └── config.py          # Dataclasses: WupConfig, VisualDiffConfig, TestQLConfig...
+│       └── config.py          # Dataclasses: WupConfig, VisualDiffConfig, WebConfig...
+├── wup-web/                   # Optional FastAPI dashboard (separate package)
+│   ├── wup_web/
+│   │   ├── main.py            # FastAPI app
+│   │   ├── routers/           # events, drivers, dashboard
+│   │   ├── storage.py         # EventStore (in-memory + JSONL)
+│   │   └── templates/         # index.html dashboard
+│   └── tests/                 # FastAPI endpoint tests (pytest + TestClient)
 ├── tests/
 │   ├── test_wup.py            # unit/integration tests (incl. VisualDiffer, config)
 │   ├── test_testql_watcher.py # TestQLWatcher + VisualDiffer integration tests
+│   ├── test_web_client.py     # WebClient + WebConfig tests
 │   └── test_e2e.py            # end-to-end CLI tests
 ├── examples/
 │   ├── fastapi-app/           # FastAPI example project

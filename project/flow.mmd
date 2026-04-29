@@ -13,8 +13,6 @@ flowchart TD
     end
 
     subgraph Core
-        wup__config__load_config["load_config"]
-        wup__config__validate_config["validate_config"]
         wup__dependency_mapper__DependencyMapper__build_from_codebase["build_from_codebase"]
         wup__dependency_mapper__DependencyMapper___detect_framework["_detect_framework"]
         wup__dependency_mapper__DependencyMapper___search_codebase["_search_codebase"]
@@ -28,7 +26,9 @@ flowchart TD
         wup__dependency_mapper__DependencyMapper__get_service_for_file["get_service_for_file"]
         wup__dependency_mapper__DependencyMapper__to_dict["to_dict"]
         wup__dependency_mapper__DependencyMapper__save["save"]
-        ...["+81 more"]
+        wup__dependency_mapper__DependencyMapper__load["load"]
+        wup__dependency_mapper__DependencyMapper__build_from_testql_scenarios["build_from_testql_scenarios"]
+        ...["+88 more"]
     end
 
     class wup__dependency_mapper__DependencyMapper__build_from_codebase,wup__dependency_mapper__DependencyMapper___detect_framework,wup__dependency_mapper__DependencyMapper___search_codebase,wup__dependency_mapper__DependencyMapper___scan_endpoints,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__dependency_mapper__DependencyMapper___scan_js_endpoints,wup__dependency_mapper__DependencyMapper___infer_service,wup__dependency_mapper__DependencyMapper__get_endpoints_for_file,wup__dependency_mapper__DependencyMapper__get_endpoints_for_service,wup__dependency_mapper__DependencyMapper__get_files_for_service entry

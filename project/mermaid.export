@@ -45,6 +45,17 @@ flowchart TD
         examples__testql_integration__TestQLWatcher___generate_blame_report["_generate_blame_report"]
         examples__testql_integration__main["main"]
     end
+    subgraph examples__visual_diff_demo
+        examples__visual_diff_demo___make_dom["_make_dom"]
+        examples__visual_diff_demo___save_snapshot["_save_snapshot"]
+        examples__visual_diff_demo__demo_diff_algorithm["demo_diff_algorithm"]
+        examples__visual_diff_demo__demo_page_slug["demo_page_slug"]
+        examples__visual_diff_demo__demo_snapshot_persistence["demo_snapshot_persistence"]
+        examples__visual_diff_demo__demo_config_yaml_round_trip["demo_config_yaml_round_trip"]
+        examples__visual_diff_demo__demo_disabled_is_noop["demo_disabled_is_noop"]
+        examples__visual_diff_demo__demo_live_page["demo_live_page"]
+        examples__visual_diff_demo__main["main"]
+    end
     subgraph project__map
         project__map__toon__list_users["list_users"]
         project__map__toon__get_user["get_user"]
@@ -69,6 +80,7 @@ flowchart TD
         project__map__toon__test_browser_event_file_is_written_without_service_url["test_browser_event_file_is_written_"]
         project__map__toon__test_config_endpoints_use_base_url_from_yaml_config["test_config_endpoints_use_base_url_"]
         project__map__toon__test_config_endpoints_use_base_url_from_env_when_yaml_missing["test_config_endpoints_use_base_url_"]
+        project__map__toon__test_service_health_transitions_are_persisted["test_service_health_transitions_are"]
         project__map__toon__test_import["test_import"]
         project__map__toon__watch["watch"]
         project__map__toon__map_deps["map_deps"]
@@ -85,13 +97,14 @@ flowchart TD
     subgraph wup__cli
         wup__cli__watch["watch"]
         wup__cli__map_deps["map_deps"]
-        wup__cli__status{{status CC=32}}
+        wup__cli__status["status"]
         wup__cli__init["init"]
         wup__cli__testql_endpoints["testql_endpoints"]
         wup__cli__version["version"]
     end
     subgraph wup__config
         wup__config__find_config_file["find_config_file"]
+        wup__config___load_dotenv("_load_dotenv CC=10")
         wup__config__load_config["load_config"]
         wup__config__validate_config["validate_config"]
         wup__config__get_default_config["get_default_config"]
@@ -153,7 +166,7 @@ flowchart TD
     subgraph wup__testql_watcher
         wup__testql_watcher__BrowserNotifier____init__["__init__"]
         wup__testql_watcher__BrowserNotifier__notify["notify"]
-        wup__testql_watcher__TestQLWatcher____init__("__init__ CC=8")
+        wup__testql_watcher__TestQLWatcher____init__("__init__ CC=10")
         wup__testql_watcher__TestQLWatcher___load_service_health["_load_service_health"]
         wup__testql_watcher__TestQLWatcher___save_service_health["_save_service_health"]
         wup__testql_watcher__TestQLWatcher___record_health_transition["_record_health_transition"]
@@ -166,21 +179,64 @@ flowchart TD
         wup__testql_watcher__TestQLWatcher___select_scenarios_for_service{{_select_scenarios_for_service CC=15}}
         wup__testql_watcher__TestQLWatcher___run_testql["_run_testql"]
         wup__testql_watcher__TestQLWatcher___write_track("_write_track CC=11")
-        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=13")
+        wup__testql_watcher__TestQLWatcher__run_quick_test{{run_quick_test CC=15}}
         wup__testql_watcher__TestQLWatcher__run_detail_test("run_detail_test CC=9")
         wup__testql_watcher__TestQLWatcher__process_changed_file_once["process_changed_file_once"]
     end
+    subgraph wup__visual_diff
+        wup__visual_diff___playwright_available["_playwright_available"]
+        wup__visual_diff___fetch_dom_snapshot["_fetch_dom_snapshot"]
+        wup__visual_diff___page_slug["_page_slug"]
+        wup__visual_diff___snapshot_path["_snapshot_path"]
+        wup__visual_diff___load_snapshot["_load_snapshot"]
+        wup__visual_diff___save_snapshot["_save_snapshot"]
+        wup__visual_diff___node_signature["_node_signature"]
+        wup__visual_diff___flatten["_flatten"]
+        wup__visual_diff___diff_snapshots("_diff_snapshots CC=11")
+        wup__visual_diff___resolve_base_url["_resolve_base_url"]
+        wup__visual_diff__VisualDiffer____init__["__init__"]
+        wup__visual_diff__VisualDiffer___pages_for_service("_pages_for_service CC=8")
+        wup__visual_diff__VisualDiffer__run_for_service["run_for_service"]
+        wup__visual_diff__VisualDiffer___check_page["_check_page"]
+        wup__visual_diff__VisualDiffer___write_diff_event["_write_diff_event"]
+        wup__visual_diff__VisualDiffer__get_recent_diffs["get_recent_diffs"]
+    end
+    wup__core__WupWatcher____init__ --> project__map__toon__load_config
+    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
+    wup__config__load_config --> wup__config___load_dotenv
     wup__config__load_config --> wup__config__validate_config
     wup__config__load_config --> wup__config__find_config_file
     wup__config__load_config --> wup__config__get_default_config
-    examples__testql_demo__simulate_with_mock_data --> examples__testql_demo__simulate_testql_analysis
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
-    wup__cli__status --> wup__config__load_config
-    wup__cli__init --> wup__config__get_default_config
-    wup__cli__init --> wup__config__save_config
-    wup__core__WupWatcher____init__ --> wup__config__load_config
+    examples__visual_diff_demo__demo_diff_algorithm --> examples__visual_diff_demo___make_dom
+    examples__visual_diff_demo__demo_diff_algorithm --> wup__visual_diff___diff_snapshots
+    examples__visual_diff_demo__demo_page_slug --> wup__visual_diff___page_slug
+    examples__visual_diff_demo__demo_snapshot_persistence --> examples__visual_diff_demo___save_snapshot
+    examples__visual_diff_demo__demo_config_yaml_round_trip --> project__map__toon__save_config
+    examples__visual_diff_demo__demo_config_yaml_round_trip --> project__map__toon__load_config
+    examples__visual_diff_demo__demo_live_page --> wup__visual_diff___playwright_available
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_diff_algorithm
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_page_slug
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_snapshot_persistence
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_config_yaml_round_trip
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_disabled_is_noop
+    examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_live_page
+    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
+    wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
+    wup__visual_diff___flatten --> wup__visual_diff___node_signature
+    wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
+    wup__visual_diff__VisualDiffer____init__ --> wup__visual_diff___resolve_base_url
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___snapshot_path
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
+    wup__visual_diff__VisualDiffer___check_page --> examples__visual_diff_demo___save_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___fetch_dom_snapshot
+    wup__visual_diff__VisualDiffer___write_diff_event --> wup__visual_diff___page_slug
+    wup__cli__status --> project__map__toon__load_config
+    wup__cli__init --> project__map__toon__get_default_config
+    wup__cli__init --> project__map__toon__save_config
+    wup__testql_watcher__TestQLWatcher____init__ --> project__map__toon__load_config
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__cli__status,wup__core__WupWatcher__detect_service_coincidences highCC
-    class wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,examples__testql_demo__simulate_testql_analysis,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching medCC
+    class wup__core__WupWatcher__detect_service_coincidences,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher__run_quick_test highCC
+    class wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,examples__testql_demo__simulate_testql_analysis,wup__config___load_dotenv,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_detail_test medCC

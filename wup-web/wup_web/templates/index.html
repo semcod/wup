@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WUP Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --blue: #58a6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 { font-size: 18px; margin: 0; }
+    header .badge {
+      padding: 2px 8px; border-radius: 12px; background: var(--panel);
+      color: var(--muted); font-size: 12px;
+    }
+    main { padding: 24px; max-width: 1200px; margin: 0 auto; }
+    .stats { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat {
+      flex: 1; min-width: 120px;
+      padding: 16px; background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    .stat .value { font-size: 24px; font-weight: 600; margin-top: 4px; }
+    .stat.regression .value { color: var(--red); }
+    .stat.pass .value { color: var(--green); }
+    .stat.anomaly .value { color: var(--yellow); }
+    .stat.diff .value { color: var(--blue); }
+
+    table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { background: #1c2129; color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 11px; }
+    tr:last-child td { border-bottom: none; }
+
+    .type-tag {
+      padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;
+      display: inline-block; min-width: 70px; text-align: center;
+    }
+    .type-REGRESSION { background: rgba(248,81,73,.15); color: var(--red); }
+    .type-PASS { background: rgba(63,185,80,.15); color: var(--green); }
+    .type-ANOMALY { background: rgba(210,153,34,.15); color: var(--yellow); }
+    .type-VISUAL_DIFF { background: rgba(88,166,255,.15); color: var(--blue); }
+    .type-HEALTH_TRANSITION { background: rgba(125,133,144,.15); color: var(--muted); }
+
+    .controls { display: flex; gap: 8px; margin-bottom: 12px; }
+    button, select {
+      background: var(--panel); color: var(--text); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    }
+    button:hover { background: #1c2129; }
+    .muted { color: var(--muted); }
+    .empty { text-align: center; padding: 40px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔬 WUP Dashboard</h1>
+    <span class="badge" id="status">connecting…</span>
+    <span class="badge muted" id="last-update">—</span>
+  </header>
+  <main>
+    <div class="stats" id="stats"></div>
+    <div class="controls">
+      <select id="filter-type">
+        <option value="">All types</option>
+        <option value="REGRESSION">Regression</option>
+        <option value="PASS">Pass</option>
+        <option value="ANOMALY">Anomaly</option>
+        <option value="VISUAL_DIFF">Visual diff</option>
+        <option value="HEALTH_TRANSITION">Health transition</option>
+      </select>
+      <button onclick="refresh()">↻ Refresh</button>
+      <button onclick="clearAll()" style="color: var(--red)">⌫ Clear</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th><th>Type</th><th>Service</th>
+          <th>Endpoint / URL</th><th>Status</th><th>Reason</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="6" class="empty">Loading…</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+<script>
+const fmtTime = (ts) => new Date(ts * 1000).toLocaleTimeString();
+
+async function fetchEvents() {
+  const filter = document.getElementById("filter-type").value;
+  const url = filter ? `/events?type=${filter}&limit=200` : "/events?limit=200";
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function fetchStats() {
+  const r = await fetch("/events/stats");
+  return r.json();
+}
+
+function renderStats(stats) {
+  const types = ["REGRESSION", "PASS", "ANOMALY", "VISUAL_DIFF", "HEALTH_TRANSITION"];
+  const cls = { REGRESSION: "regression", PASS: "pass", ANOMALY: "anomaly", VISUAL_DIFF: "diff", HEALTH_TRANSITION: "" };
+  const labels = { REGRESSION: "Regressions", PASS: "Passes", ANOMALY: "Anomalies", VISUAL_DIFF: "Visual diffs", HEALTH_TRANSITION: "Health" };
+  const container = document.getElementById("stats");
+  const totalCard = `<div class="stat"><div class="label">Total events</div><div class="value">${stats.total}</div></div>`;
+  const cards = types.map(t => {
+    const v = (stats.by_type && stats.by_type[t]) || 0;
+    return `<div class="stat ${cls[t] || ""}"><div class="label">${labels[t]}</div><div class="value">${v}</div></div>`;
+  });
+  container.innerHTML = totalCard + cards.join("");
+}
+
+function renderRows(items) {
+  const tbody = document.getElementById("rows");
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">No events yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(e => `
+    <tr>
+      <td class="muted">${fmtTime(e.timestamp)}</td>
+      <td><span class="type-tag type-${e.type}">${e.type}</span></td>
+      <td>${e.service || "—"}</td>
+      <td class="muted">${e.endpoint || e.url || "—"}</td>
+      <td>${e.status || "—"}</td>
+      <td class="muted">${e.reason || "—"}</td>
+    </tr>
+  `).join("");
+}
+
+async function refresh() {
+  try {
+    const [events, stats] = await Promise.all([fetchEvents(), fetchStats()]);
+    renderStats(stats);
+    renderRows(events.items);
+    document.getElementById("status").textContent = "live";
+    document.getElementById("status").style.color = "var(--green)";
+    document.getElementById("last-update").textContent = "updated " + new Date().toLocaleTimeString();
+  } catch (err) {
+    document.getElementById("status").textContent = "offline";
+    document.getElementById("status").style.color = "var(--red)";
+  }
+}
+
+async function clearAll() {
+  if (!confirm("Clear all events?")) return;
+  await fetch("/events", { method: "DELETE" });
+  refresh();
+}
+
+document.getElementById("filter-type").addEventListener("change", refresh);
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>

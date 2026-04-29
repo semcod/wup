@@ -1,21 +1,17 @@
-# code2llm/evolution | 111 func | 7f | 2026-04-29
+# code2llm/evolution | 129 func | 8f | 2026-04-29
 
-NEXT[4] (ranked by impact):
+NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/core.py
       WHY: 604L, 2 classes, max CC=19
       EFFORT: ~4h  IMPACT: 11476
 
-  [2] !! SPLIT-FUNC      status  CC=32  fan=30
-      WHY: CC=32 exceeds 15
-      EFFORT: ~1h  IMPACT: 960
+  [2] !  SPLIT-FUNC      TestQLWatcher.run_quick_test  CC=15  fan=17
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 255
 
   [3] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=15  fan=8
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 120
-
-  [4] !  SPLIT-FUNC      WupWatcher.detect_service_coincidences  CC=19  fan=2
-      WHY: CC=19 exceeds 15
-      EFFORT: ~1h  IMPACT: 38
 
 
 RISKS[1]:
@@ -23,7 +19,7 @@ RISKS[1]:
 
 METRICS-TARGET:
   CC̄:          3.2 → ≤2.2
-  max-CC:      32 → ≤16
+  max-CC:      19 → ≤9
   god-modules: 1 → 0
   high-CC(≥15): 3 → ≤1
   hub-types:   0 → ≤0
@@ -53,4 +49,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=3.0 → now CC̄=3.2
+  prev CC̄=3.2 → now CC̄=3.2

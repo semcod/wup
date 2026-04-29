@@ -1,29 +1,43 @@
-# redup/duplication | 1 groups | 21f 1948L | 2026-04-29
+# redup/duplication | 2 groups | 24f 2848L | 2026-04-29
 
 SUMMARY:
-  files_scanned: 21
-  total_lines:   1948
-  dup_groups:    1
-  dup_fragments: 2
-  saved_lines:   3
-  scan_ms:       2778
+  files_scanned: 24
+  total_lines:   2848
+  dup_groups:    2
+  dup_fragments: 4
+  saved_lines:   6
+  scan_ms:       2894
 
-HOTSPOTS[1] (files with most duplication):
-  examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.3%)
+HOTSPOTS[3] (files with most duplication):
+  examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.2%)
+  examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.1%)
+  wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.1%)
 
-DUPLICATES[1] (ranked by impact):
+DUPLICATES[2] (ranked by impact):
   [e86dae8501b38602]   STRU  login  L=3 N=2 saved=3 sim=1.00
       examples/flask-app/app/auth/routes.py:7-9  (login)
       examples/flask-app/app/auth/routes.py:18-20  (register)
+  [94e52a5e17c9baae]   STRU  _save_snapshot  L=3 N=2 saved=3 sim=1.00
+      examples/visual_diff_demo.py:55-57  (_save_snapshot)
+      wup/visual_diff.py:125-127  (_save_snapshot)
 
-REFACTOR[1] (ranked by priority):
+REFACTOR[2] (ranked by priority):
   [1] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: examples/flask-app/app/auth/routes.py
+  [2] ○ extract_function   → utils/_save_snapshot.py
+      WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
+      FILES: examples/visual_diff_demo.py, wup/visual_diff.py
 
-EFFORT_ESTIMATE (total ≈ 0.1h):
+DEPENDENCY_RISK[1] (duplicates spanning multiple packages):
+  _save_snapshot  packages=2  files=2
+      examples/visual_diff_demo.py
+      wup/visual_diff.py
+
+EFFORT_ESTIMATE (total ≈ 0.3h):
   easy   login                               saved=3L  ~6min
+  easy   _save_snapshot                      saved=3L  ~12min
 
 METRICS-TARGET:
-  dup_groups:  1 → 0
-  saved_lines: 3 lines recoverable
+  dup_groups:  2 → 0
+  saved_lines: 6 lines recoverable

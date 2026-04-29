@@ -20,6 +20,7 @@ from .models.config import (
     NotifyConfig,
     ServiceTestConfig,
     VisualDiffConfig,
+    WebConfig,
 )
 
 
@@ -218,6 +219,16 @@ def validate_config(raw: dict) -> WupConfig:
         headless=vd_raw.get("headless", True),
     )
 
+    # Parse web config (event sink)
+    web_raw = raw.get("web", {})
+    web = WebConfig(
+        enabled=web_raw.get("enabled", False),
+        endpoint=web_raw.get("endpoint", ""),
+        endpoint_env=web_raw.get("endpoint_env", "WUP_WEB_ENDPOINT"),
+        timeout_s=float(web_raw.get("timeout_s", 2.0)),
+        api_key=web_raw.get("api_key", ""),
+    )
+
     return WupConfig(
         project=project,
         watch=watch,
@@ -225,6 +236,7 @@ def validate_config(raw: dict) -> WupConfig:
         test_strategy=test_strategy,
         testql=testql,
         visual_diff=visual_diff,
+        web=web,
     )
 
 
@@ -302,6 +314,13 @@ def save_config(config: WupConfig, output_path: Path):
             "threshold_removed": config.visual_diff.threshold_removed,
             "threshold_changed": config.visual_diff.threshold_changed,
             "headless": config.visual_diff.headless,
+        },
+        "web": {
+            "enabled": config.web.enabled,
+            "endpoint": config.web.endpoint,
+            "endpoint_env": config.web.endpoint_env,
+            "timeout_s": config.web.timeout_s,
+            "api_key": config.web.api_key,
         }
     }
     

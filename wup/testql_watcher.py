@@ -16,6 +16,7 @@ from .config import load_config
 from .core import WupWatcher
 from .models.config import WupConfig, ServiceConfig
 from .visual_diff import VisualDiffer
+from .web_client import WebClient
 
 
 class BrowserNotifier:
@@ -96,6 +97,7 @@ class TestQLWatcher(WupWatcher):
         self.service_health = self._load_service_health()
         self.config = config
         self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
+        self.web_client = WebClient(config.web) if config and getattr(config, "web", None) else WebClient()
 
     def _load_service_health(self) -> Dict[str, Dict]:
         if not self.health_state_path.exists():
@@ -163,6 +165,20 @@ class TestQLWatcher(WupWatcher):
                 "track_file": track_file,
             }
         )
+
+        # Fire-and-forget: forward event to wup-web backend if active
+        if self.web_client.is_active:
+            try:
+                asyncio.ensure_future(
+                    self.web_client.send_health_transition(
+                        service=service,
+                        from_status=previous_status,
+                        to_status=status,
+                    )
+                )
+            except RuntimeError:
+                # No running event loop — skip silently
+                pass
 
     def _tokenize_service(self, service: str) -> List[str]:
         raw_tokens = re.split(r"[^a-zA-Z0-9]+", service.lower())

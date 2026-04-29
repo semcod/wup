@@ -1,10 +1,10 @@
-# wup | 31f 5235L | python:28,shell:2,less:1 | 2026-04-29
-# stats: 50 func | 30 cls | 31 mod | CC̄=2.9 | critical:3 | cycles:0
-# alerts[5]: CC status=32; CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC test_process_changed_file_creates_track_on_failure=7; CC watch=6
-# hotspots[5]: status fan=22; testql_endpoints fan=19; map_deps fan=18; test_process_changed_file_creates_track_on_failure fan=16; watch fan=16
+# wup | 34f 6506L | python:31,shell:2,less:1 | 2026-04-29
+# stats: 75 func | 35 cls | 34 mod | CC̄=2.8 | critical:4 | cycles:0
+# alerts[5]: CC test_service_health_transitions_are_persisted=12; CC simulate_testql_analysis=11; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_process_changed_file_creates_track_on_failure=7
+# hotspots[5]: status fan=31; testql_endpoints fan=19; map_deps fan=18; demo_snapshot_persistence fan=17; validate_config fan=17
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[31]:
+M[34]:
   app.doql.less,33
   examples/fastapi-app/app/__init__.py,1
   examples/fastapi-app/app/users/__init__.py,1
@@ -21,21 +21,24 @@ M[31]:
   examples/multi-service/users-service/app/users/routes.py,19
   examples/multi-service/users-service/main.py,17
   examples/testql_demo.py,193
-  examples/testql_integration.py,238
+  examples/testql_integration.py,268
+  examples/visual_diff_demo.py,272
   project.sh,49
   tests/test_e2e.py,517
-  tests/test_testql_watcher.py,202
-  tests/test_wup.py,1346
+  tests/test_testql_watcher.py,256
+  tests/test_wup.py,1624
   tree.sh,2
   wup/__init__.py,40
-  wup/cli.py,459
-  wup/config.py,255
+  wup/cli.py,451
+  wup/config.py,351
   wup/core.py,605
   wup/dependency_mapper.py,285
   wup/models/__init__.py,22
-  wup/models/config.py,83
+  wup/models/config.py,113
   wup/testql_discovery.py,230
-  wup/testql_watcher.py,456
+  wup/testql_watcher.py,462
+  wup/visual_diff.py,334
+  wup/web_client.py,179
 D:
   examples/fastapi-app/app/__init__.py:
   examples/fastapi-app/app/users/__init__.py:
@@ -96,7 +99,18 @@ D:
     simulate_with_mock_data()
   examples/testql_integration.py:
     e: main,TestQLWatcher
-    TestQLWatcher: __init__(1),run_quick_test(2),run_detail_test(2),_find_scenarios_for_service(1),_generate_blame_report(2)  # Custom WUP watcher integrated with TestQL test framework.
+    TestQLWatcher: __init__(2),run_quick_test(2),run_detail_test(2),_find_scenarios_for_service(1),_generate_blame_report(2)  # Custom WUP watcher integrated with TestQL test framework.
+    main()
+  examples/visual_diff_demo.py:
+    e: _make_dom,_save_snapshot,demo_diff_algorithm,demo_page_slug,demo_snapshot_persistence,demo_config_yaml_round_trip,demo_disabled_is_noop,demo_live_page,main
+    _make_dom(n_divs)
+    _save_snapshot(path;dom)
+    demo_diff_algorithm()
+    demo_page_slug()
+    demo_snapshot_persistence()
+    demo_config_yaml_round_trip()
+    demo_disabled_is_noop()
+    demo_live_page(url)
     main()
   tests/test_e2e.py:
     e: run_wup_command,TestE2ECLI,TestE2EWorkflow,TestE2EIntegration,TestE2EErrorHandling,TestE2EPerformance,TestE2EConfigScenarios
@@ -108,20 +122,23 @@ D:
     TestE2EConfigScenarios: test_config_with_multiple_services(0),test_config_with_service_coincidence(0)  # End-to-end tests for configuration scenarios.
     run_wup_command(args;cwd;timeout;capture_output;text)
   tests/test_testql_watcher.py:
-    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing,test_service_health_transitions_are_persisted
+    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing,test_service_health_transitions_are_persisted,test_visual_differ_disabled_by_default,test_visual_differ_initialized_when_enabled
     test_process_changed_file_creates_track_on_failure()
     test_browser_event_file_is_written_without_service_url()
     test_config_endpoints_use_base_url_from_yaml_config()
     test_config_endpoints_use_base_url_from_env_when_yaml_missing()
     test_service_health_transitions_are_persisted()
+    test_visual_differ_disabled_by_default()
+    test_visual_differ_initialized_when_enabled()
   tests/test_wup.py:
-    e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
+    e: test_import,TestDependencyMapper,TestWupWatcher,TestIntegrationWorkflow,TestFileFiltering,TestConfigModels,TestVisualDiffer,TestConfigLoader,TestConfigIntegration,TestTestQLWatcherConfig
     TestDependencyMapper: test_init(0),test_infer_service_from_path(0),test_build_from_codebase_empty(0),test_build_from_codebase_with_fastapi(0),test_save_and_load(0),test_infer_service_from_path_edge_cases(0),test_get_service_for_file_empty_mapper(0),test_get_endpoints_for_service_empty_mapper(0),test_build_from_codebase_with_flask(0),test_service_to_files_tracking(0),test_build_from_codebase_nonexistent_directory(0)  # Tests for the DependencyMapper class.
     TestWupWatcher: test_init(0),test_init_with_custom_params(0),test_infer_service(0),test_infer_service_with_auto_detection(0),test_infer_service_with_explicit_paths(0),test_infer_service_priority_config_over_mapper(0),test_infer_service_fallback_to_heuristics(0),test_should_test_cooldown(0),test_schedule_quick_test(0),test_schedule_detail_test(0),test_on_file_change_skip_dirs(0),test_detect_service_coincidences_shell_web(0),test_detect_service_coincidences_auto_type(0),test_detect_service_coincidences_no_config(0),test_detect_service_coincidences_unknown_service(0),test_services_share_domain(0),test_on_file_change_filters_by_file_type(0),test_on_file_change_no_file_type_filter(0)  # Tests for the WupWatcher class.
     TestIntegrationWorkflow: test_full_workflow_file_change_to_test_scheduling(0),test_workflow_with_file_type_filtering(0),test_workflow_with_service_coincidence(0),test_workflow_with_multiple_file_changes(0),test_workflow_with_auto_detection_and_explicit_paths(0)  # Integration tests for complete workflows.
     TestFileFiltering: test_should_watch_file_with_config(0),test_should_watch_file_without_config(0)  # Tests for file type filtering.
-    TestConfigModels: test_project_config(0),test_notify_config(0),test_service_test_config(0),test_service_config(0),test_watch_config(0),test_test_strategy_config(0),test_testql_config(0),test_wup_config(0)  # Tests for configuration dataclasses.
-    TestConfigLoader: test_get_default_config(0),test_save_and_load_config(0),test_load_config_from_yaml(0),test_load_config_auto_detect(0),test_load_config_no_file_returns_default(0),test_load_config_invalid_yaml(0),test_load_config_missing_project_name(0)  # Tests for configuration loading and saving.
+    TestConfigModels: test_project_config(0),test_notify_config(0),test_service_test_config(0),test_service_config(0),test_watch_config(0),test_test_strategy_config(0),test_testql_config(0),test_wup_config(0),test_visual_diff_config_defaults(0),test_visual_diff_config_custom(0)  # Tests for configuration dataclasses.
+    TestVisualDiffer: test_resolve_base_url_from_config(0),test_resolve_base_url_from_env(1),test_resolve_base_url_empty(1),test_page_slug(0),test_pages_for_service_explicit(0),test_pages_for_service_from_endpoints(0),test_pages_for_service_fallback(0),test_pages_for_service_absolute_url_passthrough(0),test_diff_snapshots_baseline(0),test_diff_snapshots_identical(0),test_diff_snapshots_changed(0),test_run_for_service_disabled_returns_empty(0),test_get_recent_diffs_empty(0),test_get_recent_diffs_filters_by_age(0)  # Tests for the VisualDiffer class (no Playwright required).
+    TestConfigLoader: test_get_default_config(0),test_save_and_load_config(0),test_load_config_from_yaml(0),test_load_config_auto_detect(0),test_load_config_no_file_returns_default(0),test_load_config_invalid_yaml(0),test_load_config_missing_project_name(0),test_save_and_load_visual_diff_config(0),test_load_config_visual_diff_from_yaml(0),test_load_config_visual_diff_defaults_when_section_absent(0),test_load_dotenv_sets_env_var(0),test_load_dotenv_does_not_overwrite_existing(0)  # Tests for configuration loading and saving.
     TestConfigIntegration: test_watcher_with_config(0),test_watcher_uses_config_debounce(0),test_watcher_build_watched_paths_from_config(0),test_watcher_infer_service_from_config(0),test_watcher_get_service_config(0),test_watcher_schedule_quick_test_uses_config_limit(0),test_watcher_on_file_change_uses_exclude_patterns(0)  # Tests for configuration integration with WupWatcher.
     TestTestQLWatcherConfig: test_testql_watcher_with_config(0),test_testql_watcher_uses_config_scenarios_dir(0),test_testql_watcher_get_service_config(0),test_testql_watcher_select_scenarios_uses_config_limit(0),test_testql_watcher_uses_config_timeout(0),test_testql_watcher_without_config_loads_default(0)  # Tests for TestQLWatcher configuration integration.
     test_import()
@@ -130,14 +147,15 @@ D:
     e: watch,map_deps,status,init,testql_endpoints,map_deps,version
     watch(project;deps_file;cpu_throttle;debounce;cooldown;dashboard;mode;scenarios_dir;testql_bin;browser_service_url;track_dir;quick_limit;config)
     map_deps(project;output;framework;config)
-    status(deps_file;config;delta_seconds;failed_only)
+    status(deps_file;config;delta_seconds;failed_only;watch;interval)
     init(project;output)
     testql_endpoints(scenarios_dir;output;testql_bin)
     map_deps(project;output;framework)
     version()
   wup/config.py:
-    e: find_config_file,load_config,validate_config,get_default_config,save_config
+    e: find_config_file,_load_dotenv,load_config,validate_config,get_default_config,save_config
     find_config_file(project_root)
+    _load_dotenv(project_root)
     load_config(project_root;config_path)
     validate_config(raw)
     get_default_config(project_root)
@@ -151,13 +169,15 @@ D:
     DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_search_codebase(1),_scan_endpoints(1),_scan_python_endpoints(1),_scan_js_endpoints(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing.
   wup/models/__init__.py:
   wup/models/config.py:
-    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,ProjectConfig,WupConfig
+    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,ProjectConfig,WupConfig
     NotifyConfig:  # Notification configuration for a service.
     ServiceTestConfig:  # Test configuration for a service (quick or detail).
     ServiceConfig:  # Configuration for a single service.
     WatchConfig:  # Configuration for file watching.
     TestStrategyConfig:  # Global test strategy configuration.
     TestQLConfig:  # TestQL-specific configuration.
+    VisualDiffConfig:  # Configuration for visual DOM diff after file changes.
+    WebConfig:  # Configuration for sending events to wup-web backend.
     ProjectConfig:  # Project metadata.
     WupConfig:  # Main WUP configuration.
   wup/testql_discovery.py:
@@ -167,3 +187,22 @@ D:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file
     TestQLWatcher: __init__(7),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),run_quick_test(2),run_detail_test(2),process_changed_file_once(1)  # WUP watcher running selective TestQL scenarios for changed s
+  wup/visual_diff.py:
+    e: _playwright_available,_fetch_dom_snapshot,_page_slug,_snapshot_path,_load_snapshot,_save_snapshot,_node_signature,_flatten,_diff_snapshots,_resolve_base_url,VisualDiffer
+    VisualDiffer: __init__(2),_pages_for_service(2),run_for_service(2),_check_page(2),_write_diff_event(3),get_recent_diffs(1)  # Triggered by TestQLWatcher after a file change.
+    _playwright_available()
+    _fetch_dom_snapshot(url;max_depth;headless)
+    _page_slug(url)
+    _snapshot_path(snapshot_dir;service;url)
+    _load_snapshot(path)
+    _save_snapshot(path;snapshot)
+    _node_signature(node;depth)
+    _flatten(node;depth;max_depth)
+    _diff_snapshots(old;new;max_depth;threshold_added;threshold_removed;threshold_changed)
+    _resolve_base_url(cfg)
+  wup/web_client.py:
+    e: _httpx_available,resolve_endpoint,_normalize,WebClient
+    WebClient: __init__(1),is_active(0),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wup-web backend.
+    _httpx_available()
+    resolve_endpoint(cfg)
+    _normalize(payload)

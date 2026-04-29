@@ -1,31 +1,101 @@
 project: /home/tom/github/semcod/wup
 generated_from: code2llm call graph analysis
 stats:
-  total_nodes: 11
-  total_edges: 9
-  modules_count: 5
+  total_nodes: 35
+  total_edges: 32
+  modules_count: 8
 nodes:
-  examples.testql_demo.simulate_testql_analysis:
-    name: simulate_testql_analysis
-    module: examples.testql_demo
-    line: 17
+  wup.visual_diff._node_signature:
+    name: _node_signature
+    module: wup.visual_diff
+    line: 134
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  wup.visual_diff._load_snapshot:
+    name: _load_snapshot
+    module: wup.visual_diff
+    line: 116
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  examples.visual_diff_demo.demo_snapshot_persistence:
+    name: demo_snapshot_persistence
+    module: examples.visual_diff_demo
+    line: 111
+    cyclomatic_complexity: 3
+    calls_out: 26
+    calls_in: 1
+  examples.visual_diff_demo.main:
+    name: main
+    module: examples.visual_diff_demo
+    line: 249
+    cyclomatic_complexity: 2
+    calls_out: 15
+    calls_in: 0
+  examples.visual_diff_demo._make_dom:
+    name: _make_dom
+    module: examples.visual_diff_demo
+    line: 35
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 5
+  wup.visual_diff._diff_snapshots:
+    name: _diff_snapshots
+    module: wup.visual_diff
+    line: 154
     cyclomatic_complexity: 11
-    calls_out: 80
+    calls_out: 15
+    calls_in: 2
+  wup.visual_diff.VisualDiffer.__init__:
+    name: __init__
+    module: wup.visual_diff
+    line: 225
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  project.map.toon.load_config:
+    name: load_config
+    module: project.map.toon
+    line: 141
+    cyclomatic_complexity: 0
+    calls_out: 0
+    calls_in: 5
+  examples.visual_diff_demo.demo_live_page:
+    name: demo_live_page
+    module: examples.visual_diff_demo
+    line: 218
+    cyclomatic_complexity: 3
+    calls_out: 14
+    calls_in: 1
+  examples.visual_diff_demo.demo_config_yaml_round_trip:
+    name: demo_config_yaml_round_trip
+    module: examples.visual_diff_demo
+    line: 167
+    cyclomatic_complexity: 6
+    calls_out: 16
+    calls_in: 1
+  examples.visual_diff_demo.demo_diff_algorithm:
+    name: demo_diff_algorithm
+    module: examples.visual_diff_demo
+    line: 64
+    cyclomatic_complexity: 3
+    calls_out: 16
     calls_in: 1
   wup.cli.init:
     name: init
     module: wup.cli
-    line: 325
+    line: 317
     cyclomatic_complexity: 3
     calls_out: 16
     calls_in: 0
-  wup.config.load_config:
-    name: load_config
-    module: wup.config
-    line: 44
+  wup.cli.status:
+    name: status
+    module: wup.cli
+    line: 171
     cyclomatic_complexity: 5
-    calls_out: 7
-    calls_in: 4
+    calls_out: 97
+    calls_in: 0
   examples.testql_demo.simulate_with_mock_data:
     name: simulate_with_mock_data
     module: examples.testql_demo
@@ -33,12 +103,145 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 3
     calls_in: 1
-  wup.config.save_config:
-    name: save_config
+  wup.visual_diff._fetch_dom_snapshot:
+    name: _fetch_dom_snapshot
+    module: wup.visual_diff
+    line: 80
+    cyclomatic_complexity: 3
+    calls_out: 9
+    calls_in: 1
+  examples.visual_diff_demo._save_snapshot:
+    name: _save_snapshot
+    module: examples.visual_diff_demo
+    line: 55
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 2
+  examples.visual_diff_demo.demo_page_slug:
+    name: demo_page_slug
+    module: examples.visual_diff_demo
+    line: 96
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 1
+  wup.visual_diff._resolve_base_url:
+    name: _resolve_base_url
+    module: wup.visual_diff
+    line: 208
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  wup.visual_diff.VisualDiffer._write_diff_event:
+    name: _write_diff_event
+    module: wup.visual_diff
+    line: 307
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 0
+  wup.visual_diff._flatten:
+    name: _flatten
+    module: wup.visual_diff
+    line: 144
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 3
+  wup.config.load_config:
+    name: load_config
     module: wup.config
-    line: 196
+    line: 67
+    cyclomatic_complexity: 5
+    calls_out: 8
+    calls_in: 0
+  examples.testql_demo.simulate_testql_analysis:
+    name: simulate_testql_analysis
+    module: examples.testql_demo
+    line: 17
+    cyclomatic_complexity: 11
+    calls_out: 80
+    calls_in: 1
+  wup.visual_diff.VisualDiffer._check_page:
+    name: _check_page
+    module: wup.visual_diff
+    line: 284
+    cyclomatic_complexity: 2
+    calls_out: 7
+    calls_in: 0
+  wup.config._load_dotenv:
+    name: _load_dotenv
+    module: wup.config
+    line: 47
+    cyclomatic_complexity: 10
+    calls_out: 10
+    calls_in: 1
+  wup.visual_diff._page_slug:
+    name: _page_slug
+    module: wup.visual_diff
+    line: 105
     cyclomatic_complexity: 2
     calls_out: 3
+    calls_in: 3
+  wup.config.find_config_file:
+    name: find_config_file
+    module: wup.config
+    line: 27
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  wup.config.validate_config:
+    name: validate_config
+    module: wup.config
+    line: 100
+    cyclomatic_complexity: 7
+    calls_out: 82
+    calls_in: 1
+  project.map.toon.save_config:
+    name: save_config
+    module: project.map.toon
+    line: 144
+    cyclomatic_complexity: 0
+    calls_out: 0
+    calls_in: 2
+  wup.visual_diff._playwright_available:
+    name: _playwright_available
+    module: wup.visual_diff
+    line: 40
+    cyclomatic_complexity: 3
+    calls_out: 0
+    calls_in: 2
+  wup.config.get_default_config:
+    name: get_default_config
+    module: wup.config
+    line: 243
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 1
+  project.map.toon.get_default_config:
+    name: get_default_config
+    module: project.map.toon
+    line: 143
+    cyclomatic_complexity: 0
+    calls_out: 0
+    calls_in: 1
+  wup.testql_watcher.TestQLWatcher.__init__:
+    name: __init__
+    module: wup.testql_watcher
+    line: 57
+    cyclomatic_complexity: 10
+    calls_out: 9
+    calls_in: 0
+  examples.visual_diff_demo.demo_disabled_is_noop:
+    name: demo_disabled_is_noop
+    module: examples.visual_diff_demo
+    line: 204
+    cyclomatic_complexity: 2
+    calls_out: 11
+    calls_in: 1
+  wup.visual_diff._snapshot_path:
+    name: _snapshot_path
+    module: wup.visual_diff
+    line: 110
+    cyclomatic_complexity: 1
+    calls_out: 2
     calls_in: 1
   wup.core.WupWatcher.__init__:
     name: __init__
@@ -47,42 +250,16 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 17
     calls_in: 0
-  wup.cli.status:
-    name: status
-    module: wup.cli
-    line: 171
-    cyclomatic_complexity: 32
-    calls_out: 97
-    calls_in: 0
-  wup.config.get_default_config:
-    name: get_default_config
-    module: wup.config
-    line: 169
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 2
-  wup.config.validate_config:
-    name: validate_config
-    module: wup.config
-    line: 75
-    cyclomatic_complexity: 4
-    calls_out: 47
-    calls_in: 1
-  wup.config.find_config_file:
-    name: find_config_file
-    module: wup.config
-    line: 24
-    cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 1
-  wup.testql_watcher.TestQLWatcher.__init__:
-    name: __init__
-    module: wup.testql_watcher
-    line: 56
-    cyclomatic_complexity: 8
-    calls_out: 8
-    calls_in: 0
 edges:
+- caller: wup.core.WupWatcher.__init__
+  callee: project.map.toon.load_config
+  call_type: resolved
+- caller: examples.testql_demo.simulate_with_mock_data
+  callee: examples.testql_demo.simulate_testql_analysis
+  call_type: resolved
+- caller: wup.config.load_config
+  callee: wup.config._load_dotenv
+  call_type: resolved
 - caller: wup.config.load_config
   callee: wup.config.validate_config
   call_type: resolved
@@ -92,41 +269,128 @@ edges:
 - caller: wup.config.load_config
   callee: wup.config.get_default_config
   call_type: resolved
-- caller: examples.testql_demo.simulate_with_mock_data
-  callee: examples.testql_demo.simulate_testql_analysis
+- caller: examples.visual_diff_demo.demo_diff_algorithm
+  callee: examples.visual_diff_demo._make_dom
   call_type: resolved
-- caller: wup.testql_watcher.TestQLWatcher.__init__
-  callee: wup.config.load_config
+- caller: examples.visual_diff_demo.demo_diff_algorithm
+  callee: wup.visual_diff._diff_snapshots
+  call_type: resolved
+- caller: examples.visual_diff_demo.demo_page_slug
+  callee: wup.visual_diff._page_slug
+  call_type: resolved
+- caller: examples.visual_diff_demo.demo_config_yaml_round_trip
+  callee: project.map.toon.save_config
+  call_type: resolved
+- caller: examples.visual_diff_demo.demo_config_yaml_round_trip
+  callee: project.map.toon.load_config
+  call_type: resolved
+- caller: examples.visual_diff_demo.demo_live_page
+  callee: wup.visual_diff._playwright_available
+  call_type: resolved
+- caller: examples.visual_diff_demo.main
+  callee: examples.visual_diff_demo.demo_diff_algorithm
+  call_type: resolved
+- caller: examples.visual_diff_demo.main
+  callee: examples.visual_diff_demo.demo_page_slug
+  call_type: resolved
+- caller: examples.visual_diff_demo.main
+  callee: examples.visual_diff_demo.demo_snapshot_persistence
+  call_type: resolved
+- caller: examples.visual_diff_demo.main
+  callee: examples.visual_diff_demo.demo_config_yaml_round_trip
+  call_type: resolved
+- caller: examples.visual_diff_demo.main
+  callee: examples.visual_diff_demo.demo_disabled_is_noop
+  call_type: resolved
+- caller: wup.visual_diff._fetch_dom_snapshot
+  callee: wup.visual_diff._playwright_available
+  call_type: resolved
+- caller: wup.visual_diff._snapshot_path
+  callee: wup.visual_diff._page_slug
+  call_type: resolved
+- caller: wup.visual_diff._flatten
+  callee: wup.visual_diff._node_signature
+  call_type: resolved
+- caller: wup.visual_diff._diff_snapshots
+  callee: wup.visual_diff._flatten
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer.__init__
+  callee: wup.visual_diff._resolve_base_url
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._snapshot_path
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._load_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._diff_snapshots
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: examples.visual_diff_demo._save_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._fetch_dom_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._write_diff_event
+  callee: wup.visual_diff._page_slug
   call_type: resolved
 - caller: wup.cli.status
-  callee: wup.config.load_config
+  callee: project.map.toon.load_config
   call_type: resolved
 - caller: wup.cli.init
-  callee: wup.config.get_default_config
+  callee: project.map.toon.get_default_config
   call_type: resolved
 - caller: wup.cli.init
-  callee: wup.config.save_config
+  callee: project.map.toon.save_config
   call_type: resolved
-- caller: wup.core.WupWatcher.__init__
-  callee: wup.config.load_config
+- caller: wup.testql_watcher.TestQLWatcher.__init__
+  callee: project.map.toon.load_config
   call_type: resolved
 modules:
   examples.testql_demo:
   - examples.testql_demo.simulate_testql_analysis
   - examples.testql_demo.simulate_with_mock_data
+  examples.visual_diff_demo:
+  - examples.visual_diff_demo._make_dom
+  - examples.visual_diff_demo._save_snapshot
+  - examples.visual_diff_demo.demo_config_yaml_round_trip
+  - examples.visual_diff_demo.demo_diff_algorithm
+  - examples.visual_diff_demo.demo_disabled_is_noop
+  - examples.visual_diff_demo.demo_live_page
+  - examples.visual_diff_demo.demo_page_slug
+  - examples.visual_diff_demo.demo_snapshot_persistence
+  - examples.visual_diff_demo.main
+  project.map.toon:
+  - project.map.toon.get_default_config
+  - project.map.toon.load_config
+  - project.map.toon.save_config
   wup.cli:
   - wup.cli.init
   - wup.cli.status
   wup.config:
+  - wup.config._load_dotenv
   - wup.config.find_config_file
   - wup.config.get_default_config
   - wup.config.load_config
-  - wup.config.save_config
   - wup.config.validate_config
   wup.core:
   - wup.core.WupWatcher.__init__
   wup.testql_watcher:
   - wup.testql_watcher.TestQLWatcher.__init__
+  wup.visual_diff:
+  - wup.visual_diff.VisualDiffer.__init__
+  - wup.visual_diff.VisualDiffer._check_page
+  - wup.visual_diff.VisualDiffer._write_diff_event
+  - wup.visual_diff._diff_snapshots
+  - wup.visual_diff._fetch_dom_snapshot
+  - wup.visual_diff._flatten
+  - wup.visual_diff._load_snapshot
+  - wup.visual_diff._node_signature
+  - wup.visual_diff._page_slug
+  - wup.visual_diff._playwright_available
+  - wup.visual_diff._resolve_base_url
+  - wup.visual_diff._snapshot_path
 entry_points:
 - examples.fastapi-app.app.users.routes.create_user
 - examples.fastapi-app.app.users.routes.delete_user
@@ -162,19 +426,18 @@ entry_points:
 - examples.testql_integration.TestQLWatcher.run_detail_test
 - examples.testql_integration.TestQLWatcher.run_quick_test
 - examples.testql_integration.main
+- examples.visual_diff_demo.main
 - project.map.toon.change_password
 - project.map.toon.create_payment
 - project.map.toon.create_user
 - project.map.toon.delete_user
 - project.map.toon.find_config_file
-- project.map.toon.get_default_config
 - project.map.toon.get_payment
 - project.map.toon.get_user
 - project.map.toon.health
 - project.map.toon.init
 - project.map.toon.list_payments
 - project.map.toon.list_users
-- project.map.toon.load_config
 - project.map.toon.login
 - project.map.toon.logout
 - project.map.toon.main
@@ -183,7 +446,6 @@ entry_points:
 - project.map.toon.register
 - project.map.toon.root
 - project.map.toon.run_wup_command
-- project.map.toon.save_config
 - project.map.toon.simulate_testql_analysis
 - project.map.toon.simulate_with_mock_data
 - project.map.toon.status
@@ -192,6 +454,7 @@ entry_points:
 - project.map.toon.test_config_endpoints_use_base_url_from_yaml_config
 - project.map.toon.test_import
 - project.map.toon.test_process_changed_file_creates_track_on_failure
+- project.map.toon.test_service_health_transitions_are_persisted
 - project.map.toon.testql_endpoints
 - project.map.toon.update_user
 - project.map.toon.validate_config
@@ -203,6 +466,8 @@ entry_points:
 - wup.cli.testql_endpoints
 - wup.cli.version
 - wup.cli.watch
+- wup.config.load_config
+- wup.config.save_config
 - wup.core.WupEventHandler.__init__
 - wup.core.WupEventHandler.on_created
 - wup.core.WupEventHandler.on_deleted
@@ -268,3 +533,10 @@ entry_points:
 - wup.testql_watcher.TestQLWatcher.process_changed_file_once
 - wup.testql_watcher.TestQLWatcher.run_detail_test
 - wup.testql_watcher.TestQLWatcher.run_quick_test
+- wup.visual_diff.VisualDiffer.__init__
+- wup.visual_diff.VisualDiffer._check_page
+- wup.visual_diff.VisualDiffer._pages_for_service
+- wup.visual_diff.VisualDiffer._write_diff_event
+- wup.visual_diff.VisualDiffer.get_recent_diffs
+- wup.visual_diff.VisualDiffer.run_for_service
+- wup.visual_diff._save_snapshot
