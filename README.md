@@ -163,6 +163,16 @@ Full regression: 15s test → 15% CPU spike
 
 ## Configuration
 
+### Service Types
+
+WUP supports three service types for coincidence detection and intelligent testing:
+
+- **web** - HTTP/API services (FastAPI, Flask, Django, Express.js, etc.)
+- **shell** - CLI tools, scripts, and command-line services
+- **auto** - Automatic detection (default)
+
+Coincidence detection allows WUP to identify related services. For example, if you have `users-web` and `users-shell`, WUP will detect they share the same domain and test both when relevant files change.
+
 ### wup.yaml Configuration File
 
 WUP supports declarative configuration via `wup.yaml` (or `.wup.yaml`) in your project root. This allows you to define watch paths, service-specific settings, and test strategies.
