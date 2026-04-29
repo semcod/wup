@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-04-29
+
+### Docs
+- Update README.md
+- Update examples/fastapi-app/README.md
+- Update examples/flask-app/README.md
+
+### Test
+- Update tests/test_e2e.py
+
+### Other
+- Update examples/fastapi-app/Dockerfile
+- Update examples/fastapi-app/app/__init__.py
+- Update examples/fastapi-app/app/users/__init__.py
+- Update examples/fastapi-app/app/users/routes.py
+- Update examples/fastapi-app/main.py
+- Update examples/fastapi-app/requirements.txt
+- Update examples/fastapi-app/wup.yaml
+- Update examples/flask-app/Dockerfile
+- Update examples/flask-app/app/__init__.py
+- Update examples/flask-app/app/auth/__init__.py
+- ... and 21 more files
+
 ## [0.2.7] - 2026-04-29
 
 ### Docs

@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  users-api:
+    build: ./users-service
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./users-service:/app
+    networks:
+      - app-network
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8002:5000"
+    volumes:
+      - ./auth-service:/app
+    networks:
+      - app-network
+
+  payments-service:
+    build: ./payments-service
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./payments-service:/app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -226,8 +226,17 @@ def status(
     if services:
         console.print("[bold]Service Details:[/bold]")
         for service, info in sorted(services.items()):
-            endpoints = info.get("endpoints", [])
-            service_files = info.get("files", [])
+            # Handle both dict format (new) and list format (legacy)
+            if isinstance(info, dict):
+                endpoints = info.get("endpoints", [])
+                service_files = info.get("files", [])
+            elif isinstance(info, list):
+                endpoints = info
+                service_files = []
+            else:
+                endpoints = []
+                service_files = []
+            
             console.print(f"  [cyan]{service}[/cyan]")
             console.print(f"    Endpoints: {len(endpoints)}")
             console.print(f"    Files: {len(service_files)}")
@@ -324,6 +333,41 @@ def testql_endpoints(
         json.dump(dependency_map, f, indent=2)
     
     console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
+
+
+@app.command()
+def map_deps(
+    project: str = typer.Argument(".", help="Path to the project root directory"),
+    output: str = typer.Option("deps.json", "--output", "-o", help="Output dependency map file path"),
+    framework: str = typer.Option("auto", "--framework", "-f", help="Framework to detect (auto, fastapi, flask, django, express)"),
+):
+    """
+    Build dependency map from codebase.
+    """
+    import json
+    from .dependency_mapper import DependencyMapper
+    
+    project_path = Path(project).resolve()
+    
+    if not project_path.exists():
+        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+        raise typer.Exit(1)
+    
+    console.print(f"[cyan]🔍 Building dependency map from codebase...[/cyan]")
+    console.print(f"[dim]Project: {project_path}[/dim]")
+    console.print()
+    
+    mapper = DependencyMapper(str(project_path))
+    deps = mapper.build_from_codebase(framework=framework)
+    
+    # Save to file
+    output_path = Path(output)
+    with open(output_path, 'w') as f:
+        json.dump(deps, f, indent=2)
+    
+    console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
+    console.print(f"[dim]Services: {len(deps.get('services', {}))}[/dim]")
+    console.print(f"[dim]Files: {len(deps.get('files', {}))}[/dim]")
 
 
 @app.command()

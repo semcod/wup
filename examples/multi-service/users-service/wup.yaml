@@ -1,0 +1,21 @@
+project:
+  name: "users-service"
+  description: "Users microservice"
+
+watch:
+  paths:
+    - "app/**"
+  file_types:
+    - ".py"
+
+services:
+  - name: "users"
+    root: "app/users"
+    paths:
+      - "app/users/**"
+    type: "auto"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5

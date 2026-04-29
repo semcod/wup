@@ -1,0 +1,28 @@
+project:
+  name: "fastapi-example"
+  description: "FastAPI example project with WUP"
+
+watch:
+  paths:
+    - "app/**"
+  file_types:
+    - ".py"
+  excludes:
+    - "*.md"
+    - "tests/**"
+
+services:
+  - name: "users"
+    root: "app/users"
+    paths:
+      - "app/users/**"
+    type: "auto"
+    quick_tests:
+      scope: "all"
+      max_endpoints: 3
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
+    timeout_s: 10

@@ -1,0 +1,21 @@
+project:
+  name: "payments-service"
+  description: "Payments microservice"
+
+watch:
+  paths:
+    - "app/**"
+  file_types:
+    - ".py"
+
+services:
+  - name: "payments"
+    root: "app/payments"
+    paths:
+      - "app/payments/**"
+    type: "auto"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5

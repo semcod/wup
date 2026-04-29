@@ -1,0 +1,21 @@
+project:
+  name: "auth-service"
+  description: "Auth microservice"
+
+watch:
+  paths:
+    - "app/**"
+  file_types:
+    - ".py"
+
+services:
+  - name: "auth"
+    root: "app/auth"
+    paths:
+      - "app/auth/**"
+    type: "auto"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
