@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-04-29
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+
+### Test
+- Update testql-deps.json
+
+### Other
+- Update VERSION
+- Update wup.yaml
+- Update wup.yaml.example
+- Update wup/__init__.py
+- Update wup/cli.py
+- Update wup/config.py
+- Update wup/core.py
+- Update wup/dependency_mapper.py
+- Update wup/models/config.py
+- Update wup/testql_discovery.py
+
+## [0.2.5] - 2026-04-29
+
+### Added
+- **Service Coincidence Detection**: Added automatic detection of related services (e.g., shell <-> web)
+- **Auto-detection for Services**: Made service paths optional - WUP auto-detects files by service name
+- **Service Type Classification**: Added `type` field to services (web/shell/auto) for coincidence detection
+- **Coincidence Detection Methods**: Added `detect_service_coincidences()` and `_services_share_domain()` to WupWatcher
+
+### Changed
+- **ServiceConfig**: Made `root` and `paths` optional, added `type` field
+- **Config Loader**: Updated to handle optional service fields and type classification
+- **Infer Service**: Enhanced to auto-detect service files when paths are empty
+- **Simplified Configuration**: Service config no longer requires manual path mapping
+
+### Docs
+- Updated wup.yaml.example with simplified service configuration examples
+- Updated README with auto-detection and coincidence detection documentation
+
+## [0.2.4] - 2026-04-29
+
+### Added
+- **TestQL Endpoint Discovery**: Added automatic endpoint discovery from TestQL scenario files
+- **testql_discovery Module**: New module to extract API endpoints from .testql.toon.yaml files
+- **CLI Command**: Added `wup testql-endpoints` command to discover and map endpoints from TestQL scenarios
+- **DependencyMapper Integration**: Added `build_from_testql_scenarios()` method to build dependency maps from TestQL
+- **Configuration**: Added `endpoint_discovery` field to TestQLConfig for controlling automatic discovery
+
+### Changed
+- **DependencyMapper**: Added import for TestQLEndpointDiscovery
+- **TestQLConfig**: Added `endpoint_discovery` boolean field (default: true)
+- **Config Loader**: Updated to load `endpoint_discovery` from wup.yaml
+
+### Docs
+- Updated wup.yaml.example with endpoint_discovery configuration
+- Updated README with testql-endpoints command usage
+
 ## [0.2.2] - 2026-04-29
 
 ### Docs

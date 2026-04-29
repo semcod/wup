@@ -1,0 +1,50 @@
+project:
+  name: c2004
+  description: Auto-generated config for c2004
+watch:
+  paths:
+  - app/**
+  - src/**
+  - routes/**
+  exclude_patterns:
+  - '*.md'
+  - '*.txt'
+  - tests/**
+  - node_modules/**
+services:
+  # Services with auto-detection and coincidence detection
+  - name: "iter1-api"
+    type: "web"
+    quick_tests:
+      scope: "read"
+      max_endpoints: 3
+  - name: "iter1-shell"
+    type: "shell"
+    quick_tests:
+      scope: "all"
+      max_endpoints: 3
+  - name: "iter7-auto"
+    type: "web"
+    quick_tests:
+      scope: "read,write"
+      max_endpoints: 5
+  - name: "iter7-shell"
+    type: "shell"
+    quick_tests:
+      scope: "all"
+      max_endpoints: 5
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
+    timeout_s: 10
+  detail:
+    debounce_s: 10
+    max_queue: 1
+    timeout_s: 30
+testql:
+  scenario_dir: scenarios/tests
+  smoke_scenario: smoke.testql.toon.yaml
+  output_format: json
+  extra_args:
+  - --timeout 10s

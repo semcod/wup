@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.90-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.6-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$1.05-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $0.9000 (6 commits)
+- 🤖 **LLM usage:** $1.0500 (7 commits)
 - 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.6-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -96,6 +96,9 @@ wup watch ./my-project --config custom-config.yaml
 
 # TestQL mode
 wup watch ./my-project --mode testql
+
+# Discover endpoints from TestQL scenarios
+wup testql-endpoints /path/to/scenarios --output testql-deps.json
 ```
 
 ### Initialize Configuration
@@ -124,24 +127,24 @@ wup status --deps my-deps.json
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    DETECTION LAYER                           │
+│                    DETECTION LAYER                          │
 │  File watching with watchdog + heuristics                   │
 │  Skips: .git, __pycache__, node_modules, .venv              │
 └──────────────────────┬──────────────────────────────────────┘
                        │ File change
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   PRIORITY LAYER                             │
+│                   PRIORITY LAYER                            │
 │  Quick test: 3 endpoints max per service                    │
-│  Duration: ~1-2 seconds                                      │
-│  Result: Pass → Done, Fail → Escalate                        │
+│  Duration: ~1-2 seconds                                     │
+│  Result: Pass → Done, Fail → Escalate                       │
 └──────────────────────┬──────────────────────────────────────┘
                        │ Failure
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    DETAIL LAYER                              │
+│                    DETAIL LAYER                             │
 │  Full test: All endpoints with blame report                 │
-│  Duration: ~3-5 seconds                                      │
+│  Duration: ~3-5 seconds                                     │
 │  Result: Regression report with file/line/commit            │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -189,24 +192,31 @@ watch:
     - "*.txt"
     - "migrations/**"
 
+  # File types to watch (empty = watch all files)
+  # Only changes to these file extensions will trigger tests
+  file_types:
+    - ".py"
+    - ".ts"
+    - ".jsx"
+
 services:
-  # Service configurations
-  - name: "users"
-    root: "app/users"
+  # Service configurations - simplified with auto-detection
+  # If paths are empty, WUP auto-detects files by service name
+  
+  - name: "users-shell"
+    type: "shell"
+    # Auto-detects files containing "users-shell"
+  
+  - name: "users-web"
+    type: "web"
+    # Auto-detects files containing "users-web"
+    # Will detect coincidence with users-shell
+  
+  # Or use explicit paths (old style still works)
+  - name: "payments"
     paths:
-      - "app/users/**"
-      - "routes/users/**"
-    quick_tests:
-      scope: "read,write"
-      max_endpoints: 3
-    detail_tests:
-      scope: "all"
-      max_endpoints: 10
-    cpu_throttle: 0.7
-    notify:
-      type: "http+file"
-      url: "http://localhost:8001/notify"
-      file: "wup/notify-users.json"
+      - "app/payments/**"
+    type: "auto"
 
 test_strategy:
   quick:

@@ -99,7 +99,8 @@ def validate_config(raw: dict) -> WupConfig:
     watch_raw = raw.get("watch", {})
     watch = WatchConfig(
         paths=watch_raw.get("paths", []),
-        exclude_patterns=watch_raw.get("exclude_patterns", ["*.md", "*.txt"])
+        exclude_patterns=watch_raw.get("exclude_patterns", ["*.md", "*.txt"]),
+        file_types=watch_raw.get("file_types", [])
     )
     
     # Parse services
@@ -117,6 +118,7 @@ def validate_config(raw: dict) -> WupConfig:
             name=svc_raw["name"],
             root=svc_raw.get("root", ""),
             paths=svc_raw.get("paths", []),
+            type=svc_raw.get("type", "auto"),
             quick_tests=ServiceTestConfig(
                 scope=quick_tests_raw.get("scope", "all"),
                 max_endpoints=quick_tests_raw.get("max_endpoints", 10)
@@ -147,7 +149,8 @@ def validate_config(raw: dict) -> WupConfig:
         scenario_dir=testql_raw.get("scenario_dir", "scenarios/tests"),
         smoke_scenario=testql_raw.get("smoke_scenario", "smoke.testql.toon.yaml"),
         output_format=testql_raw.get("output_format", "json"),
-        extra_args=testql_raw.get("extra_args", ["--timeout 10s"])
+        extra_args=testql_raw.get("extra_args", ["--timeout 10s"]),
+        endpoint_discovery=testql_raw.get("endpoint_discovery", True)
     )
     
     return WupConfig(

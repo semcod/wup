@@ -1,0 +1,311 @@
+{
+  "services": {
+    "iter1/api/v3/smoke.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v1/health",
+        "GET /api/v3/customers",
+        "GET /api/v3/devices",
+        "GET /api/v3/health",
+        "GET /api/v3/menu/by-route?route=main-navigation",
+        "GET /api/v3/menu/configurations",
+        "GET /api/v3/scenarios",
+        "GET /api/v3/test-sessions",
+        "GET /api/v3/version"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-api-v3-smoke.testql.toon.yaml"
+      ]
+    },
+    "iter1/backend/pytest.testql.toon.yaml": {
+      "endpoints": [],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-backend-pytest.testql.toon.yaml"
+      ]
+    },
+    "iter1/connect/id/api.testql.toon.yaml": {
+      "endpoints": [
+        "GET http://localhost:8103/api/id/capabilities",
+        "GET http://localhost:8103/api/id/health",
+        "GET http://localhost:8103/health"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-connect-id-api.testql.toon.yaml"
+      ]
+    },
+    "iter1/modules/smoke.testql.toon.yaml": {
+      "endpoints": [
+        "GET http://localhost:8101/"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-modules-smoke.testql.toon.yaml"
+      ]
+    },
+    "iter3/module/apis.testql.toon.yaml": {
+      "endpoints": [
+        "GET http://localhost:8103/api/id/capabilities",
+        "GET http://localhost:8103/health",
+        "GET http://localhost:8104/api/manager/capabilities",
+        "GET http://localhost:8104/health",
+        "GET http://localhost:8105/api/scenario/health",
+        "GET http://localhost:8105/health"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter3-module-apis.testql.toon.yaml"
+      ]
+    },
+    "iter3/unit/tests.testql.toon.yaml": {
+      "endpoints": [],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter3-unit-tests.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/auth.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/auth/demo-users",
+        "GET /api/v3/auth/session",
+        "GET /api/v3/auth/users",
+        "GET /api/v3/auth/users/admin",
+        "GET /api/v3/roles",
+        "GET /api/v3/roles/access",
+        "GET /api/v3/roles/meta"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-auth.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/config.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/config/hardware-status",
+        "GET /api/v3/config/sections",
+        "GET /api/v3/config/sections/network",
+        "GET /api/v3/config/system",
+        "GET /api/v3/config/validate",
+        "GET /api/v3/feature-flags",
+        "GET /api/v3/feature-flags/all",
+        "GET /api/v3/feature-flags/categories"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-config.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/data.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/schema",
+        "GET /api/v3/schema/labels",
+        "GET /api/v3/schema/tables",
+        "GET /api/v3/sync/connect-data/compare",
+        "GET /api/v3/sync/database/tables",
+        "GET /api/v3/sync/modules/scan"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-data.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/dsl.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/dsl/functions",
+        "GET /api/v3/dsl/logs",
+        "GET /api/v3/dsl/logs/export",
+        "GET /api/v3/dsl/objects",
+        "GET /api/v3/dsl/params",
+        "GET /api/v3/dsl/units"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-dsl.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/identification.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/identification",
+        "GET /api/v3/identification/health",
+        "GET /api/v3/identification/history"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-identification.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/misc.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/health/modules/service-data",
+        "GET /api/v3/manager/health",
+        "GET /api/v3/scenarios/fallback",
+        "GET /api/v3/scenarios/health",
+        "GET /api/v3/workshops/health"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-misc.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/navigation.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/menu-editor/screenshots",
+        "GET /api/v3/redirects",
+        "GET /api/v3/redirects/aliases",
+        "GET /api/v3/redirects/options",
+        "GET /api/v3/redirects/options/all",
+        "GET /api/v3/redirects/options/contexts"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-navigation.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/operations.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/activities",
+        "GET /api/v3/assignments",
+        "GET /api/v3/protocols"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-operations.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/reports.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/reports",
+        "GET /api/v3/reports/health"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-reports.testql.toon.yaml"
+      ]
+    },
+    "iter7/auto/system.testql.toon.yaml": {
+      "endpoints": [
+        "GET /api/v3/backups/databases",
+        "GET /api/v3/backups/health",
+        "GET /api/v3/backups/list",
+        "GET /api/v3/backups/status",
+        "GET /api/v3/events/streams",
+        "GET /api/v3/events?stream=system",
+        "GET /api/v3/icons",
+        "GET /api/v3/logs",
+        "GET /api/v3/logs/dsl",
+        "GET /api/v3/logs/dsl/export",
+        "GET /api/v3/logs/errors",
+        "GET /api/v3/logs/stats",
+        "GET /api/v3/version/check",
+        "GET /api/v3/version/compare"
+      ],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-system.testql.toon.yaml"
+      ]
+    },
+    "iter7/page/discovery.testql.toon.yaml": {
+      "endpoints": [],
+      "files": [
+        "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-page-discovery.testql.toon.yaml"
+      ]
+    }
+  },
+  "files": {
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-api-v3-smoke.testql.toon.yaml": [
+      "GET /api/v1/health",
+      "GET /api/v3/customers",
+      "GET /api/v3/devices",
+      "GET /api/v3/health",
+      "GET /api/v3/menu/by-route?route=main-navigation",
+      "GET /api/v3/menu/configurations",
+      "GET /api/v3/scenarios",
+      "GET /api/v3/test-sessions",
+      "GET /api/v3/version"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-backend-pytest.testql.toon.yaml": [],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-connect-id-api.testql.toon.yaml": [
+      "GET http://localhost:8103/api/id/capabilities",
+      "GET http://localhost:8103/api/id/health",
+      "GET http://localhost:8103/health"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter1-modules-smoke.testql.toon.yaml": [
+      "GET http://localhost:8101/"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter3-module-apis.testql.toon.yaml": [
+      "GET http://localhost:8103/api/id/capabilities",
+      "GET http://localhost:8103/health",
+      "GET http://localhost:8104/api/manager/capabilities",
+      "GET http://localhost:8104/health",
+      "GET http://localhost:8105/api/scenario/health",
+      "GET http://localhost:8105/health"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter3-unit-tests.testql.toon.yaml": [],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-auth.testql.toon.yaml": [
+      "GET /api/v3/auth/demo-users",
+      "GET /api/v3/auth/session",
+      "GET /api/v3/auth/users",
+      "GET /api/v3/auth/users/admin",
+      "GET /api/v3/roles",
+      "GET /api/v3/roles/access",
+      "GET /api/v3/roles/meta"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-config.testql.toon.yaml": [
+      "GET /api/v3/config/hardware-status",
+      "GET /api/v3/config/sections",
+      "GET /api/v3/config/sections/network",
+      "GET /api/v3/config/system",
+      "GET /api/v3/config/validate",
+      "GET /api/v3/feature-flags",
+      "GET /api/v3/feature-flags/all",
+      "GET /api/v3/feature-flags/categories"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-data.testql.toon.yaml": [
+      "GET /api/v3/schema",
+      "GET /api/v3/schema/labels",
+      "GET /api/v3/schema/tables",
+      "GET /api/v3/sync/connect-data/compare",
+      "GET /api/v3/sync/database/tables",
+      "GET /api/v3/sync/modules/scan"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-dsl.testql.toon.yaml": [
+      "GET /api/v3/dsl/functions",
+      "GET /api/v3/dsl/logs",
+      "GET /api/v3/dsl/logs/export",
+      "GET /api/v3/dsl/objects",
+      "GET /api/v3/dsl/params",
+      "GET /api/v3/dsl/units"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-identification.testql.toon.yaml": [
+      "GET /api/v3/identification",
+      "GET /api/v3/identification/health",
+      "GET /api/v3/identification/history"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-misc.testql.toon.yaml": [
+      "GET /api/v3/health/modules/service-data",
+      "GET /api/v3/manager/health",
+      "GET /api/v3/scenarios/fallback",
+      "GET /api/v3/scenarios/health",
+      "GET /api/v3/workshops/health"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-navigation.testql.toon.yaml": [
+      "GET /api/v3/menu-editor/screenshots",
+      "GET /api/v3/redirects",
+      "GET /api/v3/redirects/aliases",
+      "GET /api/v3/redirects/options",
+      "GET /api/v3/redirects/options/all",
+      "GET /api/v3/redirects/options/contexts"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-operations.testql.toon.yaml": [
+      "GET /api/v3/activities",
+      "GET /api/v3/assignments",
+      "GET /api/v3/protocols"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-reports.testql.toon.yaml": [
+      "GET /api/v3/reports",
+      "GET /api/v3/reports/health"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-auto-system.testql.toon.yaml": [
+      "GET /api/v3/backups/databases",
+      "GET /api/v3/backups/health",
+      "GET /api/v3/backups/list",
+      "GET /api/v3/backups/status",
+      "GET /api/v3/events/streams",
+      "GET /api/v3/events?stream=system",
+      "GET /api/v3/icons",
+      "GET /api/v3/logs",
+      "GET /api/v3/logs/dsl",
+      "GET /api/v3/logs/dsl/export",
+      "GET /api/v3/logs/errors",
+      "GET /api/v3/logs/stats",
+      "GET /api/v3/version/check",
+      "GET /api/v3/version/compare"
+    ],
+    "/home/tom/github/maskservice/c2004/testql-scenarios/iter7-page-discovery.testql.toon.yaml": []
+  }
+}

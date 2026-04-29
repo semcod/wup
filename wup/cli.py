@@ -264,6 +264,69 @@ def init(
 
 
 @app.command()
+def testql_endpoints(
+    scenarios_dir: str = typer.Argument(..., help="Path to TestQL scenarios directory"),
+    output: str = typer.Option("testql-deps.json", "--output", "-o", help="Output dependency map file path"),
+    testql_bin: str = typer.Option("testql", "--testql-bin", help="TestQL executable name or path"),
+):
+    """
+    Discover endpoints from TestQL scenario files and build dependency map.
+    """
+    from .testql_discovery import TestQLEndpointDiscovery
+    from rich.table import Table
+    
+    scenarios_path = Path(scenarios_dir)
+    
+    if not scenarios_path.exists():
+        console.print(f"[red]Error: Scenarios directory '{scenarios_dir}' does not exist[/red]")
+        raise typer.Exit(1)
+    
+    console.print(f"[cyan]🔍 Discovering endpoints from TestQL scenarios...[/cyan]")
+    console.print(f"[dim]Scenarios directory: {scenarios_dir}[/dim]")
+    console.print()
+    
+    discovery = TestQLEndpointDiscovery(scenarios_dir, testql_bin)
+    dependency_map = discovery.to_dependency_map()
+    
+    # Display results
+    table = Table(title="Discovered Endpoints")
+    table.add_column("Service", style="cyan")
+    table.add_column("Endpoints", style="green")
+    table.add_column("Scenarios", style="yellow")
+    
+    total_endpoints = 0
+    total_scenarios = 0
+    
+    for service, info in sorted(dependency_map.get("services", {}).items()):
+        endpoints_count = len(info.get("endpoints", []))
+        scenarios_count = len(info.get("scenarios", []))
+        total_endpoints += endpoints_count
+        total_scenarios += scenarios_count
+        
+        table.add_row(
+            service,
+            str(endpoints_count),
+            str(scenarios_count)
+        )
+    
+    console.print(table)
+    console.print()
+    console.print(f"[bold]Summary:[/bold]")
+    console.print(f"  Services: {len(dependency_map.get('services', {}))}")
+    console.print(f"  Total endpoints: {total_endpoints}")
+    console.print(f"  Total scenarios: {total_scenarios}")
+    console.print()
+    
+    # Save to file
+    import json
+    output_path = Path(output)
+    with open(output_path, 'w') as f:
+        json.dump(dependency_map, f, indent=2)
+    
+    console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
+
+
+@app.command()
 def version():
     """Show WUP version."""
     from . import __version__

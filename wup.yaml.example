@@ -23,25 +23,50 @@ watch:
     - "migrations/**"
     - "__pycache__/**"
 
+  # File types to watch (empty = watch all files)
+  # Only changes to these file extensions will trigger tests
+  file_types:
+    - ".py"
+    - ".ts"
+    - ".jsx"
+    - ".tsx"
+
 services:
-  # Service configurations
-  - name: "users"
-    root: "app/users"
-    paths:
-      - "app/users/**"
-      - "routes/users/**"
-      - "schema/users/**"
+  # Service configurations - simplified with auto-detection
+  # If paths are empty, WUP auto-detects files by service name
+  
+  # Example: Shell service (auto-detects files containing "users-shell")
+  - name: "users-shell"
+    type: "shell"
+    # paths: []  # Optional - auto-detect if empty
     quick_tests:
-      scope: "read,write"
+      scope: "all"
       max_endpoints: 3
     detail_tests:
       scope: "all"
       max_endpoints: 10
-    cpu_throttle: 0.7
-    notify:
-      type: "http+file"
-      url: "http://localhost:8001/notify"
-      file: "wup/notify-users.json"
+  
+  # Example: Web service with same domain (will detect coincidence with shell)
+  - name: "users-web"
+    type: "web"
+    # paths: []  # Optional - auto-detect if empty
+    quick_tests:
+      scope: "read,write"
+      max_endpoints: 5
+    detail_tests:
+      scope: "all"
+      max_endpoints: 15
+  
+  # Example: Service with explicit paths (old style still works)
+  - name: "payments"
+    root: "app/payments"
+    paths:
+      - "app/payments/**"
+      - "routes/payments/**"
+    type: "auto"
+    quick_tests:
+      scope: "read"
+      max_endpoints: 3
 
   - name: "auth"
     root: "app/auth"
@@ -75,3 +100,5 @@ testql:
   output_format: "json"
   extra_args:
     - "--timeout 10s"
+  # Enable automatic endpoint discovery from TestQL scenario files
+  endpoint_discovery: true

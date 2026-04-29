@@ -27,8 +27,9 @@ class ServiceTestConfig:
 class ServiceConfig:
     """Configuration for a single service."""
     name: str
-    root: str
-    paths: List[str] = field(default_factory=list)
+    root: str = ""  # Optional - auto-detected if empty
+    paths: List[str] = field(default_factory=list)  # Optional - auto-detected if empty
+    type: str = "auto"  # "web", "shell", "auto" - for coincidence detection
     quick_tests: ServiceTestConfig = field(default_factory=ServiceTestConfig)
     detail_tests: ServiceTestConfig = field(default_factory=ServiceTestConfig)
     cpu_throttle: float = 0.8
@@ -40,6 +41,7 @@ class WatchConfig:
     """Configuration for file watching."""
     paths: List[str] = field(default_factory=list)
     exclude_patterns: List[str] = field(default_factory=lambda: ["*.md", "*.txt"])
+    file_types: List[str] = field(default_factory=list)  # e.g., [".py", ".ts", ".jsx"]
 
 
 @dataclass
@@ -56,6 +58,7 @@ class TestQLConfig:
     smoke_scenario: str = "smoke.testql.toon.yaml"
     output_format: str = "json"
     extra_args: List[str] = field(default_factory=lambda: ["--timeout 10s"])
+    endpoint_discovery: bool = True  # Enable automatic endpoint discovery from scenarios
 
 
 @dataclass

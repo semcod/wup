@@ -107,9 +107,7 @@ class WupWatcher:
         """
         Infer service name from file path.
         
-        Examples:
-            app/users/routes.py → "app/users"
-            src/components/auth.ts → "src/components"
+        Uses config services first, then dependency mapper, then heuristics.
         """
         rel_path = self._to_relative_path(file_path)
         parts = rel_path.parts
@@ -117,10 +115,17 @@ class WupWatcher:
         # Try to match against configured services first
         if self.config.services:
             for svc in self.config.services:
-                for svc_path in svc.paths:
-                    # Convert glob pattern to simple check
-                    if str(rel_path).startswith(svc_path.replace("**", "")):
-                        return svc.name
+                if svc.paths:
+                    # Use explicit paths if provided
+                    for svc_path in svc.paths:
+                        if str(rel_path).startswith(svc_path.replace("**", "")):
+                            return svc.name
+                else:
+                    # Auto-detect: check if service name appears in path
+                    service_name_parts = svc.name.replace("/", " ").replace("-", " ").split()
+                    for part in service_name_parts:
+                        if part.lower() in str(rel_path).lower():
+                            return svc.name
         
         # Use dependency mapper if available
         service = self.dependency_mapper.get_service_for_file(file_path)
@@ -132,6 +137,75 @@ class WupWatcher:
             return "/".join(parts[:2])
         
         return None
+    
+    def detect_service_coincidences(self, changed_service: str) -> List[str]:
+        """
+        Detect coincidences between services (e.g., shell <-> web).
+        
+        When a service changes, this finds related services that should also be tested.
+        
+        Args:
+            changed_service: The service that changed
+            
+        Returns:
+            List of related services that should also be tested
+        """
+        related_services = []
+        
+        if not self.config.services:
+            return related_services
+        
+        # Get the changed service config
+        changed_svc_config = None
+        for svc in self.config.services:
+            if svc.name == changed_service:
+                changed_svc_config = svc
+                break
+        
+        if not changed_svc_config:
+            return related_services
+        
+        # Find coincidences based on service type
+        for svc in self.config.services:
+            if svc.name == changed_service:
+                continue
+            
+            # Coincidence: shell <-> web for same domain
+            if changed_svc_config.type != "auto" and svc.type != "auto":
+                # If both have explicit types, check for opposites
+                if (changed_svc_config.type == "shell" and svc.type == "web") or \
+                   (changed_svc_config.type == "web" and svc.type == "shell"):
+                    # Check if they share a common domain (same base name)
+                    if self._services_share_domain(changed_service, svc.name):
+                        related_services.append(svc.name)
+            
+            # Coincidence: auto-detect by name similarity
+            elif changed_svc_config.type == "auto" or svc.type == "auto":
+                if self._services_share_domain(changed_service, svc.name):
+                    related_services.append(svc.name)
+        
+        return related_services
+    
+    def _services_share_domain(self, service1: str, service2: str) -> bool:
+        """
+        Check if two services share a common domain/base name.
+        
+        Examples:
+            users-shell and users-web -> True
+            api/auth and api/users -> False
+            payments and payments-shell -> True
+        """
+        # Extract base names (remove type suffixes like -shell, -web)
+        def extract_base(name: str) -> str:
+            for suffix in ["-shell", "-web", "_shell", "_web"]:
+                if name.endswith(suffix):
+                    return name[:-len(suffix)]
+            return name
+        
+        base1 = extract_base(service1)
+        base2 = extract_base(service2)
+        
+        return base1 == base2
     
     def get_service_config(self, service_name: str) -> Optional[ServiceConfig]:
         """
@@ -314,6 +388,17 @@ class WupWatcher:
             if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
                 return
             if pattern in str(rel_path):
+                return
+        
+        # Filter by file type if specified in config
+        if self.config.watch.file_types:
+            # Ensure file extensions start with dot
+            file_ext = rel_path.suffix if rel_path.suffix else ""
+            if not file_ext.startswith("."):
+                file_ext = f".{file_ext}"
+            
+            # Check if file extension matches any of the configured types
+            if file_ext not in self.config.watch.file_types:
                 return
         
         # Infer service from file path

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Dict, List, Set, Optional
 from collections import defaultdict
 import re
+from .testql_discovery import TestQLEndpointDiscovery
 
 
 class DependencyMapper:
@@ -257,3 +258,27 @@ class DependencyMapper:
             self.service_to_files[service] = set(info.get("files", []))
         
         self.file_to_endpoints = defaultdict(list, data.get("files", {}))
+    
+    def build_from_testql_scenarios(self, scenarios_dir: str, testql_bin: str = "testql") -> Dict:
+        """
+        Build dependency map from TestQL scenario files.
+        
+        Args:
+            scenarios_dir: Path to TestQL scenarios directory
+            testql_bin: TestQL executable name or path
+            
+        Returns:
+            Dictionary containing the full dependency map
+        """
+        discovery = TestQLEndpointDiscovery(scenarios_dir, testql_bin)
+        dependency_map = discovery.to_dependency_map()
+        
+        # Merge with existing mappings
+        for service, info in dependency_map.get("services", {}).items():
+            self.service_to_endpoints[service].extend(info["endpoints"])
+            self.service_to_files[service].update(info["files"])
+        
+        for file_path, endpoints in dependency_map.get("files", {}).items():
+            self.file_to_endpoints[file_path].extend(endpoints)
+        
+        return self.to_dict()
