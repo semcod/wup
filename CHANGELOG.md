@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ci_cd_integration.py`: CI/CD pipeline integration patterns (GitHub Actions, GitLab CI)
   - `webhook_notifications.py`: Slack, Teams, Discord notifications
 - **c2004 Integration**: Tested and verified with c2004 project at `/home/tom/github/maskservice/c2004`
+- **Enhanced wup.yaml Generation**: `wup init` now generates config with:
+  - Metadata header (version, generation date)
+  - Documentation links (PyPI, GitHub, README)
+  - Dependencies info (wup version, wupbro optional)
+  - wupbro section comments with install/run instructions
+  - Quick start guide in comments
 
 ### Docs
 - Updated README.md with new examples

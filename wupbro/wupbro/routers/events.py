@@ -3,6 +3,8 @@
 GET /events — list recent events (filterable by type/service).
 GET /events/stats — aggregate counts by type.
 DELETE /events — clear the store (admin/debug).
+
+Events trigger notifications for subscribed clients.
 """
 
 from __future__ import annotations
@@ -12,6 +14,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Query, Depends
 
 from ..models import Event, EventList
+from ..notifications import get_notification_manager
 from ..storage import EventStore, get_default_store
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -24,7 +27,21 @@ def _store() -> EventStore:
 @router.post("", status_code=201)
 async def post_event(event: Event, store: EventStore = Depends(_store)) -> dict:
     store.add(event)
-    return {"accepted": True, "type": event.type, "timestamp": event.timestamp}
+    
+    # Process notifications for this event
+    notification_manager = get_notification_manager(store)
+    notifications = notification_manager.process_event(event)
+    
+    # Push notifications to SSE clients
+    for sub_id, payload in notifications:
+        notification_manager.push_to_sse(payload)
+    
+    return {
+        "accepted": True, 
+        "type": event.type, 
+        "timestamp": event.timestamp,
+        "notifications_sent": len(notifications)
+    }
 
 
 @router.get("", response_model=EventList)

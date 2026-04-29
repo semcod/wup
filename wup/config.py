@@ -269,12 +269,37 @@ def get_default_config(project_root: Path) -> WupConfig:
 
 def save_config(config: WupConfig, output_path: Path):
     """
-    Save configuration to YAML file.
-    
+    Save configuration to YAML file with metadata header.
+
     Args:
         config: WupConfig object to save
         output_path: Path where to save the config
     """
+    from . import __version__
+
+    # Build metadata header
+    header_lines = [
+        f"# WUP (What's Up) Configuration",
+        f"# Version: {__version__}",
+        f"# Generated: {__import__('datetime').datetime.now().isoformat()}",
+        f"#",
+        f"# Documentation:",
+        f"#   PyPI: https://pypi.org/project/wup/",
+        f"#   GitHub: https://github.com/semcod/wup",
+        f"#   Docs: https://github.com/semcod/wup/blob/main/README.md",
+        f"#",
+        f"# Dependencies:",
+        f"#   wup=={__version__}",
+        f"#   wupbro (optional dashboard): pip install wupbro",
+        f"#",
+        f"# Quick Start:",
+        f"#   1. wup watch .                    # Start watching",
+        f"#   2. wup watch . --dashboard        # With live dashboard",
+        f"#   3. wup map-deps .                 # Build dependency map",
+        f"#",
+        ""
+    ]
+
     config_dict = {
         "project": {
             "name": config.project.name,
@@ -345,6 +370,25 @@ def save_config(config: WupConfig, output_path: Path):
             }
         }
         config_dict["services"].append(svc_dict)
-    
+
     with open(output_path, 'w') as f:
-        yaml.dump(config_dict, f, default_flow_style=False, sort_keys=False)
+        # Write header comments
+        f.write('\n'.join(header_lines))
+        # Write YAML content to string first
+        import io
+        yaml_buffer = io.StringIO()
+        yaml.dump(config_dict, yaml_buffer, default_flow_style=False, sort_keys=False)
+        yaml_content = yaml_buffer.getvalue()
+
+        # Add wupbro comments before web section
+        web_section_comment = """# wupbro dashboard integration - optional web UI for viewing events
+# Install: pip install wupbro
+# Run: wupbro --reload --port 8000
+# Docs: https://github.com/semcod/wup/tree/main/wupbro
+"""
+        yaml_content = yaml_content.replace(
+            "web:",
+            f"{web_section_comment}web:"
+        )
+
+        f.write(yaml_content)

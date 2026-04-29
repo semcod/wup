@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__
-from .routers import dashboard, drivers, events
+from .routers import dashboard, drivers, events, notifications
 
 
 def create_app() -> FastAPI:
@@ -32,6 +32,7 @@ def create_app() -> FastAPI:
     app.include_router(events.router)
     app.include_router(drivers.router)
     app.include_router(dashboard.router)
+    app.include_router(notifications.router)
 
     @app.get("/healthz", tags=["meta"])
     async def healthz():

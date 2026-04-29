@@ -6,7 +6,7 @@ FastAPI backend + minimal HTML dashboard for the WUP regression watcher.
 
 ```
 ┌──────────────────────┐   POST /events    ┌──────────────────────┐
-│  WUP agent (shell)   │ ───────────────▶  │  wupbro (FastAPI)   │
+│  WUP agent (shell)   │ ───────────────▶  │  wupbro (FastAPI)    │
 │  - file watcher      │                   │  - /events (sink)    │
 │  - testql runner     │                   │  - /drivers/*        │
 │  - visual diff       │                   │  - /dashboard (UI)   │
@@ -104,7 +104,7 @@ The agent will POST events fire-and-forget on:
 ```bash
 docker run -d --name browserless -p 3000:3000 browserless/chrome
 export BROWSERLESS_URL=http://localhost:3000
-wup-web
+wupbro
 ```
 
 Then:

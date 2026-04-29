@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-04-29
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/ANOMALY_DETECTION.md
+- Update docs/NOTIFICATIONS.md
+- Update docs/WUP_ASSISTANT.md
+- Update wupbro/README.md
+
+### Other
+- Update wup/anomaly_detector.py
+- Update wup/assistant.py
+- Update wup/config.py
+- Update wupbro/wupbro/main.py
+- Update wupbro/wupbro/models.py
+- Update wupbro/wupbro/notifications.py
+- Update wupbro/wupbro/routers/events.py
+- Update wupbro/wupbro/routers/notifications.py
+- Update wupbro/wupbro/templates/index.html
+
 ## [0.1.2] - 2026-04-29
 
 ### Docs

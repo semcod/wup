@@ -4,10 +4,10 @@
 ## AI Cost Tracking
 
 ![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.85-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-5.7h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.00-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-5.7h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.8500 (19 commits)
-- 👤 **Human dev:** ~$568 (5.7h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $3.0000 (20 commits)
+- 👤 **Human dev:** ~$571 (5.7h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
@@ -169,6 +169,11 @@ Generate a default configuration:
 ```bash
 wup init
 ```
+
+The generated `wup.yaml` includes:
+- **Metadata header**: Version, generation date, documentation links
+- **Dependencies info**: WUP version and optional wupbro dashboard
+- **Quick start guide**: Common commands to get started
 
 Example `wup.yaml`:
 
@@ -333,7 +338,7 @@ web:
 Or via env:
 
 ```bash
-export WUP_WEB_ENDPOINT=http://localhost:8000
+export WUPBRO_ENDPOINT=http://localhost:8000
 ```
 
 The agent fire-and-forgets `REGRESSION`, `PASS`, `ANOMALY`, `VISUAL_DIFF`, and `HEALTH_TRANSITION` events. Network errors never break the watcher (soft-fail).
