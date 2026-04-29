@@ -375,6 +375,26 @@ class WupWatcher:
             await self.process_test_queue_once()
             await asyncio.sleep(self.debounce_seconds)
     
+    def should_watch_file(self, file_path: str) -> bool:
+        """
+        Check if a file should be watched based on configured file types.
+        
+        Args:
+            file_path: Path to the file
+            
+        Returns:
+            True if file should be watched, False otherwise
+        """
+        normalized = str(file_path).lower()
+        if normalized.endswith(".testql.toon.yaml"):
+            return True
+
+        if not self.config.watch.file_types:
+            return True
+        
+        file_suffix = Path(file_path).suffix.lower()
+        return file_suffix in self.config.watch.file_types
+    
     def on_file_change(self, file_path: str):
         """
         Handle file change event.
@@ -382,6 +402,10 @@ class WupWatcher:
         Args:
             file_path: Path to the changed file
         """
+        # Check file type filter
+        if not self.should_watch_file(file_path):
+            return
+        
         # Only watch relevant directories
         rel_path = self._to_relative_path(file_path)
         parts = rel_path.parts

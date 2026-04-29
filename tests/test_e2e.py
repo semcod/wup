@@ -1,6 +1,7 @@
 """End-to-end tests for WUP CLI and workflows."""
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -11,13 +12,29 @@ from typing import List
 import pytest
 
 
+def run_wup_command(args, cwd=None, timeout=30, capture_output=True, text=True):
+    """Helper to run WUP commands with PYTHONPATH set."""
+    env = os.environ.copy()
+    # Add project root to PYTHONPATH so subprocess can find wup module
+    project_root = Path(__file__).parent.parent
+    env["PYTHONPATH"] = str(project_root) + ":" + env.get("PYTHONPATH", "")
+    return subprocess.run(
+        args,
+        cwd=cwd,
+        capture_output=capture_output,
+        text=text,
+        timeout=timeout,
+        env=env
+    )
+
+
 class TestE2ECLI:
     """End-to-end tests for CLI commands."""
     
     def test_cli_init_creates_config_file(self):
         """Test that wup init creates a wup.yaml configuration file."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "init", "--output", str(Path(tmpdir) / "wup.yaml")],
                 cwd=tmpdir,
                 capture_output=True,
@@ -37,7 +54,7 @@ class TestE2ECLI:
     def test_cli_init_default_location(self):
         """Test that wup init creates wup.yaml in current directory by default."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "init"],
                 cwd=tmpdir,
                 capture_output=True,
@@ -67,7 +84,7 @@ def get_users():
     return []
 """)
             
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir, "--framework", "fastapi"],
                 cwd=tmpdir,
                 capture_output=True,
@@ -98,7 +115,7 @@ def get_users():
                 "files": {"app/users/routes.py": ["/users"]}
             }))
             
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "status", "--deps", str(deps_file)],
                 cwd=tmpdir,
                 capture_output=True,
@@ -118,25 +135,23 @@ class TestE2EWorkflow:
         """Test complete workflow from config to file watching."""
         with tempfile.TemporaryDirectory() as tmpdir:
             # Initialize config
-            subprocess.run(
+            run_wup_command(
                 [sys.executable, "-m", "wup.cli", "init"],
                 cwd=tmpdir,
-                capture_output=True,
                 timeout=10
             )
-            
+
             # Create project structure
             app_dir = Path(tmpdir) / "app" / "users"
             app_dir.mkdir(parents=True)
-            
+
             routes_file = app_dir / "routes.py"
             routes_file.write_text("def handler(): pass\n")
-            
+
             # Build dependencies
-            subprocess.run(
+            run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir, "--framework", "fastapi"],
                 cwd=tmpdir,
-                capture_output=True,
                 timeout=30
             )
             
@@ -186,19 +201,10 @@ test_strategy:
             routes_file.write_text("def handler(): pass\n")
             
             # Build dependencies
-            import os
-            env = os.environ.copy()
-            # Add project root to PYTHONPATH so subprocess can find wup module
-            project_root = Path(__file__).parent.parent
-            env["PYTHONPATH"] = str(project_root) + ":" + env.get("PYTHONPATH", "")
-            
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
-                capture_output=True,
-                text=True,
-                timeout=30,
-                env=env
+                timeout=30
             )
             
             assert result.returncode == 0
@@ -241,7 +247,7 @@ services:
             md_file.write_text("# API\n")
             
             # Build dependencies
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
                 capture_output=True,
@@ -312,7 +318,7 @@ def login():
 """)
             
             # Build dependencies for FastAPI
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir, "--framework", "fastapi"],
                 cwd=tmpdir,
                 capture_output=True,
@@ -338,7 +344,7 @@ class TestE2EErrorHandling:
             config_file = Path(tmpdir) / "wup.yaml"
             config_file.write_text("invalid: yaml: content: [")
             
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "status"],
                 cwd=tmpdir,
                 capture_output=True,
@@ -351,7 +357,7 @@ class TestE2EErrorHandling:
     
     def test_cli_handles_missing_project(self):
         """Test that CLI handles missing project directory."""
-        result = subprocess.run(
+        result = run_wup_command(
             [sys.executable, "-m", "wup.cli", "map-deps", "/nonexistent/path"],
             capture_output=True,
             text=True,
@@ -364,7 +370,7 @@ class TestE2EErrorHandling:
     def test_cli_handles_empty_project(self):
         """Test that CLI handles empty project directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
                 capture_output=True,
@@ -394,7 +400,7 @@ class TestE2EPerformance:
                 routes_file.write_text("def handler(): pass\n")
             
             start_time = time.time()
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
                 capture_output=True,
@@ -409,7 +415,7 @@ class TestE2EPerformance:
         """Test init command performance."""
         with tempfile.TemporaryDirectory() as tmpdir:
             start_time = time.time()
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "init"],
                 cwd=tmpdir,
                 capture_output=True,
@@ -461,7 +467,7 @@ services:
                 routes_file.write_text("def handler(): pass\n")
             
             # Build dependencies
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
                 capture_output=True,
@@ -500,7 +506,7 @@ services:
                 routes_file.write_text("def handler(): pass\n")
             
             # Build dependencies
-            result = subprocess.run(
+            result = run_wup_command(
                 [sys.executable, "-m", "wup.cli", "map-deps", tmpdir],
                 cwd=tmpdir,
                 capture_output=True,

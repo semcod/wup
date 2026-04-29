@@ -68,16 +68,13 @@ class TestQLWatcher(WupWatcher):
         # Pass config to parent class
         super().__init__(project_root=project_root, config=config, **kwargs)
         
-        # Use config values if available, otherwise use parameters
-        if config.testql:
+        # Use config scenario_dir if available, otherwise use parameter default
+        if config and config.testql and config.testql.scenario_dir:
             self.scenarios_dir = self.project_root / config.testql.scenario_dir
-            self.testql_bin = testql_bin  # CLI parameter takes precedence
-            # Use extra_args from config if needed
-            self.testql_extra_args = config.testql.extra_args
         else:
             self.scenarios_dir = self.project_root / scenarios_dir
-            self.testql_bin = testql_bin
-            self.testql_extra_args = []
+        self.testql_bin = testql_bin
+        self.testql_extra_args = config.testql.extra_args if config and config.testql else []
         
         self.quick_limit = quick_limit
         self.track_dir = self.project_root / track_dir
@@ -92,6 +89,17 @@ class TestQLWatcher(WupWatcher):
     def _tokenize_service(self, service: str) -> List[str]:
         raw_tokens = re.split(r"[^a-zA-Z0-9]+", service.lower())
         return [token for token in raw_tokens if len(token) >= 3]
+
+    def _get_config_endpoints_for_service(self, service: str) -> List[str]:
+        by_service = self.config.testql.endpoints_by_service or {}
+        explicit = self.config.testql.explicit_endpoints or []
+
+        service_specific = by_service.get(service, [])
+        merged: List[str] = []
+        for endpoint in [*service_specific, *explicit]:
+            if endpoint not in merged:
+                merged.append(endpoint)
+        return merged
 
     def _discover_scenarios(self) -> List[Path]:
         if not self.scenarios_dir.exists():
@@ -210,6 +218,11 @@ class TestQLWatcher(WupWatcher):
         return track_path
 
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
+        merged_endpoints = list(endpoints)
+        for configured_endpoint in self._get_config_endpoints_for_service(service):
+            if configured_endpoint not in merged_endpoints:
+                merged_endpoints.append(configured_endpoint)
+
         scenarios = self._select_scenarios_for_service(service)
         
         # Apply service-specific quick limit
@@ -224,7 +237,7 @@ class TestQLWatcher(WupWatcher):
             return True
 
         self.console.print(
-            f"[cyan]🧪 Quick TestQL for {service} ({len(scenarios)} scenarios / {len(endpoints)} endpoints)[/cyan]"
+            f"[cyan]🧪 Quick TestQL for {service} ({len(scenarios)} scenarios / {len(merged_endpoints)} endpoints)[/cyan]"
         )
 
         for scenario in scenarios:
@@ -255,10 +268,16 @@ class TestQLWatcher(WupWatcher):
         return True
 
     async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
+        merged_endpoints = list(endpoints)
+        for configured_endpoint in self._get_config_endpoints_for_service(service):
+            if configured_endpoint not in merged_endpoints:
+                merged_endpoints.append(configured_endpoint)
+
         scenarios = self._select_scenarios_for_service(service)
         results = {
             "service": service,
             "total_scenarios": len(scenarios),
+            "total_endpoints": len(merged_endpoints),
             "passed": 0,
             "failed": 0,
             "failed_scenarios": [],
@@ -266,7 +285,7 @@ class TestQLWatcher(WupWatcher):
         }
 
         self.console.print(
-            f"[cyan]🔍 Detail TestQL for {service} ({len(scenarios)} scenarios / {len(endpoints)} endpoints)[/cyan]"
+            f"[cyan]🔍 Detail TestQL for {service} ({len(scenarios)} scenarios / {len(merged_endpoints)} endpoints)[/cyan]"
         )
 
         for scenario in scenarios:

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-04-29
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_e2e.py
+- Update tests/test_testql_watcher.py
+- Update tests/test_wup.py
+
+### Other
+- Update wup/config.py
+- Update wup/core.py
+- Update wup/models/config.py
+- Update wup/testql_watcher.py
+
 ## [0.2.8] - 2026-04-29
 
 ### Docs

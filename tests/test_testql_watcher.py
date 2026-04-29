@@ -17,15 +17,16 @@ def test_process_changed_file_creates_track_on_failure():
 
         scenario_dir = root / "testql-scenarios"
         scenario_dir.mkdir(parents=True, exist_ok=True)
-        failing_scenario = scenario_dir / "api-users-failing.testql.toon.yaml"
+        failing_scenario = scenario_dir / "app-users.testql.toon.yaml"
         failing_scenario.write_text("name: failing\n", encoding="utf-8")
 
         # Pass empty config to prevent loading from temp dir
+        from wup.models.config import TestQLConfig
         empty_config = WupConfig(
             project=ProjectConfig(name="test"),
             services=[],
             test_strategy=None,
-            testql=None
+            testql=TestQLConfig(scenario_dir="testql-scenarios")
         )
         watcher = TestQLWatcher(
             project_root=str(root),

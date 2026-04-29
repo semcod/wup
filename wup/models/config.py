@@ -59,6 +59,10 @@ class TestQLConfig:
     output_format: str = "json"
     extra_args: List[str] = field(default_factory=lambda: ["--timeout 10s"])
     endpoint_discovery: bool = True  # Enable automatic endpoint discovery from scenarios
+    base_url: str = ""
+    base_url_env: str = "WUP_BASE_URL"
+    explicit_endpoints: List[str] = field(default_factory=list)
+    endpoints_by_service: Dict[str, List[str]] = field(default_factory=dict)
 
 
 @dataclass

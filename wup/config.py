@@ -150,7 +150,11 @@ def validate_config(raw: dict) -> WupConfig:
         smoke_scenario=testql_raw.get("smoke_scenario", "smoke.testql.toon.yaml"),
         output_format=testql_raw.get("output_format", "json"),
         extra_args=testql_raw.get("extra_args", ["--timeout 10s"]),
-        endpoint_discovery=testql_raw.get("endpoint_discovery", True)
+        endpoint_discovery=testql_raw.get("endpoint_discovery", True),
+        base_url=testql_raw.get("base_url", ""),
+        base_url_env=testql_raw.get("base_url_env", "WUP_BASE_URL"),
+        explicit_endpoints=testql_raw.get("explicit_endpoints", []),
+        endpoints_by_service=testql_raw.get("endpoints_by_service", {})
     )
     
     return WupConfig(
@@ -215,7 +219,12 @@ def save_config(config: WupConfig, output_path: Path):
             "scenario_dir": config.testql.scenario_dir,
             "smoke_scenario": config.testql.smoke_scenario,
             "output_format": config.testql.output_format,
-            "extra_args": config.testql.extra_args
+            "extra_args": config.testql.extra_args,
+            "endpoint_discovery": config.testql.endpoint_discovery,
+            "base_url": config.testql.base_url,
+            "base_url_env": config.testql.base_url_env,
+            "explicit_endpoints": config.testql.explicit_endpoints,
+            "endpoints_by_service": config.testql.endpoints_by_service,
         }
     }
     

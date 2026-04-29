@@ -790,6 +790,47 @@ def test_import():
     from wup import WupWatcher, DependencyMapper  # noqa: F401
 
 
+class TestFileFiltering:
+    """Tests for file type filtering."""
+    
+    def test_should_watch_file_with_config(self):
+        """Test file filtering with configured file types."""
+        from wup.models.config import WupConfig, ProjectConfig, WatchConfig
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(file_types=[".py", ".ts", ".tsx", ".js"])
+            )
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Should watch allowed types
+            assert watcher.should_watch_file(str(Path(tmpdir) / "app.py"))
+            assert watcher.should_watch_file(str(Path(tmpdir) / "component.ts"))
+            assert watcher.should_watch_file(str(Path(tmpdir) / "app.tsx"))
+            assert watcher.should_watch_file(str(Path(tmpdir) / "main.js"))
+            
+            # Should skip disallowed types
+            assert not watcher.should_watch_file(str(Path(tmpdir) / "README.md"))
+            assert not watcher.should_watch_file(str(Path(tmpdir) / "config.yaml"))
+    
+    def test_should_watch_file_without_config(self):
+        """Test file filtering without configured file types (watch all)."""
+        from wup.models.config import WupConfig, ProjectConfig, WatchConfig
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(file_types=[])
+            )
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Should watch all files when no filter configured
+            assert watcher.should_watch_file(str(Path(tmpdir) / "app.py"))
+            assert watcher.should_watch_file(str(Path(tmpdir) / "README.md"))
+            assert watcher.should_watch_file(str(Path(tmpdir) / "config.yaml"))
+
+
 class TestConfigModels:
     """Tests for configuration dataclasses."""
     
