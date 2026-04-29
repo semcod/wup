@@ -1,19 +1,28 @@
 """
-Integration example: WUP + TestQL
+Integration example: WUP + TestQL + Visual DOM Diff
 
 This example shows how to integrate WUP watcher with TestQL framework
-to monitor TestQL codebase and run intelligent regression tests.
+to monitor TestQL codebase and run intelligent regression tests,
+with optional visual DOM diff after each successful quick test.
+
+Visual diff requires Playwright:
+  pip install playwright && playwright install chromium
+
+Set base URL via wup.yaml or env:
+  WUP_BASE_URL=http://localhost:8100
 """
 
 import asyncio
 import subprocess
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from wup.core import WupWatcher
+from wup.models.config import VisualDiffConfig
+from wup.visual_diff import VisualDiffer
 
 
 class TestQLWatcher(WupWatcher):
@@ -21,12 +30,15 @@ class TestQLWatcher(WupWatcher):
     Custom WUP watcher integrated with TestQL test framework.
     
     Overrides test methods to run actual TestQL tests instead of simulated ones.
+    Optionally runs visual DOM diff after each successful quick test.
     """
     
-    def __init__(self, testql_project_root: str, **kwargs):
+    def __init__(self, testql_project_root: str,
+                 visual_diff_cfg: Optional[VisualDiffConfig] = None, **kwargs):
         super().__init__(testql_project_root, **kwargs)
         self.testql_root = Path(testql_project_root)
         self.scenarios_dir = self.testql_root / "scenarios"
+        self.visual_differ = VisualDiffer(testql_project_root, visual_diff_cfg or VisualDiffConfig())
         
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         """
@@ -65,6 +77,10 @@ class TestQLWatcher(WupWatcher):
                     return False
             
             self.console.print(f"[green]✓ Quick test passed ({len(test_scenarios)} scenarios)[/green]")
+            if self.visual_differ.cfg.enabled:
+                asyncio.ensure_future(
+                    self.visual_differ.run_for_service(service, endpoints)
+                )
             return True
             
         except (subprocess.TimeoutExpired, Exception) as e:
@@ -193,13 +209,27 @@ def main():
     # Default to testql directory or use provided path
     testql_path = sys.argv[1] if len(sys.argv) > 1 else "/home/tom/github/oqlos/testql"
     
-    print(f"🚀 Starting WUP + TestQL integration")
+    print(f"🚀 Starting WUP + TestQL + Visual Diff integration")
     print(f"📁 TestQL project: {testql_path}")
     print()
+
+    # Visual diff configuration — enable to scan pages after each successful quick test
+    # Requires: pip install playwright && playwright install chromium
+    vd_cfg = VisualDiffConfig(
+        enabled=False,        # set to True to activate
+        base_url="",          # or set WUP_BASE_URL env var
+        pages=["/health"],    # explicit pages to scan
+        pages_from_endpoints=True,
+        delay_seconds=5.0,
+        threshold_added=3,
+        threshold_removed=3,
+        threshold_changed=5,
+    )
     
     # Initialize watcher with TestQL-specific settings
     watcher = TestQLWatcher(
         testql_project_root=testql_path,
+        visual_diff_cfg=vd_cfg,
         cpu_throttle=0.7,  # Be gentle with CPU
         debounce_seconds=3,
         test_cooldown_seconds=180  # 3 minutes between tests

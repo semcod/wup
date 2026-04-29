@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.14-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.25-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-3.2h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.15-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.40-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-4.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.2500 (15 commits)
-- 👤 **Human dev:** ~$324 (3.2h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.4000 (16 commits)
+- 👤 **Human dev:** ~$411 (4.1h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.14-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.15-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -259,56 +259,86 @@ export WUP_CPU_THROTTLE=0.5
 export WUP_DEBOUNCE=3
 ```
 
-## Integration with Test Frameworks
+## Visual DOM Diff
 
-WUP is designed to work with any test framework. The current implementation includes placeholder test methods that you can customize:
+WUP optionally scans configured pages with Playwright after each successful quick test, compares the DOM structure to the previous snapshot, and reports significant changes.
 
-```python
-# In wup/core.py, customize these methods:
+### Setup
 
-async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
-    # Integrate with your test framework (pytest, unittest, TestQL, etc.)
-    # Example:
-    result = subprocess.run([
-        "pytest", f"tests/{service}/test_smoke.py",
-        "--maxfail=1", "-q"
-    ])
-    return result.returncode == 0
-
-async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
-    # Run full test suite with blame reporting
-    # Example:
-    result = subprocess.run([
-        "pytest", f"tests/{service}/",
-        "--cov", f"app/{service}",
-        "--cov-report=json"
-    ])
-    return parse_coverage_report("coverage.json")
+```bash
+pip install playwright
+playwright install chromium
 ```
+
+### Configuration
+
+```yaml
+visual_diff:
+  enabled: true
+  base_url: "http://localhost:8100"   # or leave empty and set WUP_BASE_URL env var
+  base_url_env: "WUP_BASE_URL"
+  delay_seconds: 5.0      # wait after file change before scanning
+  max_depth: 10            # DOM snapshot depth
+  pages:
+    - "/health"
+    - "/dashboard"
+  pages_from_endpoints: true   # also scan endpoints from testql config
+  threshold_added: 3           # min node additions to report as "changed"
+  threshold_removed: 3
+  threshold_changed: 5
+  headless: true
+```
+
+Or set the base URL in `.wup.env` in the project root (not committed to git):
+
+```bash
+# .wup.env
+WUP_BASE_URL=http://localhost:8100
+```
+
+### Output
+
+- **Snapshots** — `.wup/visual-snapshots/<service>/<page>.json`
+- **Diff events** — `.wup/visual-diffs/<service>/<page>.jsonl` (appended on each change)
+
+Visible in `wup status` as a "Visual DOM diffs" section.
+
+### Graceful degradation
+
+If Playwright is not installed, the visual diff module logs a warning and skips scanning — it does **not** break the watcher.
 
 ## Project Structure
 
 ```
 wup/
 ├── wup/
-│   ├── __init__.py           # Package exports
-│   ├── config.py             # Configuration loader
-│   ├── models/
-│   │   ├── __init__.py       # Models package
-│   │   └── config.py         # Configuration dataclasses
-│   ├── core.py               # WupWatcher implementation
-│   ├── dependency_mapper.py  # Dependency mapping logic
-│   ├── testql_watcher.py     # TestQL integration
-│   └── cli.py                # CLI interface
+│   ├── __init__.py            # Package exports
+│   ├── cli.py                 # CLI: watch, map-deps, status, init, testql-endpoints
+│   ├── config.py              # Config loading/saving + .wup.env support
+│   ├── core.py                # WupWatcher: detection, inference, scheduling
+│   ├── dependency_mapper.py   # DependencyMapper: codebase → deps.json
+│   ├── testql_discovery.py    # TestQLEndpointDiscovery: scenario parsing
+│   ├── testql_watcher.py      # TestQLWatcher: scenario runner + health tracking
+│   ├── visual_diff.py         # VisualDiffer: Playwright DOM snapshot + diff engine
+│   └── models/
+│       ├── __init__.py
+│       └── config.py          # Dataclasses: WupConfig, VisualDiffConfig, TestQLConfig...
 ├── tests/
-│   └── test_wup.py           # Unit tests
+│   ├── test_wup.py            # unit/integration tests (incl. VisualDiffer, config)
+│   ├── test_testql_watcher.py # TestQLWatcher + VisualDiffer integration tests
+│   └── test_e2e.py            # end-to-end CLI tests
+├── examples/
+│   ├── fastapi-app/           # FastAPI example project
+│   ├── flask-app/             # Flask example project
+│   ├── multi-service/         # Multi-service example
+│   ├── testql_demo.py         # TestQL simulation demo
+│   ├── testql_integration.py  # Custom TestQLWatcher + visual diff example
+│   └── visual_diff_demo.py    # Visual DOM diff demo (no Playwright required)
 ├── docs/
-│   ├── 2.md                  # Refactoring documentation
-│   ├── 3.md                  # Configuration plan
-│   └── TESTQL_INTEGRATION.md # TestQL integration docs
-├── wup.yaml.example          # Example configuration
-├── pyproject.toml           # Package configuration
-└── README.md                 # This file
+│   └── TESTQL_INTEGRATION.md  # TestQL integration guide
+├── testql-scenarios/          # Auto-generated TestQL scenarios
+├── pyproject.toml             # Package config (setuptools)
+└── README.md
 ```
 
 ## Development
@@ -317,23 +347,33 @@ wup/
 
 ```bash
 # Run all tests
-pytest
+python3 -m pytest tests/ -v
+
+# Run specific suite
+python3 -m pytest tests/test_wup.py -v
+python3 -m pytest tests/test_testql_watcher.py -v
 
 # Run with coverage
-pytest --cov=wup
-
-# Run specific test
-pytest tests/test_wup.py::TestDependencyMapper::test_init
+python3 -m pytest tests/ --cov=wup
 ```
 
-### Building for Distribution
+### Examples
 
 ```bash
-# Build wheel and source distribution
-python -m build
+# Visual diff demo (no Playwright required)
+python3 examples/visual_diff_demo.py
 
-# Install from dist
-pip install dist/wup-0.1.6-py3-none-any.whl
+# With live page scan (requires playwright)
+python3 examples/visual_diff_demo.py http://localhost:8100/health
+
+# TestQL + visual diff integration
+python3 examples/testql_integration.py /path/to/project
+```
+
+### Building & Publishing
+
+```bash
+python -m build
 ```
 
 ## License

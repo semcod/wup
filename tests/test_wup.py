@@ -18,8 +18,10 @@ from wup.models.config import (
     NotifyConfig,
     ServiceTestConfig,
     ProjectConfig,
+    VisualDiffConfig,
 )
 from wup.testql_watcher import TestQLWatcher
+from wup.visual_diff import VisualDiffer, _diff_snapshots, _page_slug, _resolve_base_url
 
 
 class TestDependencyMapper:
@@ -921,6 +923,162 @@ class TestConfigModels:
         assert config.project.name == "test"
         assert len(config.services) == 1
         assert config.services[0].name == "users"
+        # visual_diff is auto-populated with defaults
+        assert isinstance(config.visual_diff, VisualDiffConfig)
+        assert config.visual_diff.enabled is False
+
+    def test_visual_diff_config_defaults(self):
+        """Test VisualDiffConfig has sensible defaults."""
+        cfg = VisualDiffConfig()
+        assert cfg.enabled is False
+        assert cfg.base_url == ""
+        assert cfg.base_url_env == "WUP_BASE_URL"
+        assert cfg.delay_seconds == 5.0
+        assert cfg.max_depth == 10
+        assert cfg.snapshot_dir == ".wup/visual-snapshots"
+        assert cfg.diff_dir == ".wup/visual-diffs"
+        assert cfg.pages == []
+        assert cfg.pages_from_endpoints is True
+        assert cfg.headless is True
+
+    def test_visual_diff_config_custom(self):
+        """Test VisualDiffConfig with custom values."""
+        cfg = VisualDiffConfig(
+            enabled=True,
+            base_url="http://localhost:9000",
+            pages=["/dashboard", "/users"],
+            threshold_added=10,
+        )
+        assert cfg.enabled is True
+        assert cfg.base_url == "http://localhost:9000"
+        assert cfg.pages == ["/dashboard", "/users"]
+        assert cfg.threshold_added == 10
+
+
+class TestVisualDiffer:
+    """Tests for the VisualDiffer class (no Playwright required)."""
+
+    def test_resolve_base_url_from_config(self):
+        cfg = VisualDiffConfig(base_url="http://localhost:8080/")
+        assert _resolve_base_url(cfg) == "http://localhost:8080"
+
+    def test_resolve_base_url_from_env(self, monkeypatch):
+        cfg = VisualDiffConfig(base_url="", base_url_env="MY_VD_URL")
+        monkeypatch.setenv("MY_VD_URL", "http://env-host:1234/")
+        assert _resolve_base_url(cfg) == "http://env-host:1234"
+
+    def test_resolve_base_url_empty(self, monkeypatch):
+        cfg = VisualDiffConfig(base_url="", base_url_env="WUP_VD_NONE")
+        monkeypatch.delenv("WUP_VD_NONE", raising=False)
+        assert _resolve_base_url(cfg) == ""
+
+    def test_page_slug(self):
+        assert _page_slug("http://x/api/v1/users") == "api_v1_users"
+        assert _page_slug("http://x/") == "root"
+
+    def test_pages_for_service_explicit(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                base_url="http://localhost:8080",
+                pages=["/dashboard"],
+                pages_from_endpoints=False,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+            pages = differ._pages_for_service("users", ["/api/users"])
+            assert pages == ["http://localhost:8080/dashboard"]
+
+    def test_pages_for_service_from_endpoints(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                base_url="http://localhost:8080",
+                pages_from_endpoints=True,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+            pages = differ._pages_for_service("users", ["/api/users", "/api/users/1"])
+            assert "http://localhost:8080/api/users" in pages
+            assert "http://localhost:8080/api/users/1" in pages
+
+    def test_pages_for_service_fallback(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                base_url="http://localhost:8080",
+                pages_from_endpoints=False,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+            pages = differ._pages_for_service("users", [])
+            assert pages == ["http://localhost:8080/users"]
+
+    def test_pages_for_service_absolute_url_passthrough(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                base_url="http://localhost:8080",
+                pages=["https://example.com/health"],
+                pages_from_endpoints=False,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+            pages = differ._pages_for_service("svc", [])
+            assert pages == ["https://example.com/health"]
+
+    def test_diff_snapshots_baseline(self):
+        new = {"tag": "HTML", "children": [{"tag": "BODY"}]}
+        diff = _diff_snapshots(None, new, max_depth=5,
+                               threshold_added=1, threshold_removed=1, threshold_changed=1)
+        assert diff["status"] == "new"
+
+    def test_diff_snapshots_identical(self):
+        snap = {"tag": "HTML", "children": [{"tag": "BODY", "id": "main"}]}
+        diff = _diff_snapshots(snap, snap, max_depth=5,
+                               threshold_added=1, threshold_removed=1, threshold_changed=1)
+        assert diff["status"] == "ok"
+        assert diff["counts"]["added"] == 0
+        assert diff["counts"]["removed"] == 0
+
+    def test_diff_snapshots_changed(self):
+        old = {"tag": "HTML", "children": [{"tag": "BODY"}]}
+        new = {"tag": "HTML", "children": [
+            {"tag": "BODY"},
+            {"tag": "DIV", "id": "added1"},
+            {"tag": "DIV", "id": "added2"},
+            {"tag": "DIV", "id": "added3"},
+        ]}
+        diff = _diff_snapshots(old, new, max_depth=5,
+                               threshold_added=3, threshold_removed=10, threshold_changed=10)
+        assert diff["status"] == "changed"
+        assert diff["counts"]["added"] >= 3
+
+    def test_run_for_service_disabled_returns_empty(self):
+        """When disabled, run_for_service should be a no-op."""
+        import asyncio
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(enabled=False)
+            differ = VisualDiffer(tmpdir, cfg)
+            results = asyncio.run(differ.run_for_service("svc", ["/x"]))
+            assert results == []
+
+    def test_get_recent_diffs_empty(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig()
+            differ = VisualDiffer(tmpdir, cfg)
+            assert differ.get_recent_diffs() == []
+
+    def test_get_recent_diffs_filters_by_age(self):
+        import time
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(diff_dir=".wup/visual-diffs")
+            differ = VisualDiffer(tmpdir, cfg)
+            now = int(time.time())
+            diff_file = differ.diff_dir / "svc" / "page.jsonl"
+            diff_file.parent.mkdir(parents=True, exist_ok=True)
+            diff_file.write_text(
+                json.dumps({"timestamp": now, "service": "svc", "url": "/x",
+                            "diff": {"status": "changed"}}) + "\n"
+                + json.dumps({"timestamp": now - 9999, "service": "svc", "url": "/y",
+                              "diff": {"status": "changed"}}) + "\n",
+                encoding="utf-8",
+            )
+            recent = differ.get_recent_diffs(seconds=300)
+            assert len(recent) == 1
+            assert recent[0]["url"] == "/x"
 
 
 class TestConfigLoader:
@@ -1072,6 +1230,126 @@ project:
             
             with pytest.raises(ValueError, match="project.name"):
                 load_config(Path(tmpdir), config_path)
+
+    def test_save_and_load_visual_diff_config(self):
+        """Test that visual_diff section is correctly saved and reloaded."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="vd-test"),
+                visual_diff=VisualDiffConfig(
+                    enabled=True,
+                    base_url="http://localhost:9000",
+                    pages=["/health", "/users"],
+                    delay_seconds=2.5,
+                    max_depth=6,
+                    threshold_added=7,
+                    threshold_removed=4,
+                    threshold_changed=8,
+                    headless=False,
+                ),
+            )
+            config_path = Path(tmpdir) / "wup.yaml"
+            save_config(config, config_path)
+
+            loaded = load_config(Path(tmpdir), config_path)
+            vd = loaded.visual_diff
+            assert vd.enabled is True
+            assert vd.base_url == "http://localhost:9000"
+            assert vd.pages == ["/health", "/users"]
+            assert vd.delay_seconds == 2.5
+            assert vd.max_depth == 6
+            assert vd.threshold_added == 7
+            assert vd.threshold_removed == 4
+            assert vd.threshold_changed == 8
+            assert vd.headless is False
+
+    def test_load_config_visual_diff_from_yaml(self):
+        """Test parsing visual_diff section from raw YAML."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            yaml_content = """
+project:
+  name: "my-app"
+visual_diff:
+  enabled: true
+  base_url: "http://localhost:8100"
+  base_url_env: "MY_BASE_URL"
+  delay_seconds: 3.0
+  max_depth: 8
+  snapshot_dir: ".wup/snaps"
+  diff_dir: ".wup/diffs"
+  pages:
+    - "/dashboard"
+    - "/settings"
+  pages_from_endpoints: false
+  threshold_added: 5
+  threshold_removed: 2
+  threshold_changed: 9
+  headless: false
+"""
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(yaml_content)
+            config = load_config(Path(tmpdir), config_path)
+            vd = config.visual_diff
+            assert vd.enabled is True
+            assert vd.base_url == "http://localhost:8100"
+            assert vd.base_url_env == "MY_BASE_URL"
+            assert vd.delay_seconds == 3.0
+            assert vd.max_depth == 8
+            assert vd.snapshot_dir == ".wup/snaps"
+            assert vd.diff_dir == ".wup/diffs"
+            assert vd.pages == ["/dashboard", "/settings"]
+            assert vd.pages_from_endpoints is False
+            assert vd.threshold_added == 5
+            assert vd.threshold_removed == 2
+            assert vd.threshold_changed == 9
+            assert vd.headless is False
+
+    def test_load_config_visual_diff_defaults_when_section_absent(self):
+        """visual_diff section absent → all defaults used."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text("project:\n  name: x\n")
+            config = load_config(Path(tmpdir), config_path)
+            vd = config.visual_diff
+            assert vd.enabled is False
+            assert vd.base_url == ""
+            assert vd.max_depth == 10
+            assert vd.pages == []
+            assert vd.headless is True
+
+    def test_load_dotenv_sets_env_var(self):
+        """_load_dotenv should load .wup.env into os.environ."""
+        import os
+        from wup.config import _load_dotenv
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            env_file = root / ".wup.env"
+            env_file.write_text('WUP_TEST_DUMMY_VAR=hello_wup\n# comment\n', encoding="utf-8")
+            existing = os.environ.pop("WUP_TEST_DUMMY_VAR", None)
+            try:
+                _load_dotenv(root)
+                assert os.environ.get("WUP_TEST_DUMMY_VAR") == "hello_wup"
+            finally:
+                os.environ.pop("WUP_TEST_DUMMY_VAR", None)
+                if existing is not None:
+                    os.environ["WUP_TEST_DUMMY_VAR"] = existing
+
+    def test_load_dotenv_does_not_overwrite_existing(self):
+        """_load_dotenv must NOT overwrite already-set env vars."""
+        import os
+        from wup.config import _load_dotenv
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            env_file = root / ".wup.env"
+            env_file.write_text('WUP_TEST_NOOVERWRITE=from_file\n', encoding="utf-8")
+            os.environ["WUP_TEST_NOOVERWRITE"] = "original"
+            try:
+                _load_dotenv(root)
+                assert os.environ["WUP_TEST_NOOVERWRITE"] == "original"
+            finally:
+                os.environ.pop("WUP_TEST_NOOVERWRITE", None)
 
 
 class TestConfigIntegration:

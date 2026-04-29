@@ -183,12 +183,31 @@ def validate_config(raw: dict) -> WupConfig:
 
     # Parse visual_diff config
     vd_raw = raw.get("visual_diff", {})
+    env_visual_enabled = os.environ.get("WUP_VISUAL_DIFF_ENABLED")
+    env_visual_delay = os.environ.get("WUP_VISUAL_DIFF_DELAY_SECONDS")
+    env_visual_depth = os.environ.get("WUP_VISUAL_DIFF_MAX_DEPTH")
+
+    if env_visual_enabled is None:
+        visual_enabled = vd_raw.get("enabled", False)
+    else:
+        visual_enabled = env_visual_enabled.strip().lower() in {"1", "true", "yes", "on"}
+
+    if env_visual_delay is None:
+        visual_delay = float(vd_raw.get("delay_seconds", 5.0))
+    else:
+        visual_delay = float(env_visual_delay)
+
+    if env_visual_depth is None:
+        visual_depth = int(vd_raw.get("max_depth", 10))
+    else:
+        visual_depth = int(env_visual_depth)
+
     visual_diff = VisualDiffConfig(
-        enabled=vd_raw.get("enabled", False),
+        enabled=visual_enabled,
         base_url=vd_raw.get("base_url", ""),
         base_url_env=vd_raw.get("base_url_env", "WUP_BASE_URL"),
-        delay_seconds=float(vd_raw.get("delay_seconds", 5.0)),
-        max_depth=int(vd_raw.get("max_depth", 10)),
+        delay_seconds=visual_delay,
+        max_depth=visual_depth,
         snapshot_dir=vd_raw.get("snapshot_dir", ".wup/visual-snapshots"),
         diff_dir=vd_raw.get("diff_dir", ".wup/visual-diffs"),
         pages=vd_raw.get("pages", []),

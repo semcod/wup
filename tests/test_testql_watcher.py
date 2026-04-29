@@ -6,7 +6,7 @@ from pathlib import Path
 from subprocess import CompletedProcess
 
 from wup.testql_watcher import TestQLWatcher
-from wup.models.config import WupConfig, ProjectConfig, TestQLConfig
+from wup.models.config import WupConfig, ProjectConfig, TestQLConfig, VisualDiffConfig
 
 
 def test_process_changed_file_creates_track_on_failure():
@@ -199,3 +199,57 @@ def test_service_health_transitions_are_persisted():
         statuses = [event.get("status") for event in events if event.get("service") == "connect-config"]
         assert "down" in statuses
         assert "up" in statuses
+
+
+def test_visual_differ_disabled_by_default():
+    """visual_differ exists but is disabled (no-op) when visual_diff.enabled=False."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            testql=TestQLConfig(scenario_dir="testql-scenarios"),
+            visual_diff=VisualDiffConfig(enabled=False),
+        )
+
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+
+        # Differ is created but flagged disabled — run_for_service() must be a no-op
+        assert watcher.visual_differ is not None
+        assert watcher.visual_differ.cfg.enabled is False
+        results = asyncio.run(watcher.visual_differ.run_for_service("svc", ["/x"]))
+        assert results == []
+
+
+def test_visual_differ_initialized_when_enabled():
+    """When visual_diff.enabled=True, TestQLWatcher.visual_differ is a VisualDiffer."""
+    from wup.visual_diff import VisualDiffer
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            testql=TestQLConfig(scenario_dir="testql-scenarios"),
+            visual_diff=VisualDiffConfig(
+                enabled=True,
+                base_url="http://localhost:9000",
+                pages=["/dashboard"],
+            ),
+        )
+
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+
+        assert isinstance(watcher.visual_differ, VisualDiffer)
+        assert watcher.visual_differ.cfg.enabled is True
+        assert watcher.visual_differ.base_url == "http://localhost:9000"
