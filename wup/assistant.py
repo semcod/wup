@@ -80,7 +80,12 @@ class WupAssistant:
     
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
-        self.config = WupConfig()
+        self.config = WupConfig(
+            project=ProjectConfig(
+                name=self.project_root.name,
+                description=""
+            )
+        )
         self.draft_path = self.project_root / '.wup.yaml.draft'
         
     def run(self, quick: bool = False, template: Optional[str] = None):

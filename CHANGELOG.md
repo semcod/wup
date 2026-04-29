@@ -19,6 +19,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Dependencies info (wup version, wupbro optional)
   - wupbro section comments with install/run instructions
   - Quick start guide in comments
+- **Configuration Assistant** (`wup assistant`): Interactive shell assistant for wup.yaml
+  - Auto-detects framework (FastAPI, Flask, Django, Express)
+  - Auto-detects services from project structure
+  - Guided setup for services, watch paths, TestQL, web dashboard
+  - Validation and intelligent suggestions
+  - Quick mode: `wup assistant --quick --template fastapi`
+- **Fast Anomaly Detection**: Alternatives to Playwright for YAML/config monitoring
+  - Hash-based detection (~1ms per file)
+  - YAML structure analysis (keys, types, nesting)
+  - Python AST diff for API changes
+  - Configure via `anomaly_detection:` in wup.yaml
+- **Browser Notifications** (wupbro): Real-time notifications for regression events
+  - 7 notification types: REGRESSION_NEW, REGRESSION_DIFF, STATUS_TRANSITION, PASS_RECOVERY, ANOMALY_NEW, VISUAL_DIFF_NEW, HEALTH_CHANGE
+  - Configurable per-type with cooldown and service filtering
+  - Server-Sent Events (SSE) for instant delivery
+  - Native Browser Notifications API integration
+  - Dashboard UI for configuration
+- **Notification System** (wupbro backend):
+  - `POST /notifications/subscribe` - Create subscription
+  - `GET /notifications/stream` - SSE endpoint for real-time notifications
+  - `PUT /notifications/subscriptions/{id}` - Update config
+  - `POST /notifications/test` - Send test notification
+  - NotificationManager with event detection and cooldown
+- **Documentation Suite**: Comprehensive docs in `docs/` directory
+  - `docs/WUP_ASSISTANT.md` - Configuration assistant guide
+  - `docs/ANOMALY_DETECTION.md` - Fast anomaly detection methods
+  - `docs/NOTIFICATIONS.md` - Browser notifications setup
+  - `docs/TESTQL_INTEGRATION.md` - TestQL integration guide
+- **Package Rename**: wup-web → wupbro (dashboard package)
+  - Renamed folder and all references
+  - Updated CLI command from `wup-web` to `wupbro`
+  - Updated documentation and environment variables
 
 ### Docs
 - Updated README.md with new examples
