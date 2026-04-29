@@ -43,8 +43,9 @@ test_strategy:
     max_queue: 1
     timeout_s: 30
 testql:
-  scenario_dir: scenarios/tests
-  smoke_scenario: smoke.testql.toon.yaml
+  scenario_dir: testql-scenarios
+  smoke_scenario: iter1-api-v3-smoke.testql.toon.yaml
   output_format: json
   extra_args:
   - --timeout 10s
+  endpoint_discovery: true

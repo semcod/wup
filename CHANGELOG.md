@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-04-29
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_wup.py
+
+### Other
+- Update wup.yaml
+- Update wup/core.py
+
 ## [0.2.6] - 2026-04-29
 
 ### Docs

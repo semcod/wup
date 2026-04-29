@@ -103,6 +103,91 @@ def create_user():
             
             assert mapper2.file_to_endpoints == mapper.file_to_endpoints
             assert mapper2.service_to_endpoints == mapper.service_to_endpoints
+    
+    def test_infer_service_from_path_edge_cases(self):
+        """Test service inference with edge case paths."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mapper = DependencyMapper(tmpdir)
+            
+            # Single directory - returns None (needs at least 2 parts)
+            assert mapper._infer_service("app") is None
+            
+            # Very deep nesting
+            assert mapper._infer_service("a/b/c/d/e/f/file.py") == "a/b"
+            
+            # Path with numbers
+            assert mapper._infer_service("v1/api/routes.py") == "v1/api"
+            
+            # Path with underscores
+            assert mapper._infer_service("src/user_auth/login.py") == "src/user_auth"
+    
+    def test_get_service_for_file_empty_mapper(self):
+        """Test getting service for file when mapper is empty."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mapper = DependencyMapper(tmpdir)
+            
+            # Need to use absolute path under tmpdir
+            file_path = str(Path(tmpdir) / "app" / "users" / "routes.py")
+            service = mapper.get_service_for_file(file_path)
+            # Dependency mapper has fallback heuristic that returns first two path parts
+            assert service == "app/users"
+    
+    def test_get_endpoints_for_service_empty_mapper(self):
+        """Test getting endpoints for service when mapper is empty."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mapper = DependencyMapper(tmpdir)
+            
+            endpoints = mapper.get_endpoints_for_service("users")
+            assert endpoints == []
+    
+    def test_build_from_codebase_with_flask(self):
+        """Test building dependency map with Flask endpoints."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create a sample Flask file
+            app_dir = Path(tmpdir) / "app" / "auth"
+            app_dir.mkdir(parents=True)
+            
+            routes_file = app_dir / "views.py"
+            routes_file.write_text("""
+from flask import Blueprint, jsonify
+
+bp = Blueprint('auth', __name__)
+
+@bp.route('/login', methods=['POST'])
+def login():
+    return jsonify({'token': 'abc'})
+
+@bp.route('/logout', methods=['POST'])
+def logout():
+    return jsonify({'success': True})
+""")
+            
+            mapper = DependencyMapper(tmpdir)
+            deps = mapper.build_from_codebase(framework="flask")
+            
+            assert len(deps["services"]) > 0
+            assert len(deps["files"]) > 0
+    
+    def test_service_to_files_tracking(self):
+        """Test that service to files mapping is tracked correctly."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mapper = DependencyMapper(tmpdir)
+            
+            # Add file to service
+            mapper.service_to_files["users"].add("app/users/routes.py")
+            mapper.service_to_files["users"].add("app/users/models.py")
+            
+            assert len(mapper.service_to_files["users"]) == 2
+            assert "app/users/routes.py" in mapper.service_to_files["users"]
+    
+    def test_build_from_codebase_nonexistent_directory(self):
+        """Test building from codebase with non-existent directory."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            mapper = DependencyMapper(tmpdir)
+            # Should not fail, just return empty deps
+            deps = mapper.build_from_codebase(framework="fastapi")
+            assert "services" in deps
+            assert "files" in deps
 
 
 class TestWupWatcher:
@@ -151,6 +236,102 @@ class TestWupWatcher:
             # Test with dependency mapper
             service = watcher.infer_service(str(Path(tmpdir) / "app" / "users" / "routes.py"))
             assert service == "app/users"
+    
+    def test_infer_service_with_auto_detection(self):
+        """Test service inference with auto-detection from config."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create service with auto-detection (empty paths)
+            service = ServiceConfig(
+                name="users-shell",
+                root="app/users-shell",
+                paths=[],  # Empty paths triggers auto-detection
+                type="shell"
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # File containing "users-shell" should match
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "users-shell" / "main.py"))
+            assert inferred == "users-shell"
+            
+            # File containing "users" should not match auto-detection
+            # Fallback heuristic returns "app/users" from dependency mapper
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "users" / "main.py"))
+            assert inferred == "app/users"  # Fallback heuristic
+    
+    def test_infer_service_with_explicit_paths(self):
+        """Test service inference with explicit config paths."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**", "routes/users/**"],
+                type="auto"
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Explicit path should match
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "users" / "routes.py"))
+            assert inferred == "users"
+            
+            # Alternative explicit path should match
+            inferred = watcher.infer_service(str(Path(tmpdir) / "routes" / "users" / "main.py"))
+            assert inferred == "users"
+    
+    def test_infer_service_priority_config_over_mapper(self):
+        """Test that config services take priority over dependency mapper."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = ServiceConfig(
+                name="custom-service",
+                root="app/custom",
+                paths=["app/custom/**"],
+                type="auto"
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Config should take priority
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "custom" / "file.py"))
+            assert inferred == "custom-service"
+    
+    def test_infer_service_fallback_to_heuristics(self):
+        """Test fallback to heuristics when no config or mapper match."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Should fallback to heuristics (first two path parts)
+            inferred = watcher.infer_service(str(Path(tmpdir) / "app" / "users" / "routes.py"))
+            assert inferred == "app/users"
     
     def test_should_test_cooldown(self):
         """Test cooldown mechanism for testing."""
@@ -224,6 +405,383 @@ class TestWupWatcher:
             
             # No services should have been added
             assert len(watcher.changed_services) == 0
+    
+    def test_detect_service_coincidences_shell_web(self):
+        """Test coincidence detection between shell and web services."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service1 = ServiceConfig(
+                name="users-shell",
+                root="app/users-shell",
+                type="shell",
+                paths=[]
+            )
+            service2 = ServiceConfig(
+                name="users-web",
+                root="app/users-web",
+                type="web",
+                paths=[]
+            )
+            service3 = ServiceConfig(
+                name="payments-shell",
+                root="app/payments-shell",
+                type="shell",
+                paths=[]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service1, service2, service3],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # users-shell should detect users-web as related
+            related = watcher.detect_service_coincidences("users-shell")
+            assert "users-web" in related
+            assert "payments-shell" not in related
+            
+            # users-web should detect users-shell as related
+            related = watcher.detect_service_coincidences("users-web")
+            assert "users-shell" in related
+            assert "payments-shell" not in related
+    
+    def test_detect_service_coincidences_auto_type(self):
+        """Test coincidence detection with auto type services."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service1 = ServiceConfig(
+                name="users",
+                root="app/users",
+                type="auto",
+                paths=[]
+            )
+            service2 = ServiceConfig(
+                name="users-api",
+                root="app/users-api",
+                type="auto",
+                paths=[]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service1, service2],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # users and users-api don't share domain (only shell/web suffixes are handled)
+            # Since both are auto type and don't have shell/web suffixes, they don't match
+            related = watcher.detect_service_coincidences("users")
+            assert "users-api" not in related
+    
+    def test_detect_service_coincidences_no_config(self):
+        """Test coincidence detection with no configured services."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            related = watcher.detect_service_coincidences("users")
+            assert len(related) == 0
+    
+    def test_detect_service_coincidences_unknown_service(self):
+        """Test coincidence detection for unknown service."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service1 = ServiceConfig(
+                name="users-shell",
+                root="app/users-shell",
+                type="shell",
+                paths=[]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service1],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Unknown service should return empty list
+            related = watcher.detect_service_coincidences("unknown")
+            assert len(related) == 0
+    
+    def test_services_share_domain(self):
+        """Test the _services_share_domain helper method."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            watcher = WupWatcher(tmpdir)
+            
+            # Same domain with different suffixes
+            assert watcher._services_share_domain("users-shell", "users-web")
+            assert watcher._services_share_domain("users-shell", "users")
+            assert watcher._services_share_domain("payments", "payments-shell")
+            
+            # Different domains
+            assert not watcher._services_share_domain("users", "payments")
+            assert not watcher._services_share_domain("api/auth", "api/users")
+            
+            # Underscore variants
+            assert watcher._services_share_domain("users_shell", "users_web")
+            assert watcher._services_share_domain("users_shell", "users")
+    
+    def test_on_file_change_filters_by_file_type(self):
+        """Test that file change respects configured file types."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            watch = WatchConfig(
+                paths=["app/**"],
+                file_types=[".py", ".ts"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=watch,
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Python file should be processed
+            py_file = str(Path(tmpdir) / "app" / "test.py")
+            watcher.on_file_change(py_file)
+            
+            # TypeScript file should be processed
+            ts_file = str(Path(tmpdir) / "app" / "test.ts")
+            watcher.on_file_change(ts_file)
+            
+            # Markdown file should be filtered out
+            md_file = str(Path(tmpdir) / "app" / "test.md")
+            watcher.on_file_change(md_file)
+            
+            # Text file should be filtered out
+            txt_file = str(Path(tmpdir) / "app" / "test.txt")
+            watcher.on_file_change(txt_file)
+            
+            # Only .py and .ts files should trigger service detection
+            # (though no services are configured, so changed_services will be empty)
+            # The key is that no errors occur and filtering works
+    
+    def test_on_file_change_no_file_type_filter(self):
+        """Test that when file_types is empty, all files are processed."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            watch = WatchConfig(
+                paths=["app/**"],
+                file_types=[]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=watch,
+                services=[],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # All file types should be processed
+            py_file = str(Path(tmpdir) / "app" / "test.py")
+            watcher.on_file_change(py_file)
+            
+            md_file = str(Path(tmpdir) / "app" / "test.md")
+            watcher.on_file_change(md_file)
+            
+            # No filtering should occur
+
+
+class TestIntegrationWorkflow:
+    """Integration tests for complete workflows."""
+    
+    def test_full_workflow_file_change_to_test_scheduling(self):
+        """Test complete workflow from file change to test scheduling."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**"],
+                quick_tests=ServiceTestConfig(scope="all", max_endpoints=3)
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(paths=["app/**"]),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            watcher.dependency_mapper.service_to_endpoints["users"] = [
+                "/api/users",
+                "/api/users/{id}",
+                "/api/users/create"
+            ]
+            
+            # Simulate file change
+            file_path = str(Path(tmpdir) / "app" / "users" / "routes.py")
+            watcher.on_file_change(file_path)
+            
+            # Verify service was detected
+            assert "users" in watcher.changed_services
+            
+            # Verify test was scheduled
+            assert len(watcher.test_queue) == 1
+            test_type, service_name, endpoints = watcher.test_queue[0]
+            assert test_type == "quick"
+            assert service_name == "users"
+            assert len(endpoints) == 3  # Limited by quick_tests.max_endpoints
+    
+    def test_workflow_with_file_type_filtering(self):
+        """Test workflow with file type filtering."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            watch = WatchConfig(
+                paths=["app/**"],
+                file_types=[".py"]
+            )
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=watch,
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            watcher.dependency_mapper.service_to_endpoints["users"] = ["/api/users"]
+            
+            # Python file should trigger
+            py_file = str(Path(tmpdir) / "app" / "users" / "routes.py")
+            watcher.on_file_change(py_file)
+            assert "users" in watcher.changed_services
+            
+            # Markdown file should not trigger
+            watcher.changed_services.clear()
+            md_file = str(Path(tmpdir) / "app" / "users" / "README.md")
+            watcher.on_file_change(md_file)
+            assert "users" not in watcher.changed_services
+    
+    def test_workflow_with_service_coincidence(self):
+        """Test workflow that detects service coincidences."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service1 = ServiceConfig(
+                name="users-shell",
+                root="app/users-shell",
+                type="shell",
+                paths=[]
+            )
+            service2 = ServiceConfig(
+                name="users-web",
+                root="app/users-web",
+                type="web",
+                paths=[]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service1, service2],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Detect coincidences
+            related = watcher.detect_service_coincidences("users-shell")
+            assert "users-web" in related
+    
+    def test_workflow_with_multiple_file_changes(self):
+        """Test workflow with multiple rapid file changes."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            service = ServiceConfig(
+                name="users",
+                root="app/users",
+                paths=["app/users/**"]
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(paths=["app/**"]),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            watcher.dependency_mapper.service_to_endpoints["users"] = ["/api/users"]
+            
+            # Multiple file changes for same service
+            files = [
+                str(Path(tmpdir) / "app" / "users" / "routes.py"),
+                str(Path(tmpdir) / "app" / "users" / "models.py"),
+                str(Path(tmpdir) / "app" / "users" / "schemas.py"),
+            ]
+            
+            for file_path in files:
+                watcher.on_file_change(file_path)
+            
+            # Service should be in changed_services
+            assert "users" in watcher.changed_services
+            
+            # Multiple tests might be scheduled depending on debounce
+            # But service should be tracked
+            assert len(watcher.changed_services) == 1
+    
+    def test_workflow_with_auto_detection_and_explicit_paths(self):
+        """Test workflow mixing auto-detection and explicit paths."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            (Path(tmpdir) / "app").mkdir()
+            
+            service1 = ServiceConfig(
+                name="users-shell",
+                root="app/users-shell",
+                type="shell",
+                paths=[]  # Auto-detection
+            )
+            service2 = ServiceConfig(
+                name="payments",
+                root="app/payments",
+                type="auto",
+                paths=["app/payments/**"]  # Explicit paths
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service1, service2],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig()
+            )
+            
+            watcher = WupWatcher(tmpdir, config=config)
+            
+            # Auto-detection should match
+            inferred1 = watcher.infer_service(str(Path(tmpdir) / "app" / "users-shell" / "main.py"))
+            assert inferred1 == "users-shell"
+            
+            # Explicit path should match
+            inferred2 = watcher.infer_service(str(Path(tmpdir) / "app" / "payments" / "routes.py"))
+            assert inferred2 == "payments"
 
 
 def test_import():

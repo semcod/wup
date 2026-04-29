@@ -122,19 +122,26 @@ class WupWatcher:
                             return svc.name
                 else:
                     # Auto-detect: check if service name appears in path
-                    service_name_parts = svc.name.replace("/", " ").replace("-", " ").split()
-                    for part in service_name_parts:
-                        if part.lower() in str(rel_path).lower():
-                            return svc.name
+                    # Require the full service name to match as a complete segment
+                    path_lower = str(rel_path).lower()
+                    service_name_lower = svc.name.lower()
+                    
+                    # Check if service name appears as a complete segment (separated by /, -, _, or .)
+                    import re
+                    pattern = r'(?:[\/\-_.]|^)' + re.escape(service_name_lower) + r'(?:[\/\-_.]|$)'
+                    if re.search(pattern, path_lower):
+                        return svc.name
         
         # Use dependency mapper if available
         service = self.dependency_mapper.get_service_for_file(file_path)
         if service:
             return service
         
-        # Fallback: use first two meaningful parts
+        # Fallback: use first two meaningful parts (only if file exists)
         if len(parts) >= 2:
-            return "/".join(parts[:2])
+            # Check if file exists (absolute path)
+            if Path(file_path).is_file():
+                return "/".join(parts[:2])
         
         return None
     
@@ -179,8 +186,9 @@ class WupWatcher:
                     if self._services_share_domain(changed_service, svc.name):
                         related_services.append(svc.name)
             
-            # Coincidence: auto-detect by name similarity
-            elif changed_svc_config.type == "auto" or svc.type == "auto":
+            # Coincidence: auto with shell/web (but not auto with auto)
+            elif (changed_svc_config.type == "auto" and svc.type != "auto") or \
+                 (changed_svc_config.type != "auto" and svc.type == "auto"):
                 if self._services_share_domain(changed_service, svc.name):
                     related_services.append(svc.name)
         
