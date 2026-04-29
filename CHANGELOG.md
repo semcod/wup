@@ -55,6 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 - Updated README.md with new examples
 
+## [0.2.17] - 2026-04-29
+
+### Docs
+- Update README.md
+
+### Other
+- Update uv.lock
+
 ## [0.2.16] - 2026-04-29
 
 ### Docs
