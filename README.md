@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.1-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.75-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.90-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $0.7500 (5 commits)
+- 🤖 **LLM usage:** $0.9000 (6 commits)
 - 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
 
 Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.1-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -31,6 +31,9 @@ WUP monitors file changes and runs intelligent regression tests using a 3-layer 
 - 🔍 **Dependency Mapping**: Automatic detection of files → endpoints → services
 - 🚀 **Framework Support**: FastAPI, Flask, Django, Express.js, and more
 - 📝 **Blame Reports**: Detailed regression reports with file/line/commit info
+- ⚙️ **Configuration System**: Declarative configuration via `wup.yaml` file
+- 🎛️ **Per-Service Settings**: Custom test strategies per service
+- 🧪 **TestQL Integration**: Native support for TestQL scenarios
 
 ## Installation
 
@@ -45,13 +48,16 @@ pip install -e ".[dev]"
 ## Quick Start
 
 ```bash
-# 1. Build dependency map (one-time setup)
+# 1. Initialize configuration (optional)
+wup init
+
+# 2. Build dependency map (one-time setup)
 wup map-deps ./my-project
 
-# 2. Start watching for changes
+# 3. Start watching for changes
 wup watch ./my-project
 
-# 3. Start with live dashboard
+# 4. Start with live dashboard
 wup watch ./my-project --dashboard
 ```
 
@@ -73,7 +79,7 @@ wup map-deps ./my-project --output my-deps.json
 ### Watch Project
 
 ```bash
-# Basic watching
+# Basic watching (uses wup.yaml if present)
 wup watch ./my-project
 
 # With custom settings
@@ -84,6 +90,22 @@ wup watch ./my-project \
 
 # With live dashboard
 wup watch ./my-project --dashboard
+
+# Use specific config file
+wup watch ./my-project --config custom-config.yaml
+
+# TestQL mode
+wup watch ./my-project --mode testql
+```
+
+### Initialize Configuration
+
+```bash
+# Generate default wup.yaml configuration
+wup init
+
+# Generate with custom output path
+wup init --output .wup.yaml
 ```
 
 ### Check Status
@@ -135,15 +157,87 @@ Full regression: 15s test → 15% CPU spike
 
 ## Configuration
 
+### wup.yaml Configuration File
+
+WUP supports declarative configuration via `wup.yaml` (or `.wup.yaml`) in your project root. This allows you to define watch paths, service-specific settings, and test strategies.
+
+Generate a default configuration:
+
+```bash
+wup init
+```
+
+Example `wup.yaml`:
+
+```yaml
+project:
+  name: "my-project"
+  description: "My awesome project"
+
+watch:
+  # Folders to watch (supports glob patterns)
+  paths:
+    - "app/**"
+    - "src/**"
+    - "routes/**"
+    - "!tests/**"         # exclusion
+    - "!node_modules/**"
+
+  # Global exclude patterns
+  exclude_patterns:
+    - "*.md"
+    - "*.txt"
+    - "migrations/**"
+
+services:
+  # Service configurations
+  - name: "users"
+    root: "app/users"
+    paths:
+      - "app/users/**"
+      - "routes/users/**"
+    quick_tests:
+      scope: "read,write"
+      max_endpoints: 3
+    detail_tests:
+      scope: "all"
+      max_endpoints: 10
+    cpu_throttle: 0.7
+    notify:
+      type: "http+file"
+      url: "http://localhost:8001/notify"
+      file: "wup/notify-users.json"
+
+test_strategy:
+  quick:
+    debounce_s: 2
+    max_queue: 5
+    timeout_s: 10
+  detail:
+    debounce_s: 10
+    max_queue: 1
+    timeout_s: 30
+
+testql:
+  # TestQL-specific configuration
+  scenario_dir: "scenarios/tests"
+  smoke_scenario: "smoke.testql.toon.yaml"
+  output_format: "json"
+  extra_args:
+    - "--timeout 10s"
+```
+
 ### CLI Options
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `--config` | auto | Path to wup.yaml config file |
 | `--cpu-throttle` | 0.8 | CPU usage threshold (0.0-1.0) |
 | `--debounce` | 2 | Debounce time in seconds |
 | `--cooldown` | 300 | Test cooldown in seconds |
 | `--dashboard` | false | Enable live dashboard |
 | `--deps` | deps.json | Dependency map file path |
+| `--mode` | default | Watcher mode: default or testql |
 
 ### Environment Variables
 
@@ -188,11 +282,21 @@ async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
 wup/
 ├── wup/
 │   ├── __init__.py           # Package exports
+│   ├── config.py             # Configuration loader
+│   ├── models/
+│   │   ├── __init__.py       # Models package
+│   │   └── config.py         # Configuration dataclasses
 │   ├── core.py               # WupWatcher implementation
 │   ├── dependency_mapper.py  # Dependency mapping logic
+│   ├── testql_watcher.py     # TestQL integration
 │   └── cli.py                # CLI interface
 ├── tests/
 │   └── test_wup.py           # Unit tests
+├── docs/
+│   ├── 2.md                  # Refactoring documentation
+│   ├── 3.md                  # Configuration plan
+│   └── TESTQL_INTEGRATION.md # TestQL integration docs
+├── wup.yaml.example          # Example configuration
 ├── pyproject.toml           # Package configuration
 └── README.md                 # This file
 ```
