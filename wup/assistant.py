@@ -40,6 +40,10 @@ from .models.config import (
     WupConfig,
 )
 
+# Import ServiceType for type checking
+if False:  # TYPE_CHECKING
+    from .models.config import ServiceType as ServiceTypeLiteral
+
 console = Console()
 
 

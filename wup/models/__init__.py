@@ -3,19 +3,32 @@ Configuration models for WUP.
 """
 
 from .config import (
-    WupConfig,
-    WatchConfig,
-    ServiceConfig,
-    TestStrategyConfig,
-    TestQLConfig,
+    AnomalyDetectionConfig,
     NotifyConfig,
+    ProjectConfig,
+    ServiceConfig,
+    ServiceTestConfig,
+    TestQLConfig,
+    TestStrategyConfig,
+    VisualDiffConfig,
+    WatchConfig,
+    WebConfig,
+    WupConfig,
 )
 
+ServiceType = str  # Type alias: 'web', 'shell', 'auto'
+
 __all__ = [
-    "WupConfig",
-    "WatchConfig",
-    "ServiceConfig",
-    "TestStrategyConfig",
-    "TestQLConfig",
+    "AnomalyDetectionConfig",
     "NotifyConfig",
+    "ProjectConfig",
+    "ServiceConfig",
+    "ServiceTestConfig",
+    "ServiceType",
+    "TestQLConfig",
+    "TestStrategyConfig",
+    "VisualDiffConfig",
+    "WatchConfig",
+    "WebConfig",
+    "WupConfig",
 ]

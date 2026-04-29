@@ -5,7 +5,9 @@ Defines the structure for wup.yaml configuration file.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
+
+ServiceType = Literal["web", "shell", "auto"]
 
 
 @dataclass
@@ -94,6 +96,21 @@ class WebConfig:
 
 
 @dataclass
+class AnomalyDetectionConfig:
+    """Configuration for fast anomaly detection without Playwright."""
+    enabled: bool = True
+    methods: List[str] = field(default_factory=lambda: ['hash', 'structure'])  # 'hash', 'structure', 'keys', 'ast', 'text'
+    ignore_patterns: List[str] = field(default_factory=lambda: [
+        '*.tmp', '*.bak', '*~', '.git/*', '__pycache__/*', '.venv/*', 'node_modules/*'
+    ])
+    max_key_depth: int = 5
+    max_file_size_kb: int = 500
+    strict_mode: bool = False  # True = detect minor changes
+    watch_paths: List[str] = field(default_factory=list)
+    severity_threshold: str = "medium"  # 'low', 'medium', 'high', 'critical'
+
+
+@dataclass
 class ProjectConfig:
     """Project metadata."""
     name: str
@@ -110,3 +127,4 @@ class WupConfig:
     testql: TestQLConfig = field(default_factory=TestQLConfig)
     visual_diff: VisualDiffConfig = field(default_factory=VisualDiffConfig)
     web: WebConfig = field(default_factory=WebConfig)
+    anomaly_detection: AnomalyDetectionConfig = field(default_factory=AnomalyDetectionConfig)
