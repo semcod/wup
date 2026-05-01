@@ -88,6 +88,39 @@ class WupAssistant:
         )
         self.draft_path = self.project_root / '.wup.yaml.draft'
         
+    _MENU_ITEMS = [
+        ("1", "Initialize project"),
+        ("2", "Configure services"),
+        ("3", "Setup file watching"),
+        ("4", "Configure TestQL"),
+        ("5", "Setup web dashboard"),
+        ("6", "Setup visual diff"),
+        ("7", "Setup anomaly detection"),
+        ("8", "Review & validate"),
+        ("9", "Save configuration"),
+        ("0", "Exit"),
+    ]
+
+    def _dispatch_menu_choice(self, choice: str, template: Optional[str]) -> bool:
+        """Execute a menu action. Returns False when the loop should exit."""
+        if choice == "0":
+            if Confirm.ask("Save draft before exiting?"):
+                self._save_draft()
+            return False
+        dispatch = {
+            "1": lambda: self._init_project(template),
+            "2": self._configure_services,
+            "3": self._setup_watch,
+            "4": self._configure_testql,
+            "5": self._setup_web_dashboard,
+            "6": self._setup_visual_diff,
+            "7": self._setup_anomaly_detection,
+            "8": self._review_and_validate,
+            "9": self._save_configuration,
+        }
+        dispatch[choice]()
+        return True
+
     def run(self, quick: bool = False, template: Optional[str] = None):
         """Run the assistant."""
         console.print(Panel.fit(
@@ -95,57 +128,26 @@ class WupAssistant:
             "Interactive setup for wup.yaml",
             border_style="blue"
         ))
-        
+
         if quick:
             return self._quick_setup(template)
-        
-        # Load existing draft if present
+
         if self.draft_path.exists():
             if Confirm.ask("📝 Found existing draft. Load it?", default=True):
                 self._load_draft()
-        
-        # Main loop
+
         while True:
             console.print("\n[bold]Main Menu:[/bold]")
-            console.print("  1. Initialize project")
-            console.print("  2. Configure services")
-            console.print("  3. Setup file watching")
-            console.print("  4. Configure TestQL")
-            console.print("  5. Setup web dashboard")
-            console.print("  6. Setup visual diff")
-            console.print("  7. Setup anomaly detection")
-            console.print("  8. Review & validate")
-            console.print("  9. Save configuration")
-            console.print("  0. Exit")
-            
+            for key, label in self._MENU_ITEMS:
+                console.print(f"  {key}. {label}")
+
             choice = Prompt.ask(
                 "Select option",
-                choices=["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                default="1"
+                choices=[key for key, _ in self._MENU_ITEMS],
+                default="1",
             )
-            
-            if choice == "0":
-                if Confirm.ask("Save draft before exiting?"):
-                    self._save_draft()
+            if not self._dispatch_menu_choice(choice, template):
                 break
-            elif choice == "1":
-                self._init_project(template)
-            elif choice == "2":
-                self._configure_services()
-            elif choice == "3":
-                self._setup_watch()
-            elif choice == "4":
-                self._configure_testql()
-            elif choice == "5":
-                self._setup_web_dashboard()
-            elif choice == "6":
-                self._setup_visual_diff()
-            elif choice == "7":
-                self._setup_anomaly_detection()
-            elif choice == "8":
-                self._review_and_validate()
-            elif choice == "9":
-                self._save_configuration()
     
     def _init_project(self, template: Optional[str] = None):
         """Initialize project configuration."""

@@ -240,43 +240,37 @@ class TestQLWatcher(WupWatcher):
                 return svc
         return None
     
+    def _score_scenario(self, scenario: Path, tokens: List[str]) -> int:
+        """Score a scenario by relevance to service tokens."""
+        name = scenario.name.lower()
+        score = 0
+        if any(token in name for token in tokens):
+            score += 3
+        if "api" in name or "endpoint" in name:
+            score += 2
+        if "infra" in name or "smoke" in name:
+            score += 1
+        return score
+
     def _select_scenarios_for_service(self, service: str) -> List[Path]:
         all_scenarios = self._discover_scenarios()
         if not all_scenarios:
             return []
 
         tokens = self._tokenize_service(service)
-        scored: List[tuple[int, Path]] = []
-
-        for scenario in all_scenarios:
-            name = scenario.name.lower()
-            score = 0
-            if any(token in name for token in tokens):
-                score += 3
-            if "api" in name or "endpoint" in name:
-                score += 2
-            if "infra" in name or "smoke" in name:
-                score += 1
-            scored.append((score, scenario))
-
-        scored.sort(key=lambda item: (item[0], item[1].name), reverse=True)
-        selected = [scenario for score, scenario in scored if score > 0]
-
+        scored = sorted(
+            ((self._score_scenario(s, tokens), s) for s in all_scenarios),
+            key=lambda item: (item[0], item[1].name),
+            reverse=True,
+        )
+        selected = [s for score, s in scored if score > 0]
         if selected:
             return selected
 
-        # Fallback: return all scenarios up to limit if no matches found
-        # Use service config for quick_limit if available
         svc_config = self.get_service_config(service)
-        limit = self.quick_limit
-        if svc_config and svc_config.quick_tests:
-            limit = svc_config.quick_tests.max_endpoints
-        
-        # Return all scenarios if limit is larger than available scenarios
-        if limit >= len(all_scenarios):
-            return all_scenarios
-        
-        return all_scenarios[: limit]
+        limit = (svc_config.quick_tests.max_endpoints
+                 if svc_config and svc_config.quick_tests else self.quick_limit)
+        return all_scenarios if limit >= len(all_scenarios) else all_scenarios[:limit]
 
     def _run_testql(self, args: Sequence[str], timeout: int) -> subprocess.CompletedProcess:
         cmd = [self.testql_bin, *args]
@@ -336,86 +330,81 @@ class TestQLWatcher(WupWatcher):
         )
         return track_path
 
+    def _quick_timeout(self) -> int:
+        """Return timeout for quick tests from config or default."""
+        if self.config.test_strategy and self.config.test_strategy.quick:
+            return self.config.test_strategy.quick.get("timeout_s", 60)
+        return 60
+
+    def _merge_endpoints(self, service: str, endpoints: List[str]) -> List[str]:
+        """Merge caller endpoints with config-declared endpoints for the service."""
+        merged = list(endpoints)
+        for ep in self._get_config_endpoints_for_service(service):
+            if ep not in merged:
+                merged.append(ep)
+        return merged
+
+    async def _run_scenario_quick(
+        self, service: str, scenario: Path, merged_endpoints: List[str]
+    ) -> bool:
+        """Run a single scenario in quick (dry-run) mode. Returns False on failure."""
+        args = ["run", str(scenario), "--dry-run", *self.testql_extra_args]
+        result = self._run_testql(args, timeout=self._quick_timeout())
+        if result.returncode == 0:
+            return True
+
+        reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
+        track_path = self._write_track(service=service, stage="quick",
+                                       scenario=scenario, result=result)
+        self._record_health_transition(service=service, status="down", stage="quick",
+                                       message=reason, track_file=str(track_path))
+        if self.web_client.is_active:
+            endpoint = merged_endpoints[0] if merged_endpoints else f"/{service}"
+            await self.web_client.send_regression(
+                service=service, file="", endpoint=endpoint, reason=reason, stage="quick"
+            )
+        self.console.print(f"[red]✗ Quick failed: {scenario.name} | track: {track_path}[/red]")
+        return False
+
+    async def _quick_pass_actions(self, service: str, merged_endpoints: List[str]) -> None:
+        """Actions to perform after all quick scenarios pass."""
+        self._record_health_transition(service=service, status="up", stage="quick",
+                                       message="Quick TestQL passed")
+        if self.web_client.is_active:
+            await self.web_client.send_pass(service=service, stage="quick")
+        self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
+        if self.visual_differ and self.visual_differ.cfg.enabled:
+            visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
+            await self._publish_visual_events(service, visual_results)
+
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
-        merged_endpoints = list(endpoints)
-        for configured_endpoint in self._get_config_endpoints_for_service(service):
-            if configured_endpoint not in merged_endpoints:
-                merged_endpoints.append(configured_endpoint)
+        merged_endpoints = self._merge_endpoints(service, endpoints)
 
         scenarios = self._select_scenarios_for_service(service)
-        
-        # Apply service-specific quick limit
         svc_config = self.get_service_config(service)
-        if svc_config and svc_config.quick_tests:
-            scenarios = scenarios[: svc_config.quick_tests.max_endpoints]
-        else:
-            scenarios = scenarios[: self.quick_limit]
-        
+        limit = (svc_config.quick_tests.max_endpoints
+                 if svc_config and svc_config.quick_tests else self.quick_limit)
+        scenarios = scenarios[:limit]
+
         if not scenarios:
-            self.console.print(f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]")
+            self.console.print(
+                f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]"
+            )
             if self.visual_differ and self.visual_differ.cfg.enabled:
                 visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
                 await self._publish_visual_events(service, visual_results)
             return True
 
         self.console.print(
-            f"[cyan]🧪 Quick TestQL for {service} ({len(scenarios)} scenarios / {len(merged_endpoints)} endpoints)[/cyan]"
+            f"[cyan]🧪 Quick TestQL for {service} "
+            f"({len(scenarios)} scenarios / {len(merged_endpoints)} endpoints)[/cyan]"
         )
 
         for scenario in scenarios:
-            # Build args from config if available
-            args = ["run", str(scenario), "--dry-run"]
-            if self.testql_extra_args:
-                args.extend(self.testql_extra_args)
-            
-            # Use timeout from config if available
-            timeout = 60
-            if self.config.test_strategy and self.config.test_strategy.quick:
-                timeout = self.config.test_strategy.quick.get("timeout_s", 60)
-            
-            result = self._run_testql(args, timeout=timeout)
-            if result.returncode != 0:
-                reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
-                track_path = self._write_track(
-                    service=service,
-                    stage="quick",
-                    scenario=scenario,
-                    result=result,
-                )
-                self._record_health_transition(
-                    service=service,
-                    status="down",
-                    stage="quick",
-                    message=reason,
-                    track_file=str(track_path),
-                )
-                if self.web_client.is_active:
-                    endpoint = merged_endpoints[0] if merged_endpoints else f"/{service}"
-                    await self.web_client.send_regression(
-                        service=service,
-                        file="",
-                        endpoint=endpoint,
-                        reason=reason,
-                        stage="quick",
-                    )
-                self.console.print(
-                    f"[red]✗ Quick failed: {scenario.name} | track: {track_path}[/red]"
-                )
+            if not await self._run_scenario_quick(service, scenario, merged_endpoints):
                 return False
 
-        self._record_health_transition(
-            service=service,
-            status="up",
-            stage="quick",
-            message="Quick TestQL passed",
-        )
-        if self.web_client.is_active:
-            await self.web_client.send_pass(service=service, stage="quick")
-
-        self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
-        if self.visual_differ and self.visual_differ.cfg.enabled:
-            visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
-            await self._publish_visual_events(service, visual_results)
+        await self._quick_pass_actions(service, merged_endpoints)
         return True
 
     async def _publish_visual_events(self, service: str, visual_results: List[Dict]) -> None:

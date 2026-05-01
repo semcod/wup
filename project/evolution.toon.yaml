@@ -1,53 +1,33 @@
-# code2llm/evolution | 301 func | 19f | 2026-04-29
+# code2llm/evolution | 248 func | 14f | 2026-05-01
 
-NEXT[9] (ranked by impact):
-  [1] !! SPLIT           wup/core.py
-      WHY: 604L, 2 classes, max CC=19
-      EFFORT: ~4h  IMPACT: 11476
+NEXT[4] (ranked by impact):
+  [1] !! SPLIT           wup/assistant.py
+      WHY: 694L, 1 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 9716
 
-  [2] !! SPLIT           wup/assistant.py
-      WHY: 692L, 1 classes, max CC=16
-      EFFORT: ~4h  IMPACT: 11072
+  [2] !! SPLIT           wup/core.py
+      WHY: 590L, 2 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 8260
 
-  [3] !! SPLIT           wup/anomaly_detector.py
-      WHY: 593L, 6 classes, max CC=16
-      EFFORT: ~4h  IMPACT: 9488
+  [3] !! SPLIT           wup/testql_watcher.py
+      WHY: 512L, 2 classes, max CC=12
+      EFFORT: ~4h  IMPACT: 6144
 
-  [4] !  SPLIT-FUNC      ASTDetector.detect  CC=16  fan=19
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 304
-
-  [5] !  SPLIT-FUNC      WupAssistant.run  CC=16  fan=17
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 272
-
-  [6] !  SPLIT-FUNC      TestQLWatcher.run_quick_test  CC=15  fan=17
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 255
-
-  [7] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=15  fan=8
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 120
-
-  [8] !  SPLIT-FUNC      ASTDetector._extract_ast_info  CC=16  fan=7
+  [4] !  SPLIT-FUNC      ASTDetector._extract_ast_info  CC=16  fan=7
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 112
 
-  [9] !  SPLIT-FUNC      YAMLStructureDetector._compare_structures  CC=15  fan=7
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 105
-
 
 RISKS[3]:
-  ⚠ Splitting wup/assistant.py may break 23 import paths
-  ⚠ Splitting wup/core.py may break 24 import paths
-  ⚠ Splitting wup/anomaly_detector.py may break 23 import paths
+  ⚠ Splitting wup/assistant.py may break 24 import paths
+  ⚠ Splitting wup/core.py may break 25 import paths
+  ⚠ Splitting wup/testql_watcher.py may break 24 import paths
 
 METRICS-TARGET:
-  CC̄:          2.7 → ≤1.9
-  max-CC:      19 → ≤9
+  CC̄:          2.9 → ≤2.0
+  max-CC:      16 → ≤8
   god-modules: 3 → 0
-  high-CC(≥15): 7 → ≤3
+  high-CC(≥15): 1 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -75,4 +55,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=2.6 → now CC̄=2.7
+  prev CC̄=2.9 → now CC̄=2.9

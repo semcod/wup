@@ -2,60 +2,11 @@
 
 app {
   name: wup;
-  version: 0.2.17;
+  version: 0.2.20;
 }
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
-}
-
-entity[name="Event"] {
-  type: EventType!;
-  service: string;
-  file: string;
-  endpoint: string;
-  url: string;
-  status: string;
-  stage: string;
-  reason: string;
-  diff: Dict[str, Any];
-  timestamp: int!;
-}
-
-entity[name="EventList"] {
-  items: List[Event]!;
-  total: int!;
-}
-
-entity[name="AnomalyReport"] {
-  service: string!;
-  metric: string!;
-  value: float!;
-  threshold: float!;
-  timestamp: int!;
-}
-
-entity[name="NotificationConfig"] {
-  enabled: bool!;
-  regression_new: bool!;
-  regression_diff: bool!;
-  regression_diff_seconds: int!;
-  status_transition: bool!;
-  status_transition_type: StatusTransitionType!;
-  anomaly_new: bool!;
-  visual_diff_new: bool!;
-  health_change: bool!;
-  pass_recovery: bool!;
-  cooldown_seconds: int!;
-  services_include: List[str]!;
-  services_exclude: List[str]!;
-}
-
-entity[name="NotificationSubscription"] {
-  subscription_id: string!;
-  config: NotificationConfig!;
-  created_at: int!;
-  last_notification_at: int;
 }
 
 interface[type="api"] {

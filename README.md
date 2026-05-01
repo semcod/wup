@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.20-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.65-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-7.3h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.21-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$4.80-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-9.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $4.6500 (31 commits)
-- 👤 **Human dev:** ~$732 (7.3h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $4.8000 (32 commits)
+- 👤 **Human dev:** ~$913 (9.1h @ $100/h, 30min dedup)
 
-Generated on 2026-04-29 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+Generated on 2026-05-01 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.20-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.21-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -277,6 +277,26 @@ export WUP_CPU_THROTTLE=0.5
 export WUP_DEBOUNCE=3
 ```
 
+Full list of supported variables (see `.env.example`):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `WUP_CPU_THROTTLE` | — | CPU usage threshold (0.0-1.0) |
+| `WUP_DEBOUNCE` | — | Debounce time in seconds |
+| `WUPBRO_ENDPOINT` | — | wupbro backend URL |
+| `WUP_BASE_URL` | — | Base URL for visual diff page scanning |
+| `OPENROUTER_API_KEY` | *(not set)* | Required for LLM features (https://openrouter.ai/keys) |
+| `LLM_MODEL` | `openrouter/qwen/qwen3-coder-next` | LLM model for assistant |
+| `PFIX_AUTO_APPLY` | `true` | Apply fixes without asking |
+| `PFIX_AUTO_INSTALL_DEPS` | `true` | Auto pip/uv install missing deps |
+| `PFIX_AUTO_RESTART` | `false` | Restart process after fix |
+| `PFIX_MAX_RETRIES` | `3` | Max fix retries |
+| `PFIX_DRY_RUN` | `false` | Dry-run mode (no changes written) |
+| `PFIX_ENABLED` | `true` | Enable/disable pfix |
+| `PFIX_GIT_COMMIT` | `false` | Auto-commit fixes |
+| `PFIX_GIT_PREFIX` | `pfix:` | Commit message prefix |
+| `PFIX_CREATE_BACKUPS` | `false` | Create .pfix_backups/ directory |
+
 ## Visual DOM Diff
 
 WUP optionally scans configured pages with Playwright after each successful quick test, compares the DOM structure to the previous snapshot, and reports significant changes.
@@ -364,7 +384,9 @@ See `wupbro/README.md` for full API reference and driver endpoints (DOM diff, br
 wup/
 ├── wup/
 │   ├── __init__.py            # Package exports
-│   ├── cli.py                 # CLI: watch, map-deps, status, init, testql-endpoints
+│   ├── anomaly_detector.py    # AnomalyDetector: hash, YAML structure, AST diff
+│   ├── assistant.py           # WupAssistant: interactive configuration wizard
+│   ├── cli.py                 # CLI: watch, map-deps, status, init, testql-endpoints, assistant, version
 │   ├── config.py              # Config loading/saving + .wup.env support
 │   ├── core.py                # WupWatcher: detection, inference, scheduling
 │   ├── dependency_mapper.py   # DependencyMapper: codebase → deps.json
@@ -374,7 +396,7 @@ wup/
 │   ├── web_client.py          # WebClient: async HTTP event sink → wupbro
 │   └── models/
 │       ├── __init__.py
-│       └── config.py          # Dataclasses: WupConfig, VisualDiffConfig, WebConfig...
+│       └── config.py          # Dataclasses: WupConfig, ServiceConfig, WatchConfig, TestStrategyConfig, TestQLConfig, VisualDiffConfig, WebConfig, AnomalyDetectionConfig...
 ├── wupbro/                   # Optional FastAPI dashboard (separate package)
 │   ├── wupbro/
 │   │   ├── main.py            # FastAPI app

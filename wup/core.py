@@ -153,6 +153,12 @@ class WupWatcher:
         
         return None
     
+    def _is_coincident_pair(self, type_a: str, type_b: str) -> bool:
+        """Return True when two service types form a coincident pair (shell↔web or auto↔explicit)."""
+        if type_a != "auto" and type_b != "auto":
+            return (type_a == "shell" and type_b == "web") or (type_a == "web" and type_b == "shell")
+        return (type_a == "auto") != (type_b == "auto")
+
     def detect_service_coincidences(self, changed_service: str) -> List[str]:
         """
         Detect coincidences between services (e.g., shell <-> web).
@@ -165,42 +171,22 @@ class WupWatcher:
         Returns:
             List of related services that should also be tested
         """
-        related_services = []
-        
         if not self.config.services:
-            return related_services
-        
-        # Get the changed service config
-        changed_svc_config = None
-        for svc in self.config.services:
-            if svc.name == changed_service:
-                changed_svc_config = svc
-                break
-        
+            return []
+
+        changed_svc_config = next(
+            (svc for svc in self.config.services if svc.name == changed_service), None
+        )
         if not changed_svc_config:
-            return related_services
-        
-        # Find coincidences based on service type
-        for svc in self.config.services:
-            if svc.name == changed_service:
-                continue
-            
-            # Coincidence: shell <-> web for same domain
-            if changed_svc_config.type != "auto" and svc.type != "auto":
-                # If both have explicit types, check for opposites
-                if (changed_svc_config.type == "shell" and svc.type == "web") or \
-                   (changed_svc_config.type == "web" and svc.type == "shell"):
-                    # Check if they share a common domain (same base name)
-                    if self._services_share_domain(changed_service, svc.name):
-                        related_services.append(svc.name)
-            
-            # Coincidence: auto with shell/web (but not auto with auto)
-            elif (changed_svc_config.type == "auto" and svc.type != "auto") or \
-                 (changed_svc_config.type != "auto" and svc.type == "auto"):
-                if self._services_share_domain(changed_service, svc.name):
-                    related_services.append(svc.name)
-        
-        return related_services
+            return []
+
+        return [
+            svc.name
+            for svc in self.config.services
+            if svc.name != changed_service
+            and self._is_coincident_pair(changed_svc_config.type, svc.type)
+            and self._services_share_domain(changed_service, svc.name)
+        ]
     
     def _services_share_domain(self, service1: str, service2: str) -> bool:
         """

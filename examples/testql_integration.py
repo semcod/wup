@@ -25,10 +25,10 @@ from wup.models.config import VisualDiffConfig
 from wup.visual_diff import VisualDiffer
 
 
-class TestQLWatcher(WupWatcher):
+class CustomTestQLWatcher(WupWatcher):
     """
     Custom WUP watcher integrated with TestQL test framework.
-    
+
     Overrides test methods to run actual TestQL tests instead of simulated ones.
     Optionally runs visual DOM diff after each successful quick test.
     """
@@ -227,7 +227,7 @@ def main():
     )
     
     # Initialize watcher with TestQL-specific settings
-    watcher = TestQLWatcher(
+    watcher = CustomTestQLWatcher(
         testql_project_root=testql_path,
         visual_diff_cfg=vd_cfg,
         cpu_throttle=0.7,  # Be gentle with CPU
