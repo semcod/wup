@@ -1,6 +1,14 @@
 flowchart TD
+%% generated in 0.01s
     subgraph examples__c2004_monorepo_demo
-        examples__c2004_monorepo_demo__analyze_monorepo{{analyze_monorepo CC=22}}
+        examples__c2004_monorepo_demo___discover_modules["_discover_modules"]
+        examples__c2004_monorepo_demo___print_config_summary["_print_config_summary"]
+        examples__c2004_monorepo_demo___analyze_module["_analyze_module"]
+        examples__c2004_monorepo_demo___analyze_module_structure["_analyze_module_structure"]
+        examples__c2004_monorepo_demo___test_file_inference["_test_file_inference"]
+        examples__c2004_monorepo_demo___print_endpoints_summary["_print_endpoints_summary"]
+        examples__c2004_monorepo_demo___print_recommendations["_print_recommendations"]
+        examples__c2004_monorepo_demo__analyze_monorepo["analyze_monorepo"]
         examples__c2004_monorepo_demo__simulate_monorepo["simulate_monorepo"]
         examples__c2004_monorepo_demo__main["main"]
     end
@@ -29,20 +37,20 @@ flowchart TD
         examples__flask_app__app__auth__routes__change_password["change_password"]
     end
     subgraph examples__multi_service
-        examples__multi_service__payments_service__main__root["root"]
-        examples__multi_service__payments_service__main__health["health"]
         examples__multi_service__payments_service__app__payments__routes__list_payments["list_payments"]
         examples__multi_service__payments_service__app__payments__routes__get_payment["get_payment"]
         examples__multi_service__payments_service__app__payments__routes__create_payment["create_payment"]
+        examples__multi_service__payments_service__main__root["root"]
+        examples__multi_service__payments_service__main__health["health"]
         examples__multi_service__auth_service__main__root["root"]
         examples__multi_service__auth_service__main__health["health"]
         examples__multi_service__auth_service__app__auth__routes__login["login"]
         examples__multi_service__auth_service__app__auth__routes__register["register"]
-        examples__multi_service__users_service__main__root["root"]
-        examples__multi_service__users_service__main__health["health"]
         examples__multi_service__users_service__app__users__routes__list_users["list_users"]
         examples__multi_service__users_service__app__users__routes__get_user["get_user"]
         examples__multi_service__users_service__app__users__routes__create_user["create_user"]
+        examples__multi_service__users_service__main__root["root"]
+        examples__multi_service__users_service__main__health["health"]
     end
     subgraph examples__testql_demo
         examples__testql_demo___run_with_mock_services["_run_with_mock_services"]
@@ -51,11 +59,11 @@ flowchart TD
         examples__testql_demo__simulate_with_mock_data["simulate_with_mock_data"]
     end
     subgraph examples__testql_integration
-        examples__testql_integration__TestQLWatcher____init__["__init__"]
-        examples__testql_integration__TestQLWatcher__run_quick_test["run_quick_test"]
-        examples__testql_integration__TestQLWatcher__run_detail_test["run_detail_test"]
-        examples__testql_integration__TestQLWatcher___find_scenarios_for_service["_find_scenarios_for_service"]
-        examples__testql_integration__TestQLWatcher___generate_blame_report["_generate_blame_report"]
+        examples__testql_integration__CustomTestQLWatcher____init__["__init__"]
+        examples__testql_integration__CustomTestQLWatcher__run_quick_test["run_quick_test"]
+        examples__testql_integration__CustomTestQLWatcher__run_detail_test["run_detail_test"]
+        examples__testql_integration__CustomTestQLWatcher___find_scenarios_for_service["_find_scenarios_for_service"]
+        examples__testql_integration__CustomTestQLWatcher___generate_blame_report["_generate_blame_report"]
         examples__testql_integration__main["main"]
     end
     subgraph examples__visual_diff_demo
@@ -81,71 +89,13 @@ flowchart TD
         examples__webhook_notifications__show_webhook_demo["show_webhook_demo"]
         examples__webhook_notifications__main["main"]
     end
-    subgraph project__map
-        project__map__toon__analyze_monorepo["analyze_monorepo"]
-        project__map__toon__simulate_monorepo["simulate_monorepo"]
-        project__map__toon__main["main"]
-        project__map__toon__generate_github_actions["generate_github_actions"]
-        project__map__toon__generate_gitlab_ci["generate_gitlab_ci"]
-        project__map__toon__show_ci_cd_demo["show_ci_cd_demo"]
-        project__map__toon__list_users["list_users"]
-        project__map__toon__get_user["get_user"]
-        project__map__toon__create_user["create_user"]
-        project__map__toon__update_user["update_user"]
-        project__map__toon__delete_user["delete_user"]
-        project__map__toon__root["root"]
-        project__map__toon__health["health"]
-        project__map__toon__login["login"]
-        project__map__toon__logout["logout"]
-        project__map__toon__register["register"]
-        project__map__toon__profile["profile"]
-        project__map__toon__change_password["change_password"]
-        project__map__toon__list_payments["list_payments"]
-        project__map__toon__get_payment["get_payment"]
-        project__map__toon__create_payment["create_payment"]
-        project__map__toon___run_with_mock_services["_run_with_mock_services"]
-        project__map__toon___build_mock_services["_build_mock_services"]
-        project__map__toon__simulate_testql_analysis["simulate_testql_analysis"]
-        project__map__toon__simulate_with_mock_data["simulate_with_mock_data"]
-        project__map__toon___make_dom["_make_dom"]
-        project__map__toon___save_snapshot["_save_snapshot"]
-        project__map__toon__demo_diff_algorithm["demo_diff_algorithm"]
-        project__map__toon__demo_page_slug["demo_page_slug"]
-        project__map__toon__demo_snapshot_persistence["demo_snapshot_persistence"]
-        project__map__toon__demo_config_yaml_round_trip["demo_config_yaml_round_trip"]
-        project__map__toon__demo_disabled_is_noop["demo_disabled_is_noop"]
-        project__map__toon__demo_live_page["demo_live_page"]
-        project__map__toon__create_slack_payload["create_slack_payload"]
-        project__map__toon__create_teams_payload["create_teams_payload"]
-        project__map__toon__create_discord_payload["create_discord_payload"]
-        project__map__toon__show_webhook_demo["show_webhook_demo"]
-        project__map__toon__run_wup_command["run_wup_command"]
-        project__map__toon__test_process_changed_file_creates_track_on_failure["test_process_changed_file_creates_t"]
-        project__map__toon__test_browser_event_file_is_written_without_service_url["test_browser_event_file_is_written_"]
-        project__map__toon__test_config_endpoints_use_base_url_from_yaml_config["test_config_endpoints_use_base_url_"]
-        project__map__toon__test_config_endpoints_use_base_url_from_env_when_yaml_missing["test_config_endpoints_use_base_url_"]
-        project__map__toon__test_service_health_transitions_are_persisted["test_service_health_transitions_are"]
-        project__map__toon__test_visual_differ_disabled_by_default["test_visual_differ_disabled_by_defa"]
-        project__map__toon__test_visual_differ_initialized_when_enabled["test_visual_differ_initialized_when"]
-        project__map__toon___make_handler["_make_handler"]
-        project__map__toon__recorder_server["recorder_server"]
-        project__map__toon__test_resolve_endpoint_from_config["test_resolve_endpoint_from_config"]
-        project__map__toon__test_resolve_endpoint_from_env["test_resolve_endpoint_from_env"]
-        project__map__toon__test_resolve_endpoint_empty["test_resolve_endpoint_empty"]
-        project__map__toon__test_is_active_false_when_disabled["test_is_active_false_when_disabled"]
-        project__map__toon__test_is_active_false_when_no_endpoint["test_is_active_false_when_no_endpoi"]
-        project__map__toon__test_send_event_disabled_returns_false["test_send_event_disabled_returns_fa"]
-        project__map__toon__test_send_event_posts_to_recorder["test_send_event_posts_to_recorder"]
-        project__map__toon__test_send_event_with_api_key["test_send_event_with_api_key"]
-        project__map__toon__test_send_event_swallows_connection_error["test_send_event_swallows_connection"]
-        project__map__toon__test_send_regression_helper["test_send_regression_helper"]
-        project__map__toon__test_send_health_transition_helper["test_send_health_transition_helper"]
-        project__map__toon__test_import["test_import"]
-        project__map__toon__quick_scan["quick_scan"]
-    end
     subgraph wup___ast_detector
         wup___ast_detector__ASTDetector____init__["__init__"]
-        wup___ast_detector__ASTDetector___extract_ast_info{{_extract_ast_info CC=16}}
+        wup___ast_detector__ASTDetector___collect_import["_collect_import"]
+        wup___ast_detector__ASTDetector___collect_import_from["_collect_import_from"]
+        wup___ast_detector__ASTDetector___collect_class["_collect_class"]
+        wup___ast_detector__ASTDetector___collect_function["_collect_function"]
+        wup___ast_detector__ASTDetector___extract_ast_info["_extract_ast_info"]
         wup___ast_detector__ASTDetector___snapshot_path["_snapshot_path"]
         wup___ast_detector__ASTDetector___compute_changes("_compute_changes CC=11")
         wup___ast_detector__ASTDetector__detect["detect"]
@@ -334,26 +284,11 @@ flowchart TD
     wup__config__load_config --> wup__config__validate_config
     wup__config__load_config --> wup__config__find_config_file
     wup__config__load_config --> wup__config__get_default_config
-    wup__cli__status --> wup__config__load_config
-    wup__cli__init --> wup__config__get_default_config
-    wup__cli__init --> wup__config__save_config
-    wup__core__WupWatcher____init__ --> wup__config__load_config
-    wup__web_client__WebClient____init__ --> wup__web_client__resolve_endpoint
-    wup__web_client__WebClient__send_event --> wup__web_client___normalize
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
-    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
-    wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
-    wup__visual_diff___flatten --> wup__visual_diff___node_signature
-    wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
-    wup__visual_diff__VisualDiffer____init__ --> wup__testql_watcher__TestQLWatcher___resolve_base_url
-    wup__visual_diff__VisualDiffer___check_page --> wup___ast_detector__ASTDetector___snapshot_path
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___detect_content_issues
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___save_snapshot
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___fetch_dom_snapshot
-    wup__visual_diff__VisualDiffer___write_diff_event --> wup__visual_diff___page_slug
+    examples__c2004_monorepo_demo___analyze_module_structure --> examples__c2004_monorepo_demo___analyze_module
+    examples__c2004_monorepo_demo__analyze_monorepo --> examples__c2004_monorepo_demo___discover_modules
     examples__c2004_monorepo_demo__analyze_monorepo --> wup__config__load_config
+    examples__c2004_monorepo_demo__analyze_monorepo --> examples__c2004_monorepo_demo___print_config_summary
+    examples__c2004_monorepo_demo__analyze_monorepo --> examples__c2004_monorepo_demo___analyze_module_structure
     examples__c2004_monorepo_demo__main --> examples__c2004_monorepo_demo__analyze_monorepo
     examples__visual_diff_demo__demo_diff_algorithm --> examples__visual_diff_demo___make_dom
     examples__visual_diff_demo__demo_diff_algorithm --> wup__visual_diff___diff_snapshots
@@ -368,16 +303,34 @@ flowchart TD
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_config_yaml_round_trip
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_disabled_is_noop
     examples__visual_diff_demo__main --> examples__visual_diff_demo__demo_live_page
+    wup__cli__status --> wup__config__load_config
+    wup__cli__init --> wup__config__get_default_config
+    wup__cli__init --> wup__config__save_config
     examples__testql_demo__simulate_testql_analysis --> examples__testql_demo___build_mock_services
     examples__testql_demo__simulate_testql_analysis --> examples__testql_demo___run_with_mock_services
     examples__testql_demo__simulate_with_mock_data --> examples__testql_demo___build_mock_services
     examples__testql_demo__simulate_with_mock_data --> examples__testql_demo___run_with_mock_services
+    wup__web_client__WebClient____init__ --> wup__web_client__resolve_endpoint
+    wup__web_client__WebClient__send_event --> wup__web_client___normalize
     examples__ci_cd_integration__main --> examples__ci_cd_integration__generate_github_actions
     examples__ci_cd_integration__main --> examples__ci_cd_integration__generate_gitlab_ci
     examples__ci_cd_integration__main --> examples__ci_cd_integration__show_ci_cd_demo
     examples__webhook_notifications__main --> examples__webhook_notifications__show_webhook_demo
+    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
+    wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
+    wup__visual_diff___flatten --> wup__visual_diff___node_signature
+    wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
+    wup__visual_diff__VisualDiffer____init__ --> wup__visual_diff___resolve_base_url
+    wup__visual_diff__VisualDiffer___check_page --> wup___yaml_detector__YAMLStructureDetector___snapshot_path
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___detect_content_issues
+    wup__visual_diff__VisualDiffer___check_page --> examples__visual_diff_demo___save_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___fetch_dom_snapshot
+    wup__visual_diff__VisualDiffer___write_diff_event --> wup__visual_diff___page_slug
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
+    wup__core__WupWatcher____init__ --> wup__config__load_config
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class wup___ast_detector__ASTDetector___extract_ast_info,examples__c2004_monorepo_demo__analyze_monorepo highCC
-    class wup__config___load_dotenv,wup__assistant__WupAssistant__run,wup__assistant__WupAssistant___detect_service_type,wup__assistant__WupAssistant___configure_services,wup__assistant__WupAssistant___add_service_interactive,wup__assistant__WupAssistant___setup_anomaly_detection,wup__assistant__WupAssistant___review_and_validate,wup__assistant__WupAssistant___validate_config,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup___ast_detector__ASTDetector___compute_changes,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__detect_service_coincidences,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup___yaml_detector__YAMLStructureDetector__detect,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__visual_diff___fetch_dom_snapshot,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service medCC
+    class wup___yaml_detector__YAMLStructureDetector__detect,wup__assistant__WupAssistant__run,wup__assistant__WupAssistant___detect_service_type,wup__assistant__WupAssistant___configure_services,wup__assistant__WupAssistant___add_service_interactive,wup__assistant__WupAssistant___setup_anomaly_detection,wup__assistant__WupAssistant___review_and_validate,wup__assistant__WupAssistant___validate_config,wup__config___load_dotenv,wup___ast_detector__ASTDetector___compute_changes,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__visual_diff___fetch_dom_snapshot,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__detect_service_coincidences,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching medCC

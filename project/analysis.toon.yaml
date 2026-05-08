@@ -1,31 +1,29 @@
-# code2llm | 61f 9306L | python:34,yaml:15,txt:5,json:2,toml:1,shell:1,yml:1 | 2026-05-01
-# CC̄=2.8 | critical:2/312 | dups:0 | cycles:2
+# code2llm | 61f 7785L | python:37,yaml:8,txt:5,json:2,shell:2,toml:1,yml:1 | 2026-05-08
+# generated in 0.02s
+# CC̄=3.8 | critical:0/236 | dups:0 | cycles:2
 
-HEALTH[2]:
-  🟡 CC    _extract_ast_info CC=16 (limit:15)
-  🟡 CC    analyze_monorepo CC=22 (limit:15)
+HEALTH[0]: ok
 
-REFACTOR[2]:
-  1. split 2 high-CC methods  (CC>15)
-  2. break 2 circular dependencies
+REFACTOR[1]:
+  1. break 2 circular dependencies
 
-PIPELINES[178]:
+PIPELINES[182]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [_should_scan]: _should_scan
+  [2] Src [_load_yaml]: _load_yaml
       PURITY: 100% pure
-  [3] Src [scan_file]: scan_file
+  [3] Src [_extract_structure]: _extract_structure
       PURITY: 100% pure
-  [4] Src [scan_directory]: scan_directory
+  [4] Src [_compare_structures]: _compare_structures
       PURITY: 100% pure
-  [5] Src [get_summary]: get_summary
+  [5] Src [_compare_dict_structures]: _compare_dict_structures
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.5    ←in:6  →out:0
+  wup/                            CC̄=4.4    ←in:6  →out:1
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       590L  2C   25m  CC=14     ←0
-  │ !! testql_watcher             512L  2C   24m  CC=12     ←1
+  │ !! testql_watcher             512L  2C   24m  CC=12     ←0
   │ cli                        478L  0C    7m  CC=6      ←0
   │ config                     405L  0C    6m  CC=10     ←5
   │ visual_diff                388L  1C   17m  CC=11     ←1
@@ -34,25 +32,30 @@ LAYERS:
   │ web_client                 178L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
   │ config                     138L  11C    0m  CC=0.0    ←0
-  │ _yaml_detector             128L  1C    8m  CC=8      ←0
-  │ !! _ast_detector              116L  1C    5m  CC=16     ←1
+  │ _yaml_detector             128L  1C    8m  CC=8      ←1
+  │ _ast_detector              124L  1C    9m  CC=11     ←0
   │ _hash_detector              72L  1C    4m  CC=5      ←0
   │ __init__                    39L  0C    0m  CC=0.0    ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.5    ←in:0  →out:6
+  examples/                       CC̄=2.4    ←in:1  →out:6
   │ webhook_notifications      427L  1C   10m  CC=6      ←0
   │ ci_cd_integration          337L  0C    4m  CC=3      ←0
-  │ visual_diff_demo           271L  0C    9m  CC=6      ←0
+  │ visual_diff_demo           271L  0C    9m  CC=6      ←1
   │ testql_integration         267L  1C    6m  CC=6      ←0
-  │ !! c2004_monorepo_demo        229L  0C    3m  CC=22     ←0
+  │ c2004_monorepo_demo        241L  0C   10m  CC=7      ←0
   │ testql_demo                192L  0C    4m  CC=6      ←0
   │ routes                      38L  1C    5m  CC=1      ←0
   │ docker-compose.yml          33L  0C    0m  CC=0.0    ←0
   │ routes                      31L  0C    5m  CC=2      ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
@@ -66,42 +69,36 @@ LAYERS:
   │ routes                      13L  0C    2m  CC=1      ←0
   │ requirements.txt             3L  0C    0m  CC=0.0    ←0
   │ requirements.txt             2L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             2L  0C    0m  CC=0.0    ←0
   │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
+  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
   │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │
-  project/                        CC̄=0.0    ←in:0  →out:0
-  │ !! calls.yaml                 802L  0C    0m  CC=0.0    ←0
-  │ map.toon.yaml              280L  0C   87m  CC=0.0    ←0
-  │ calls.toon.yaml            146L  0C    0m  CC=0.0    ←0
-  │ analysis.toon.yaml         110L  0C    0m  CC=0.0    ←0
-  │ duplication.toon.yaml       68L  0C    0m  CC=0.0    ←0
-  │ evolution.toon.yaml         58L  0C    0m  CC=0.0    ←0
-  │ project.toon.yaml           54L  0C    0m  CC=0.0    ←0
-  │ prompt.txt                  47L  0C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   110L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              71L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
+  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
   │ generated-cli-tests.testql.toon.yaml    20L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
-     examples/flask-app/Dockerfile             0L
+     examples/fastapi-app/app/__init__.py      0L
+     examples/fastapi-app/app/users/__init__.py  0L
      examples/flask-app/app/__init__.py        0L
-     examples/multi-service/payments-service/Dockerfile  0L
+     examples/flask-app/app/auth/__init__.py   0L
 
 COUPLING:
             examples       wup
   examples        ──         6
-       wup        ←6        ──  hub
+       wup         1        ──  hub
   CYCLES: 2
   HUB: wup/ (fan-in=6)
 

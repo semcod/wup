@@ -1,12 +1,12 @@
-# redup/duplication | 4 groups | 33f 5224L | 2026-05-01
+# redup/duplication | 4 groups | 33f 5244L | 2026-05-08
 
 SUMMARY:
   files_scanned: 33
-  total_lines:   5224
+  total_lines:   5244
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   18
-  scan_ms:       3795
+  scan_ms:       3403
 
 HOTSPOTS[6] (files with most duplication):
   wup/_ast_detector.py  dup=6L  groups=2  frags=2  (0.1%)
@@ -22,7 +22,7 @@ DUPLICATES[4] (ranked by impact):
       wup/_hash_detector.py:15-17  (__init__)
       wup/_yaml_detector.py:19-21  (__init__)
   [8575900946923f44]   STRU  _snapshot_path  L=3 N=3 saved=6 sim=1.00
-      wup/_ast_detector.py:51-53  (_snapshot_path)
+      wup/_ast_detector.py:59-61  (_snapshot_path)
       wup/_hash_detector.py:22-24  (_snapshot_path)
       wup/_yaml_detector.py:49-51  (_snapshot_path)
   [e86dae8501b38602]   STRU  login  L=3 N=2 saved=3 sim=1.00

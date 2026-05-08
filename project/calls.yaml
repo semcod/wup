@@ -1,17 +1,129 @@
 project: /home/tom/github/semcod/wup
 generated_from: code2llm call graph analysis
 stats:
-  total_nodes: 49
-  total_edges: 42
+  total_nodes: 52
+  total_edges: 44
   modules_count: 12
 nodes:
-  wup.web_client._normalize:
-    name: _normalize
-    module: wup.web_client
-    line: 55
+  examples.c2004_monorepo_demo._analyze_module_structure:
+    name: _analyze_module_structure
+    module: examples.c2004_monorepo_demo
+    line: 82
+    cyclomatic_complexity: 7
+    calls_out: 10
+    calls_in: 1
+  examples.testql_demo.simulate_with_mock_data:
+    name: simulate_with_mock_data
+    module: examples.testql_demo
+    line: 170
+    cyclomatic_complexity: 1
+    calls_out: 12
+    calls_in: 1
+  wup.visual_diff._fetch_dom_snapshot:
+    name: _fetch_dom_snapshot
+    module: wup.visual_diff
+    line: 80
+    cyclomatic_complexity: 9
+    calls_out: 17
+    calls_in: 1
+  wup.visual_diff._diff_snapshots:
+    name: _diff_snapshots
+    module: wup.visual_diff
+    line: 193
+    cyclomatic_complexity: 11
+    calls_out: 15
+    calls_in: 2
+  wup.visual_diff._detect_content_issues:
+    name: _detect_content_issues
+    module: wup.visual_diff
+    line: 123
     cyclomatic_complexity: 6
-    calls_out: 7
+    calls_out: 11
+    calls_in: 1
+  examples.visual_diff_demo.demo_snapshot_persistence:
+    name: demo_snapshot_persistence
+    module: examples.visual_diff_demo
+    line: 111
+    cyclomatic_complexity: 3
+    calls_out: 26
+    calls_in: 1
+  wup.visual_diff._page_slug:
+    name: _page_slug
+    module: wup.visual_diff
+    line: 144
+    cyclomatic_complexity: 2
+    calls_out: 3
     calls_in: 3
+  wup.config.get_default_config:
+    name: get_default_config
+    module: wup.config
+    line: 251
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 2
+  examples.c2004_monorepo_demo.analyze_monorepo:
+    name: analyze_monorepo
+    module: examples.c2004_monorepo_demo
+    line: 156
+    cyclomatic_complexity: 2
+    calls_out: 26
+    calls_in: 1
+  examples.visual_diff_demo.demo_page_slug:
+    name: demo_page_slug
+    module: examples.visual_diff_demo
+    line: 96
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 1
+  examples.testql_demo.simulate_testql_analysis:
+    name: simulate_testql_analysis
+    module: examples.testql_demo
+    line: 141
+    cyclomatic_complexity: 2
+    calls_out: 18
+    calls_in: 0
+  examples.ci_cd_integration.generate_github_actions:
+    name: generate_github_actions
+    module: examples.ci_cd_integration
+    line: 189
+    cyclomatic_complexity: 1
+    calls_out: 9
+    calls_in: 1
+  examples.c2004_monorepo_demo._analyze_module:
+    name: _analyze_module
+    module: examples.c2004_monorepo_demo
+    line: 66
+    cyclomatic_complexity: 3
+    calls_out: 9
+    calls_in: 1
+  wup.visual_diff.VisualDiffer._check_page:
+    name: _check_page
+    module: wup.visual_diff
+    line: 329
+    cyclomatic_complexity: 3
+    calls_out: 8
+    calls_in: 0
+  wup.visual_diff._playwright_available:
+    name: _playwright_available
+    module: wup.visual_diff
+    line: 40
+    cyclomatic_complexity: 3
+    calls_out: 0
+    calls_in: 2
+  examples.ci_cd_integration.show_ci_cd_demo:
+    name: show_ci_cd_demo
+    module: examples.ci_cd_integration
+    line: 223
+    cyclomatic_complexity: 2
+    calls_out: 69
+    calls_in: 1
+  examples.webhook_notifications.main:
+    name: main
+    module: examples.webhook_notifications
+    line: 408
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 0
   examples.visual_diff_demo.demo_live_page:
     name: demo_live_page
     module: examples.visual_diff_demo
@@ -26,61 +138,33 @@ nodes:
     cyclomatic_complexity: 3
     calls_out: 3
     calls_in: 1
-  examples.c2004_monorepo_demo.analyze_monorepo:
-    name: analyze_monorepo
-    module: examples.c2004_monorepo_demo
-    line: 43
-    cyclomatic_complexity: 22
-    calls_out: 94
-    calls_in: 1
-  examples.visual_diff_demo.demo_page_slug:
-    name: demo_page_slug
-    module: examples.visual_diff_demo
-    line: 96
-    cyclomatic_complexity: 2
-    calls_out: 6
-    calls_in: 1
-  wup.cli.init:
-    name: init
-    module: wup.cli
-    line: 317
-    cyclomatic_complexity: 3
-    calls_out: 16
-    calls_in: 0
-  wup.testql_watcher.TestQLWatcher.__init__:
-    name: __init__
-    module: wup.testql_watcher
-    line: 58
-    cyclomatic_complexity: 12
-    calls_out: 12
-    calls_in: 0
-  examples.ci_cd_integration.generate_github_actions:
-    name: generate_github_actions
-    module: examples.ci_cd_integration
-    line: 189
+  wup.visual_diff._snapshot_path:
+    name: _snapshot_path
+    module: wup.visual_diff
+    line: 149
     cyclomatic_complexity: 1
-    calls_out: 9
-    calls_in: 1
-  examples.visual_diff_demo.demo_config_yaml_round_trip:
-    name: demo_config_yaml_round_trip
-    module: examples.visual_diff_demo
-    line: 167
-    cyclomatic_complexity: 6
-    calls_out: 16
-    calls_in: 1
-  examples.c2004_monorepo_demo.main:
-    name: main
-    module: examples.c2004_monorepo_demo
-    line: 219
-    cyclomatic_complexity: 2
     calls_out: 2
     calls_in: 0
-  wup.web_client.WebClient.__init__:
+  wup._yaml_detector.YAMLStructureDetector._snapshot_path:
+    name: _snapshot_path
+    module: wup._yaml_detector
+    line: 49
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  wup.core.WupWatcher.__init__:
     name: __init__
+    module: wup.core
+    line: 35
+    cyclomatic_complexity: 7
+    calls_out: 17
+    calls_in: 0
+  wup.web_client.WebClient.send_event:
+    name: send_event
     module: wup.web_client
-    line: 86
-    cyclomatic_complexity: 2
-    calls_out: 2
+    line: 100
+    cyclomatic_complexity: 4
+    calls_out: 9
     calls_in: 0
   wup.config.find_config_file:
     name: find_config_file
@@ -89,34 +173,34 @@ nodes:
     cyclomatic_complexity: 3
     calls_out: 1
     calls_in: 1
-  wup.visual_diff._page_slug:
-    name: _page_slug
-    module: wup.visual_diff
-    line: 144
+  examples.visual_diff_demo.demo_disabled_is_noop:
+    name: demo_disabled_is_noop
+    module: examples.visual_diff_demo
+    line: 204
     cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 3
-  wup.visual_diff._detect_content_issues:
-    name: _detect_content_issues
-    module: wup.visual_diff
-    line: 123
-    cyclomatic_complexity: 6
     calls_out: 11
     calls_in: 1
-  wup.config.get_default_config:
-    name: get_default_config
-    module: wup.config
-    line: 251
-    cyclomatic_complexity: 1
-    calls_out: 5
+  examples.testql_demo._build_mock_services:
+    name: _build_mock_services
+    module: examples.testql_demo
+    line: 88
+    cyclomatic_complexity: 5
+    calls_out: 4
     calls_in: 2
-  wup.visual_diff._flatten:
-    name: _flatten
-    module: wup.visual_diff
-    line: 183
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 3
+  examples.visual_diff_demo._save_snapshot:
+    name: _save_snapshot
+    module: examples.visual_diff_demo
+    line: 55
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 2
+  wup.cli.init:
+    name: init
+    module: wup.cli
+    line: 317
+    cyclomatic_complexity: 3
+    calls_out: 16
+    calls_in: 0
   examples.visual_diff_demo.demo_diff_algorithm:
     name: demo_diff_algorithm
     module: examples.visual_diff_demo
@@ -124,19 +208,12 @@ nodes:
     cyclomatic_complexity: 3
     calls_out: 16
     calls_in: 1
-  wup.visual_diff._snapshot_path:
-    name: _snapshot_path
+  wup.visual_diff._resolve_base_url:
+    name: _resolve_base_url
     module: wup.visual_diff
-    line: 149
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  examples.webhook_notifications.show_webhook_demo:
-    name: show_webhook_demo
-    module: examples.webhook_notifications
-    line: 280
-    cyclomatic_complexity: 4
-    calls_out: 68
+    line: 247
+    cyclomatic_complexity: 3
+    calls_out: 3
     calls_in: 1
   wup.config.validate_config:
     name: validate_config
@@ -145,125 +222,6 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 87
     calls_in: 1
-  wup.visual_diff._save_snapshot:
-    name: _save_snapshot
-    module: wup.visual_diff
-    line: 164
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  wup.config.load_config:
-    name: load_config
-    module: wup.config
-    line: 67
-    cyclomatic_complexity: 5
-    calls_out: 8
-    calls_in: 6
-  wup.visual_diff._load_snapshot:
-    name: _load_snapshot
-    module: wup.visual_diff
-    line: 155
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  wup.cli.status:
-    name: status
-    module: wup.cli
-    line: 171
-    cyclomatic_complexity: 5
-    calls_out: 97
-    calls_in: 0
-  wup.visual_diff._diff_snapshots:
-    name: _diff_snapshots
-    module: wup.visual_diff
-    line: 193
-    cyclomatic_complexity: 11
-    calls_out: 15
-    calls_in: 2
-  examples.visual_diff_demo.demo_disabled_is_noop:
-    name: demo_disabled_is_noop
-    module: examples.visual_diff_demo
-    line: 204
-    cyclomatic_complexity: 2
-    calls_out: 11
-    calls_in: 1
-  examples.ci_cd_integration.generate_gitlab_ci:
-    name: generate_gitlab_ci
-    module: examples.ci_cd_integration
-    line: 203
-    cyclomatic_complexity: 3
-    calls_out: 10
-    calls_in: 1
-  wup.config._load_dotenv:
-    name: _load_dotenv
-    module: wup.config
-    line: 47
-    cyclomatic_complexity: 10
-    calls_out: 10
-    calls_in: 1
-  wup.testql_watcher.TestQLWatcher._resolve_base_url:
-    name: _resolve_base_url
-    module: wup.testql_watcher
-    line: 199
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 1
-  examples.testql_demo.simulate_with_mock_data:
-    name: simulate_with_mock_data
-    module: examples.testql_demo
-    line: 170
-    cyclomatic_complexity: 1
-    calls_out: 12
-    calls_in: 1
-  wup.web_client.WebClient.send_event:
-    name: send_event
-    module: wup.web_client
-    line: 100
-    cyclomatic_complexity: 4
-    calls_out: 9
-    calls_in: 0
-  examples.ci_cd_integration.show_ci_cd_demo:
-    name: show_ci_cd_demo
-    module: examples.ci_cd_integration
-    line: 223
-    cyclomatic_complexity: 2
-    calls_out: 69
-    calls_in: 1
-  examples.visual_diff_demo._make_dom:
-    name: _make_dom
-    module: examples.visual_diff_demo
-    line: 35
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 5
-  wup.visual_diff._playwright_available:
-    name: _playwright_available
-    module: wup.visual_diff
-    line: 40
-    cyclomatic_complexity: 3
-    calls_out: 0
-    calls_in: 2
-  examples.webhook_notifications.main:
-    name: main
-    module: examples.webhook_notifications
-    line: 408
-    cyclomatic_complexity: 3
-    calls_out: 7
-    calls_in: 0
-  wup.visual_diff.VisualDiffer.__init__:
-    name: __init__
-    module: wup.visual_diff
-    line: 264
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  examples.visual_diff_demo.main:
-    name: main
-    module: examples.visual_diff_demo
-    line: 249
-    cyclomatic_complexity: 2
-    calls_out: 15
-    calls_in: 0
   examples.testql_demo._run_with_mock_services:
     name: _run_with_mock_services
     module: examples.testql_demo
@@ -271,26 +229,26 @@ nodes:
     cyclomatic_complexity: 6
     calls_out: 60
     calls_in: 2
-  wup.core.WupWatcher.__init__:
-    name: __init__
-    module: wup.core
-    line: 35
-    cyclomatic_complexity: 7
-    calls_out: 17
-    calls_in: 0
-  examples.visual_diff_demo.demo_snapshot_persistence:
-    name: demo_snapshot_persistence
-    module: examples.visual_diff_demo
-    line: 111
+  examples.ci_cd_integration.generate_gitlab_ci:
+    name: generate_gitlab_ci
+    module: examples.ci_cd_integration
+    line: 203
     cyclomatic_complexity: 3
-    calls_out: 26
+    calls_out: 10
     calls_in: 1
-  wup.visual_diff.VisualDiffer._write_diff_event:
-    name: _write_diff_event
-    module: wup.visual_diff
-    line: 362
-    cyclomatic_complexity: 1
-    calls_out: 6
+  examples.visual_diff_demo.demo_config_yaml_round_trip:
+    name: demo_config_yaml_round_trip
+    module: examples.visual_diff_demo
+    line: 167
+    cyclomatic_complexity: 6
+    calls_out: 16
+    calls_in: 1
+  examples.visual_diff_demo.main:
+    name: main
+    module: examples.visual_diff_demo
+    line: 249
+    cyclomatic_complexity: 2
+    calls_out: 15
     calls_in: 0
   wup.visual_diff._node_signature:
     name: _node_signature
@@ -299,6 +257,69 @@ nodes:
     cyclomatic_complexity: 3
     calls_out: 4
     calls_in: 1
+  wup.config._load_dotenv:
+    name: _load_dotenv
+    module: wup.config
+    line: 47
+    cyclomatic_complexity: 10
+    calls_out: 10
+    calls_in: 1
+  examples.webhook_notifications.show_webhook_demo:
+    name: show_webhook_demo
+    module: examples.webhook_notifications
+    line: 280
+    cyclomatic_complexity: 4
+    calls_out: 68
+    calls_in: 1
+  wup.cli.status:
+    name: status
+    module: wup.cli
+    line: 171
+    cyclomatic_complexity: 5
+    calls_out: 97
+    calls_in: 0
+  wup.web_client.WebClient.__init__:
+    name: __init__
+    module: wup.web_client
+    line: 86
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  examples.c2004_monorepo_demo.main:
+    name: main
+    module: examples.c2004_monorepo_demo
+    line: 231
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  wup.visual_diff._flatten:
+    name: _flatten
+    module: wup.visual_diff
+    line: 183
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 3
+  wup.visual_diff.VisualDiffer.__init__:
+    name: __init__
+    module: wup.visual_diff
+    line: 264
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  wup.visual_diff._load_snapshot:
+    name: _load_snapshot
+    module: wup.visual_diff
+    line: 155
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  wup.testql_watcher.TestQLWatcher.__init__:
+    name: __init__
+    module: wup.testql_watcher
+    line: 58
+    cyclomatic_complexity: 12
+    calls_out: 12
+    calls_in: 0
   examples.ci_cd_integration.main:
     name: main
     module: examples.ci_cd_integration
@@ -306,27 +327,13 @@ nodes:
     cyclomatic_complexity: 3
     calls_out: 7
     calls_in: 0
-  wup.visual_diff.VisualDiffer._check_page:
-    name: _check_page
-    module: wup.visual_diff
-    line: 329
-    cyclomatic_complexity: 3
-    calls_out: 8
-    calls_in: 0
-  examples.testql_demo.simulate_testql_analysis:
-    name: simulate_testql_analysis
-    module: examples.testql_demo
-    line: 141
+  examples.visual_diff_demo._make_dom:
+    name: _make_dom
+    module: examples.visual_diff_demo
+    line: 35
     cyclomatic_complexity: 2
-    calls_out: 18
-    calls_in: 0
-  wup._ast_detector.ASTDetector._snapshot_path:
-    name: _snapshot_path
-    module: wup._ast_detector
-    line: 51
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
+    calls_out: 1
+    calls_in: 5
   wup.config.save_config:
     name: save_config
     module: wup.config
@@ -334,20 +341,34 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 12
     calls_in: 2
-  examples.testql_demo._build_mock_services:
-    name: _build_mock_services
-    module: examples.testql_demo
-    line: 88
+  wup.config.load_config:
+    name: load_config
+    module: wup.config
+    line: 67
     cyclomatic_complexity: 5
-    calls_out: 4
-    calls_in: 2
-  wup.visual_diff._fetch_dom_snapshot:
-    name: _fetch_dom_snapshot
-    module: wup.visual_diff
-    line: 80
-    cyclomatic_complexity: 9
-    calls_out: 17
+    calls_out: 8
+    calls_in: 6
+  examples.c2004_monorepo_demo._discover_modules:
+    name: _discover_modules
+    module: examples.c2004_monorepo_demo
+    line: 42
+    cyclomatic_complexity: 5
+    calls_out: 8
     calls_in: 1
+  wup.visual_diff.VisualDiffer._write_diff_event:
+    name: _write_diff_event
+    module: wup.visual_diff
+    line: 362
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 0
+  wup.web_client._normalize:
+    name: _normalize
+    module: wup.web_client
+    line: 55
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 3
 edges:
 - caller: wup.config.load_config
   callee: wup.config._load_dotenv
@@ -361,62 +382,11 @@ edges:
 - caller: wup.config.load_config
   callee: wup.config.get_default_config
   call_type: resolved
-- caller: wup.cli.status
-  callee: wup.config.load_config
+- caller: examples.c2004_monorepo_demo._analyze_module_structure
+  callee: examples.c2004_monorepo_demo._analyze_module
   call_type: resolved
-- caller: wup.cli.init
-  callee: wup.config.get_default_config
-  call_type: resolved
-- caller: wup.cli.init
-  callee: wup.config.save_config
-  call_type: resolved
-- caller: wup.core.WupWatcher.__init__
-  callee: wup.config.load_config
-  call_type: resolved
-- caller: wup.web_client.WebClient.__init__
-  callee: wup.web_client.resolve_endpoint
-  call_type: resolved
-- caller: wup.web_client.WebClient.send_event
-  callee: wup.web_client._normalize
-  call_type: resolved
-- caller: wup.testql_watcher.TestQLWatcher.__init__
-  callee: wup.config.load_config
-  call_type: resolved
-- caller: wup.visual_diff._fetch_dom_snapshot
-  callee: wup.visual_diff._playwright_available
-  call_type: resolved
-- caller: wup.visual_diff._snapshot_path
-  callee: wup.visual_diff._page_slug
-  call_type: resolved
-- caller: wup.visual_diff._flatten
-  callee: wup.visual_diff._node_signature
-  call_type: resolved
-- caller: wup.visual_diff._diff_snapshots
-  callee: wup.visual_diff._flatten
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer.__init__
-  callee: wup.testql_watcher.TestQLWatcher._resolve_base_url
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup._ast_detector.ASTDetector._snapshot_path
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup.visual_diff._load_snapshot
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup.visual_diff._diff_snapshots
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup.visual_diff._detect_content_issues
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup.visual_diff._save_snapshot
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._check_page
-  callee: wup.visual_diff._fetch_dom_snapshot
-  call_type: resolved
-- caller: wup.visual_diff.VisualDiffer._write_diff_event
-  callee: wup.visual_diff._page_slug
+- caller: examples.c2004_monorepo_demo.analyze_monorepo
+  callee: examples.c2004_monorepo_demo._discover_modules
   call_type: resolved
 - caller: examples.c2004_monorepo_demo.main
   callee: examples.c2004_monorepo_demo.analyze_monorepo
@@ -454,6 +424,15 @@ edges:
 - caller: examples.visual_diff_demo.main
   callee: examples.visual_diff_demo.demo_disabled_is_noop
   call_type: resolved
+- caller: wup.cli.status
+  callee: wup.config.load_config
+  call_type: resolved
+- caller: wup.cli.init
+  callee: wup.config.get_default_config
+  call_type: resolved
+- caller: wup.cli.init
+  callee: wup.config.save_config
+  call_type: resolved
 - caller: examples.testql_demo.simulate_testql_analysis
   callee: examples.testql_demo._build_mock_services
   call_type: resolved
@@ -462,6 +441,12 @@ edges:
   call_type: resolved
 - caller: examples.testql_demo.simulate_with_mock_data
   callee: examples.testql_demo._run_with_mock_services
+  call_type: resolved
+- caller: wup.web_client.WebClient.__init__
+  callee: wup.web_client.resolve_endpoint
+  call_type: resolved
+- caller: wup.web_client.WebClient.send_event
+  callee: wup.web_client._normalize
   call_type: resolved
 - caller: examples.ci_cd_integration.main
   callee: examples.ci_cd_integration.generate_github_actions
@@ -475,8 +460,53 @@ edges:
 - caller: examples.webhook_notifications.main
   callee: examples.webhook_notifications.show_webhook_demo
   call_type: resolved
+- caller: wup.visual_diff._fetch_dom_snapshot
+  callee: wup.visual_diff._playwright_available
+  call_type: resolved
+- caller: wup.visual_diff._snapshot_path
+  callee: wup.visual_diff._page_slug
+  call_type: resolved
+- caller: wup.visual_diff._flatten
+  callee: wup.visual_diff._node_signature
+  call_type: resolved
+- caller: wup.visual_diff._diff_snapshots
+  callee: wup.visual_diff._flatten
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer.__init__
+  callee: wup.visual_diff._resolve_base_url
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup._yaml_detector.YAMLStructureDetector._snapshot_path
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._load_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._diff_snapshots
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._detect_content_issues
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: examples.visual_diff_demo._save_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._check_page
+  callee: wup.visual_diff._fetch_dom_snapshot
+  call_type: resolved
+- caller: wup.visual_diff.VisualDiffer._write_diff_event
+  callee: wup.visual_diff._page_slug
+  call_type: resolved
+- caller: wup.testql_watcher.TestQLWatcher.__init__
+  callee: wup.config.load_config
+  call_type: resolved
+- caller: wup.core.WupWatcher.__init__
+  callee: wup.config.load_config
+  call_type: resolved
 modules:
   examples.c2004_monorepo_demo:
+  - examples.c2004_monorepo_demo._analyze_module
+  - examples.c2004_monorepo_demo._analyze_module_structure
+  - examples.c2004_monorepo_demo._discover_modules
   - examples.c2004_monorepo_demo.analyze_monorepo
   - examples.c2004_monorepo_demo.main
   examples.ci_cd_integration:
@@ -491,6 +521,7 @@ modules:
   - examples.testql_demo.simulate_with_mock_data
   examples.visual_diff_demo:
   - examples.visual_diff_demo._make_dom
+  - examples.visual_diff_demo._save_snapshot
   - examples.visual_diff_demo.demo_config_yaml_round_trip
   - examples.visual_diff_demo.demo_diff_algorithm
   - examples.visual_diff_demo.demo_disabled_is_noop
@@ -501,8 +532,8 @@ modules:
   examples.webhook_notifications:
   - examples.webhook_notifications.main
   - examples.webhook_notifications.show_webhook_demo
-  wup._ast_detector:
-  - wup._ast_detector.ASTDetector._snapshot_path
+  wup._yaml_detector:
+  - wup._yaml_detector.YAMLStructureDetector._snapshot_path
   wup.cli:
   - wup.cli.init
   - wup.cli.status
@@ -517,7 +548,6 @@ modules:
   - wup.core.WupWatcher.__init__
   wup.testql_watcher:
   - wup.testql_watcher.TestQLWatcher.__init__
-  - wup.testql_watcher.TestQLWatcher._resolve_base_url
   wup.visual_diff:
   - wup.visual_diff.VisualDiffer.__init__
   - wup.visual_diff.VisualDiffer._check_page
@@ -530,7 +560,7 @@ modules:
   - wup.visual_diff._node_signature
   - wup.visual_diff._page_slug
   - wup.visual_diff._playwright_available
-  - wup.visual_diff._save_snapshot
+  - wup.visual_diff._resolve_base_url
   - wup.visual_diff._snapshot_path
   wup.web_client:
   - wup.web_client.WebClient.__init__
@@ -569,11 +599,11 @@ entry_points:
 - examples.multi-service.users-service.main.health
 - examples.multi-service.users-service.main.root
 - examples.testql_demo.simulate_testql_analysis
-- examples.testql_integration.TestQLWatcher.__init__
-- examples.testql_integration.TestQLWatcher._find_scenarios_for_service
-- examples.testql_integration.TestQLWatcher._generate_blame_report
-- examples.testql_integration.TestQLWatcher.run_detail_test
-- examples.testql_integration.TestQLWatcher.run_quick_test
+- examples.testql_integration.CustomTestQLWatcher.__init__
+- examples.testql_integration.CustomTestQLWatcher._find_scenarios_for_service
+- examples.testql_integration.CustomTestQLWatcher._generate_blame_report
+- examples.testql_integration.CustomTestQLWatcher.run_detail_test
+- examples.testql_integration.CustomTestQLWatcher.run_quick_test
 - examples.testql_integration.main
 - examples.visual_diff_demo.main
 - examples.webhook_notifications.NotificationRouter.__init__
@@ -582,96 +612,14 @@ entry_points:
 - examples.webhook_notifications.NotificationRouter.add_teams
 - examples.webhook_notifications.NotificationRouter.send
 - examples.webhook_notifications.main
-- project.map.toon._build_mock_services
-- project.map.toon._detect_content_issues
-- project.map.toon._diff_snapshots
-- project.map.toon._fetch_dom_snapshot
-- project.map.toon._flatten
-- project.map.toon._httpx_available
-- project.map.toon._load_dotenv
-- project.map.toon._load_snapshot
-- project.map.toon._make_dom
-- project.map.toon._make_handler
-- project.map.toon._node_signature
-- project.map.toon._normalize
-- project.map.toon._page_slug
-- project.map.toon._playwright_available
-- project.map.toon._resolve_base_url
-- project.map.toon._run_with_mock_services
-- project.map.toon._save_snapshot
-- project.map.toon._snapshot_path
-- project.map.toon.analyze_monorepo
-- project.map.toon.assistant
-- project.map.toon.change_password
-- project.map.toon.create_discord_payload
-- project.map.toon.create_payment
-- project.map.toon.create_slack_payload
-- project.map.toon.create_teams_payload
-- project.map.toon.create_user
-- project.map.toon.delete_user
-- project.map.toon.demo_config_yaml_round_trip
-- project.map.toon.demo_diff_algorithm
-- project.map.toon.demo_disabled_is_noop
-- project.map.toon.demo_live_page
-- project.map.toon.demo_page_slug
-- project.map.toon.demo_snapshot_persistence
-- project.map.toon.find_config_file
-- project.map.toon.generate_github_actions
-- project.map.toon.generate_gitlab_ci
-- project.map.toon.get_default_config
-- project.map.toon.get_payment
-- project.map.toon.get_user
-- project.map.toon.health
-- project.map.toon.init
-- project.map.toon.list_payments
-- project.map.toon.list_users
-- project.map.toon.load_config
-- project.map.toon.login
-- project.map.toon.logout
-- project.map.toon.main
-- project.map.toon.map_deps
-- project.map.toon.profile
-- project.map.toon.quick_scan
-- project.map.toon.recorder_server
-- project.map.toon.register
-- project.map.toon.resolve_endpoint
-- project.map.toon.root
-- project.map.toon.run_wup_command
-- project.map.toon.save_config
-- project.map.toon.scan_yaml_changes
-- project.map.toon.show_ci_cd_demo
-- project.map.toon.show_webhook_demo
-- project.map.toon.simulate_monorepo
-- project.map.toon.simulate_testql_analysis
-- project.map.toon.simulate_with_mock_data
-- project.map.toon.status
-- project.map.toon.test_browser_event_file_is_written_without_service_url
-- project.map.toon.test_config_endpoints_use_base_url_from_env_when_yaml_missing
-- project.map.toon.test_config_endpoints_use_base_url_from_yaml_config
-- project.map.toon.test_import
-- project.map.toon.test_is_active_false_when_disabled
-- project.map.toon.test_is_active_false_when_no_endpoint
-- project.map.toon.test_process_changed_file_creates_track_on_failure
-- project.map.toon.test_resolve_endpoint_empty
-- project.map.toon.test_resolve_endpoint_from_config
-- project.map.toon.test_resolve_endpoint_from_env
-- project.map.toon.test_send_event_disabled_returns_false
-- project.map.toon.test_send_event_posts_to_recorder
-- project.map.toon.test_send_event_swallows_connection_error
-- project.map.toon.test_send_event_with_api_key
-- project.map.toon.test_send_health_transition_helper
-- project.map.toon.test_send_regression_helper
-- project.map.toon.test_service_health_transitions_are_persisted
-- project.map.toon.test_visual_differ_disabled_by_default
-- project.map.toon.test_visual_differ_initialized_when_enabled
-- project.map.toon.testql_endpoints
-- project.map.toon.update_user
-- project.map.toon.validate_config
-- project.map.toon.version
-- project.map.toon.watch
 - wup._ast_detector.ASTDetector.__init__
+- wup._ast_detector.ASTDetector._collect_class
+- wup._ast_detector.ASTDetector._collect_function
+- wup._ast_detector.ASTDetector._collect_import
+- wup._ast_detector.ASTDetector._collect_import_from
 - wup._ast_detector.ASTDetector._compute_changes
 - wup._ast_detector.ASTDetector._extract_ast_info
+- wup._ast_detector.ASTDetector._snapshot_path
 - wup._ast_detector.ASTDetector.detect
 - wup._hash_detector.HashDetector.__init__
 - wup._hash_detector.HashDetector._compute_hash
@@ -683,7 +631,6 @@ entry_points:
 - wup._yaml_detector.YAMLStructureDetector._extract_structure
 - wup._yaml_detector.YAMLStructureDetector._generate_suggestions
 - wup._yaml_detector.YAMLStructureDetector._load_yaml
-- wup._yaml_detector.YAMLStructureDetector._snapshot_path
 - wup._yaml_detector.YAMLStructureDetector.detect
 - wup.anomaly_detector.AnomalyDetector.__init__
 - wup.anomaly_detector.AnomalyDetector._should_scan
@@ -783,6 +730,7 @@ entry_points:
 - wup.testql_watcher.TestQLWatcher._quick_pass_actions
 - wup.testql_watcher.TestQLWatcher._quick_timeout
 - wup.testql_watcher.TestQLWatcher._record_health_transition
+- wup.testql_watcher.TestQLWatcher._resolve_base_url
 - wup.testql_watcher.TestQLWatcher._run_scenario_quick
 - wup.testql_watcher.TestQLWatcher._run_testql
 - wup.testql_watcher.TestQLWatcher._save_service_health
@@ -801,7 +749,7 @@ entry_points:
 - wup.visual_diff.VisualDiffer._write_diff_event
 - wup.visual_diff.VisualDiffer.get_recent_diffs
 - wup.visual_diff.VisualDiffer.run_for_service
-- wup.visual_diff._resolve_base_url
+- wup.visual_diff._save_snapshot
 - wup.visual_diff._snapshot_path
 - wup.web_client.WebClient.__init__
 - wup.web_client.WebClient._headers

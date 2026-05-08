@@ -1,6 +1,7 @@
-# code2llm/evolution | 248 func | 14f | 2026-05-01
+# code2llm/evolution | 165 func | 13f | 2026-05-08
+# generated in 0.01s
 
-NEXT[4] (ranked by impact):
+NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/assistant.py
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
@@ -9,25 +10,21 @@ NEXT[4] (ranked by impact):
       WHY: 590L, 2 classes, max CC=14
       EFFORT: ~4h  IMPACT: 8260
 
-  [3] !! SPLIT           wup/testql_watcher.py
-      WHY: 512L, 2 classes, max CC=12
-      EFFORT: ~4h  IMPACT: 6144
-
-  [4] !  SPLIT-FUNC      ASTDetector._extract_ast_info  CC=16  fan=7
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 112
+  [3] !! SPLIT           goal.yaml
+      WHY: 512L, 0 classes, max CC=0
+      EFFORT: ~4h  IMPACT: 0
 
 
 RISKS[3]:
   ⚠ Splitting wup/assistant.py may break 24 import paths
   ⚠ Splitting wup/core.py may break 25 import paths
-  ⚠ Splitting wup/testql_watcher.py may break 24 import paths
+  ⚠ Splitting goal.yaml may break 0 import paths
 
 METRICS-TARGET:
-  CC̄:          2.9 → ≤2.0
-  max-CC:      16 → ≤8
-  god-modules: 3 → 0
-  high-CC(≥15): 1 → ≤0
+  CC̄:          4.4 → ≤3.1
+  max-CC:      14 → ≤7
+  god-modules: 4 → 0
+  high-CC(≥15): 0 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -55,4 +52,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=2.9 → now CC̄=2.9
+  prev CC̄=2.9 → now CC̄=4.4
