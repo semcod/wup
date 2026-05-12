@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wup"
-version = "0.2.21"
+version = "0.2.22"
 description = "WUP (What's Up) - Intelligent file watcher for regression testing in large projects"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -28,9 +28,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
+license = "Apache-2.0"
 
-[project.license]
-text = "Apache-2.0"
 [tool.setuptools.packages.find]
 include = ["wup*"]
 
