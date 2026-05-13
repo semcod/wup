@@ -25,12 +25,18 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from wup.models.config import VisualDiffConfig, WupConfig, ProjectConfig, TestQLConfig
-from wup.visual_diff import VisualDiffer, _diff_snapshots, _page_slug, _playwright_available
+from wup.visual_diff import (
+    VisualDiffer,
+    _diff_snapshots,
+    _page_slug,
+    _playwright_available,
+)
 
 
 # ---------------------------------------------------------------------------
 # Helpers for simulated snapshots
 # ---------------------------------------------------------------------------
+
 
 def _make_dom(n_divs: int) -> dict:
     """Return a minimal DOM tree with *n_divs* child DIVs under BODY."""
@@ -45,7 +51,8 @@ def _make_dom(n_divs: int) -> dict:
                 "tag": "BODY",
                 "id": "app",
                 "children": [
-                    {"tag": "DIV", "id": f"block-{i}", "cls": "card"} for i in range(n_divs)
+                    {"tag": "DIV", "id": f"block-{i}", "cls": "card"}
+                    for i in range(n_divs)
                 ],
             },
         ],
@@ -61,6 +68,7 @@ def _save_snapshot(path: Path, dom: dict) -> None:
 # Demo sections
 # ---------------------------------------------------------------------------
 
+
 def demo_diff_algorithm():
     print("=" * 60)
     print("  1. Diff algorithm (no Playwright)")
@@ -72,24 +80,30 @@ def demo_diff_algorithm():
     smaller = _make_dom(0)
 
     for label, old, new, cfg in [
-        ("No previous snapshot (baseline)",
-         None, baseline, (1, 1, 1)),
-        ("Identical DOM",
-         same, same, (1, 1, 1)),
-        ("7 divs added (threshold=3 → changed)",
-         baseline, bigger, (3, 3, 5)),
-        ("3 divs removed (threshold=3 → changed)",
-         baseline, smaller, (3, 3, 5)),
+        ("No previous snapshot (baseline)", None, baseline, (1, 1, 1)),
+        ("Identical DOM", same, same, (1, 1, 1)),
+        ("7 divs added (threshold=3 → changed)", baseline, bigger, (3, 3, 5)),
+        ("3 divs removed (threshold=3 → changed)", baseline, smaller, (3, 3, 5)),
     ]:
-        result = _diff_snapshots(old, new, max_depth=10, threshold_added=cfg[0],
-                                 threshold_removed=cfg[1], threshold_changed=cfg[2])
+        result = _diff_snapshots(
+            old,
+            new,
+            max_depth=10,
+            threshold_added=cfg[0],
+            threshold_removed=cfg[1],
+            threshold_changed=cfg[2],
+        )
         status = result["status"]
-        emoji = {"new": "📷", "ok": "✅", "changed": "🔴", "error": "❌"}.get(status, "?")
+        emoji = {"new": "📷", "ok": "✅", "changed": "🔴", "error": "❌"}.get(
+            status, "?"
+        )
         print(f"  {emoji}  {label}")
         if status not in ("new",):
             counts = result.get("counts", {})
-            print(f"     added={counts.get('added', 0)}  removed={counts.get('removed', 0)}  "
-                  f"changed_attrs={counts.get('changed_attrs', 0)}")
+            print(
+                f"     added={counts.get('added', 0)}  removed={counts.get('removed', 0)}  "
+                f"changed_attrs={counts.get('changed_attrs', 0)}"
+            )
     print()
 
 
@@ -142,17 +156,28 @@ def demo_snapshot_persistence():
 
         # Simulate a diff event
         import time
+
         diff_file = differ.diff_dir / service / "health.jsonl"
         diff_file.parent.mkdir(parents=True, exist_ok=True)
         diff_file.write_text(
-            json.dumps({
-                "timestamp": int(time.time()),
-                "service": service,
-                "url": "http://localhost:8100/health",
-                "diff": {"status": "changed",
-                         "counts": {"added": 7, "removed": 0, "changed_attrs": 0,
-                                    "total_old": 6, "total_new": 13}},
-            }) + "\n",
+            json.dumps(
+                {
+                    "timestamp": int(time.time()),
+                    "service": service,
+                    "url": "http://localhost:8100/health",
+                    "diff": {
+                        "status": "changed",
+                        "counts": {
+                            "added": 7,
+                            "removed": 0,
+                            "changed_attrs": 0,
+                            "total_old": 6,
+                            "total_new": 13,
+                        },
+                    },
+                }
+            )
+            + "\n",
             encoding="utf-8",
         )
 
@@ -160,7 +185,9 @@ def demo_snapshot_persistence():
         print(f"  get_recent_diffs(60s) → {len(recent)} event(s)")
         for ev in recent:
             c = ev["diff"]["counts"]
-            print(f"    {ev['url']}  +{c['added']} -{c['removed']} ~{c['changed_attrs']}")
+            print(
+                f"    {ev['url']}  +{c['added']} -{c['removed']} ~{c['changed_attrs']}"
+            )
     print()
 
 
@@ -190,8 +217,10 @@ def demo_config_yaml_round_trip():
 
         reloaded = load_config(root)
         vd = reloaded.visual_diff
-        print(f"  Reloaded: enabled={vd.enabled}  base_url={vd.base_url!r}  "
-              f"pages={vd.pages}  max_depth={vd.max_depth}  threshold_added={vd.threshold_added}")
+        print(
+            f"  Reloaded: enabled={vd.enabled}  base_url={vd.base_url!r}  "
+            f"pages={vd.pages}  max_depth={vd.max_depth}  threshold_added={vd.threshold_added}"
+        )
         assert vd.enabled is True
         assert vd.base_url == "http://localhost:8100"
         assert vd.pages == ["/health", "/dashboard"]
@@ -237,7 +266,9 @@ async def demo_live_page(url: str):
         results = await differ.run_for_service("live", [])
         for r in results:
             status = r["diff"]["status"]
-            emoji = {"new": "📷", "ok": "✅", "changed": "🔴", "error": "❌"}.get(status, "?")
+            emoji = {"new": "📷", "ok": "✅", "changed": "🔴", "error": "❌"}.get(
+                status, "?"
+            )
             print(f"  {emoji}  {r['url']}  status={status}")
     print()
 
@@ -245,6 +276,7 @@ async def demo_live_page(url: str):
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main():
     print()
@@ -261,7 +293,9 @@ def main():
         asyncio.run(demo_live_page(sys.argv[1]))
     else:
         print("  (Pass a URL as argument to run a live Playwright scan)")
-        print("  e.g.: python3 examples/visual_diff_demo.py http://localhost:8100/health")
+        print(
+            "  e.g.: python3 examples/visual_diff_demo.py http://localhost:8100/health"
+        )
         print()
 
     print("  All demos completed successfully.")

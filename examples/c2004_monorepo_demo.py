@@ -42,7 +42,8 @@ from wup.core import WupWatcher
 def _discover_modules(project_root: Path) -> list:
     """Step 1: Discover and print connect-* module names."""
     modules = sorted(
-        item.name for item in project_root.iterdir()
+        item.name
+        for item in project_root.iterdir()
         if item.is_dir() and item.name.startswith("connect-")
     )
     print(f"✓ Found {len(modules)} connect-* modules:")
@@ -73,7 +74,9 @@ def _analyze_module(module_path: Path) -> dict:
         "backend_files": 0,
     }
     if analysis["has_frontend"]:
-        analysis["frontend_files"] = len(list((module_path / "frontend").rglob("*.ts*")))
+        analysis["frontend_files"] = len(
+            list((module_path / "frontend").rglob("*.ts*"))
+        )
     if analysis["has_backend"]:
         analysis["backend_files"] = len(list((module_path / "backend").rglob("*.py")))
     return analysis
@@ -194,35 +197,47 @@ def analyze_monorepo(project_path: str):
 
 def simulate_monorepo():
     """Simulate monorepo analysis when path not available."""
-    
+
     print("(Running in simulation mode)")
     print()
-    
+
     # Simulated module list
     connect_modules = [
-        "connect-config", "connect-data", "connect-devtools",
-        "connect-encoder", "connect-id", "connect-live-protocol",
-        "connect-manager", "connect-menu-editor", "connect-menu-tree",
-        "connect-reports", "connect-router", "connect-scenario",
-        "connect-template", "connect-template2", "connect-test",
-        "connect-test-device", "connect-test-full", "connect-workshop",
+        "connect-config",
+        "connect-data",
+        "connect-devtools",
+        "connect-encoder",
+        "connect-id",
+        "connect-live-protocol",
+        "connect-manager",
+        "connect-menu-editor",
+        "connect-menu-tree",
+        "connect-reports",
+        "connect-router",
+        "connect-scenario",
+        "connect-template",
+        "connect-template2",
+        "connect-test",
+        "connect-test-device",
+        "connect-test-full",
+        "connect-workshop",
     ]
-    
+
     print(f"✓ Simulated {len(connect_modules)} connect-* modules")
     for mod in connect_modules:
         print(f"  • {mod}")
     print()
-    
+
     print("✓ Simulated watch patterns:")
     print("  • connect-*/frontend/src/**")
     print("  • connect-*/backend/**/*.py")
     print("  • app/**")
     print("  • src/**")
     print()
-    
+
     print("✓ Simulated test endpoints: 148 endpoints configured")
     print()
-    
+
     print("=" * 70)
     print("✅ Simulation complete!")
     print("=" * 70)
@@ -230,10 +245,12 @@ def simulate_monorepo():
 
 def main():
     import sys
-    
+
     # Default to c2004 directory
-    project_path = sys.argv[1] if len(sys.argv) > 1 else "/home/tom/github/maskservice/c2004"
-    
+    project_path = (
+        sys.argv[1] if len(sys.argv) > 1 else "/home/tom/github/maskservice/c2004"
+    )
+
     analyze_monorepo(project_path)
 
 

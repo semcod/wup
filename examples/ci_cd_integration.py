@@ -26,12 +26,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from wup.config import load_config
-from wup.core import WupWatcher
-from wup.dependency_mapper import DependencyMapper
 
-
-GITHUB_ACTIONS_TEMPLATE = '''\
+GITHUB_ACTIONS_TEMPLATE = """\
 name: WUP Regression Testing
 
 on:
@@ -111,10 +107,10 @@ jobs:
           path: |
             deps-full.json
             wup-status.json
-'''
+"""
 
 
-GITLAB_CI_TEMPLATE = '''\
+GITLAB_CI_TEMPLATE = """\
 stages:
   - validate
   - test
@@ -183,14 +179,14 @@ wup:report:
       # Custom report generation
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
-'''
+"""
 
 
 def generate_github_actions():
     """Generate GitHub Actions workflow file."""
     output_path = Path(".github/workflows/wup-regression.yml")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     output_path.write_text(GITHUB_ACTIONS_TEMPLATE)
     print(f"✅ Generated GitHub Actions workflow: {output_path}")
     print()
@@ -203,7 +199,7 @@ def generate_github_actions():
 def generate_gitlab_ci():
     """Generate GitLab CI configuration."""
     output_path = Path(".gitlab-ci.yml")
-    
+
     # Check if file exists and append or create
     if output_path.exists():
         content = output_path.read_text()
@@ -222,50 +218,50 @@ def generate_gitlab_ci():
 
 def show_ci_cd_demo():
     """Show CI/CD integration demo."""
-    
+
     print("=" * 70)
     print("🔧 WUP CI/CD Integration Demo")
     print("=" * 70)
     print()
-    
+
     print("📋 Integration Patterns:")
     print("-" * 70)
     print()
-    
+
     print("1️⃣  Pre-commit Validation")
     print("   • Run: wup map-deps . --validate")
     print("   • Purpose: Ensure dependency map is up-to-date")
     print("   • Time: ~5 seconds")
     print()
-    
+
     print("2️⃣  Pull Request Testing (Quick)")
     print("   • Run: wup test --changed-files --mode quick")
     print("   • Purpose: Test only services affected by PR changes")
     print("   • Time: ~30 seconds")
     print()
-    
+
     print("3️⃣  Pull Request Testing (Detail on Failure)")
     print("   • Run: wup test --failed-services --mode detail")
     print("   • Purpose: Full test with blame report if quick fails")
     print("   • Time: ~2-3 minutes (only on failure)")
     print()
-    
+
     print("4️⃣  Post-merge Regression")
     print("   • Run: wup status --format json")
     print("   • Purpose: Track service health after merge")
     print("   • Output: Artifact for trend analysis")
     print()
-    
+
     print("5️⃣  Nightly Full Test")
     print("   • Run: wup test --all-services --mode full")
     print("   • Purpose: Complete regression detection")
     print("   • Schedule: Daily at 2 AM")
     print()
-    
+
     print("📊 CI/CD Performance Matrix:")
     print("-" * 70)
     print()
-    
+
     scenarios = [
         ("Pre-commit", "5s", "Validate deps map", "No"),
         ("PR Quick", "30s", "3 endpoints per service", "Yes"),
@@ -273,13 +269,13 @@ def show_ci_cd_demo():
         ("Post-merge", "10s", "Health check", "Yes"),
         ("Nightly", "5-10m", "Full regression", "No"),
     ]
-    
+
     print(f"{'Scenario':<15} {'Time':<10} {'Coverage':<25} {'Parallel'}")
     print("-" * 70)
     for name, time, coverage, parallel in scenarios:
         print(f"{name:<15} {time:<10} {coverage:<25} {parallel}")
     print()
-    
+
     print("🎯 CI/CD Best Practices:")
     print("-" * 70)
     print()
@@ -298,7 +294,7 @@ def show_ci_cd_demo():
     print("   5. Track trends over time")
     print("      → Store wup-status.json for analytics")
     print()
-    
+
     print("🔧 Environment Variables for CI/CD:")
     print("-" * 70)
     print()
@@ -308,7 +304,7 @@ def show_ci_cd_demo():
     print("   WUP_BASE_URL=http://...   # Test server URL")
     print("   WUPBRO_ENDPOINT=http://... # Dashboard endpoint")
     print()
-    
+
     print("=" * 70)
     print("✅ CI/CD integration demo complete!")
     print("=" * 70)
@@ -316,15 +312,21 @@ def show_ci_cd_demo():
 
 def main():
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="WUP CI/CD Integration Demo")
-    parser.add_argument("--generate-github-actions", action="store_true",
-                       help="Generate GitHub Actions workflow file")
-    parser.add_argument("--generate-gitlab-ci", action="store_true",
-                       help="Generate GitLab CI configuration file")
-    
+    parser.add_argument(
+        "--generate-github-actions",
+        action="store_true",
+        help="Generate GitHub Actions workflow file",
+    )
+    parser.add_argument(
+        "--generate-gitlab-ci",
+        action="store_true",
+        help="Generate GitLab CI configuration file",
+    )
+
     args = parser.parse_args()
-    
+
     if args.generate_github_actions:
         generate_github_actions()
     elif args.generate_gitlab_ci:

@@ -5,7 +5,6 @@ This demo shows how WUP would work with TestQL project
 without actually running the file watcher.
 """
 
-import json
 from pathlib import Path
 import sys
 
@@ -25,9 +24,9 @@ def _run_with_mock_services(mapper, mock_services: dict) -> None:
         print(f"\n🔹 {service}")
         print(f"   Files: {len(info['files'])}")
         print(f"   Endpoints: {len(info['endpoints'])}")
-        for ep in info['endpoints'][:3]:
+        for ep in info["endpoints"][:3]:
             print(f"      • {ep}")
-        if len(info['endpoints']) > 3:
+        if len(info["endpoints"]) > 3:
             print(f"      ... and {len(info['endpoints']) - 3} more")
     print()
 
@@ -46,11 +45,11 @@ def _run_with_mock_services(mapper, mock_services: dict) -> None:
 
     endpoints = mapper.get_endpoints_for_service(service or "")
     print(f"\n   Layer 1 (Detection): File change detected in {service}")
-    print(f"   Layer 2 (Priority): Quick test of 3 endpoints:")
+    print("   Layer 2 (Priority): Quick test of 3 endpoints:")
     for i, ep in enumerate(endpoints[:3], 1):
         print(f"      {i}. {ep}")
-    print(f"\n   Layer 3 (Detail): If any quick test fails,")
-    print(f"                     run full test suite with blame report")
+    print("\n   Layer 3 (Detail): If any quick test fails,")
+    print("                     run full test suite with blame report")
     print()
 
     output_file = "testql-deps-demo.json"
@@ -152,7 +151,7 @@ def simulate_testql_analysis(testql_path: str):
         print(f"❌ TestQL path not found: {testql_path}")
         print("Using simulated data for demo...")
         return simulate_with_mock_data()
-    
+
     print(f"📁 Analyzing TestQL project: {testql_path}")
     print()
 
@@ -185,8 +184,8 @@ def simulate_with_mock_data():
 
 if __name__ == "__main__":
     import sys
-    
+
     # Try to use real TestQL path if available
     testql_path = "/home/tom/github/oqlos/testql"
-    
+
     simulate_testql_analysis(testql_path)

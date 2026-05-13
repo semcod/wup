@@ -61,6 +61,8 @@ wup map-deps ./my-project
 wup watch ./my-project
 
 # 5. Start with live dashboard
+
+
 wup watch ./my-project --dashboard
 ```
 
