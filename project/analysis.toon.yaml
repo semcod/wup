@@ -1,5 +1,5 @@
-# code2llm | 61f 7785L | python:37,yaml:8,txt:5,json:2,shell:2,toml:1,yml:1 | 2026-05-08
-# generated in 0.02s
+# code2llm | 53f 7833L | python:34,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-15
+# generated in 0.01s
 # CC̄=3.8 | critical:0/236 | dups:0 | cycles:2
 
 HEALTH[0]: ok
@@ -7,23 +7,23 @@ HEALTH[0]: ok
 REFACTOR[1]:
   1. break 2 circular dependencies
 
-PIPELINES[182]:
+PIPELINES[181]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [_load_yaml]: _load_yaml
+  [2] Src [_should_scan]: _should_scan
       PURITY: 100% pure
-  [3] Src [_extract_structure]: _extract_structure
+  [3] Src [scan_file]: scan_file
       PURITY: 100% pure
-  [4] Src [_compare_structures]: _compare_structures
+  [4] Src [scan_directory]: scan_directory
       PURITY: 100% pure
-  [5] Src [_compare_dict_structures]: _compare_dict_structures
+  [5] Src [get_summary]: get_summary
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.4    ←in:6  →out:1
+  wup/                            CC̄=4.4    ←in:6  →out:0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       590L  2C   25m  CC=14     ←0
-  │ !! testql_watcher             512L  2C   24m  CC=12     ←0
+  │ !! testql_watcher             512L  2C   24m  CC=12     ←1
   │ cli                        478L  0C    7m  CC=6      ←0
   │ config                     405L  0C    6m  CC=10     ←5
   │ visual_diff                388L  1C   17m  CC=11     ←1
@@ -32,28 +32,25 @@ LAYERS:
   │ web_client                 178L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
   │ config                     138L  11C    0m  CC=0.0    ←0
-  │ _yaml_detector             128L  1C    8m  CC=8      ←1
-  │ _ast_detector              124L  1C    9m  CC=11     ←0
+  │ _yaml_detector             128L  1C    8m  CC=8      ←0
+  │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
   │ __init__                    39L  0C    0m  CC=0.0    ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.4    ←in:1  →out:6
-  │ webhook_notifications      427L  1C   10m  CC=6      ←0
-  │ ci_cd_integration          337L  0C    4m  CC=3      ←0
-  │ visual_diff_demo           271L  0C    9m  CC=6      ←1
-  │ testql_integration         267L  1C    6m  CC=6      ←0
-  │ c2004_monorepo_demo        241L  0C   10m  CC=7      ←0
-  │ testql_demo                192L  0C    4m  CC=6      ←0
+  examples/                       CC̄=2.4    ←in:0  →out:6
+  │ webhook_notifications      375L  1C   10m  CC=6      ←0
+  │ ci_cd_integration          339L  0C    4m  CC=3      ←0
+  │ visual_diff_demo           305L  0C    9m  CC=6      ←0
+  │ testql_integration         286L  1C    6m  CC=6      ←0
+  │ c2004_monorepo_demo        258L  0C   10m  CC=7      ←0
+  │ testql_demo                191L  0C    4m  CC=6      ←0
   │ routes                      38L  1C    5m  CC=1      ←0
+  │ routes                      33L  0C    5m  CC=2      ←0
   │ docker-compose.yml          33L  0C    0m  CC=0.0    ←0
-  │ routes                      31L  0C    5m  CC=2      ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
@@ -69,36 +66,28 @@ LAYERS:
   │ routes                      13L  0C    2m  CC=1      ←0
   │ requirements.txt             3L  0C    0m  CC=0.0    ←0
   │ requirements.txt             2L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             2L  0C    0m  CC=0.0    ←0
   │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
   │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              71L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   110L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              70L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
-  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
   │ generated-cli-tests.testql.toon.yaml    20L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
-     examples/fastapi-app/app/__init__.py      0L
-     examples/fastapi-app/app/users/__init__.py  0L
      examples/flask-app/app/__init__.py        0L
-     examples/flask-app/app/auth/__init__.py   0L
 
 COUPLING:
             examples       wup
   examples        ──         6
-       wup         1        ──  hub
+       wup        ←6        ──  hub
   CYCLES: 2
   HUB: wup/ (fan-in=6)
 

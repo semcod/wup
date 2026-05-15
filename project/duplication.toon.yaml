@@ -1,18 +1,18 @@
-# redup/duplication | 4 groups | 33f 5244L | 2026-05-08
+# redup/duplication | 4 groups | 33f 5247L | 2026-05-15
 
 SUMMARY:
   files_scanned: 33
-  total_lines:   5244
+  total_lines:   5247
   dup_groups:    4
   dup_fragments: 10
-  saved_lines:   18
-  scan_ms:       3403
+  saved_lines:   20
+  scan_ms:       1992
 
 HOTSPOTS[6] (files with most duplication):
+  examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.2%)
   wup/_ast_detector.py  dup=6L  groups=2  frags=2  (0.1%)
   wup/_hash_detector.py  dup=6L  groups=2  frags=2  (0.1%)
   wup/_yaml_detector.py  dup=6L  groups=2  frags=2  (0.1%)
-  examples/flask-app/app/auth/routes.py  dup=6L  groups=1  frags=2  (0.1%)
   examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.1%)
   wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.1%)
 
@@ -25,11 +25,11 @@ DUPLICATES[4] (ranked by impact):
       wup/_ast_detector.py:59-61  (_snapshot_path)
       wup/_hash_detector.py:22-24  (_snapshot_path)
       wup/_yaml_detector.py:49-51  (_snapshot_path)
-  [e86dae8501b38602]   STRU  login  L=3 N=2 saved=3 sim=1.00
-      examples/flask-app/app/auth/routes.py:7-9  (login)
-      examples/flask-app/app/auth/routes.py:18-20  (register)
+  [e86dae8501b38602]   STRU  login  L=5 N=2 saved=5 sim=1.00
+      examples/flask-app/app/auth/routes.py:7-11  (login)
+      examples/flask-app/app/auth/routes.py:20-22  (register)
   [94e52a5e17c9baae]   STRU  _save_snapshot  L=3 N=2 saved=3 sim=1.00
-      examples/visual_diff_demo.py:55-57  (_save_snapshot)
+      examples/visual_diff_demo.py:62-64  (_save_snapshot)
       wup/visual_diff.py:164-166  (_save_snapshot)
 
 REFACTOR[4] (ranked by priority):
@@ -40,7 +40,7 @@ REFACTOR[4] (ranked by priority):
       WHY: 3 occurrences of 3-line block across 3 files — saves 6 lines
       FILES: wup/_ast_detector.py, wup/_hash_detector.py, wup/_yaml_detector.py
   [3] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
-      WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
+      WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: examples/flask-app/app/auth/routes.py
   [4] ○ extract_function   → utils/_save_snapshot.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
@@ -57,12 +57,12 @@ DEPENDENCY_RISK[1] (duplicates spanning multiple packages):
       examples/visual_diff_demo.py
       wup/visual_diff.py
 
-EFFORT_ESTIMATE (total ≈ 0.7h):
+EFFORT_ESTIMATE (total ≈ 0.8h):
   easy   __init__                            saved=6L  ~12min
   easy   _snapshot_path                      saved=6L  ~12min
-  easy   login                               saved=3L  ~6min
+  easy   login                               saved=5L  ~10min
   easy   _save_snapshot                      saved=3L  ~12min
 
 METRICS-TARGET:
   dup_groups:  4 → 0
-  saved_lines: 18 lines recoverable
+  saved_lines: 20 lines recoverable

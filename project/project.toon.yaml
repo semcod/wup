@@ -1,4 +1,4 @@
-# wup | 236 func | 29f | 7785L | python | 2026-05-08
+# wup | 236 func | 29f | 7833L | python | 2026-05-15
 # generated in 0.00s
 
 HEALTH:
@@ -12,27 +12,27 @@ ALERTS[20]:
   !!  high_fan_out     watch = 16 (limit:10)
   !!  high_fan_out     show_webhook_demo = 16 (limit:10)
   !!  high_fan_out     map_deps = 15 (limit:10)
-  !   high_fan_out     YAMLStructureDetector.detect = 14 (limit:10)
   !   high_fan_out     ASTDetector.detect = 14 (limit:10)
   !   high_fan_out     WupWatcher.__init__ = 14 (limit:10)
+  !   high_fan_out     WupWatcher.infer_service = 14 (limit:10)
 
-MODULES[61] (top by size):
+MODULES[53] (top by size):
   M[wup/assistant.py] 694L C:1 F:24 CC↑14 D:0 (python)
   M[wup/core.py] 590L C:2 F:25 CC↑14 D:0 (python)
-  M[wup/testql_watcher.py] 512L C:2 F:24 CC↑12 D:0 (python)
+  M[wup/testql_watcher.py] 512L C:2 F:24 CC↑12 D:1 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
   M[wup/cli.py] 478L C:0 F:7 CC↑6 D:0 (python)
-  M[examples/webhook_notifications.py] 427L C:1 F:10 CC↑6 D:0 (python)
   M[wup/config.py] 405L C:0 F:6 CC↑10 D:5 (python)
   M[wup/visual_diff.py] 388L C:1 F:17 CC↑11 D:1 (python)
-  M[examples/ci_cd_integration.py] 337L C:0 F:4 CC↑3 D:0 (python)
+  M[examples/webhook_notifications.py] 375L C:1 F:10 CC↑6 D:0 (python)
+  M[examples/ci_cd_integration.py] 339L C:0 F:4 CC↑3 D:0 (python)
   M[testql-deps.json] 311L C:0 F:0 CC↑0 D:0 (json)
+  M[examples/visual_diff_demo.py] 305L C:0 F:9 CC↑6 D:0 (python)
+  M[examples/testql_integration.py] 286L C:1 F:6 CC↑6 D:0 (python)
   M[wup/dependency_mapper.py] 284L C:1 F:16 CC↑10 D:0 (python)
-  M[examples/visual_diff_demo.py] 271L C:0 F:9 CC↑6 D:1 (python)
-  M[examples/testql_integration.py] 267L C:1 F:6 CC↑6 D:0 (python)
-  M[examples/c2004_monorepo_demo.py] 241L C:0 F:10 CC↑7 D:0 (python)
+  M[examples/c2004_monorepo_demo.py] 258L C:0 F:10 CC↑7 D:0 (python)
   M[wup/testql_discovery.py] 229L C:1 F:7 CC↑11 D:0 (python)
-  LANGS: python:37/yaml:8/other:5/txt:5/json:2/shell:2/yml:1/toml:1
+  LANGS: python:34/yaml:8/txt:4/json:2/other:2/yml:1/shell:1/toml:1
 
 HOTSPOTS[10]:
   ★ status fan=38  // Show dependency map status and configuration.
@@ -54,4 +54,4 @@ REFACTOR[9]:
   [5] M/L Break circular dependency: wup.web_client._normalize
 
 EVOLUTION:
-  2026-05-08 CC̄=3.8 crit=13 7785L // Automated analysis
+  2026-05-15 CC̄=3.8 crit=13 7833L // Automated analysis

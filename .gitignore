@@ -1,4 +1,16 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/__init___1778575039167989094_994.pkl
+.code2llm_cache/c2004_monorepo_demo_1778684557319617197_8257.pkl
+.code2llm_cache/ci_cd_integration_1778684557320617207_9296.pkl
+.code2llm_cache/main_1778684557319617197_369.pkl
+.code2llm_cache/main_1778684557321617217_382.pkl
+.code2llm_cache/pyproject_1778690658063351150_1757.pkl
+.code2llm_cache/routes_1778684557320617207_301.pkl
+.code2llm_cache/routes_1778684557320617207_881.pkl
+.code2llm_cache/testql_demo_1778684557320617207_6201.pkl
+.code2llm_cache/testql_integration_1778684557324617246_9120.pkl
+.code2llm_cache/visual_diff_demo_1778684557321617217_9460.pkl
+.code2llm_cache/webhook_notifications_1778684557321617217_11145.pkl
 .idea/pyProjectModel.xml
 .idea/wup.iml
 .idea/inspectionProfiles/Project_Default.xml

@@ -6,6 +6,8 @@ import asyncio
 import json
 import subprocess
 import time
+import urllib.error
+import urllib.request
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
@@ -298,69 +300,96 @@ class WupWatcher:
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         """
         Run a quick test for a service (smoke test).
-        
+
         Args:
             service: Service name
             endpoints: List of endpoints to test
-            
+
         Returns:
             True if all tests passed, False otherwise
         """
         self.console.print(f"[cyan]🧪 Quick testing {service} ({len(endpoints)} endpoints)[/cyan]")
-        
-        # This is a placeholder - integrate with TestQL or your test framework
-        # For now, simulate a test
-        await asyncio.sleep(1)
-        
-        # Simulate random failure for demo (10% chance)
-        import random
-        passed = random.random() > 0.1
-        
+
+        if not endpoints:
+            self.console.print(f"[yellow]⚠ No endpoints configured for {service}, skipping quick test[/yellow]")
+            return True
+
+        passed = True
+        for endpoint in endpoints:
+            try:
+                req = urllib.request.Request(endpoint, method="HEAD")
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    if resp.status >= 400:
+                        self.console.print(f"[red]✗ {endpoint} → HTTP {resp.status}[/red]")
+                        passed = False
+                    else:
+                        self.console.print(f"[green]✓ {endpoint} → HTTP {resp.status}[/green]")
+            except Exception as e:
+                self.console.print(f"[red]✗ {endpoint} → {e}[/red]")
+                passed = False
+
         if passed:
             self.console.print(f"[green]✓ Quick test passed for {service}[/green]")
         else:
             self.console.print(f"[red]✗ Quick test failed for {service}[/red]")
-        
+
         return passed
     
     async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
         """
         Run a detailed test for a service with blame report.
-        
+
         Args:
             service: Service name
             endpoints: List of endpoints to test
-            
+
         Returns:
             Dictionary with test results and blame information
         """
         self.console.print(f"[cyan]🔍 Detail testing {service} ({len(endpoints)} endpoints)[/cyan]")
-        
-        # This is a placeholder - integrate with TestQL or your test framework
-        # For now, simulate a test
-        await asyncio.sleep(3)
-        
-        # Simulate results
+
         results = {
             "service": service,
             "total_endpoints": len(endpoints),
-            "passed": len(endpoints) - 1,
-            "failed": 1,
-            "failed_endpoint": endpoints[0] if endpoints else None,
-            "blame": {
-                "file": f"app/{service}/routes.py",
-                "line": 42,
-                "commit": "abc123",
-                "author": "developer"
-            }
+            "passed": 0,
+            "failed": 0,
+            "failed_endpoint": None,
+            "blame": {},
         }
-        
+
+        for endpoint in endpoints:
+            try:
+                req = urllib.request.Request(endpoint, method="GET")
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    if resp.status >= 400:
+                        results["failed"] += 1
+                        self.console.print(f"[red]✗ {endpoint} → HTTP {resp.status}[/red]")
+                    else:
+                        results["passed"] += 1
+                        self.console.print(f"[green]✓ {endpoint} → HTTP {resp.status}[/green]")
+            except Exception as e:
+                results["failed"] += 1
+                self.console.print(f"[red]✗ {endpoint} → {e}[/red]")
+
         if results["failed"] > 0:
+            results["failed_endpoint"] = endpoints[0] if endpoints else None
+            try:
+                blame_result = subprocess.run(
+                    ["git", "log", "--oneline", "-5", "--", f"*/{service}/*"],
+                    cwd=str(self.project_root),
+                    capture_output=True,
+                    text=True,
+                )
+                if blame_result.returncode == 0:
+                    lines = blame_result.stdout.strip().split("\n")
+                    if lines and lines[0]:
+                        results["blame"] = {"recent_commits": lines}
+            except Exception:
+                pass
             self.console.print(f"[red]✗ Detail test found {results['failed']} regression(s)[/red]")
-            self.console.print(f"[red]  Blame: {results['blame']['file']}:{results['blame']['line']}[/red]")
         else:
             self.console.print(f"[green]✓ Detail test passed for {service}[/green]")
-        
+
         return results
     
     async def test_loop(self):

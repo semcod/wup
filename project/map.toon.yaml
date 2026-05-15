@@ -1,4 +1,4 @@
-# wup | 44f 9130L | python:41,shell:2,less:1 | 2026-05-08
+# wup | 44f 9151L | python:41,shell:2,less:1 | 2026-05-15
 # stats: 114 func | 45 cls | 44 mod | CC̄=2.9 | critical:3 | cycles:0
 # alerts[5]: CC test_service_health_transitions_are_persisted=12; CC _diff_snapshots=11; CC _load_dotenv=10; CC test_send_event_posts_to_recorder=9; CC _fetch_dom_snapshot=9
 # hotspots[5]: status fan=31; testql_endpoints fan=19; map_deps fan=18; demo_snapshot_persistence fan=17; validate_config fan=17
@@ -6,15 +6,15 @@
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[44]:
   app.doql.less,33
-  examples/c2004_monorepo_demo.py,242
-  examples/ci_cd_integration.py,338
+  examples/c2004_monorepo_demo.py,259
+  examples/ci_cd_integration.py,340
   examples/fastapi-app/app/__init__.py,1
   examples/fastapi-app/app/users/__init__.py,1
   examples/fastapi-app/app/users/routes.py,39
   examples/fastapi-app/main.py,17
   examples/flask-app/app/__init__.py,1
   examples/flask-app/app/auth/__init__.py,1
-  examples/flask-app/app/auth/routes.py,32
+  examples/flask-app/app/auth/routes.py,34
   examples/flask-app/main.py,21
   examples/multi-service/auth-service/app/auth/routes.py,14
   examples/multi-service/auth-service/main.py,21
@@ -22,10 +22,10 @@ M[44]:
   examples/multi-service/payments-service/main.py,17
   examples/multi-service/users-service/app/users/routes.py,19
   examples/multi-service/users-service/main.py,17
-  examples/testql_demo.py,193
-  examples/testql_integration.py,268
-  examples/visual_diff_demo.py,272
-  examples/webhook_notifications.py,428
+  examples/testql_demo.py,192
+  examples/testql_integration.py,287
+  examples/visual_diff_demo.py,306
+  examples/webhook_notifications.py,376
   project.sh,49
   tests/test_e2e.py,517
   tests/test_testql_watcher.py,256

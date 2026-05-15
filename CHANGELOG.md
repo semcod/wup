@@ -55,6 +55,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 - Updated README.md with new examples
 
+## [0.2.25] - 2026-05-15
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .code2llm_cache/__init___1778575039167989094_994.pkl
+- Update .code2llm_cache/c2004_monorepo_demo_1778684557319617197_8257.pkl
+- Update .code2llm_cache/ci_cd_integration_1778684557320617207_9296.pkl
+- Update .code2llm_cache/main_1778684557319617197_369.pkl
+- Update .code2llm_cache/main_1778684557321617217_382.pkl
+- Update .code2llm_cache/pyproject_1778690658063351150_1757.pkl
+- Update .code2llm_cache/routes_1778684557320617207_301.pkl
+- Update .code2llm_cache/routes_1778684557320617207_881.pkl
+- Update .code2llm_cache/testql_demo_1778684557320617207_6201.pkl
+- Update .code2llm_cache/testql_integration_1778684557324617246_9120.pkl
+- ... and 23 more files
+
 ## [0.2.22] - 2026-05-12
 
 ### Docs
