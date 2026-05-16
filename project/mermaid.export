@@ -42,15 +42,15 @@ flowchart TD
         examples__multi_service__payments_service__app__payments__routes__list_payments["list_payments"]
         examples__multi_service__payments_service__app__payments__routes__get_payment["get_payment"]
         examples__multi_service__payments_service__app__payments__routes__create_payment["create_payment"]
+        examples__multi_service__auth_service__main__root["root"]
+        examples__multi_service__auth_service__main__health["health"]
+        examples__multi_service__auth_service__app__auth__routes__login["login"]
+        examples__multi_service__auth_service__app__auth__routes__register["register"]
         examples__multi_service__users_service__main__root["root"]
         examples__multi_service__users_service__main__health["health"]
         examples__multi_service__users_service__app__users__routes__list_users["list_users"]
         examples__multi_service__users_service__app__users__routes__get_user["get_user"]
         examples__multi_service__users_service__app__users__routes__create_user["create_user"]
-        examples__multi_service__auth_service__main__root["root"]
-        examples__multi_service__auth_service__main__health["health"]
-        examples__multi_service__auth_service__app__auth__routes__login["login"]
-        examples__multi_service__auth_service__app__auth__routes__register["register"]
     end
     subgraph examples__testql_demo
         examples__testql_demo___run_with_mock_services["_run_with_mock_services"]
@@ -153,11 +153,12 @@ flowchart TD
         wup__assistant__main["main"]
     end
     subgraph wup__cli
-        wup__cli__watch["watch"]
+        wup__cli__watch("watch CC=12")
         wup__cli__map_deps["map_deps"]
         wup__cli__status["status"]
         wup__cli__init["init"]
         wup__cli__testql_endpoints["testql_endpoints"]
+        wup__cli__sync_testql("sync_testql CC=13")
         wup__cli__assistant["assistant"]
         wup__cli__version["version"]
     end
@@ -165,7 +166,7 @@ flowchart TD
         wup__config__find_config_file["find_config_file"]
         wup__config___load_dotenv("_load_dotenv CC=10")
         wup__config__load_config["load_config"]
-        wup__config__validate_config["validate_config"]
+        wup__config__validate_config("validate_config CC=8")
         wup__config__get_default_config["get_default_config"]
         wup__config__save_config["save_config"]
     end
@@ -183,7 +184,7 @@ flowchart TD
         wup__core__WupWatcher__process_test_queue_once["process_test_queue_once"]
         wup__core__WupWatcher__cpu_ok["cpu_ok"]
         wup__core__WupWatcher__run_quick_test["run_quick_test"]
-        wup__core__WupWatcher__run_detail_test["run_detail_test"]
+        wup__core__WupWatcher__run_detail_test("run_detail_test CC=10")
         wup__core__WupWatcher__test_loop["test_loop"]
         wup__core__WupWatcher__should_watch_file["should_watch_file"]
         wup__core__WupWatcher__on_file_change("on_file_change CC=14")
@@ -214,6 +215,18 @@ flowchart TD
         wup__dependency_mapper__DependencyMapper__load["load"]
         wup__dependency_mapper__DependencyMapper__build_from_testql_scenarios["build_from_testql_scenarios"]
     end
+    subgraph wup__monitoring_manifest
+        wup__monitoring_manifest___parse_port_mapping["_parse_port_mapping"]
+        wup__monitoring_manifest__discover_docker_compose_services{{discover_docker_compose_services CC=20}}
+        wup__monitoring_manifest___host_port_from_mapping["_host_port_from_mapping"]
+        wup__monitoring_manifest___map_docker_to_wup_service("_map_docker_to_wup_service CC=11")
+        wup__monitoring_manifest___probe_row["_probe_row"]
+        wup__monitoring_manifest__build_monitoring_manifest{{build_monitoring_manifest CC=19}}
+        wup__monitoring_manifest__manifest_to_yaml_block["manifest_to_yaml_block"]
+        wup__monitoring_manifest__patch_wup_yaml_monitoring["patch_wup_yaml_monitoring"]
+        wup__monitoring_manifest__load_monitoring_manifest_from_yaml("load_monitoring_manifest_from_yaml CC=9")
+        wup__monitoring_manifest__format_manifest_summary("format_manifest_summary CC=10")
+    end
     subgraph wup__testql_discovery
         wup__testql_discovery__TestQLEndpointDiscovery____init__["__init__"]
         wup__testql_discovery__TestQLEndpointDiscovery__discover_scenarios["discover_scenarios"]
@@ -223,10 +236,28 @@ flowchart TD
         wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli("discover_via_testql_cli CC=8")
         wup__testql_discovery__TestQLEndpointDiscovery__to_dependency_map["to_dependency_map"]
     end
+    subgraph wup__testql_monitor
+        wup__testql_monitor__ProbeTarget__probe["probe"]
+        wup__testql_monitor___parse_api_lines["_parse_api_lines"]
+        wup__testql_monitor__parse_scenario_probes["parse_scenario_probes"]
+        wup__testql_monitor__parse_service_map_probes{{parse_service_map_probes CC=15}}
+        wup__testql_monitor__is_monitoring_probe["is_monitoring_probe"]
+        wup__testql_monitor___service_path_patterns["_service_path_patterns"]
+        wup__testql_monitor__assign_probe_to_service{{assign_probe_to_service CC=17}}
+        wup__testql_monitor__TestQLMonitor____init__["__init__"]
+        wup__testql_monitor__TestQLMonitor___service_map_paths["_service_map_paths"]
+        wup__testql_monitor__TestQLMonitor__discover_probes_by_service{{discover_probes_by_service CC=20}}
+        wup__testql_monitor__TestQLMonitor___probeable_url["_probeable_url"]
+        wup__testql_monitor__TestQLMonitor__probes_for_service("probes_for_service CC=11")
+        wup__testql_monitor__TestQLMonitor__run_probes["run_probes"]
+        wup__testql_monitor__TestQLMonitor__suggested_endpoints_by_service["suggested_endpoints_by_service"]
+        wup__testql_monitor__TestQLMonitor___resolve_base_url["_resolve_base_url"]
+        wup__testql_monitor__TestQLMonitor___join_base["_join_base"]
+    end
     subgraph wup__testql_watcher
         wup__testql_watcher__BrowserNotifier____init__["__init__"]
         wup__testql_watcher__BrowserNotifier__notify["notify"]
-        wup__testql_watcher__TestQLWatcher____init__("__init__ CC=12")
+        wup__testql_watcher__TestQLWatcher____init__("__init__ CC=13")
         wup__testql_watcher__TestQLWatcher___load_service_health["_load_service_health"]
         wup__testql_watcher__TestQLWatcher___save_service_health["_save_service_health"]
         wup__testql_watcher__TestQLWatcher___record_health_transition["_record_health_transition"]
@@ -244,10 +275,17 @@ flowchart TD
         wup__testql_watcher__TestQLWatcher___merge_endpoints["_merge_endpoints"]
         wup__testql_watcher__TestQLWatcher___run_scenario_quick["_run_scenario_quick"]
         wup__testql_watcher__TestQLWatcher___quick_pass_actions["_quick_pass_actions"]
-        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=8")
+        wup__testql_watcher__TestQLWatcher___quick_probe_limit["_quick_probe_limit"]
+        wup__testql_watcher__TestQLWatcher___quick_probe_timeout["_quick_probe_timeout"]
+        wup__testql_watcher__TestQLWatcher___run_live_http_probes["_run_live_http_probes"]
+        wup__testql_watcher__TestQLWatcher___run_fleet_health_scenario("_run_fleet_health_scenario CC=9")
+        wup__testql_watcher__TestQLWatcher__run_quick_test("run_quick_test CC=9")
         wup__testql_watcher__TestQLWatcher___publish_visual_events["_publish_visual_events"]
         wup__testql_watcher__TestQLWatcher__run_detail_test("run_detail_test CC=9")
         wup__testql_watcher__TestQLWatcher__process_changed_file_once["process_changed_file_once"]
+        wup__testql_watcher__TestQLWatcher___run_periodic_probes_once["_run_periodic_probes_once"]
+        wup__testql_watcher__TestQLWatcher___start_periodic_probe_thread["_start_periodic_probe_thread"]
+        wup__testql_watcher__TestQLWatcher__start_watching["start_watching"]
     end
     subgraph wup__visual_diff
         wup__visual_diff___playwright_available["_playwright_available"]
@@ -280,22 +318,14 @@ flowchart TD
         wup__web_client__WebClient__send_health_transition["send_health_transition"]
         wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
     end
-    wup__config__load_config --> wup__config___load_dotenv
-    wup__config__load_config --> wup__config__validate_config
-    wup__config__load_config --> wup__config__find_config_file
-    wup__config__load_config --> wup__config__get_default_config
-    wup__cli__status --> wup__config__load_config
-    wup__cli__init --> wup__config__get_default_config
-    wup__cli__init --> wup__config__save_config
     wup__core__WupWatcher____init__ --> wup__config__load_config
     wup__web_client__WebClient____init__ --> wup__web_client__resolve_endpoint
     wup__web_client__WebClient__send_event --> wup__web_client___normalize
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
     wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
     wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
     wup__visual_diff___flatten --> wup__visual_diff___node_signature
     wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
-    wup__visual_diff__VisualDiffer____init__ --> wup__testql_watcher__TestQLWatcher___resolve_base_url
+    wup__visual_diff__VisualDiffer____init__ --> wup__visual_diff___resolve_base_url
     wup__visual_diff__VisualDiffer___check_page --> wup___ast_detector__ASTDetector___snapshot_path
     wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
     wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
@@ -330,7 +360,27 @@ flowchart TD
     examples__ci_cd_integration__main --> examples__ci_cd_integration__generate_gitlab_ci
     examples__ci_cd_integration__main --> examples__ci_cd_integration__show_ci_cd_demo
     examples__webhook_notifications__main --> examples__webhook_notifications__show_webhook_demo
+    wup__monitoring_manifest__build_monitoring_manifest --> wup__monitoring_manifest__discover_docker_compose_services
+    wup__monitoring_manifest__build_monitoring_manifest --> wup__monitoring_manifest___map_docker_to_wup_service
+    wup__monitoring_manifest__patch_wup_yaml_monitoring --> wup__monitoring_manifest__manifest_to_yaml_block
+    wup__config__load_config --> wup__config___load_dotenv
+    wup__config__load_config --> wup__config__validate_config
+    wup__config__load_config --> wup__config__find_config_file
+    wup__config__load_config --> wup__config__get_default_config
+    wup__cli__status --> wup__config__load_config
+    wup__cli__init --> wup__config__get_default_config
+    wup__cli__init --> wup__config__save_config
+    wup__cli__sync_testql --> wup__config__load_config
+    wup__cli__sync_testql --> wup__monitoring_manifest__build_monitoring_manifest
+    wup__cli__sync_testql --> wup__monitoring_manifest__patch_wup_yaml_monitoring
+    wup__testql_monitor__parse_scenario_probes --> wup__testql_monitor___parse_api_lines
+    wup__testql_monitor__assign_probe_to_service --> wup__testql_monitor___service_path_patterns
+    wup__testql_monitor__TestQLMonitor__discover_probes_by_service --> wup__testql_monitor__assign_probe_to_service
+    wup__testql_monitor__TestQLMonitor__discover_probes_by_service --> wup__testql_monitor__parse_scenario_probes
+    wup__testql_monitor__TestQLMonitor__discover_probes_by_service --> wup__testql_monitor__parse_service_map_probes
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class wup__config___load_dotenv,wup__assistant__WupAssistant__run,wup__assistant__WupAssistant___detect_service_type,wup__assistant__WupAssistant___configure_services,wup__assistant__WupAssistant___add_service_interactive,wup__assistant__WupAssistant___setup_anomaly_detection,wup__assistant__WupAssistant___review_and_validate,wup__assistant__WupAssistant___validate_config,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup___ast_detector__ASTDetector___compute_changes,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__detect_service_coincidences,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup___yaml_detector__YAMLStructureDetector__detect,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service,wup__testql_watcher__TestQLWatcher___write_track,wup__testql_watcher__TestQLWatcher__run_quick_test,wup__testql_watcher__TestQLWatcher__run_detail_test,wup__visual_diff___fetch_dom_snapshot,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service medCC
+    class wup__monitoring_manifest__discover_docker_compose_services,wup__monitoring_manifest__build_monitoring_manifest,wup__testql_monitor__parse_service_map_probes,wup__testql_monitor__assign_probe_to_service,wup__testql_monitor__TestQLMonitor__discover_probes_by_service highCC
+    class wup__assistant__WupAssistant__run,wup__assistant__WupAssistant___detect_service_type,wup__assistant__WupAssistant___configure_services,wup__assistant__WupAssistant___add_service_interactive,wup__assistant__WupAssistant___setup_anomaly_detection,wup__assistant__WupAssistant___review_and_validate,wup__assistant__WupAssistant___validate_config,wup__dependency_mapper__DependencyMapper___scan_python_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__parse_scenario_endpoints,wup__testql_discovery__TestQLEndpointDiscovery__discover_via_testql_cli,wup___ast_detector__ASTDetector___compute_changes,wup__core__WupWatcher__infer_service,wup__core__WupWatcher__detect_service_coincidences,wup__core__WupWatcher__run_detail_test,wup__core__WupWatcher__on_file_change,wup__core__WupWatcher__start_watching,wup___yaml_detector__YAMLStructureDetector__detect,wup__visual_diff___fetch_dom_snapshot,wup__visual_diff___diff_snapshots,wup__visual_diff__VisualDiffer___pages_for_service,wup__monitoring_manifest___map_docker_to_wup_service,wup__monitoring_manifest__load_monitoring_manifest_from_yaml,wup__monitoring_manifest__format_manifest_summary,wup__config___load_dotenv,wup__config__validate_config,wup__cli__watch,wup__cli__sync_testql,wup__testql_monitor__TestQLMonitor__probes_for_service,wup__testql_watcher__TestQLWatcher____init__,wup__testql_watcher__TestQLWatcher___select_scenarios_for_service medCC

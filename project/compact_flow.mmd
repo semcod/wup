@@ -3,16 +3,17 @@ flowchart TD
     examples__c2004_monorepo_demo["examples.c2004_monorepo_demo<br/>10 funcs"]
     examples__visual_diff_demo["examples.visual_diff_demo<br/>9 funcs"]
     wup___ast_detector["wup._ast_detector<br/>9 funcs"]
-    wup__cli["wup.cli<br/>7 funcs"]
+    wup__cli["wup.cli<br/>8 funcs"]
     wup__config["wup.config<br/>6 funcs"]
     wup__core["wup.core<br/>25 funcs"]
-    wup__testql_watcher["wup.testql_watcher<br/>24 funcs"]
+    wup__monitoring_manifest["wup.monitoring_manifest<br/>10 funcs"]
+    wup__testql_watcher["wup.testql_watcher<br/>31 funcs"]
     wup__visual_diff["wup.visual_diff<br/>17 funcs"]
-    wup__cli ==>|4| wup__config
+    wup__cli ==>|8| wup__config
+    wup__cli ==>|7| wup__monitoring_manifest
     examples__visual_diff_demo -->|3| wup__visual_diff
     examples__visual_diff_demo -->|2| wup__config
     wup__core -->|1| wup__config
-    wup__testql_watcher -->|1| wup__config
-    wup__visual_diff -->|1| wup__testql_watcher
     wup__visual_diff -->|1| wup___ast_detector
     examples__c2004_monorepo_demo -->|1| wup__config
+    wup__testql_watcher -->|1| wup__config

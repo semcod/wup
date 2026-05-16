@@ -1,13 +1,19 @@
-# code2llm | 53f 7833L | python:34,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-15
+# code2llm | 55f 8766L | python:36,yaml:8,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-16
 # generated in 0.01s
-# CC̄=3.8 | critical:0/236 | dups:0 | cycles:2
+# CC̄=4.3 | critical:5/270 | dups:0 | cycles:2
 
-HEALTH[0]: ok
+HEALTH[5]:
+  🟡 CC    discover_docker_compose_services CC=20 (limit:15)
+  🟡 CC    build_monitoring_manifest CC=19 (limit:15)
+  🟡 CC    parse_service_map_probes CC=15 (limit:15)
+  🟡 CC    assign_probe_to_service CC=17 (limit:15)
+  🟡 CC    discover_probes_by_service CC=20 (limit:15)
 
-REFACTOR[1]:
-  1. break 2 circular dependencies
+REFACTOR[2]:
+  1. split 5 high-CC methods  (CC>15)
+  2. break 2 circular dependencies
 
-PIPELINES[181]:
+PIPELINES[200]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
   [2] Src [_should_scan]: _should_scan
@@ -20,18 +26,20 @@ PIPELINES[181]:
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.4    ←in:6  →out:0
+  wup/                            CC̄=4.9    ←in:6  →out:0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! core                       590L  2C   25m  CC=14     ←0
-  │ !! testql_watcher             512L  2C   24m  CC=12     ←1
-  │ cli                        478L  0C    7m  CC=6      ←0
-  │ config                     405L  0C    6m  CC=10     ←5
+  │ !! testql_watcher             641L  2C   31m  CC=13     ←0
+  │ !! core                       619L  2C   25m  CC=14     ←0
+  │ !! cli                        609L  0C    8m  CC=13     ←0
+  │ config                     411L  0C    6m  CC=10     ←5
   │ visual_diff                388L  1C   17m  CC=11     ←1
+  │ !! testql_monitor             329L  2C   16m  CC=20     ←0
+  │ !! monitoring_manifest        306L  1C   10m  CC=20     ←1
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
   │ web_client                 178L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ config                     138L  11C    0m  CC=0.0    ←0
+  │ config                     141L  11C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0

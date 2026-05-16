@@ -1,4 +1,13 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/__init___1778834867362150110_994.pkl
+.code2llm_cache/cli_1778918000187674386_25505.pkl
+.code2llm_cache/config_1778917061530209730_5560.pkl
+.code2llm_cache/config_1778917065742082116_14204.pkl
+.code2llm_cache/core_1778834388730285362_22557.pkl
+.code2llm_cache/monitoring_manifest_1778918028128141262_11166.pkl
+.code2llm_cache/pyproject_1778834867353321406_1757.pkl
+.code2llm_cache/testql_monitor_1778917195918986170_12093.pkl
+.code2llm_cache/testql_watcher_1778917117518359513_24716.pkl
 .code2llm_cache/__init___1778575039167989094_994.pkl
 .code2llm_cache/c2004_monorepo_demo_1778684557319617197_8257.pkl
 .code2llm_cache/ci_cd_integration_1778684557320617207_9296.pkl

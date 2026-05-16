@@ -9,7 +9,7 @@ from typing import Optional
 import typer
 from rich.console import Console
 
-from .config import load_config
+from .config import find_config_file, load_config
 from .core import WupWatcher
 from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig
@@ -37,6 +37,11 @@ def watch(
     browser_service_url: Optional[str] = typer.Option(None, "--browser-service-url", help="HTTP endpoint for browser notifications"),
     track_dir: str = typer.Option(".wup/tracks", "--track-dir", help="Directory where error track JSON files are written"),
     quick_limit: int = typer.Option(3, "--quick-limit", help="Maximum TestQL scenarios used in quick pass"),
+    probe_interval: Optional[int] = typer.Option(
+        None,
+        "--probe-interval",
+        help="Periodic live HTTP/TestQL probes in seconds (overrides testql.probe_interval_s)",
+    ),
     config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
@@ -56,16 +61,30 @@ def watch(
     # Load configuration
     config_path = Path(config) if config else None
     wup_config = load_config(project_path, config_path)
-    
+    if probe_interval is not None:
+        wup_config.testql.probe_interval_s = int(probe_interval)
+
     console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
     console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
     console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
     console.print(f"[dim]CPU Throttle: {cpu_throttle * 100}%[/dim]")
     console.print(f"[dim]Debounce: {debounce}s[/dim]")
     console.print(f"[dim]Cooldown: {cooldown}s[/dim]")
+    if wup_config.testql.probe_interval_s:
+        console.print(f"[dim]Live probes: every {wup_config.testql.probe_interval_s}s[/dim]")
     console.print(f"[dim]Config: {config_path or 'auto-detected'}[/dim]")
     console.print()
     
+    cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
+    if cfg_path:
+        from .monitoring_manifest import build_monitoring_manifest, patch_wup_yaml_monitoring
+        try:
+            manifest = build_monitoring_manifest(project_path, wup_config)
+            patch_wup_yaml_monitoring(cfg_path, manifest)
+            console.print("[dim]Refreshed monitoring manifest in wup.yaml[/dim]")
+        except OSError as exc:
+            console.print(f"[yellow]Could not refresh monitoring manifest: {exc}[/yellow]")
+
     if mode.lower() == "testql":
         watcher = TestQLWatcher(
             project_root=str(project_path),
@@ -274,6 +293,33 @@ def status(
                     if track_file:
                         lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
 
+        # --- monitoring manifest (from wup.yaml) ---
+        manifest_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
+        if manifest_path:
+            from .monitoring_manifest import load_monitoring_manifest_from_yaml
+
+            manifest = load_monitoring_manifest_from_yaml(manifest_path)
+            if manifest:
+                lines.append(Text(""))
+                lines.append(Text.from_markup("[bold]Configured monitoring (wup.yaml):[/bold]"))
+                lines.append(Text.from_markup(
+                    f"  [dim]manifest {manifest.get('generated_at', '?')} · "
+                    f"probe {manifest.get('probe_interval_s', 0)}s[/dim]"
+                ))
+                for svc, info in sorted((manifest.get("wup_services") or {}).items()):
+                    probes = info.get("live_probes") or []
+                    dockers = info.get("docker") or []
+                    lines.append(Text.from_markup(
+                        f"  [cyan]{svc}[/cyan]: {len(probes)} probe(s), docker: "
+                        + ", ".join(
+                            d.get("compose_service", "?") for d in dockers[:4]
+                        )
+                        + ("…" if len(dockers) > 4 else "")
+                    ))
+                lines.append(Text.from_markup(
+                    "  [dim]Pełna lista: sekcja monitoring: w wup.yaml (BEGIN WUP MONITORING MANIFEST)[/dim]"
+                ))
+
         # --- visual diff section ---
         if wup_config.visual_diff and wup_config.visual_diff.enabled:
             from .visual_diff import VisualDiffer
@@ -437,6 +483,91 @@ def map_deps(
     console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
     console.print(f"[dim]Services: {len(deps.get('services', {}))}[/dim]")
     console.print(f"[dim]Files: {len(deps.get('files', {}))}[/dim]")
+
+
+@app.command("sync-testql")
+def sync_testql(
+    project: str = typer.Argument(".", help="Path to the project root directory"),
+    write: bool = typer.Option(False, "--write", "-w", help="Write monitoring manifest block into wup.yaml"),
+    merge_endpoints: bool = typer.Option(
+        False,
+        "--merge-endpoints",
+        help="Also merge discovered paths into testql.endpoints_by_service (rewrites YAML body)",
+    ),
+    config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
+):
+    """
+    Discover monitoring targets and document them in wup.yaml.
+
+    With ``--write``, appends/updates the auto-generated ``monitoring:`` block
+    (Docker Compose services, live HTTP probes, sources). Use this to verify
+    whether a failure is a WUP config gap vs a down container.
+
+    Use ``--merge-endpoints`` cautiously — it re-serializes wup.yaml (may drop comments).
+    """
+    import json
+
+    from .config import find_config_file, load_config
+    from .monitoring_manifest import (
+        MANIFEST_BEGIN,
+        build_monitoring_manifest,
+        format_manifest_summary,
+        patch_wup_yaml_monitoring,
+    )
+    from .testql_monitor import TestQLMonitor
+
+    project_path = Path(project).resolve()
+    if not project_path.exists():
+        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+        raise typer.Exit(1)
+
+    config_path = Path(config) if config else find_config_file(project_path)
+    wup_config = load_config(project_path, config_path)
+    monitor = TestQLMonitor(project_path, wup_config)
+    suggested = monitor.suggested_endpoints_by_service()
+    manifest = build_monitoring_manifest(project_path, wup_config)
+
+    console.print("[bold]Monitoring manifest (preview):[/bold]")
+    console.print(format_manifest_summary(manifest))
+
+    if suggested:
+        console.print()
+        console.print("[bold]Suggested testql.endpoints_by_service additions:[/bold]")
+        console.print(json.dumps(suggested, indent=2))
+
+    if not write:
+        console.print()
+        console.print("[dim]Run: wup sync-testql . --write  → dokumentacja w wup.yaml[/dim]")
+        return
+
+    if config_path is None:
+        console.print("[red]No wup.yaml found — run `wup init` first[/red]")
+        raise typer.Exit(1)
+
+    if merge_endpoints and suggested:
+        import yaml as pyyaml
+
+        merged = dict(wup_config.testql.endpoints_by_service or {})
+        for service, paths in suggested.items():
+            existing = set(merged.get(service, []))
+            existing.update(paths)
+            merged[service] = sorted(existing)
+        raw = pyyaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+        raw.setdefault("testql", {})["endpoints_by_service"] = merged
+        wup_config.testql.endpoints_by_service = merged
+        manifest = build_monitoring_manifest(project_path, wup_config)
+        body = pyyaml.safe_dump(
+            {k: v for k, v in raw.items() if k != "monitoring"},
+            sort_keys=False,
+            allow_unicode=True,
+            default_flow_style=False,
+        )
+        config_path.write_text(body.rstrip() + "\n\n", encoding="utf-8")
+        console.print("[yellow]Merged endpoints_by_service (review git diff for comment loss)[/yellow]")
+
+    patch_wup_yaml_monitoring(config_path, manifest)
+    console.print(f"[green]✓ monitoring manifest written to {config_path}[/green]")
+    console.print(f"[dim]Szukaj w pliku: {MANIFEST_BEGIN}[/dim]")
 
 
 @app.command()

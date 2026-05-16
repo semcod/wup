@@ -15,6 +15,7 @@ from urllib import error, request
 from .config import load_config
 from .core import WupWatcher
 from .models.config import WupConfig, ServiceConfig
+from .testql_monitor import TestQLMonitor
 from .visual_diff import VisualDiffer
 from .web_client import WebClient
 
@@ -96,8 +97,10 @@ class TestQLWatcher(WupWatcher):
         self.health_state_path.parent.mkdir(parents=True, exist_ok=True)
         self.service_health = self._load_service_health()
         self.config = config
+        self.monitor = TestQLMonitor(self.project_root, config) if config else None
         self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
         self.web_client = WebClient(config.web) if config and getattr(config, "web", None) else WebClient()
+        self._probe_thread = None
 
     def _load_service_health(self) -> Dict[str, Dict]:
         if not self.health_state_path.exists():
@@ -377,8 +380,97 @@ class TestQLWatcher(WupWatcher):
             visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
             await self._publish_visual_events(service, visual_results)
 
+    def _quick_probe_limit(self, service: str) -> int:
+        svc_config = self.get_service_config(service)
+        if svc_config and svc_config.quick_tests:
+            return svc_config.quick_tests.max_endpoints
+        return self.quick_limit
+
+    def _quick_probe_timeout(self) -> float:
+        if self.config.test_strategy and self.config.test_strategy.quick:
+            return float(self.config.test_strategy.quick.get("timeout_s", 10))
+        return 10.0
+
+    async def _run_live_http_probes(self, service: str, merged_endpoints: List[str]) -> bool:
+        """Probe discovered/configured health URLs before TestQL dry-run."""
+        if not self.monitor:
+            return True
+
+        probes = self.monitor.probes_for_service(service, merged_endpoints)
+        if not probes:
+            return True
+
+        ok, reason = self.monitor.run_probes(
+            service,
+            probes,
+            max_count=self._quick_probe_limit(service),
+            timeout_s=self._quick_probe_timeout(),
+        )
+        if ok:
+            return True
+
+        self._record_health_transition(
+            service=service,
+            status="down",
+            stage="probe",
+            message=reason,
+        )
+        self.console.print(f"[red]✗ Live probe failed for {service}: {reason}[/red]")
+        if self.web_client.is_active:
+            endpoint = merged_endpoints[0] if merged_endpoints else probes[0].url
+            await self.web_client.send_regression(
+                service=service,
+                file="",
+                endpoint=endpoint,
+                reason=reason,
+                stage="probe",
+            )
+        return False
+
+    async def _run_fleet_health_scenario(self) -> bool:
+        """Optional full TestQL run (not dry-run) for fleet-wide health scenarios."""
+        scenario_name = (self.config.testql.health_scenario or "").strip()
+        if not scenario_name:
+            return True
+
+        scenario_path = Path(scenario_name)
+        if not scenario_path.is_absolute():
+            scenario_path = self.project_root / scenario_name
+        if not scenario_path.exists():
+            scenario_path = self.scenarios_dir / scenario_name
+        if not scenario_path.exists():
+            self.console.print(f"[yellow]⚠ health_scenario not found: {scenario_name}[/yellow]")
+            return True
+
+        fleet = self.config.project.name
+        args = ["run", str(scenario_path), "--output", "json", *self.testql_extra_args]
+        result = self._run_testql(args, timeout=max(int(self._quick_probe_timeout()), 120))
+        if result.returncode == 0:
+            self._record_health_transition(
+                service=fleet,
+                status="up",
+                stage="health_scenario",
+                message="Fleet health scenario passed",
+            )
+            return True
+
+        reason = result.stderr.strip() or result.stdout.strip() or "health_scenario failed"
+        track_path = self._write_track(service=fleet, stage="health_scenario", scenario=scenario_path, result=result)
+        self._record_health_transition(
+            service=fleet,
+            status="down",
+            stage="health_scenario",
+            message=reason,
+            track_file=str(track_path),
+        )
+        self.console.print(f"[red]✗ Fleet health scenario failed: {reason}[/red]")
+        return False
+
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         merged_endpoints = self._merge_endpoints(service, endpoints)
+
+        if not await self._run_live_http_probes(service, merged_endpoints):
+            return False
 
         scenarios = self._select_scenarios_for_service(service)
         svc_config = self.get_service_config(service)
@@ -510,3 +602,40 @@ class TestQLWatcher(WupWatcher):
             "remaining_queue": len(self.test_queue),
             "last_track_path": str(self.last_track_path) if self.last_track_path else None,
         }
+
+    def _run_periodic_probes_once(self) -> None:
+        """Run live probes for every configured service (ignores file-change cooldown)."""
+        if not self.config.services:
+            return
+        self.console.print("[cyan]⟳ Periodic live probe cycle[/cyan]")
+        try:
+            asyncio.run(self._run_fleet_health_scenario())
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(f"[red]Fleet health scenario error: {exc}[/red]")
+        for svc in self.config.services:
+            try:
+                asyncio.run(self.run_quick_test(svc.name, []))
+            except Exception as exc:  # noqa: BLE001
+                self.console.print(f"[red]Probe error for {svc.name}: {exc}[/red]")
+
+    def _start_periodic_probe_thread(self) -> None:
+        import threading
+
+        interval = int(self.config.testql.probe_interval_s or 0)
+        if interval <= 0:
+            return
+
+        def loop() -> None:
+            while True:
+                time.sleep(interval)
+                self._run_periodic_probes_once()
+
+        self._run_periodic_probes_once()
+        self._probe_thread = threading.Thread(target=loop, daemon=True)
+        self._probe_thread.start()
+        self.console.print(f"[green]Live probes enabled (every {interval}s)[/green]")
+
+    def start_watching(self, watch_paths: Optional[List[str]] = None):
+        """Start file watcher and optional periodic TestQL/HTTP probes."""
+        self._start_periodic_probe_thread()
+        super().start_watching(watch_paths)

@@ -55,6 +55,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 - Updated README.md with new examples
 
+## [0.2.26] - 2026-05-16
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_monitoring_manifest.py
+- Update tests/test_testql_monitor.py
+
+### Other
+- Update .code2llm_cache/__init___1778834867362150110_994.pkl
+- Update .code2llm_cache/cli_1778918000187674386_25505.pkl
+- Update .code2llm_cache/config_1778917061530209730_5560.pkl
+- Update .code2llm_cache/config_1778917065742082116_14204.pkl
+- Update .code2llm_cache/core_1778834388730285362_22557.pkl
+- Update .code2llm_cache/monitoring_manifest_1778918028128141262_11166.pkl
+- Update .code2llm_cache/pyproject_1778834867353321406_1757.pkl
+- Update .code2llm_cache/testql_monitor_1778917195918986170_12093.pkl
+- Update .code2llm_cache/testql_watcher_1778917117518359513_24716.pkl
+- Update app.doql.less
+- ... and 24 more files
+
 ## [0.2.25] - 2026-05-15
 
 ### Docs

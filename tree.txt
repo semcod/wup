@@ -70,6 +70,8 @@
 │   └── generated-from-pytests.testql.toon.yaml
 ├── tests
 │   ├── test_e2e.py
+│   ├── test_monitoring_manifest.py
+│   ├── test_testql_monitor.py
 │   ├── test_testql_watcher.py
 │   ├── test_web_client.py
 │   └── test_wup.py
@@ -92,7 +94,9 @@
 │   ├── models
 │   │   ├── config.py
 │   │   └── __init__.py
+│   ├── monitoring_manifest.py
 │   ├── testql_discovery.py
+│   ├── testql_monitor.py
 │   ├── testql_watcher.py
 │   ├── visual_diff.py
 │   ├── web_client.py
@@ -107,4 +111,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-23 directories, 85 files
+23 directories, 89 files

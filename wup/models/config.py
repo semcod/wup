@@ -60,7 +60,10 @@ class TestQLConfig:
     smoke_scenario: str = "smoke.testql.toon.yaml"
     output_format: str = "json"
     extra_args: List[str] = field(default_factory=lambda: ["--timeout 10s"])
-    endpoint_discovery: bool = True  # Enable automatic endpoint discovery from scenarios
+    endpoint_discovery: bool = True  # Merge health probes from scenarios + service maps
+    probe_interval_s: int = 0  # Periodic live probes for all services (0 = file-change only)
+    health_scenario: str = ""  # Optional TestQL scenario run live (not --dry-run) on each quick pass
+    service_map_globs: List[str] = field(default_factory=list)  # e.g. testql-testing/service-map/*.yaml
     base_url: str = ""
     base_url_env: str = "WUP_BASE_URL"
     explicit_endpoints: List[str] = field(default_factory=list)
