@@ -34,6 +34,24 @@ API[1]{method, endpoint, expected_status}:
     assert is_monitoring_probe(probes[0])
 
 
+def test_connect_api_paths_on_8100_are_not_monitoring_probes():
+    probe = ProbeTarget(url="http://localhost:8100/api/id/health")
+    assert not is_monitoring_probe(probe)
+    assert assign_probe_to_service(
+        probe,
+        [ServiceConfig(name="backend", paths=["backend/**", "api/**"])],
+    ) != "backend"
+
+
+def test_connect_health_on_8103_not_assigned_to_backend():
+    services = [
+        ServiceConfig(name="frontend", paths=["frontend/**"]),
+        ServiceConfig(name="backend", paths=["backend/**"]),
+    ]
+    probe = ProbeTarget(url="http://localhost:8103/api/id/health")
+    assert assign_probe_to_service(probe, services) is None
+
+
 def test_assign_firmware_service():
     services = [
         ServiceConfig(name="frontend", paths=["frontend/**"]),
@@ -85,6 +103,28 @@ def test_monitor_merges_config_and_service_map():
         assert "http://localhost:8100/firmware/api/v1/health" in urls
         assert "http://localhost:8100/firmware/api/v1/execution/status" in urls
         assert "http://localhost:8100/firmware/api/v1/execution/logs" in urls
+
+
+def test_probes_for_service_ignores_non_health_extra_paths():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="backend", paths=["backend/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(
+                base_url="http://localhost:8100",
+                api_base_url="http://localhost:8101",
+                endpoints_by_service={"backend": ["http://localhost:8101/api/v3/health"]},
+            ),
+        )
+        monitor = TestQLMonitor(root, cfg)
+        probes = monitor.probes_for_service(
+            "backend",
+            ["/connect-config", "http://localhost:8101/connect-config"],
+        )
+        urls = {p.url for p in probes}
+        assert urls == {"http://localhost:8101/api/v3/health"}
 
 
 def test_live_probe_failure_updates_health():

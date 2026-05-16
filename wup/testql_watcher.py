@@ -188,16 +188,50 @@ class TestQLWatcher(WupWatcher):
         return [token for token in raw_tokens if len(token) >= 3]
 
     def _get_config_endpoints_for_service(self, service: str) -> List[str]:
+        """Endpoints for *service* only — never attach all explicit_endpoints to every service."""
+        from .testql_monitor import ProbeTarget, assign_probe_to_service
+
         by_service = self.config.testql.endpoints_by_service or {}
         explicit = self.config.testql.explicit_endpoints or []
 
-        service_specific = by_service.get(service, [])
         merged: List[str] = []
-        for endpoint in [*service_specific, *explicit]:
-            endpoint_url = self._to_full_url(endpoint)
-            if endpoint_url not in merged:
+        for endpoint in by_service.get(service, []):
+            endpoint_url = self._to_full_url_for_service(service, endpoint)
+            if endpoint_url and endpoint_url not in merged:
                 merged.append(endpoint_url)
+
+        for endpoint in explicit:
+            probe = ProbeTarget(
+                url=self._to_full_url_for_service(service, endpoint) or endpoint,
+                source="wup.yaml:explicit_endpoints",
+            )
+            if assign_probe_to_service(probe, self.config.services) == service:
+                if probe.url not in merged:
+                    merged.append(probe.url)
         return merged
+
+    def _to_full_url_for_service(self, service: str, endpoint: str) -> str:
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
+            return endpoint
+        base = self._resolve_base_url_for_service(service)
+        if not base:
+            return endpoint
+        if endpoint.startswith("/"):
+            return f"{base}{endpoint}"
+        return f"{base}/{endpoint}"
+
+    def _resolve_base_url_for_service(self, service: str) -> str:
+        """Per-service base URL (e.g. backend API on :8101, frontend proxy on :8100)."""
+        overrides = getattr(self.config.testql, "service_base_urls", None) or {}
+        if isinstance(overrides, dict):
+            override = (overrides.get(service) or "").strip().rstrip("/")
+            if override:
+                return override
+        if service.lower() in {"backend", "api"}:
+            api_base = (getattr(self.config.testql, "api_base_url", None) or "").strip().rstrip("/")
+            if api_base:
+                return api_base
+        return self._resolve_base_url()
 
     def _resolve_base_url(self) -> str:
         base_url = (self.config.testql.base_url or "").strip()
@@ -253,6 +287,8 @@ class TestQLWatcher(WupWatcher):
             score += 2
         if "infra" in name or "smoke" in name:
             score += 1
+        if "generated-api-smoke" in name:
+            score -= 5
         return score
 
     def _select_scenarios_for_service(self, service: str) -> List[Path]:
@@ -260,20 +296,28 @@ class TestQLWatcher(WupWatcher):
         if not all_scenarios:
             return []
 
+        svc_config = self.get_service_config(service)
+        limit = (svc_config.quick_tests.max_endpoints
+                 if svc_config and svc_config.quick_tests else self.quick_limit)
+
         tokens = self._tokenize_service(service)
         scored = sorted(
             ((self._score_scenario(s, tokens), s) for s in all_scenarios),
             key=lambda item: (item[0], item[1].name),
             reverse=True,
         )
-        selected = [s for score, s in scored if score > 0]
+        selected = [s for score, s in scored if score > 0][:limit]
         if selected:
             return selected
 
-        svc_config = self.get_service_config(service)
-        limit = (svc_config.quick_tests.max_endpoints
-                 if svc_config and svc_config.quick_tests else self.quick_limit)
-        return all_scenarios if limit >= len(all_scenarios) else all_scenarios[:limit]
+        smoke_name = (self.config.testql.smoke_scenario or "").strip()
+        if smoke_name:
+            for base in (self.scenarios_dir, self.project_root):
+                candidate = base / smoke_name
+                if candidate.exists():
+                    return [candidate]
+
+        return []
 
     def _run_testql(self, args: Sequence[str], timeout: int) -> subprocess.CompletedProcess:
         cmd = [self.testql_bin, *args]
@@ -396,7 +440,8 @@ class TestQLWatcher(WupWatcher):
         if not self.monitor:
             return True
 
-        probes = self.monitor.probes_for_service(service, merged_endpoints)
+        # Health probes come only from wup.yaml + TestQL discovery — not deps.json page routes.
+        probes = self.monitor.probes_for_service(service)
         if not probes:
             return True
 
@@ -435,9 +480,12 @@ class TestQLWatcher(WupWatcher):
 
         scenario_path = Path(scenario_name)
         if not scenario_path.is_absolute():
-            scenario_path = self.project_root / scenario_name
-        if not scenario_path.exists():
-            scenario_path = self.scenarios_dir / scenario_name
+            candidates = [
+                self.scenarios_dir / scenario_name,
+                self.project_root / scenario_name,
+                self.project_root / self.config.testql.scenario_dir / scenario_name,
+            ]
+            scenario_path = next((p for p in candidates if p.exists()), candidates[0])
         if not scenario_path.exists():
             self.console.print(f"[yellow]⚠ health_scenario not found: {scenario_name}[/yellow]")
             return True
@@ -455,16 +503,24 @@ class TestQLWatcher(WupWatcher):
             return True
 
         reason = result.stderr.strip() or result.stdout.strip() or "health_scenario failed"
+        summary = reason.splitlines()[-1] if reason else "health_scenario failed"
         track_path = self._write_track(service=fleet, stage="health_scenario", scenario=scenario_path, result=result)
         self._record_health_transition(
             service=fleet,
             status="down",
             stage="health_scenario",
-            message=reason,
+            message=summary[:500],
             track_file=str(track_path),
         )
-        self.console.print(f"[red]✗ Fleet health scenario failed: {reason}[/red]")
-        return False
+        strict = bool(getattr(self.config.testql, "health_scenario_strict", False))
+        if strict:
+            self.console.print(f"[red]✗ Fleet health scenario failed: {summary}[/red]")
+            return False
+        self.console.print(
+            f"[yellow]⚠ Fleet health scenario incomplete: {summary} "
+            f"(per-service probes continue; set testql.health_scenario_strict: true to hard-fail)[/yellow]"
+        )
+        return True
 
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         merged_endpoints = self._merge_endpoints(service, endpoints)

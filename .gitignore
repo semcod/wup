@@ -1,4 +1,17 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/tree_1778918955429694841_3999.pkl
+.code2llm_cache/run_probe_smoke_1778918681363804547_2134.pkl
+.code2llm_cache/testql_monitor_1778918670952641750_14842.pkl
+.code2llm_cache/testql_watcher_1778918700454299053_26549.pkl
+.code2llm_cache/__init___1778918218933111222_994.pkl
+.code2llm_cache/config_1778918450330955027_5847.pkl
+.code2llm_cache/config_1778918470747474400_14557.pkl
+.code2llm_cache/pyproject_1778918218917527692_1757.pkl
+.code2llm_cache/testql_monitor_1778918449357453572_15082.pkl
+.code2llm_cache/testql_watcher_1778918280559110104_26317.pkl
+.code2llm_cache/tree_1778918199878884357_3944.pkl
+.code2llm_cache/visual_diff_1778918454525889896_14792.pkl
+.code2llm_cache/web_client_1778918345826981153_5653.pkl
 .code2llm_cache/__init___1778834867362150110_994.pkl
 .code2llm_cache/cli_1778918000187674386_25505.pkl
 .code2llm_cache/config_1778917061530209730_5560.pkl

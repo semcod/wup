@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.26-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$1.95-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-15.3h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.27-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.13-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-16.3h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $1.9540 (36 commits)
-- 👤 **Human dev:** ~$1532 (15.3h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.1268 (37 commits)
+- 👤 **Human dev:** ~$1632 (16.3h @ $100/h, 30min dedup)
 
 Generated on 2026-05-16 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.26-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.27-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -57,7 +57,7 @@ wup assistant --quick --template fastapi
 # 3. Build dependency map (one-time setup)
 wup map-deps ./my-project
 
-# 4. Start watching for changes
+# 4. Start watching (TestQL + live probes every 60s by default)
 wup watch ./my-project
 
 # 5. Start with live dashboard
@@ -84,23 +84,24 @@ wup map-deps ./my-project --output my-deps.json
 ### Watch Project
 
 ```bash
-# Basic watching (uses wup.yaml if present)
+# Basic watching: TestQL mode + live HTTP probes every 60s (uses wup.yaml if present)
 wup watch ./my-project
+
+# Legacy HTTP-only watcher (no TestQL, no periodic probes unless configured)
+wup watch ./my-project --mode default --probe-interval 0
 
 # With custom settings
 wup watch ./my-project \
   --cpu-throttle 0.5 \
   --debounce 3 \
-  --cooldown 600
+  --cooldown 600 \
+  --probe-interval 120
 
 # With live dashboard
 wup watch ./my-project --dashboard
 
 # Use specific config file
 wup watch ./my-project --config custom-config.yaml
-
-# TestQL mode
-wup watch ./my-project --mode testql
 
 # Discover endpoints from TestQL scenarios
 wup testql-endpoints /path/to/scenarios --output testql-deps.json

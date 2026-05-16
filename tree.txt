@@ -62,6 +62,8 @@
 ├── project.sh
 ├── pyproject.toml
 ├── README.md
+├── scripts
+│   └── run_probe_smoke.py
 ├── SUMD.md
 ├── SUMR.md
 ├── testql-deps.json
@@ -111,4 +113,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-23 directories, 89 files
+24 directories, 90 files

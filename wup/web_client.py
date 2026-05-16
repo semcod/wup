@@ -26,6 +26,7 @@ from .models.config import WebConfig
 _console = Console()
 _HTTPX_AVAILABLE: Optional[bool] = None
 _HTTPX_WARN_LOGGED: bool = False
+_SEND_FAIL_WARNED: bool = False
 
 
 def _httpx_available() -> bool:
@@ -122,7 +123,13 @@ class WebClient:
                 )
                 return False
         except Exception as exc:  # noqa: BLE001 — soft-fail by design
-            _console.print(f"[yellow]wup.web_client: send_event failed ({exc})[/yellow]")
+            global _SEND_FAIL_WARNED
+            if not _SEND_FAIL_WARNED:
+                _SEND_FAIL_WARNED = True
+                _console.print(
+                    f"[yellow]wup.web_client: send_event failed ({exc}) — "
+                    f"set web.enabled=false or start wupbro at {self.endpoint}[/yellow]"
+                )
             return False
 
     async def send_regression(

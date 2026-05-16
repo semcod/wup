@@ -1,45 +1,48 @@
-# code2llm | 55f 8766L | python:36,yaml:8,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-16
+# code2llm | 56f 8978L | python:37,yaml:8,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-16
 # generated in 0.01s
-# CC̄=4.3 | critical:5/270 | dups:0 | cycles:2
+# CC̄=4.5 | critical:5/276 | dups:0 | cycles:2
 
 HEALTH[5]:
   🟡 CC    discover_docker_compose_services CC=20 (limit:15)
   🟡 CC    build_monitoring_manifest CC=19 (limit:15)
   🟡 CC    parse_service_map_probes CC=15 (limit:15)
-  🟡 CC    assign_probe_to_service CC=17 (limit:15)
-  🟡 CC    discover_probes_by_service CC=20 (limit:15)
+  🟡 CC    assign_probe_to_service CC=37 (limit:15)
+  🟡 CC    discover_probes_by_service CC=22 (limit:15)
 
 REFACTOR[2]:
   1. split 5 high-CC methods  (CC>15)
   2. break 2 circular dependencies
 
-PIPELINES[200]:
-  [1] Src [__init__]: __init__
+PIPELINES[204]:
+  [1] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
-  [2] Src [_should_scan]: _should_scan
+  [2] Src [__init__]: __init__
       PURITY: 100% pure
-  [3] Src [scan_file]: scan_file
+  [3] Src [_should_scan]: _should_scan
       PURITY: 100% pure
-  [4] Src [scan_directory]: scan_directory
+  [4] Src [scan_file]: scan_file
       PURITY: 100% pure
-  [5] Src [get_summary]: get_summary
+  [5] Src [scan_directory]: scan_directory
       PURITY: 100% pure
 
 LAYERS:
-  wup/                            CC̄=4.9    ←in:6  →out:0
+  scripts/                        CC̄=14.0   ←in:0  →out:3
+  │ run_probe_smoke             64L  0C    1m  CC=14     ←0
+  │
+  wup/                            CC̄=5.1    ←in:9  →out:0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! testql_watcher             641L  2C   31m  CC=13     ←0
+  │ !! testql_watcher             679L  2C   33m  CC=13     ←0
   │ !! core                       619L  2C   25m  CC=14     ←0
   │ !! cli                        609L  0C    8m  CC=13     ←0
-  │ config                     411L  0C    6m  CC=10     ←5
-  │ visual_diff                388L  1C   17m  CC=11     ←1
-  │ !! testql_monitor             329L  2C   16m  CC=20     ←0
-  │ !! monitoring_manifest        306L  1C   10m  CC=20     ←1
+  │ config                     417L  0C    6m  CC=10     ←6
+  │ visual_diff                413L  1C   18m  CC=12     ←1
+  │ !! testql_monitor             392L  2C   18m  CC=37     ←2
+  │ !! monitoring_manifest        306L  1C   10m  CC=20     ←2
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
-  │ web_client                 178L  1C   10m  CC=6      ←0
+  │ web_client                 185L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ config                     141L  11C    0m  CC=0.0    ←0
+  │ config                     144L  11C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
@@ -80,7 +83,7 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   110L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   116L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              70L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
@@ -93,11 +96,12 @@ LAYERS:
      examples/flask-app/app/__init__.py        0L
 
 COUPLING:
-            examples       wup
-  examples        ──         6
-       wup        ←6        ──  hub
+                 wup  examples   scripts
+       wup        ──        ←6        ←3  hub
+  examples         6        ──          
+   scripts         3                  ──
   CYCLES: 2
-  HUB: wup/ (fan-in=6)
+  HUB: wup/ (fan-in=9)
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

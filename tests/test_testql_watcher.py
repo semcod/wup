@@ -6,7 +6,7 @@ from pathlib import Path
 from subprocess import CompletedProcess
 
 from wup.testql_watcher import TestQLWatcher
-from wup.models.config import WupConfig, ProjectConfig, TestQLConfig, VisualDiffConfig
+from wup.models.config import WupConfig, ProjectConfig, ServiceConfig, TestQLConfig, VisualDiffConfig
 
 
 def test_process_changed_file_creates_track_on_failure():
@@ -97,6 +97,7 @@ def test_config_endpoints_use_base_url_from_yaml_config():
         root = Path(tmpdir)
         cfg = WupConfig(
             project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="connect-config", paths=["connect-config/**"])],
             testql=TestQLConfig(
                 base_url="http://localhost:8100",
                 explicit_endpoints=["/connect-config"],
@@ -122,6 +123,7 @@ def test_config_endpoints_use_base_url_from_env_when_yaml_missing():
         root = Path(tmpdir)
         cfg = WupConfig(
             project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="connect-data", paths=["connect-data/**"])],
             testql=TestQLConfig(
                 base_url="",
                 base_url_env="WUP_BASE_URL",

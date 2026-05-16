@@ -1,12 +1,12 @@
-# redup/duplication | 4 groups | 34f 5722L | 2026-05-16
+# redup/duplication | 4 groups | 35f 5827L | 2026-05-16
 
 SUMMARY:
-  files_scanned: 34
-  total_lines:   5722
+  files_scanned: 35
+  total_lines:   5827
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       2194
+  scan_ms:       2139
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
@@ -30,7 +30,7 @@ DUPLICATES[4] (ranked by impact):
       examples/flask-app/app/auth/routes.py:20-22  (register)
   [94e52a5e17c9baae]   STRU  _save_snapshot  L=3 N=2 saved=3 sim=1.00
       examples/visual_diff_demo.py:62-64  (_save_snapshot)
-      wup/visual_diff.py:164-166  (_save_snapshot)
+      wup/visual_diff.py:176-178  (_save_snapshot)
 
 REFACTOR[4] (ranked by priority):
   [1] ○ extract_function   → wup/utils/__init__.py

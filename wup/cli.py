@@ -31,8 +31,16 @@ def watch(
     debounce: int = typer.Option(2, "--debounce", "-b", help="Debounce time in seconds"),
     cooldown: int = typer.Option(300, "--cooldown", "-t", help="Test cooldown in seconds"),
     dashboard: bool = typer.Option(False, "--dashboard", help="Enable live dashboard"),
-    mode: str = typer.Option("default", "--mode", help="Watcher mode: default or testql"),
-    scenarios_dir: str = typer.Option("testql-scenarios", "--scenarios-dir", help="Directory with TestQL scenario files"),
+    mode: str = typer.Option(
+        "testql",
+        "--mode",
+        help="Watcher mode: testql (default) or default (HTTP-only, no TestQL)",
+    ),
+    scenarios_dir: Optional[str] = typer.Option(
+        None,
+        "--scenarios-dir",
+        help="TestQL scenarios directory (default: testql.scenario_dir from wup.yaml)",
+    ),
     testql_bin: str = typer.Option("testql", "--testql-bin", help="TestQL executable name/path"),
     browser_service_url: Optional[str] = typer.Option(None, "--browser-service-url", help="HTTP endpoint for browser notifications"),
     track_dir: str = typer.Option(".wup/tracks", "--track-dir", help="Directory where error track JSON files are written"),
@@ -40,17 +48,16 @@ def watch(
     probe_interval: Optional[int] = typer.Option(
         None,
         "--probe-interval",
-        help="Periodic live HTTP/TestQL probes in seconds (overrides testql.probe_interval_s)",
+        help="Periodic live HTTP probes in seconds (default: 60 in testql mode, or testql.probe_interval_s from wup.yaml; use 0 to disable)",
     ),
     config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
-    Watch project for file changes and run intelligent regression tests.
-    
-    Uses a 3-layer approach:
-    1. Detection: File watching with heuristics
-    2. Priority: Quick tests of related services (3 endpoints max)
-    3. Detail: Full tests with blame reports (only on failure)
+    Watch project for file changes and run regression tests.
+
+    Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
+    (unless ``testql.probe_interval_s`` is set in wup.yaml). Use
+    ``--mode default`` for the legacy HTTP-only watcher without TestQL.
     """
     project_path = Path(project).resolve()
     
@@ -63,6 +70,10 @@ def watch(
     wup_config = load_config(project_path, config_path)
     if probe_interval is not None:
         wup_config.testql.probe_interval_s = int(probe_interval)
+    elif mode.lower() == "testql" and not wup_config.testql.probe_interval_s:
+        wup_config.testql.probe_interval_s = 60
+
+    effective_scenarios_dir = scenarios_dir or wup_config.testql.scenario_dir
 
     console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
     console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
@@ -92,7 +103,7 @@ def watch(
             cpu_throttle=cpu_throttle,
             debounce_seconds=debounce,
             test_cooldown_seconds=cooldown,
-            scenarios_dir=scenarios_dir,
+            scenarios_dir=effective_scenarios_dir,
             testql_bin=testql_bin,
             browser_service_url=browser_service_url,
             track_dir=track_dir,

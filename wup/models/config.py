@@ -56,16 +56,20 @@ class TestStrategyConfig:
 @dataclass
 class TestQLConfig:
     """TestQL-specific configuration."""
+    __test__ = False
     scenario_dir: str = "scenarios/tests"
     smoke_scenario: str = "smoke.testql.toon.yaml"
     output_format: str = "json"
     extra_args: List[str] = field(default_factory=lambda: ["--timeout 10s"])
     endpoint_discovery: bool = True  # Merge health probes from scenarios + service maps
     probe_interval_s: int = 0  # Periodic live probes for all services (0 = file-change only)
-    health_scenario: str = ""  # Optional TestQL scenario run live (not --dry-run) on each quick pass
+    health_scenario: str = ""  # Fleet TestQL scenario on each periodic probe cycle (live run)
+    health_scenario_strict: bool = False  # If false, fleet scenario failure is logged but does not block per-service probes
     service_map_globs: List[str] = field(default_factory=list)  # e.g. testql-testing/service-map/*.yaml
     base_url: str = ""
+    api_base_url: str = ""  # Core API (c2004: http://localhost:8101) — used for backend probes
     base_url_env: str = "WUP_BASE_URL"
+    service_base_urls: Dict[str, str] = field(default_factory=dict)  # optional per-service override
     explicit_endpoints: List[str] = field(default_factory=list)
     endpoints_by_service: Dict[str, List[str]] = field(default_factory=dict)
 
@@ -81,7 +85,8 @@ class VisualDiffConfig:
     snapshot_dir: str = ".wup/visual-snapshots"
     diff_dir: str = ".wup/visual-diffs"
     pages: List[str] = field(default_factory=list)  # explicit page paths to scan
-    pages_from_endpoints: bool = True  # infer pages from explicit_endpoints
+    pages_from_endpoints: bool = True
+    max_pages: int = 5  # cap DOM scans per service per file change
     threshold_added: int = 3         # min added nodes to report
     threshold_removed: int = 3       # min removed nodes to report
     threshold_changed: int = 5       # min changed attrs to report

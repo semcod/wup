@@ -35,6 +35,7 @@ console = Console()
 # ---------------------------------------------------------------------------
 
 _PW_AVAILABLE: Optional[bool] = None
+_PW_WARNED: bool = False
 
 
 def _playwright_available() -> bool:
@@ -46,6 +47,17 @@ def _playwright_available() -> bool:
         except ImportError:
             _PW_AVAILABLE = False
     return _PW_AVAILABLE
+
+
+def _warn_playwright_missing() -> None:
+    global _PW_WARNED
+    if _PW_WARNED:
+        return
+    _PW_WARNED = True
+    console.print(
+        "[yellow]visual_diff: playwright not installed — DOM scan skipped "
+        "(pip install playwright && playwright install chromium)[/yellow]"
+    )
 
 
 _DOM_SNAPSHOT_JS = """
@@ -85,7 +97,7 @@ async def _fetch_dom_snapshot(
 ) -> Optional[Dict]:
     """Return a DOM structure dict for *url* using Playwright."""
     if not _playwright_available():
-        console.print("[yellow]visual_diff: playwright not installed — skipping DOM scan[/yellow]")
+        _warn_playwright_missing()
         return None
     try:
         from playwright.async_api import async_playwright
@@ -273,7 +285,8 @@ class VisualDiffer:
         pages: List[str] = list(self.cfg.pages)
 
         if self.cfg.pages_from_endpoints and endpoints:
-            pages.extend(endpoints)
+            for endpoint in endpoints:
+                pages.append(endpoint)
 
         if not pages:
             pages = [f"/{service}"]
@@ -297,10 +310,17 @@ class VisualDiffer:
         if not self.cfg.enabled:
             return []
 
+        if not _playwright_available():
+            _warn_playwright_missing()
+            return []
+
         if self.cfg.delay_seconds > 0:
             await asyncio.sleep(self.cfg.delay_seconds)
 
         pages = self._pages_for_service(service, endpoints)
+        max_pages = max(1, int(self.cfg.max_pages or 5))
+        if len(pages) > max_pages:
+            pages = pages[:max_pages]
         results = []
         for url in pages:
             result = await self._check_page(service, url)
@@ -321,7 +341,10 @@ class VisualDiffer:
                     )
             elif result["diff"]["status"] == "new":
                 console.print(f"[dim]📷 Baseline snapshot: {url}[/dim]")
-            else:
+            elif result["diff"]["status"] == "error":
+                message = result["diff"].get("message", "scan failed")
+                console.print(f"[yellow]⚠ Visual diff skipped: {url} ({message})[/yellow]")
+            elif result["diff"]["status"] == "ok":
                 console.print(f"[dim green]✓ No DOM change: {url}[/dim green]")
 
         return results

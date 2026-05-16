@@ -22,6 +22,18 @@ _HEALTH_HINT = re.compile(
     r"(/health|/healthz|/ready|/live|/status|/openapi\.json|/execution/status|/execution/logs)",
     re.IGNORECASE,
 )
+# Connect module APIs live on :8103+ — not valid health probes on frontend proxy :8100
+_CONNECT_API_PREFIXES = (
+    "/api/id",
+    "/api/manager",
+    "/api/scenario",
+    "/api/test",
+    "/api/template",
+    "/api/cql",
+    "/api/v1/data",
+    "/api/v2/menu",
+)
+_PATH_TOKEN_BLOCKLIST = frozenset({"api", "app", "src", "lib", "bin", "dist", "out"})
 
 
 @dataclass(frozen=True)
@@ -102,12 +114,28 @@ def parse_service_map_probes(map_path: Path) -> List[ProbeTarget]:
     return probes
 
 
+def _connect_module_api_on_frontend_proxy(probe: ProbeTarget) -> bool:
+    """True when a connect-* API path would be wrongly probed via :8100."""
+    if not probe.url.startswith("http"):
+        return False
+    parsed = urlparse(probe.url)
+    if parsed.port not in (None, 8100):
+        return False
+    path = (parsed.path or "").lower()
+    return any(path.startswith(prefix) for prefix in _CONNECT_API_PREFIXES)
+
+
 def is_monitoring_probe(probe: ProbeTarget) -> bool:
     """True when this endpoint should be used for live service health checks."""
+    if _connect_module_api_on_frontend_proxy(probe):
+        return False
     if probe.url.startswith("http"):
         path = urlparse(probe.url).path or probe.url
     else:
         path = probe.url
+    path_lower = path.lower()
+    if any(path_lower.startswith(prefix) for prefix in _CONNECT_API_PREFIXES):
+        return False
     if _HEALTH_HINT.search(path):
         return True
     # Short GET smoke paths (/, /health) without heavy write APIs
@@ -128,14 +156,38 @@ def _service_path_patterns(services: Sequence[ServiceConfig]) -> Dict[str, List[
 
 def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig]) -> Optional[str]:
     """Map a probe URL/path to a configured WUP service name."""
+    wup_names = {s.name.lower() for s in services}
     path = urlparse(probe.url).path if probe.url.startswith("http") else probe.url
     path_lower = path.lower()
+
+    if probe.url.startswith("http"):
+        parsed = urlparse(probe.url)
+        port = parsed.port
+        if port == 8101 and "backend" in wup_names:
+            return next(s.name for s in services if s.name.lower() == "backend")
+        if port == 8202:
+            for svc in services:
+                if "firmware" in svc.name.lower():
+                    return svc.name
+        if port == 8100:
+            if path_lower.startswith("/firmware"):
+                for svc in services:
+                    if "firmware" in svc.name.lower():
+                        return svc.name
+            if "frontend" in wup_names:
+                return next(s.name for s in services if s.name.lower() == "frontend")
+        # Connect-* backends on 8103+ — only if a matching WUP service exists
+        for svc in services:
+            token = svc.name.lower().replace("_", "-")
+            if token.startswith("connect-") and token.replace("connect-", "") in path_lower:
+                return svc.name
+        return None
 
     best: Optional[str] = None
     best_len = -1
     for svc in services:
         for token in _service_path_patterns([svc]).get(svc.name, []):
-            if len(token) < 3:
+            if len(token) < 4 or token in _PATH_TOKEN_BLOCKLIST:
                 continue
             if token in path_lower and len(token) > best_len:
                 best = svc.name
@@ -148,7 +200,7 @@ def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig
         for svc in services:
             if "firmware" in svc.name.lower():
                 return svc.name
-    if path_lower.startswith("/api/"):
+    if path_lower.startswith("/api/v3"):
         for svc in services:
             if svc.name.lower() in {"backend", "api"}:
                 return svc.name
@@ -193,23 +245,28 @@ class TestQLMonitor:
             seen[service].add(key)
             by_service[service].append(probe)
 
-        # 1) Config-declared endpoints (paths or full URLs)
-        base = self._resolve_base_url()
+        # 1) Config-declared endpoints (paths or full URLs) — per-service base URL
         for svc_name, paths in (self.config.testql.endpoints_by_service or {}).items():
+            base = self._resolve_base_url_for_service(svc_name)
             for path in paths:
                 url = self._probeable_url(path, base)
                 if not url:
                     continue
                 probe = ProbeTarget(url=url, source="wup.yaml:endpoints_by_service")
-                add(svc_name, probe)
+                if is_monitoring_probe(probe):
+                    add(svc_name, probe)
 
         for path in self.config.testql.explicit_endpoints or []:
+            probe = ProbeTarget(url=path, source="wup.yaml:explicit_endpoints")
+            assigned = assign_probe_to_service(probe, self.config.services)
+            if not assigned:
+                continue
+            base = self._resolve_base_url_for_service(assigned)
             url = self._probeable_url(path, base)
             if not url:
                 continue
             probe = ProbeTarget(url=url, source="wup.yaml:explicit_endpoints")
-            assigned = assign_probe_to_service(probe, self.config.services)
-            if assigned:
+            if is_monitoring_probe(probe):
                 add(assigned, probe)
 
         if not self.config.testql.endpoint_discovery:
@@ -235,6 +292,19 @@ class TestQLMonitor:
 
         return by_service
 
+    def _resolve_base_url_for_service(self, service: str) -> str:
+        tq = self.config.testql
+        overrides = getattr(tq, "service_base_urls", None) or {}
+        if isinstance(overrides, dict):
+            override = (overrides.get(service) or "").strip().rstrip("/")
+            if override:
+                return override
+        if service.lower() in {"backend", "api"}:
+            api_base = (getattr(tq, "api_base_url", None) or "").strip().rstrip("/")
+            if api_base:
+                return api_base
+        return self._resolve_base_url()
+
     def _probeable_url(self, path: str, base: str) -> Optional[str]:
         if path.startswith("http://") or path.startswith("https://"):
             return path
@@ -245,7 +315,7 @@ class TestQLMonitor:
     def probes_for_service(self, service: str, extra_paths: Iterable[str] = ()) -> List[ProbeTarget]:
         """Merged probe list for one service (discovery + config + caller extras)."""
         discovered = self.discover_probes_by_service().get(service, [])
-        base = self._resolve_base_url()
+        base = self._resolve_base_url_for_service(service)
         merged: List[ProbeTarget] = list(discovered)
         keys = {f"{p.method}:{p.url}" for p in merged}
 
@@ -253,21 +323,14 @@ class TestQLMonitor:
             url = self._probeable_url(path, base)
             if not url:
                 continue
-            key = f"GET:{url}"
+            probe = ProbeTarget(url=url, source="runtime")
+            if not is_monitoring_probe(probe):
+                continue
+            key = f"{probe.method}:{probe.url}"
             if key in keys:
                 continue
             keys.add(key)
-            merged.append(ProbeTarget(url=url, source="runtime"))
-
-        for path in self.config.testql.endpoints_by_service.get(service, []):
-            url = self._probeable_url(path, base)
-            if not url:
-                continue
-            key = f"GET:{url}"
-            if key in keys:
-                continue
-            keys.add(key)
-            merged.append(ProbeTarget(url=url, source="wup.yaml"))
+            merged.append(probe)
 
         return [p for p in merged if p.url.startswith("http://") or p.url.startswith("https://")]
 
