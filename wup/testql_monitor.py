@@ -227,6 +227,8 @@ def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig
 class TestQLMonitor:
     """Build and run live probes from TestQL scenarios + WUP config."""
 
+    __test__ = False
+
     def __init__(self, project_root: Path, config: WupConfig):
         self.project_root = project_root
         self.config = config

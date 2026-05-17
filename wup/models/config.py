@@ -49,6 +49,7 @@ class WatchConfig:
 @dataclass
 class TestStrategyConfig:
     """Global test strategy configuration."""
+    __test__ = False
     quick: Dict = field(default_factory=lambda: {"debounce_s": 2, "max_queue": 5, "timeout_s": 10})
     detail: Dict = field(default_factory=lambda: {"debounce_s": 10, "max_queue": 1, "timeout_s": 30})
 
