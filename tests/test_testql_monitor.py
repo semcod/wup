@@ -34,6 +34,13 @@ API[1]{method, endpoint, expected_status}:
     assert is_monitoring_probe(probes[0])
 
 
+def test_firmware_plugin_health_on_8202_not_live_probe():
+    probe = ProbeTarget(url="http://localhost:8202/api/v1/plugins/modbus-io/health")
+    assert not is_monitoring_probe(probe)
+    direct = ProbeTarget(url="http://localhost:8202/health")
+    assert is_monitoring_probe(direct)
+
+
 def test_connect_api_paths_on_8100_are_not_monitoring_probes():
     probe = ProbeTarget(url="http://localhost:8100/api/id/health")
     assert not is_monitoring_probe(probe)

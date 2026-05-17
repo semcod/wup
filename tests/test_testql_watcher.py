@@ -6,7 +6,14 @@ from pathlib import Path
 from subprocess import CompletedProcess
 
 from wup.testql_watcher import TestQLWatcher
-from wup.models.config import WupConfig, ProjectConfig, ServiceConfig, TestQLConfig, VisualDiffConfig
+from wup.models.config import (
+    ProjectConfig,
+    ServiceConfig,
+    TestQLConfig,
+    VisualDiffConfig,
+    WatchConfig,
+    WupConfig,
+)
 
 
 def test_process_changed_file_creates_track_on_failure():
@@ -201,6 +208,76 @@ def test_service_health_transitions_are_persisted():
         statuses = [event.get("status") for event in events if event.get("service") == "connect-config"]
         assert "down" in statuses
         assert "up" in statuses
+
+
+def test_normalize_fleet_health_entry_down_to_degraded():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        health_path = root / ".wup" / "service-health.json"
+        health_path.parent.mkdir(parents=True)
+        health_path.write_text(
+            json.dumps(
+                {
+                    "demo": {
+                        "status": "down",
+                        "stage": "health_scenario",
+                        "message": "partial",
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="frontend", paths=["frontend/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(health_scenario_strict=False),
+        )
+        TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+        state = json.loads(health_path.read_text(encoding="utf-8"))
+        assert state["demo"]["status"] == "degraded"
+
+
+def test_fleet_health_scenario_non_strict_records_degraded_not_down():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        scenario_dir = root / "testql-scenarios"
+        scenario_dir.mkdir(parents=True, exist_ok=True)
+        (scenario_dir / "fleet.testql.toon.yaml").write_text("name: fleet\n", encoding="utf-8")
+
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="frontend", paths=["frontend/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(
+                scenario_dir="testql-scenarios",
+                health_scenario="fleet.testql.toon.yaml",
+                health_scenario_strict=False,
+            ),
+        )
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+        watcher._run_testql = lambda args, timeout: CompletedProcess(  # type: ignore[method-assign]
+            args=args,
+            returncode=1,
+            stdout='{"passed": 1, "failed": 1, "errors": ["L1: bad"]}',
+            stderr="",
+        )
+        assert asyncio.run(watcher._run_fleet_health_scenario()) is True
+        state = json.loads((root / ".wup" / "service-health.json").read_text(encoding="utf-8"))
+        assert state["demo"]["status"] == "degraded"
+        assert state["demo"]["stage"] == "health_scenario"
 
 
 def test_visual_differ_disabled_by_default():

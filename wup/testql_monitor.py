@@ -125,9 +125,22 @@ def _connect_module_api_on_frontend_proxy(probe: ProbeTarget) -> bool:
     return any(path.startswith(prefix) for prefix in _CONNECT_API_PREFIXES)
 
 
+def _firmware_plugin_probe_without_runtime(probe: ProbeTarget) -> bool:
+    """Plugin health on :8202 requires loaded plugins — skip for bare simulator live probes."""
+    if not probe.url.startswith("http"):
+        return False
+    parsed = urlparse(probe.url)
+    if parsed.port != 8202:
+        return False
+    path = (parsed.path or "").lower()
+    return "/api/v1/plugins/" in path and path.endswith("/health")
+
+
 def is_monitoring_probe(probe: ProbeTarget) -> bool:
     """True when this endpoint should be used for live service health checks."""
     if _connect_module_api_on_frontend_proxy(probe):
+        return False
+    if _firmware_plugin_probe_without_runtime(probe):
         return False
     if probe.url.startswith("http"):
         path = urlparse(probe.url).path or probe.url
@@ -334,6 +347,20 @@ class TestQLMonitor:
 
         return [p for p in merged if p.url.startswith("http://") or p.url.startswith("https://")]
 
+    @staticmethod
+    def _sort_probes_for_live(probes: Sequence[ProbeTarget]) -> List[ProbeTarget]:
+        """Prefer wup.yaml endpoints before scenario discovery for pass/fail."""
+
+        def rank(probe: ProbeTarget) -> Tuple[int, str]:
+            source = probe.source or ""
+            if source.startswith("wup.yaml:endpoints_by_service"):
+                return (0, probe.url)
+            if source.startswith("wup.yaml:explicit_endpoints"):
+                return (1, probe.url)
+            return (2, probe.url)
+
+        return sorted(probes, key=rank)
+
     def run_probes(
         self,
         service: str,
@@ -347,7 +374,8 @@ class TestQLMonitor:
             return True, ""
 
         failed: List[str] = []
-        for probe in list(probes)[:max_count]:
+        ordered = self._sort_probes_for_live(probes)
+        for probe in ordered[:max_count]:
             ok, detail = probe.probe(timeout_s=timeout_s)
             if ok:
                 continue
