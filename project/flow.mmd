@@ -1,18 +1,10 @@
 flowchart TD
-%% generated in 0.00s
+%% generated in 0.01s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
-        wup__cli__watch["watch"]
-        wup__cli__map_deps["map_deps"]
-        wup__cli__status["status"]
-        wup__cli__init["init"]
-        wup__cli__testql_endpoints["testql_endpoints"]
-        wup__cli__sync_testql["sync_testql"]
-        wup__cli__assistant["assistant"]
-        wup__cli__version["version"]
         wup__web_client___httpx_available["_httpx_available"]
         wup__web_client__resolve_endpoint["resolve_endpoint"]
         wup__web_client___normalize["_normalize"]
@@ -20,6 +12,14 @@ flowchart TD
         wup__web_client__WebClient__send_event["send_event"]
         wup__web_client__WebClient__send_regression["send_regression"]
         wup__web_client__WebClient__send_pass["send_pass"]
+        wup__web_client__WebClient__send_health_transition["send_health_transition"]
+        wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
+        wup__cli__watch["watch"]
+        wup__cli__map_deps["map_deps"]
+        wup__cli__status["status"]
+        wup__cli__init["init"]
+        wup__cli__testql_endpoints["testql_endpoints"]
+        wup__cli__sync_testql["sync_testql"]
         ...["+2 more"]
     end
 
@@ -35,11 +35,11 @@ flowchart TD
         wup__anomaly_detector__AnomalyDetector__print_report["print_report"]
         wup__anomaly_detector__quick_scan["quick_scan"]
         wup__anomaly_detector__scan_yaml_changes["scan_yaml_changes"]
-        wup__testql_monitor__ProbeTarget__probe["probe"]
-        wup__testql_monitor__parse_service_map_probes{{parse_service_map_probes CC=15}}
-        wup__testql_monitor__assign_probe_to_service{{assign_probe_to_service CC=37}}
-        wup__testql_monitor__TestQLMonitor___service_map_paths["_service_map_paths"]
-        ...["+129 more"]
+        wup__assistant__WupAssistant___dispatch_menu_choice["_dispatch_menu_choice"]
+        wup__assistant__WupAssistant__run["run"]
+        wup__assistant__WupAssistant___init_project["_init_project"]
+        wup__assistant__WupAssistant___detect_framework["_detect_framework"]
+        ...["+133 more"]
     end
 
-    class wup__monitoring_manifest___host_port_from_mapping,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory,wup__anomaly_detector__AnomalyDetector__get_summary,wup__anomaly_detector__AnomalyDetector__print_report,wup__anomaly_detector__quick_scan,wup__anomaly_detector__scan_yaml_changes,wup__cli__watch,wup__cli__map_deps entry
+    class wup__monitoring_manifest___host_port_from_mapping,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory,wup__anomaly_detector__AnomalyDetector__get_summary,wup__anomaly_detector__AnomalyDetector__print_report,wup__anomaly_detector__quick_scan,wup__anomaly_detector__scan_yaml_changes,wup__assistant__WupAssistant___dispatch_menu_choice,wup__assistant__WupAssistant__run entry

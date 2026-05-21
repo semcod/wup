@@ -21,9 +21,8 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.26`
+- **version**: `0.2.29`
 - **python_requires**: `>=3.9`
-- **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
 - **generated_from**: pyproject.toml, testql(2), app.doql.less, goal.yaml, .env.example, src(16 mod), project/(2 analysis files)
@@ -41,7 +40,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.26;
+  version: 0.2.29;
 }
 
 dependencies {
@@ -215,7 +214,7 @@ ASSERT[72]{field, operator, expected}:
 ```yaml
 project:
   name: wup
-  version: 0.2.26
+  version: 0.2.29
   env: local
 ```
 
@@ -269,9 +268,9 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 49f 10541L | python:46,shell:2,less:1 | 2026-05-16
-# stats: 143 func | 48 cls | 49 mod | CC̄=4.0 | critical:12 | cycles:0
-# alerts[5]: CC assign_probe_to_service=37; CC discover_docker_compose_services=20; CC build_monitoring_manifest=19; CC watch=15; CC parse_service_map_probes=15
+# wup | 49f 11010L | python:46,shell:2,less:1 | 2026-05-21
+# stats: 153 func | 48 cls | 49 mod | CC̄=4.0 | critical:13 | cycles:0
+# alerts[5]: CC assign_probe_to_service=40; CC discover_docker_compose_services=20; CC build_monitoring_manifest=19; CC watch=15; CC parse_service_map_probes=15
 # hotspots[5]: status fan=35; sync_testql fan=28; watch fan=20; main fan=19; testql_endpoints fan=19
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
@@ -301,10 +300,10 @@ M[49]:
   scripts/run_probe_smoke.py,65
   tests/test_e2e.py,517
   tests/test_monitoring_manifest.py,73
-  tests/test_testql_monitor.py,162
-  tests/test_testql_watcher.py,258
+  tests/test_testql_monitor.py,169
+  tests/test_testql_watcher.py,413
   tests/test_web_client.py,168
-  tests/test_wup.py,1624
+  tests/test_wup.py,1710
   tree.sh,2
   wup/__init__.py,40
   wup/_ast_detector.py,125
@@ -314,16 +313,16 @@ M[49]:
   wup/anomaly_models.py,36
   wup/assistant.py,695
   wup/cli.py,621
-  wup/config.py,418
+  wup/config.py,434
   wup/core.py,620
   wup/dependency_mapper.py,285
   wup/models/__init__.py,35
-  wup/models/config.py,145
+  wup/models/config.py,148
   wup/monitoring_manifest.py,307
   wup/testql_discovery.py,230
-  wup/testql_monitor.py,393
-  wup/testql_watcher.py,680
-  wup/visual_diff.py,414
+  wup/testql_monitor.py,427
+  wup/testql_watcher.py,766
+  wup/visual_diff.py,496
   wup/web_client.py,186
 D:
   examples/c2004_monorepo_demo.py:
@@ -443,8 +442,9 @@ D:
     test_discover_docker_compose()
     test_patch_and_load_monitoring_block()
   tests/test_testql_monitor.py:
-    e: test_parse_scenario_probes_full_url,test_connect_api_paths_on_8100_are_not_monitoring_probes,test_connect_health_on_8103_not_assigned_to_backend,test_assign_firmware_service,test_monitor_merges_config_and_service_map,test_probes_for_service_ignores_non_health_extra_paths,test_live_probe_failure_updates_health
+    e: test_parse_scenario_probes_full_url,test_firmware_plugin_health_on_8202_not_live_probe,test_connect_api_paths_on_8100_are_not_monitoring_probes,test_connect_health_on_8103_not_assigned_to_backend,test_assign_firmware_service,test_monitor_merges_config_and_service_map,test_probes_for_service_ignores_non_health_extra_paths,test_live_probe_failure_updates_health
     test_parse_scenario_probes_full_url()
+    test_firmware_plugin_health_on_8202_not_live_probe()
     test_connect_api_paths_on_8100_are_not_monitoring_probes()
     test_connect_health_on_8103_not_assigned_to_backend()
     test_assign_firmware_service()
@@ -452,14 +452,18 @@ D:
     test_probes_for_service_ignores_non_health_extra_paths()
     test_live_probe_failure_updates_health()
   tests/test_testql_watcher.py:
-    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing,test_service_health_transitions_are_persisted,test_visual_differ_disabled_by_default,test_visual_differ_initialized_when_enabled
+    e: test_process_changed_file_creates_track_on_failure,test_browser_event_file_is_written_without_service_url,test_config_endpoints_use_base_url_from_yaml_config,test_config_endpoints_use_base_url_from_env_when_yaml_missing,test_service_health_transitions_are_persisted,test_normalize_fleet_health_entry_down_to_degraded,test_fleet_health_scenario_non_strict_records_degraded_not_down,test_visual_differ_disabled_by_default,test_visual_differ_initialized_when_enabled,test_get_config_endpoints_for_service_keeps_connect_pages_on_frontend,test_quick_pass_actions_prefer_config_endpoints_for_visual_diff
     test_process_changed_file_creates_track_on_failure()
     test_browser_event_file_is_written_without_service_url()
     test_config_endpoints_use_base_url_from_yaml_config()
     test_config_endpoints_use_base_url_from_env_when_yaml_missing()
     test_service_health_transitions_are_persisted()
+    test_normalize_fleet_health_entry_down_to_degraded()
+    test_fleet_health_scenario_non_strict_records_degraded_not_down()
     test_visual_differ_disabled_by_default()
     test_visual_differ_initialized_when_enabled()
+    test_get_config_endpoints_for_service_keeps_connect_pages_on_frontend()
+    test_quick_pass_actions_prefer_config_endpoints_for_visual_diff()
   tests/test_web_client.py:
     e: _make_handler,recorder_server,test_resolve_endpoint_from_config,test_resolve_endpoint_from_env,test_resolve_endpoint_empty,test_is_active_false_when_disabled,test_is_active_false_when_no_endpoint,test_send_event_disabled_returns_false,test_send_event_posts_to_recorder,test_send_event_with_api_key,test_send_event_swallows_connection_error,test_send_regression_helper,test_send_health_transition_helper,_Recorder
     _Recorder: __init__(0)
@@ -483,8 +487,8 @@ D:
     TestIntegrationWorkflow: test_full_workflow_file_change_to_test_scheduling(0),test_workflow_with_file_type_filtering(0),test_workflow_with_service_coincidence(0),test_workflow_with_multiple_file_changes(0),test_workflow_with_auto_detection_and_explicit_paths(0)  # Integration tests for complete workflows.
     TestFileFiltering: test_should_watch_file_with_config(0),test_should_watch_file_without_config(0)  # Tests for file type filtering.
     TestConfigModels: test_project_config(0),test_notify_config(0),test_service_test_config(0),test_service_config(0),test_watch_config(0),test_test_strategy_config(0),test_testql_config(0),test_wup_config(0),test_visual_diff_config_defaults(0),test_visual_diff_config_custom(0)  # Tests for configuration dataclasses.
-    TestVisualDiffer: test_resolve_base_url_from_config(0),test_resolve_base_url_from_env(1),test_resolve_base_url_empty(1),test_page_slug(0),test_pages_for_service_explicit(0),test_pages_for_service_from_endpoints(0),test_pages_for_service_fallback(0),test_pages_for_service_absolute_url_passthrough(0),test_diff_snapshots_baseline(0),test_diff_snapshots_identical(0),test_diff_snapshots_changed(0),test_run_for_service_disabled_returns_empty(0),test_get_recent_diffs_empty(0),test_get_recent_diffs_filters_by_age(0)  # Tests for the VisualDiffer class (no Playwright required).
-    TestConfigLoader: test_get_default_config(0),test_save_and_load_config(0),test_load_config_from_yaml(0),test_load_config_auto_detect(0),test_load_config_no_file_returns_default(0),test_load_config_invalid_yaml(0),test_load_config_missing_project_name(0),test_save_and_load_visual_diff_config(0),test_load_config_visual_diff_from_yaml(0),test_load_config_visual_diff_defaults_when_section_absent(0),test_load_dotenv_sets_env_var(0),test_load_dotenv_does_not_overwrite_existing(0)  # Tests for configuration loading and saving.
+    TestVisualDiffer: test_resolve_base_url_from_config(0),test_resolve_base_url_from_env(1),test_resolve_base_url_empty(1),test_page_slug(0),test_pages_for_service_explicit(0),test_pages_for_service_from_endpoints(0),test_looks_like_visual_page_skips_api_health_routes(0),test_pages_for_service_from_endpoints_skips_non_html_probes(0),test_pages_for_service_fallback(0),test_pages_for_service_absolute_url_passthrough(0),test_diff_snapshots_baseline(0),test_diff_snapshots_identical(0),test_diff_snapshots_changed(0),test_run_for_service_disabled_returns_empty(0),test_run_for_service_summarizes_fetch_errors(1),test_get_recent_diffs_empty(0),test_get_recent_diffs_filters_by_age(0)  # Tests for the VisualDiffer class (no Playwright required).
+    TestConfigLoader: test_get_default_config(0),test_save_and_load_config(0),test_load_config_from_yaml(0),test_load_config_auto_detect(0),test_load_config_no_file_returns_default(0),test_load_config_invalid_yaml(0),test_load_config_missing_project_name(0),test_save_and_load_visual_diff_config(0),test_load_config_visual_diff_from_yaml(0),test_load_config_visual_diff_defaults_when_section_absent(0),test_load_config_visual_diff_env_overrides_page_discovery(1),test_load_dotenv_sets_env_var(0),test_load_dotenv_does_not_overwrite_existing(0)  # Tests for configuration loading and saving.
     TestConfigIntegration: test_watcher_with_config(0),test_watcher_uses_config_debounce(0),test_watcher_build_watched_paths_from_config(0),test_watcher_infer_service_from_config(0),test_watcher_get_service_config(0),test_watcher_schedule_quick_test_uses_config_limit(0),test_watcher_on_file_change_uses_exclude_patterns(0)  # Tests for configuration integration with WupWatcher.
     TestTestQLWatcherConfig: test_testql_watcher_with_config(0),test_testql_watcher_uses_config_scenarios_dir(0),test_testql_watcher_get_service_config(0),test_testql_watcher_select_scenarios_uses_config_limit(0),test_testql_watcher_uses_config_timeout(0),test_testql_watcher_without_config_loads_default(0)  # Tests for TestQLWatcher configuration integration.
     test_import()
@@ -568,28 +572,33 @@ D:
     e: TestQLEndpointDiscovery
     TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files.
   wup/testql_monitor.py:
-    e: _parse_api_lines,parse_scenario_probes,parse_service_map_probes,_connect_module_api_on_frontend_proxy,is_monitoring_probe,_service_path_patterns,assign_probe_to_service,ProbeTarget,TestQLMonitor
+    e: _parse_api_lines,parse_scenario_probes,parse_service_map_probes,_connect_module_api_on_frontend_proxy,_firmware_plugin_probe_without_runtime,is_monitoring_probe,_service_path_patterns,assign_probe_to_service,ProbeTarget,TestQLMonitor
     ProbeTarget: probe(1)  # Single HTTP probe derived from TestQL scenarios or service m
-    TestQLMonitor: __init__(2),_service_map_paths(0),discover_probes_by_service(0),_resolve_base_url_for_service(1),_probeable_url(2),probes_for_service(2),run_probes(2),suggested_endpoints_by_service(0),_resolve_base_url(0),_join_base(2)  # Build and run live probes from TestQL scenarios + WUP config
+    TestQLMonitor: __init__(2),_service_map_paths(0),discover_probes_by_service(0),_resolve_base_url_for_service(1),_probeable_url(2),probes_for_service(2),_sort_probes_for_live(1),run_probes(2),suggested_endpoints_by_service(0),_resolve_base_url(0),_join_base(2)  # Build and run live probes from TestQL scenarios + WUP config
     _parse_api_lines(content;source)
     parse_scenario_probes(scenario_path)
     parse_service_map_probes(map_path)
     _connect_module_api_on_frontend_proxy(probe)
+    _firmware_plugin_probe_without_runtime(probe)
     is_monitoring_probe(probe)
     _service_path_patterns(services)
     assign_probe_to_service(probe;services)
   wup/testql_watcher.py:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file
-    TestQLWatcher: __init__(7),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_to_full_url_for_service(2),_resolve_base_url_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_score_scenario(2),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),_quick_timeout(0),_merge_endpoints(2),_run_scenario_quick(3),_quick_pass_actions(2),_quick_probe_limit(1),_quick_probe_timeout(0),_run_live_http_probes(2),_run_fleet_health_scenario(0),run_quick_test(2),_publish_visual_events(2),run_detail_test(2),process_changed_file_once(1),_run_periodic_probes_once(0),_start_periodic_probe_thread(0),start_watching(1)  # WUP watcher running selective TestQL scenarios for changed s
+    TestQLWatcher: __init__(7),_normalize_fleet_health_entry(0),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_to_full_url_for_service(2),_resolve_base_url_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_score_scenario(2),_select_scenarios_for_service(1),_run_testql(2),_write_track(0),_quick_timeout(0),_merge_endpoints(2),_run_scenario_quick(3),_quick_pass_actions(2),_quick_probe_limit(1),_quick_probe_timeout(0),_run_live_http_probes(2),_summarize_health_scenario_failure(1),_run_fleet_health_scenario(0),run_quick_test(2),_publish_visual_events(2),run_detail_test(2),process_changed_file_once(1),_run_periodic_probes_once(0),_start_periodic_probe_thread(0),start_watching(1)  # WUP watcher running selective TestQL scenarios for changed s
   wup/visual_diff.py:
-    e: _playwright_available,_warn_playwright_missing,_fetch_dom_snapshot,_detect_content_issues,_page_slug,_snapshot_path,_load_snapshot,_save_snapshot,_node_signature,_flatten,_diff_snapshots,_resolve_base_url,VisualDiffer
+    e: _playwright_available,_warn_playwright_missing,_fetch_dom_snapshot,_detect_content_issues,_page_slug,_short_url,_compact_error_message,_sample_list,_looks_like_visual_page,_snapshot_path,_load_snapshot,_save_snapshot,_node_signature,_flatten,_diff_snapshots,_resolve_base_url,VisualDiffer
     VisualDiffer: __init__(2),_pages_for_service(2),run_for_service(2),_check_page(2),_write_diff_event(3),get_recent_diffs(1)  # Triggered by TestQLWatcher after a file change.
     _playwright_available()
     _warn_playwright_missing()
     _fetch_dom_snapshot(url;max_depth;headless;error_selectors)
     _detect_content_issues(snapshot;cfg)
     _page_slug(url)
+    _short_url(url)
+    _compact_error_message(message;max_len)
+    _sample_list(items;limit)
+    _looks_like_visual_page(url)
     _snapshot_path(snapshot_dir;service;url)
     _load_snapshot(path)
     _save_snapshot(path;snapshot)
@@ -617,6 +626,7 @@ class BrowserNotifier:  # Send watcher events to browser-facing service and loca
     def notify(payload)  # CC=3
 class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for changed s
     def __init__(project_root, scenarios_dir, testql_bin, track_dir, browser_service_url, quick_limit, config)  # CC=13 ⚠
+    def _normalize_fleet_health_entry()  # CC=6
     def _load_service_health()  # CC=4
     def _save_service_health()  # CC=1
     def _record_health_transition()  # CC=6
@@ -628,17 +638,18 @@ class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for chang
     def _to_full_url(endpoint)  # CC=5
     def _discover_scenarios()  # CC=2
     def get_service_config(service_name)  # CC=3
-    def _score_scenario(scenario, tokens)  # CC=7
-    def _select_scenarios_for_service(service)  # CC=9
+    def _score_scenario(scenario, tokens)  # CC=8
+    def _select_scenarios_for_service(service)  # CC=12 ⚠
     def _run_testql(args, timeout)  # CC=2
     def _write_track()  # CC=11 ⚠
     def _quick_timeout()  # CC=3
     def _merge_endpoints(service, endpoints)  # CC=3
     def _run_scenario_quick(service, scenario, merged_endpoints)  # CC=6
-    def _quick_pass_actions(service, merged_endpoints)  # CC=4
+    def _quick_pass_actions(service, merged_endpoints)  # CC=11 ⚠
     def _quick_probe_limit(service)  # CC=3
     def _quick_probe_timeout()  # CC=3
     def _run_live_http_probes(service, merged_endpoints)  # CC=6
+    def _summarize_health_scenario_failure(result)  # CC=19 ⚠
     def _run_fleet_health_scenario()  # CC=10 ⚠
     def run_quick_test(service, endpoints)  # CC=9
     def _publish_visual_events(service, visual_results)  # CC=6
@@ -711,31 +722,6 @@ class WupAssistant:  # Interactive configuration assistant.
     def _quick_setup(template)  # CC=4
 ```
 
-### `wup.testql_monitor` (`wup/testql_monitor.py`)
-
-```python
-def _parse_api_lines(content, source)  # CC=3, fan=6
-def parse_scenario_probes(scenario_path)  # CC=2, fan=3
-def parse_service_map_probes(map_path)  # CC=15, fan=12 ⚠
-def _connect_module_api_on_frontend_proxy(probe)  # CC=5, fan=4
-def is_monitoring_probe(probe)  # CC=8, fan=6
-def _service_path_patterns(services)  # CC=6, fan=7
-def assign_probe_to_service(probe, services)  # CC=37, fan=8 ⚠
-class ProbeTarget:  # Single HTTP probe derived from TestQL scenarios or service m
-    def probe(timeout_s)  # CC=5
-class TestQLMonitor:  # Build and run live probes from TestQL scenarios + WUP config
-    def __init__(project_root, config)  # CC=2
-    def _service_map_paths()  # CC=3
-    def discover_probes_by_service()  # CC=22 ⚠
-    def _resolve_base_url_for_service(service)  # CC=8
-    def _probeable_url(path, base)  # CC=4
-    def probes_for_service(service, extra_paths)  # CC=9
-    def run_probes(service, probes)  # CC=5
-    def suggested_endpoints_by_service()  # CC=5
-    def _resolve_base_url()  # CC=4
-    def _join_base(base, path)  # CC=5
-```
-
 ### `wup.visual_diff` (`wup/visual_diff.py`)
 
 ```python
@@ -744,6 +730,10 @@ def _warn_playwright_missing()  # CC=2, fan=1
 def _fetch_dom_snapshot(url, max_depth, headless, error_selectors)  # CC=9, fan=14
 def _detect_content_issues(snapshot, cfg)  # CC=6, fan=5
 def _page_slug(url)  # CC=2, fan=3
+def _short_url(url)  # CC=3, fan=1
+def _compact_error_message(message, max_len)  # CC=3, fan=3
+def _sample_list(items, limit)  # CC=3, fan=2
+def _looks_like_visual_page(url)  # CC=7, fan=4
 def _snapshot_path(snapshot_dir, service, url)  # CC=1, fan=2
 def _load_snapshot(path)  # CC=3, fan=3
 def _save_snapshot(path, snapshot)  # CC=1, fan=3
@@ -754,40 +744,67 @@ def _resolve_base_url(cfg)  # CC=3, fan=2
 class VisualDiffer:  # Triggered by TestQLWatcher after a file change.
     def __init__(project_root, cfg)  # CC=1
     def _pages_for_service(service, endpoints)  # CC=11 ⚠
-    def run_for_service(service, endpoints)  # CC=12 ⚠
-    def _check_page(service, url)  # CC=3
+    def run_for_service(service, endpoints)  # CC=19 ⚠
+    def _check_page(service, url)  # CC=4
     def _write_diff_event(service, url, result)  # CC=1
     def get_recent_diffs(seconds)  # CC=7
 ```
 
+### `wup.testql_monitor` (`wup/testql_monitor.py`)
+
+```python
+def _parse_api_lines(content, source)  # CC=3, fan=6
+def parse_scenario_probes(scenario_path)  # CC=2, fan=3
+def parse_service_map_probes(map_path)  # CC=15, fan=12 ⚠
+def _connect_module_api_on_frontend_proxy(probe)  # CC=5, fan=4
+def _firmware_plugin_probe_without_runtime(probe)  # CC=5, fan=4
+def is_monitoring_probe(probe)  # CC=9, fan=7
+def _service_path_patterns(services)  # CC=6, fan=7
+def assign_probe_to_service(probe, services)  # CC=40, fan=8 ⚠
+class ProbeTarget:  # Single HTTP probe derived from TestQL scenarios or service m
+    def probe(timeout_s)  # CC=5
+class TestQLMonitor:  # Build and run live probes from TestQL scenarios + WUP config
+    def __init__(project_root, config)  # CC=2
+    def _service_map_paths()  # CC=3
+    def discover_probes_by_service()  # CC=22 ⚠
+    def _resolve_base_url_for_service(service)  # CC=8
+    def _probeable_url(path, base)  # CC=4
+    def probes_for_service(service, extra_paths)  # CC=9
+    def _sort_probes_for_live(probes)  # CC=1
+    def run_probes(service, probes)  # CC=5
+    def suggested_endpoints_by_service()  # CC=5
+    def _resolve_base_url()  # CC=4
+    def _join_base(base, path)  # CC=5
+```
+
 ## Call Graph
 
-*70 nodes · 60 edges · 15 modules · CC̄=4.5*
+*74 nodes · 63 edges · 15 modules · CC̄=4.6*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
 | `status` *(in wup.cli)* | 5 | 0 | 121 | **121** |
-| `validate_config` *(in wup.config)* | 8 | 1 | 95 | **96** |
+| `validate_config` *(in wup.config)* | 10 ⚠ | 1 | 103 | **104** |
 | `show_ci_cd_demo` *(in examples.ci_cd_integration)* | 2 | 1 | 69 | **70** |
 | `show_webhook_demo` *(in examples.webhook_notifications)* | 4 | 1 | 68 | **69** |
 | `_run_with_mock_services` *(in examples.testql_demo)* | 6 | 2 | 60 | **62** |
 | `sync_testql` *(in wup.cli)* | 13 ⚠ | 0 | 45 | **45** |
 | `main` *(in scripts.run_probe_smoke)* | 14 ⚠ | 0 | 38 | **38** |
-| `discover_docker_compose_services` *(in wup.monitoring_manifest)* | 20 ⚠ | 1 | 31 | **32** |
+| `run_for_service` *(in wup.visual_diff.VisualDiffer)* | 19 ⚠ | 0 | 34 | **34** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.03s
-# nodes: 70 | edges: 60 | modules: 15
-# CC̄=4.5
+# generated in 0.06s
+# nodes: 74 | edges: 63 | modules: 15
+# CC̄=4.6
 
 HUBS[20]:
   wup.cli.status
     CC=5  in:0  out:121  total:121
   wup.config.validate_config
-    CC=8  in:1  out:95  total:96
+    CC=10  in:1  out:103  total:104
   examples.ci_cd_integration.show_ci_cd_demo
     CC=2  in:1  out:69  total:70
   examples.webhook_notifications.show_webhook_demo
@@ -798,32 +815,32 @@ HUBS[20]:
     CC=13  in:0  out:45  total:45
   scripts.run_probe_smoke.main
     CC=14  in:0  out:38  total:38
+  wup.visual_diff.VisualDiffer.run_for_service
+    CC=19  in:0  out:34  total:34
+  wup.testql_monitor.assign_probe_to_service
+    CC=40  in:4  out:29  total:33
   wup.monitoring_manifest.discover_docker_compose_services
     CC=20  in:1  out:31  total:32
-  wup.testql_monitor.assign_probe_to_service
-    CC=37  in:4  out:27  total:31
   wup.monitoring_manifest.build_monitoring_manifest
     CC=19  in:4  out:24  total:28
-  examples.c2004_monorepo_demo.analyze_monorepo
-    CC=2  in:1  out:26  total:27
   wup.testql_monitor.TestQLMonitor.discover_probes_by_service
     CC=22  in:0  out:27  total:27
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
-  wup.visual_diff.VisualDiffer.run_for_service
-    CC=12  in:0  out:18  total:18
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.visual_diff._diff_snapshots
+    CC=11  in:2  out:15  total:17
   wup.core.WupWatcher.__init__
     CC=7  in:0  out:17  total:17
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.visual_diff._diff_snapshots
-    CC=11  in:2  out:15  total:17
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -842,8 +859,9 @@ MODULES:
     _run_with_mock_services  CC=6  out:60
     simulate_testql_analysis  CC=2  out:18
     simulate_with_mock_data  CC=1  out:12
-  examples.visual_diff_demo  [8 funcs]
+  examples.visual_diff_demo  [9 funcs]
     _make_dom  CC=2  out:1
+    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -868,7 +886,7 @@ MODULES:
     get_default_config  CC=1  out:5
     load_config  CC=5  out:8
     save_config  CC=2  out:12
-    validate_config  CC=8  out:95
+    validate_config  CC=10  out:103
   wup.core  [1 funcs]
     __init__  CC=7  out:17
   wup.monitoring_manifest  [6 funcs]
@@ -878,29 +896,30 @@ MODULES:
     load_monitoring_manifest_from_yaml  CC=9  out:14
     manifest_to_yaml_block  CC=1  out:2
     patch_wup_yaml_monitoring  CC=5  out:11
-  wup.testql_monitor  [8 funcs]
+  wup.testql_monitor  [9 funcs]
     _resolve_base_url  CC=4  out:6
     discover_probes_by_service  CC=22  out:27
     probes_for_service  CC=9  out:11
     _connect_module_api_on_frontend_proxy  CC=5  out:5
+    _firmware_plugin_probe_without_runtime  CC=5  out:4
     _parse_api_lines  CC=3  out:6
-    assign_probe_to_service  CC=37  out:27
-    is_monitoring_probe  CC=8  out:7
+    assign_probe_to_service  CC=40  out:29
+    is_monitoring_probe  CC=9  out:8
     parse_scenario_probes  CC=2  out:3
   wup.testql_watcher  [2 funcs]
-    __init__  CC=13  out:13
+    __init__  CC=13  out:14
     _get_config_endpoints_for_service  CC=10  out:7
-  wup.visual_diff  [15 funcs]
+  wup.visual_diff  [17 funcs]
     __init__  CC=1  out:2
-    _check_page  CC=3  out:8
+    _check_page  CC=4  out:9
+    _pages_for_service  CC=11  out:8
     _write_diff_event  CC=1  out:6
-    run_for_service  CC=12  out:18
+    run_for_service  CC=19  out:34
+    _compact_error_message  CC=3  out:3
     _detect_content_issues  CC=6  out:11
     _diff_snapshots  CC=11  out:15
     _fetch_dom_snapshot  CC=9  out:17
     _flatten  CC=4  out:5
-    _load_snapshot  CC=3  out:3
-    _node_signature  CC=3  out:4
   wup.web_client  [4 funcs]
     __init__  CC=2  out:2
     send_event  CC=5  out:9
@@ -911,39 +930,9 @@ EDGES:
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest.discover_docker_compose_services
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest._map_docker_to_wup_service
   wup.monitoring_manifest.patch_wup_yaml_monitoring → wup.monitoring_manifest.manifest_to_yaml_block
-  wup.config.load_config → wup.config._load_dotenv
-  wup.config.load_config → wup.config.validate_config
-  wup.config.load_config → wup.config.find_config_file
-  wup.config.load_config → wup.config.get_default_config
-  wup.cli.status → wup.config.load_config
-  wup.cli.init → wup.config.get_default_config
-  wup.cli.init → wup.config.save_config
-  wup.cli.sync_testql → wup.config.load_config
-  wup.cli.sync_testql → wup.monitoring_manifest.build_monitoring_manifest
-  wup.testql_monitor.parse_scenario_probes → wup.testql_monitor._parse_api_lines
-  wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._connect_module_api_on_frontend_proxy
-  wup.testql_monitor.TestQLMonitor.discover_probes_by_service → wup.testql_monitor.assign_probe_to_service
-  wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
   wup.core.WupWatcher.__init__ → wup.config.load_config
   wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
   wup.web_client.WebClient.send_event → wup.web_client._normalize
-  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
-  wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service → wup.testql_monitor.assign_probe_to_service
-  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
-  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._warn_playwright_missing
-  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
-  wup.visual_diff._flatten → wup.visual_diff._node_signature
-  wup.visual_diff._diff_snapshots → wup.visual_diff._flatten
-  wup.visual_diff.VisualDiffer.__init__ → wup.testql_monitor.TestQLMonitor._resolve_base_url
-  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._playwright_available
-  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._warn_playwright_missing
-  wup.visual_diff.VisualDiffer._check_page → wup._ast_detector.ASTDetector._snapshot_path
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._load_snapshot
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._diff_snapshots
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._detect_content_issues
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._save_snapshot
-  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._fetch_dom_snapshot
-  wup.visual_diff.VisualDiffer._write_diff_event → wup.visual_diff._page_slug
   examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
   examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
   examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
@@ -958,6 +947,36 @@ EDGES:
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
+  examples.testql_demo.simulate_testql_analysis → examples.testql_demo._build_mock_services
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._build_mock_services
+  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._run_with_mock_services
+  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_github_actions
+  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_gitlab_ci
+  examples.ci_cd_integration.main → examples.ci_cd_integration.show_ci_cd_demo
+  examples.webhook_notifications.main → examples.webhook_notifications.show_webhook_demo
+  scripts.run_probe_smoke.main → wup.config.load_config
+  scripts.run_probe_smoke.main → wup.monitoring_manifest.build_monitoring_manifest
+  scripts.run_probe_smoke.main → wup.monitoring_manifest.load_monitoring_manifest_from_yaml
+  wup.config.load_config → wup.config._load_dotenv
+  wup.config.load_config → wup.config.validate_config
+  wup.config.load_config → wup.config.find_config_file
+  wup.config.load_config → wup.config.get_default_config
+  wup.cli.status → wup.config.load_config
+  wup.cli.init → wup.config.get_default_config
+  wup.cli.init → wup.config.save_config
+  wup.cli.sync_testql → wup.config.load_config
+  wup.cli.sync_testql → wup.monitoring_manifest.build_monitoring_manifest
+  wup.testql_monitor.parse_scenario_probes → wup.testql_monitor._parse_api_lines
+  wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._connect_module_api_on_frontend_proxy
+  wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._firmware_plugin_probe_without_runtime
+  wup.testql_monitor.TestQLMonitor.discover_probes_by_service → wup.testql_monitor.assign_probe_to_service
+  wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
+  wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
+  wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service → wup.testql_monitor.assign_probe_to_service
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._warn_playwright_missing
+  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
+  wup.visual_diff._flatten → wup.visual_diff._node_signature
 ```
 
 ## Test Contracts

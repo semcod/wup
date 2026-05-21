@@ -15,13 +15,13 @@ gracefully and logs a warning.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import os
 import time
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 from rich.console import Console
 
@@ -94,11 +94,11 @@ async def _fetch_dom_snapshot(
     max_depth: int,
     headless: bool,
     error_selectors: List[str],
-) -> Optional[Dict]:
+) -> Tuple[Optional[Dict], Optional[str]]:
     """Return a DOM structure dict for *url* using Playwright."""
     if not _playwright_available():
         _warn_playwright_missing()
-        return None
+        return None, "Playwright not installed"
     try:
         from playwright.async_api import async_playwright
         async with async_playwright() as pw:
@@ -126,10 +126,9 @@ async def _fetch_dom_snapshot(
                     }
             finally:
                 await browser.close()
-        return snapshot
+        return snapshot, None
     except Exception as exc:
-        console.print(f"[yellow]visual_diff: error fetching {url}: {exc}[/yellow]")
-        return None
+        return None, str(exc)
 
 
 def _detect_content_issues(snapshot: Dict, cfg: VisualDiffConfig) -> List[str]:
@@ -156,6 +155,53 @@ def _detect_content_issues(snapshot: Dict, cfg: VisualDiffConfig) -> List[str]:
 def _page_slug(url: str) -> str:
     path = urlparse(url).path.strip("/").replace("/", "_") or "root"
     return path[:80]
+
+
+def _short_url(url: str) -> str:
+    parsed = urlparse(url)
+    path = parsed.path or "/"
+    return f"{path}?{parsed.query}" if parsed.query else path
+
+
+def _compact_error_message(message: str, max_len: int = 180) -> str:
+    compact = " ".join((message or "").split())
+    if len(compact) <= max_len:
+        return compact
+    return compact[: max_len - 3] + "..."
+
+
+def _sample_list(items: List[str], limit: int = 3) -> str:
+    if not items:
+        return ""
+    sample = ", ".join(items[:limit])
+    remaining = len(items) - limit
+    if remaining > 0:
+        sample += f" (+{remaining} more)"
+    return sample
+
+
+def _looks_like_visual_page(url: str) -> bool:
+    parsed = urlparse(url)
+    path = (parsed.path or "").lower()
+    if not path or path in {"/", "/index.html"}:
+        return True
+    if path.startswith("/api/"):
+        return False
+    if any(
+        token in path
+        for token in (
+            "/health",
+            "/healthz",
+            "/ready",
+            "/live",
+            "/status",
+            "/openapi",
+            "/execution/logs",
+            "/execution/status",
+        )
+    ):
+        return False
+    return True
 
 
 def _snapshot_path(snapshot_dir: Path, service: str, url: str) -> Path:
@@ -295,9 +341,12 @@ class VisualDiffer:
         result = []
         for p in pages:
             if p.startswith("http://") or p.startswith("https://"):
-                result.append(p)
+                if _looks_like_visual_page(p):
+                    result.append(p)
             else:
-                result.append(f"{base}{p}")
+                url = f"{base}{p}"
+                if _looks_like_visual_page(url):
+                    result.append(url)
         return result
 
     async def run_for_service(
@@ -322,12 +371,16 @@ class VisualDiffer:
         if len(pages) > max_pages:
             pages = pages[:max_pages]
         results = []
+        ok_urls: List[str] = []
+        new_urls: List[str] = []
+        error_results: List[Tuple[str, str]] = []
         for url in pages:
             result = await self._check_page(service, url)
             results.append(result)
-            if result["diff"]["status"] in {"changed", "issue"}:
+            status = result["diff"]["status"]
+            if status in {"changed", "issue"}:
                 self._write_diff_event(service, url, result)
-                if result["diff"]["status"] == "issue":
+                if status == "issue":
                     console.print(
                         f"[bold red]🚨 Page issue: {service} {url}[/bold red]  "
                         f"{'; '.join(result['diff'].get('issues', []))}"
@@ -339,13 +392,38 @@ class VisualDiffer:
                         f"-{result['diff']['counts']['removed']} "
                         f"~{result['diff']['counts']['changed_attrs']}"
                     )
-            elif result["diff"]["status"] == "new":
-                console.print(f"[dim]📷 Baseline snapshot: {url}[/dim]")
-            elif result["diff"]["status"] == "error":
+            elif status == "new":
+                new_urls.append(_short_url(url))
+            elif status == "error":
                 message = result["diff"].get("message", "scan failed")
-                console.print(f"[yellow]⚠ Visual diff skipped: {url} ({message})[/yellow]")
-            elif result["diff"]["status"] == "ok":
-                console.print(f"[dim green]✓ No DOM change: {url}[/dim green]")
+                error_results.append((_short_url(url), message))
+            elif status == "ok":
+                ok_urls.append(_short_url(url))
+
+        if new_urls:
+            console.print(
+                f"[dim]📷 Baseline snapshots for {service}: {len(new_urls)} page(s)"
+                f" — {_sample_list(new_urls)}[/dim]"
+            )
+        if ok_urls:
+            console.print(
+                f"[dim green]✓ No DOM change for {service}: {len(ok_urls)} page(s)"
+                f" — {_sample_list(ok_urls)}[/dim green]"
+            )
+        if error_results:
+            grouped_messages = Counter(
+                _compact_error_message(message or "scan failed")
+                for _, message in error_results
+            )
+            top_messages = [
+                f"{count}x {message}" for message, count in grouped_messages.most_common(2)
+            ]
+            message_summary = "; ".join(top_messages)
+            failed_urls = [url for url, _ in error_results]
+            console.print(
+                f"[yellow]⚠ Visual diff skipped for {service}: {len(error_results)} page(s)"
+                f" failed to fetch — {message_summary}; sample: {_sample_list(failed_urls)}[/yellow]"
+            )
 
         return results
 
@@ -353,7 +431,7 @@ class VisualDiffer:
         snap_path = _snapshot_path(self.snapshot_dir, service, url)
         old_snapshot = _load_snapshot(snap_path)
 
-        new_snapshot = await _fetch_dom_snapshot(
+        new_snapshot, fetch_error = await _fetch_dom_snapshot(
             url,
             self.cfg.max_depth,
             self.cfg.headless,
@@ -361,7 +439,13 @@ class VisualDiffer:
         )
 
         if new_snapshot is None:
-            return {"url": url, "diff": {"status": "error", "message": "Failed to fetch page"}}
+            return {
+                "url": url,
+                "diff": {
+                    "status": "error",
+                    "message": _compact_error_message(fetch_error or "Failed to fetch page"),
+                },
+            }
 
         diff = _diff_snapshots(
             old_snapshot,

@@ -222,13 +222,12 @@ class TestQLWatcher(WupWatcher):
                 merged.append(endpoint_url)
 
         for endpoint in explicit:
-            probe = ProbeTarget(
-                url=self._to_full_url_for_service(service, endpoint) or endpoint,
-                source="wup.yaml:explicit_endpoints",
-            )
-            if assign_probe_to_service(probe, self.config.services) == service:
-                if probe.url not in merged:
-                    merged.append(probe.url)
+            raw_probe = ProbeTarget(url=endpoint, source="wup.yaml:explicit_endpoints")
+            if assign_probe_to_service(raw_probe, self.config.services) != service:
+                continue
+            endpoint_url = self._to_full_url_for_service(service, endpoint)
+            if endpoint_url and endpoint_url not in merged:
+                merged.append(endpoint_url)
         return merged
 
     def _to_full_url_for_service(self, service: str, endpoint: str) -> str:
@@ -442,7 +441,24 @@ class TestQLWatcher(WupWatcher):
             await self.web_client.send_pass(service=service, stage="quick")
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
         if self.visual_differ and self.visual_differ.cfg.enabled:
-            visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
+            visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
+            visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
+            visual_issues = [
+                item for item in visual_results
+                if item.get("diff", {}).get("status") == "issue"
+            ]
+            if visual_issues:
+                issue_text = "; ".join(
+                    ", ".join(item.get("diff", {}).get("issues", []) or ["visual page issue"])
+                    for item in visual_issues
+                )
+                self._record_health_transition(
+                    service=service,
+                    status="down",
+                    stage="visual",
+                    message=issue_text or "visual page issue",
+                    track_file="",
+                )
             await self._publish_visual_events(service, visual_results)
 
     def _quick_probe_limit(self, service: str) -> int:

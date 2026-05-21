@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 
 import yaml
 
-from .models.config import ServiceConfig, TestQLConfig, WupConfig
+from .models.config import ServiceConfig, WupConfig
 from .testql_discovery import TestQLEndpointDiscovery
 
 _API_LINE = re.compile(
@@ -209,6 +209,10 @@ def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig
     if best:
         return best
 
+    if path_lower.startswith("/connect-"):
+        for svc in services:
+            if svc.name.lower() == "frontend":
+                return svc.name
     if path_lower.startswith("/firmware"):
         for svc in services:
             if "firmware" in svc.name.lower():

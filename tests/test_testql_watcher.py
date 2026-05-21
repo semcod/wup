@@ -9,6 +9,7 @@ from wup.testql_watcher import TestQLWatcher
 from wup.models.config import (
     ProjectConfig,
     ServiceConfig,
+    TestStrategyConfig,
     TestQLConfig,
     VisualDiffConfig,
     WatchConfig,
@@ -332,3 +333,80 @@ def test_visual_differ_initialized_when_enabled():
         assert isinstance(watcher.visual_differ, VisualDiffer)
         assert watcher.visual_differ.cfg.enabled is True
         assert watcher.visual_differ.base_url == "http://localhost:9000"
+
+
+def test_get_config_endpoints_for_service_keeps_connect_pages_on_frontend():
+    """Frontend page routes from explicit_endpoints must not be rebound to backend/api_base_url."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config = WupConfig(
+            project=ProjectConfig(name="c2004"),
+            watch=WatchConfig(),
+            services=[
+                ServiceConfig(name="frontend", type="web", paths=["frontend/**"]),
+                ServiceConfig(name="backend", type="web", paths=["backend/**"]),
+            ],
+            test_strategy=TestStrategyConfig(),
+            testql=TestQLConfig(
+                base_url="http://localhost:8100",
+                api_base_url="http://localhost:8101",
+                explicit_endpoints=["/connect-config-sitemap", "/connect-data"],
+            ),
+            visual_diff=VisualDiffConfig(enabled=True),
+        )
+
+        watcher = TestQLWatcher(tmpdir, config=config)
+
+        frontend_endpoints = watcher._get_config_endpoints_for_service("frontend")
+        backend_endpoints = watcher._get_config_endpoints_for_service("backend")
+
+        assert "http://localhost:8100/connect-config-sitemap" in frontend_endpoints
+        assert "http://localhost:8100/connect-data" in frontend_endpoints
+        assert "http://localhost:8101/connect-config-sitemap" not in backend_endpoints
+        assert "http://localhost:8101/connect-data" not in backend_endpoints
+
+
+def test_quick_pass_actions_prefer_config_endpoints_for_visual_diff():
+    """Visual diff should prefer config endpoints over merged mapper endpoints."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config = WupConfig(
+            project=ProjectConfig(name="c2004"),
+            watch=WatchConfig(),
+            services=[
+                ServiceConfig(name="frontend", type="web", paths=["frontend/**"]),
+                ServiceConfig(name="backend", type="web", paths=["backend/**"]),
+            ],
+            test_strategy=TestStrategyConfig(),
+            testql=TestQLConfig(
+                base_url="http://localhost:8100",
+                api_base_url="http://localhost:8101",
+                endpoints_by_service={"backend": ["http://localhost:8101/api/v3/health"]},
+                explicit_endpoints=["/connect-config-sitemap", "/connect-data"],
+            ),
+            visual_diff=VisualDiffConfig(enabled=True),
+        )
+
+        watcher = TestQLWatcher(tmpdir, config=config)
+
+        class RecordingDiffer:
+            def __init__(self):
+                self.cfg = VisualDiffConfig(enabled=True)
+                self.calls = []
+
+            async def run_for_service(self, service, endpoints):
+                self.calls.append((service, list(endpoints)))
+                return []
+
+        differ = RecordingDiffer()
+        watcher.visual_differ = differ
+
+        asyncio.run(
+            watcher._quick_pass_actions(
+                "backend",
+                [
+                    "http://localhost:8101/connect-config-sitemap",
+                    "http://localhost:8101/connect-data",
+                ],
+            )
+        )
+
+        assert differ.calls == [("backend", ["http://localhost:8101/api/v3/health"])]

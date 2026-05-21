@@ -193,6 +193,8 @@ def validate_config(raw: dict) -> WupConfig:
     env_visual_enabled = os.environ.get("WUP_VISUAL_DIFF_ENABLED")
     env_visual_delay = os.environ.get("WUP_VISUAL_DIFF_DELAY_SECONDS")
     env_visual_depth = os.environ.get("WUP_VISUAL_DIFF_MAX_DEPTH")
+    env_visual_max_pages = os.environ.get("WUP_VISUAL_DIFF_MAX_PAGES")
+    env_visual_pages_from_endpoints = os.environ.get("WUP_VISUAL_DIFF_PAGES_FROM_ENDPOINTS")
 
     if env_visual_enabled is None:
         visual_enabled = vd_raw.get("enabled", False)
@@ -209,6 +211,18 @@ def validate_config(raw: dict) -> WupConfig:
     else:
         visual_depth = int(env_visual_depth)
 
+    if env_visual_max_pages is None:
+        visual_max_pages = int(vd_raw.get("max_pages", 5))
+    else:
+        visual_max_pages = int(env_visual_max_pages)
+
+    if env_visual_pages_from_endpoints is None:
+        visual_pages_from_endpoints = bool(vd_raw.get("pages_from_endpoints", True))
+    else:
+        visual_pages_from_endpoints = (
+            env_visual_pages_from_endpoints.strip().lower() in {"1", "true", "yes", "on"}
+        )
+
     visual_diff = VisualDiffConfig(
         enabled=visual_enabled,
         base_url=vd_raw.get("base_url", ""),
@@ -218,8 +232,8 @@ def validate_config(raw: dict) -> WupConfig:
         snapshot_dir=vd_raw.get("snapshot_dir", ".wup/visual-snapshots"),
         diff_dir=vd_raw.get("diff_dir", ".wup/visual-diffs"),
         pages=vd_raw.get("pages", []),
-        pages_from_endpoints=vd_raw.get("pages_from_endpoints", False),
-        max_pages=int(vd_raw.get("max_pages", 5)),
+        pages_from_endpoints=visual_pages_from_endpoints,
+        max_pages=visual_max_pages,
         threshold_added=int(vd_raw.get("threshold_added", 3)),
         threshold_removed=int(vd_raw.get("threshold_removed", 3)),
         threshold_changed=int(vd_raw.get("threshold_changed", 5)),
@@ -294,24 +308,24 @@ def save_config(config: WupConfig, output_path: Path):
 
     # Build metadata header
     header_lines = [
-        f"# WUP (What's Up) Configuration",
+        "# WUP (What's Up) Configuration",
         f"# Version: {__version__}",
         f"# Generated: {__import__('datetime').datetime.now().isoformat()}",
-        f"#",
-        f"# Documentation:",
-        f"#   PyPI: https://pypi.org/project/wup/",
-        f"#   GitHub: https://github.com/semcod/wup",
-        f"#   Docs: https://github.com/semcod/wup/blob/main/README.md",
-        f"#",
-        f"# Dependencies:",
+        "#",
+        "# Documentation:",
+        "#   PyPI: https://pypi.org/project/wup/",
+        "#   GitHub: https://github.com/semcod/wup",
+        "#   Docs: https://github.com/semcod/wup/blob/main/README.md",
+        "#",
+        "# Dependencies:",
         f"#   wup=={__version__}",
-        f"#   wupbro (optional dashboard): pip install wupbro",
-        f"#",
-        f"# Quick Start:",
-        f"#   1. wup watch .                    # TestQL + live probes every 60s",
-        f"#   2. wup watch . --dashboard        # With live dashboard",
-        f"#   3. wup map-deps .                 # Build dependency map",
-        f"#",
+        "#   wupbro (optional dashboard): pip install wupbro",
+        "#",
+        "# Quick Start:",
+        "#   1. wup watch .                    # TestQL + live probes every 60s",
+        "#   2. wup watch . --dashboard        # With live dashboard",
+        "#   3. wup map-deps .                 # Build dependency map",
+        "#",
         ""
     ]
 

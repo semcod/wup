@@ -21,7 +21,13 @@ from wup.models.config import (
     VisualDiffConfig,
 )
 from wup.testql_watcher import TestQLWatcher
-from wup.visual_diff import VisualDiffer, _diff_snapshots, _page_slug, _resolve_base_url
+from wup.visual_diff import (
+    VisualDiffer,
+    _diff_snapshots,
+    _looks_like_visual_page,
+    _page_slug,
+    _resolve_base_url,
+)
 
 
 class TestDependencyMapper:
@@ -994,9 +1000,29 @@ class TestVisualDiffer:
                 pages_from_endpoints=True,
             )
             differ = VisualDiffer(tmpdir, cfg)
-            pages = differ._pages_for_service("users", ["/api/users", "/api/users/1"])
-            assert "http://localhost:8080/api/users" in pages
-            assert "http://localhost:8080/api/users/1" in pages
+            pages = differ._pages_for_service("users", ["/connect-users", "/connect-users/1"])
+            assert "http://localhost:8080/connect-users" in pages
+            assert "http://localhost:8080/connect-users/1" in pages
+
+    def test_looks_like_visual_page_skips_api_health_routes(self):
+        assert _looks_like_visual_page("http://localhost:8101/api/v3/health") is False
+        assert _looks_like_visual_page("http://localhost:8100/firmware/api/v1/execution/status") is False
+        assert _looks_like_visual_page("http://localhost:8100/connect-config") is True
+
+    def test_pages_for_service_from_endpoints_skips_non_html_probes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                base_url="http://localhost:8080",
+                pages_from_endpoints=True,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+            pages = differ._pages_for_service(
+                "backend",
+                ["/api/v3/health", "/connect-config", "http://localhost:8080/connect-data"],
+            )
+            assert "http://localhost:8080/api/v3/health" not in pages
+            assert "http://localhost:8080/connect-config" in pages
+            assert "http://localhost:8080/connect-data" in pages
 
     def test_pages_for_service_fallback(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1012,12 +1038,12 @@ class TestVisualDiffer:
         with tempfile.TemporaryDirectory() as tmpdir:
             cfg = VisualDiffConfig(
                 base_url="http://localhost:8080",
-                pages=["https://example.com/health"],
+                pages=["https://example.com/connect-dashboard"],
                 pages_from_endpoints=False,
             )
             differ = VisualDiffer(tmpdir, cfg)
             pages = differ._pages_for_service("svc", [])
-            assert pages == ["https://example.com/health"]
+            assert pages == ["https://example.com/connect-dashboard"]
 
     def test_diff_snapshots_baseline(self):
         new = {"tag": "HTML", "children": [{"tag": "BODY"}]}
@@ -1054,6 +1080,45 @@ class TestVisualDiffer:
             differ = VisualDiffer(tmpdir, cfg)
             results = asyncio.run(differ.run_for_service("svc", ["/x"]))
             assert results == []
+
+    def test_run_for_service_summarizes_fetch_errors(self, monkeypatch):
+        """Fetch failures should be reported once per service, not once per page."""
+        import asyncio
+        from wup import visual_diff as visual_diff_module
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                enabled=True,
+                base_url="http://localhost:8100",
+                pages_from_endpoints=True,
+                delay_seconds=0,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+
+            async def fake_check_page(service, url):
+                return {
+                    "url": url,
+                    "diff": {
+                        "status": "error",
+                        "message": "BrowserType.launch: Executable doesn't exist at /tmp/chrome",
+                    },
+                }
+
+            printed = []
+
+            monkeypatch.setattr(visual_diff_module, "_playwright_available", lambda: True)
+            monkeypatch.setattr(differ, "_check_page", fake_check_page)
+            monkeypatch.setattr(visual_diff_module.console, "print", lambda message: printed.append(str(message)))
+
+            results = asyncio.run(
+                differ.run_for_service("frontend", ["/a", "/b", "/c", "/d"])
+            )
+
+            assert len(results) == 4
+            assert len(printed) == 1
+            assert "Visual diff skipped for frontend: 4 page(s) failed to fetch" in printed[0]
+            assert "/a, /b, /c (+1 more)" in printed[0]
+            assert "4x BrowserType.launch: Executable doesn't exist at /tmp/chrome" in printed[0]
 
     def test_get_recent_diffs_empty(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1315,7 +1380,28 @@ visual_diff:
             assert vd.base_url == ""
             assert vd.max_depth == 10
             assert vd.pages == []
+            assert vd.pages_from_endpoints is True
             assert vd.headless is True
+
+    def test_load_config_visual_diff_env_overrides_page_discovery(self, monkeypatch):
+        """Env can widen visual page discovery for large frontend apps."""
+        monkeypatch.setenv("WUP_VISUAL_DIFF_MAX_PAGES", "200")
+        monkeypatch.setenv("WUP_VISUAL_DIFF_PAGES_FROM_ENDPOINTS", "true")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(
+                "project:\n"
+                "  name: x\n"
+                "visual_diff:\n"
+                "  enabled: true\n"
+                "  pages_from_endpoints: false\n"
+                "  max_pages: 5\n",
+                encoding="utf-8",
+            )
+            config = load_config(Path(tmpdir), config_path)
+            vd = config.visual_diff
+            assert vd.pages_from_endpoints is True
+            assert vd.max_pages == 200
 
     def test_load_dotenv_sets_env_var(self):
         """_load_dotenv should load .wup.env into os.environ."""

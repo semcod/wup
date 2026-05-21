@@ -1,19 +1,22 @@
-# code2llm | 56f 8978L | python:37,yaml:8,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-16
-# generated in 0.01s
-# CC̄=4.5 | critical:5/276 | dups:0 | cycles:2
+# code2llm | 56f 9216L | python:37,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
+# generated in 0.02s
+# CC̄=4.6 | critical:8/284 | dups:0 | cycles:2
 
-HEALTH[5]:
+HEALTH[8]:
   🟡 CC    discover_docker_compose_services CC=20 (limit:15)
   🟡 CC    build_monitoring_manifest CC=19 (limit:15)
+  🟡 CC    watch CC=15 (limit:15)
   🟡 CC    parse_service_map_probes CC=15 (limit:15)
-  🟡 CC    assign_probe_to_service CC=37 (limit:15)
+  🟡 CC    assign_probe_to_service CC=40 (limit:15)
   🟡 CC    discover_probes_by_service CC=22 (limit:15)
+  🟡 CC    _summarize_health_scenario_failure CC=19 (limit:15)
+  🟡 CC    run_for_service CC=19 (limit:15)
 
 REFACTOR[2]:
-  1. split 5 high-CC methods  (CC>15)
+  1. split 8 high-CC methods  (CC>15)
   2. break 2 circular dependencies
 
-PIPELINES[204]:
+PIPELINES[208]:
   [1] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
   [2] Src [__init__]: __init__
@@ -29,20 +32,20 @@ LAYERS:
   scripts/                        CC̄=14.0   ←in:0  →out:3
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
-  wup/                            CC̄=5.1    ←in:9  →out:0
+  wup/                            CC̄=5.3    ←in:9  →out:1
+  │ !! testql_watcher             765L  2C   35m  CC=19     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! testql_watcher             679L  2C   33m  CC=13     ←0
+  │ !! cli                        620L  0C    8m  CC=15     ←0
   │ !! core                       619L  2C   25m  CC=14     ←0
-  │ !! cli                        609L  0C    8m  CC=13     ←0
-  │ config                     417L  0C    6m  CC=10     ←6
-  │ visual_diff                413L  1C   18m  CC=12     ←1
-  │ !! testql_monitor             392L  2C   18m  CC=37     ←2
+  │ !! visual_diff                495L  1C   22m  CC=19     ←1
+  │ config                     433L  0C    6m  CC=10     ←6
+  │ !! testql_monitor             426L  2C   20m  CC=40     ←2
   │ !! monitoring_manifest        306L  1C   10m  CC=20     ←2
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
   │ web_client                 185L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ config                     144L  11C    0m  CC=0.0    ←0
+  │ config                     147L  11C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
@@ -50,10 +53,10 @@ LAYERS:
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.4    ←in:0  →out:6
+  examples/                       CC̄=2.4    ←in:1  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
   │ ci_cd_integration          339L  0C    4m  CC=3      ←0
-  │ visual_diff_demo           305L  0C    9m  CC=6      ←0
+  │ visual_diff_demo           305L  0C    9m  CC=6      ←1
   │ testql_integration         286L  1C    6m  CC=6      ←0
   │ c2004_monorepo_demo        258L  0C   10m  CC=7      ←0
   │ testql_demo                191L  0C    4m  CC=6      ←0
@@ -84,7 +87,7 @@ LAYERS:
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
   │ tree.txt                   116L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              70L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              76L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │
@@ -97,7 +100,7 @@ LAYERS:
 
 COUPLING:
                  wup  examples   scripts
-       wup        ──        ←6        ←3  hub
+       wup        ──         1        ←3  hub
   examples         6        ──          
    scripts         3                  ──
   CYCLES: 2

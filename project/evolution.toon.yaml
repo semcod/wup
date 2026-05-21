@@ -1,50 +1,58 @@
-# code2llm/evolution | 204 func | 15f | 2026-05-16
+# code2llm/evolution | 212 func | 15f | 2026-05-21
 # generated in 0.00s
 
-NEXT[8] (ranked by impact):
-  [1] !! SPLIT           wup/assistant.py
+NEXT[10] (ranked by impact):
+  [1] !! SPLIT           wup/testql_watcher.py
+      WHY: 765L, 2 classes, max CC=19
+      EFFORT: ~4h  IMPACT: 14535
+
+  [2] !! SPLIT           wup/assistant.py
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [2] !! SPLIT           wup/testql_watcher.py
-      WHY: 679L, 2 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 8827
+  [3] !! SPLIT           wup/cli.py
+      WHY: 620L, 0 classes, max CC=15
+      EFFORT: ~4h  IMPACT: 9300
 
-  [3] !! SPLIT           wup/core.py
-      WHY: 619L, 2 classes, max CC=14
-      EFFORT: ~4h  IMPACT: 8666
-
-  [4] !! SPLIT-FUNC      assign_probe_to_service  CC=37  fan=13
-      WHY: CC=37 exceeds 15
-      EFFORT: ~1h  IMPACT: 481
+  [4] !! SPLIT-FUNC      assign_probe_to_service  CC=40  fan=13
+      WHY: CC=40 exceeds 15
+      EFFORT: ~1h  IMPACT: 520
 
   [5] !  SPLIT-FUNC      build_monitoring_manifest  CC=19  fan=21
       WHY: CC=19 exceeds 15
       EFFORT: ~1h  IMPACT: 399
 
-  [6] !  SPLIT-FUNC      discover_docker_compose_services  CC=20  fan=17
+  [6] !  SPLIT-FUNC      VisualDiffer.run_for_service  CC=19  fan=21
+      WHY: CC=19 exceeds 15
+      EFFORT: ~1h  IMPACT: 399
+
+  [7] !  SPLIT-FUNC      discover_docker_compose_services  CC=20  fan=17
       WHY: CC=20 exceeds 15
       EFFORT: ~1h  IMPACT: 340
 
-  [7] !  SPLIT-FUNC      TestQLMonitor.discover_probes_by_service  CC=22  fan=14
+  [8] !  SPLIT-FUNC      watch  CC=15  fan=21
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 315
+
+  [9] !  SPLIT-FUNC      TestQLMonitor.discover_probes_by_service  CC=22  fan=14
       WHY: CC=22 exceeds 15
       EFFORT: ~1h  IMPACT: 308
 
-  [8] !  SPLIT-FUNC      parse_service_map_probes  CC=15  fan=14
+  [10] !  SPLIT-FUNC      parse_service_map_probes  CC=15  fan=14
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 210
 
 
 RISKS[3]:
+  ⚠ Splitting wup/testql_watcher.py may break 35 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
-  ⚠ Splitting wup/testql_watcher.py may break 33 import paths
-  ⚠ Splitting wup/core.py may break 25 import paths
+  ⚠ Splitting wup/cli.py may break 8 import paths
 
 METRICS-TARGET:
-  CC̄:          5.1 → ≤3.6
-  max-CC:      37 → ≤18
+  CC̄:          5.3 → ≤3.7
+  max-CC:      40 → ≤20
   god-modules: 5 → 0
-  high-CC(≥15): 5 → ≤2
+  high-CC(≥15): 8 → ≤4
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -72,4 +80,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.1 → now CC̄=5.1
+  prev CC̄=5.1 → now CC̄=5.3
