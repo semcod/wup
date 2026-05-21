@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.36] - 2026-05-21
+
 ### Fixed
 - **inotify watch limit fallback**: `wup watch` no longer crashes with `OSError: [Errno 28] inotify watch limit reached`. When the system's inotify limits are exceeded, WUP automatically falls back to `watchdog.observers.polling.PollingObserver` with a clear console warning.
 
