@@ -178,6 +178,17 @@ class TestQLWatcher(WupWatcher):
         with self.health_events_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(event) + "\n")
 
+        if status in {"down", "degraded"}:
+            self.planfile_reporter.report_failure(
+                service=service,
+                status=status,
+                stage=stage,
+                message=message,
+                track_file=track_file or "",
+            )
+        elif status == "up":
+            self.planfile_reporter.clear_service_stage(service=service, stage=stage)
+
         self.browser_notifier.notify(
             {
                 "type": "wup_service_health_change",

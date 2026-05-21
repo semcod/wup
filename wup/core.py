@@ -24,6 +24,7 @@ from watchdog.observers.polling import PollingObserver
 from .config import load_config
 from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig, ServiceConfig
+from .planfile_reporter import PlanfileReporter
 
 
 class WupWatcher:
@@ -91,6 +92,11 @@ class WupWatcher:
         self.test_queue: deque = deque()
         self.last_test_times: Dict[str, float] = defaultdict(float)
         self.console = Console()
+        self.planfile_reporter = PlanfileReporter(
+            project_root=self.project_root,
+            config=self.config.planfile,
+            console=self.console,
+        )
         
         # Load or build dependency map
         if Path(deps_file).exists():
@@ -334,6 +340,12 @@ class WupWatcher:
             self.console.print(f"[green]✓ Quick test passed for {service}[/green]")
         else:
             self.console.print(f"[red]✗ Quick test failed for {service}[/red]")
+            self.planfile_reporter.report_failure(
+                service=service,
+                status="down",
+                stage="quick",
+                message="Quick HTTP smoke test failed",
+            )
 
         return passed
     
@@ -389,6 +401,12 @@ class WupWatcher:
             except Exception:
                 pass
             self.console.print(f"[red]✗ Detail test found {results['failed']} regression(s)[/red]")
+            self.planfile_reporter.report_failure(
+                service=service,
+                status="down",
+                stage="detail",
+                message=json.dumps(results, ensure_ascii=False),
+            )
         else:
             self.console.print(f"[green]✓ Detail test passed for {service}[/green]")
 

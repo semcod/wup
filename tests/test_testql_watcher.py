@@ -4,9 +4,11 @@ import os
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
+from unittest.mock import Mock
 
 from wup.testql_watcher import TestQLWatcher
 from wup.models.config import (
+    PlanfileConfig,
     ProjectConfig,
     ServiceConfig,
     TestStrategyConfig,
@@ -15,6 +17,7 @@ from wup.models.config import (
     WatchConfig,
     WupConfig,
 )
+from wup.planfile_reporter import PlanfileReporter
 
 
 def test_process_changed_file_creates_track_on_failure():
@@ -213,6 +216,115 @@ def test_service_health_transitions_are_persisted():
         statuses = [event.get("status") for event in events if event.get("service") == "connect-config"]
         assert "down" in statuses
         assert "up" in statuses
+
+
+def test_planfile_reporter_creates_deduped_ticket(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        calls = []
+
+        def fake_run(cmd, **kwargs):
+            calls.append(cmd)
+            return CompletedProcess(cmd, returncode=0, stdout="Created PLF-999\n", stderr="")
+
+        monkeypatch.setattr("wup.planfile_reporter.subprocess.run", fake_run)
+        reporter = PlanfileReporter(
+            root,
+            PlanfileConfig(enabled=True, labels=["koru", "llm-ready", "wup"]),
+        )
+
+        first = reporter.report_failure(
+            service="frontend",
+            status="down",
+            stage="quick",
+            message="broken page",
+            track_file=".wup/tracks/one.json",
+        )
+        second = reporter.report_failure(
+            service="frontend",
+            status="down",
+            stage="quick",
+            message="broken page",
+            track_file=".wup/tracks/one.json",
+        )
+
+        assert first == "PLF-999"
+        assert second == "PLF-999"
+        assert len(calls) == 1
+        assert calls[0][:3] == ["planfile", "ticket", "create"]
+        assert "--label" in calls[0]
+        assert "llm-ready" in calls[0]
+        assert "--files" in calls[0]
+        assert ".wup/tracks/one.json" in calls[0]
+
+
+def test_planfile_reporter_clears_dedupe_after_recovery(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        calls = []
+
+        def fake_run(cmd, **kwargs):
+            calls.append(cmd)
+            ticket_id = f"PLF-{999 + len(calls)}"
+            return CompletedProcess(cmd, returncode=0, stdout=f"Created {ticket_id}\n", stderr="")
+
+        monkeypatch.setattr("wup.planfile_reporter.subprocess.run", fake_run)
+        reporter = PlanfileReporter(root, PlanfileConfig(enabled=True))
+
+        first = reporter.report_failure(
+            service="frontend",
+            status="down",
+            stage="quick",
+            message="broken page",
+        )
+        reporter.clear_service_stage(service="frontend", stage="quick")
+        second = reporter.report_failure(
+            service="frontend",
+            status="down",
+            stage="quick",
+            message="broken page",
+        )
+
+        assert first == "PLF-1000"
+        assert second == "PLF-1001"
+        assert len(calls) == 2
+
+
+def test_health_transition_creates_planfile_ticket(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="frontend", paths=["frontend/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(),
+            planfile=PlanfileConfig(enabled=True),
+        )
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+        report_failure = Mock(return_value="PLF-100")
+        watcher.planfile_reporter.report_failure = report_failure
+
+        watcher._record_health_transition(
+            service="frontend",
+            status="down",
+            stage="visual",
+            message="error_container_detected:.error-container",
+            track_file=".wup/visual-diffs/frontend.jsonl",
+        )
+
+        report_failure.assert_called_once_with(
+            service="frontend",
+            status="down",
+            stage="visual",
+            message="error_container_detected:.error-container",
+            track_file=".wup/visual-diffs/frontend.jsonl",
+        )
 
 
 def test_normalize_fleet_health_entry_down_to_degraded():

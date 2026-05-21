@@ -113,6 +113,23 @@ class WebConfig:
 
 
 @dataclass
+class PlanfileConfig:
+    """Configuration for creating planfile tickets from WUP failures."""
+    enabled: bool = False
+    command: str = "planfile"
+    sprint: str = "current"
+    priority: str = "normal"
+    source: str = "wup"
+    dedupe_file: str = ".wup/planfile-tickets.json"
+    labels: List[str] = field(default_factory=lambda: [
+        "koru",
+        "llm-ready",
+        "wup",
+        "auto-diag",
+    ])
+
+
+@dataclass
 class AnomalyDetectionConfig:
     """Configuration for fast anomaly detection without Playwright."""
     enabled: bool = True
@@ -144,4 +161,5 @@ class WupConfig:
     testql: TestQLConfig = field(default_factory=TestQLConfig)
     visual_diff: VisualDiffConfig = field(default_factory=VisualDiffConfig)
     web: WebConfig = field(default_factory=WebConfig)
+    planfile: PlanfileConfig = field(default_factory=PlanfileConfig)
     anomaly_detection: AnomalyDetectionConfig = field(default_factory=AnomalyDetectionConfig)

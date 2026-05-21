@@ -20,6 +20,7 @@ from wup.models.config import (
     NotifyConfig,
     ServiceTestConfig,
     ProjectConfig,
+    PlanfileConfig,
     VisualDiffConfig,
 )
 from wup.testql_watcher import TestQLWatcher
@@ -1448,6 +1449,49 @@ visual_diff:
             vd = config.visual_diff
             assert vd.pages_from_endpoints is True
             assert vd.max_pages == 200
+
+    def test_save_and_load_planfile_config(self):
+        """Test that planfile section is correctly saved and reloaded."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="pf-test"),
+                planfile=PlanfileConfig(
+                    enabled=True,
+                    command=".venv/bin/planfile",
+                    sprint="runtime",
+                    priority="high",
+                    source="wup-watch",
+                    dedupe_file=".wup/pf.json",
+                    labels=["koru", "llm-ready", "wup", "visual"],
+                ),
+            )
+            config_path = Path(tmpdir) / "wup.yaml"
+            save_config(config, config_path)
+
+            loaded = load_config(Path(tmpdir), config_path)
+            pf = loaded.planfile
+            assert pf.enabled is True
+            assert pf.command == ".venv/bin/planfile"
+            assert pf.sprint == "runtime"
+            assert pf.priority == "high"
+            assert pf.source == "wup-watch"
+            assert pf.dedupe_file == ".wup/pf.json"
+            assert pf.labels == ["koru", "llm-ready", "wup", "visual"]
+
+    def test_load_config_planfile_env_override(self, monkeypatch):
+        """Env can enable planfile ticket creation without editing wup.yaml."""
+        monkeypatch.setenv("WUP_PLANFILE_ENABLED", "true")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(
+                "project:\n"
+                "  name: x\n"
+                "planfile:\n"
+                "  enabled: false\n",
+                encoding="utf-8",
+            )
+            config = load_config(Path(tmpdir), config_path)
+            assert config.planfile.enabled is True
 
     def test_load_dotenv_sets_env_var(self):
         """_load_dotenv should load .wup.env into os.environ."""

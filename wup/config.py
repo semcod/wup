@@ -18,6 +18,7 @@ from .models.config import (
     TestQLConfig,
     ProjectConfig,
     NotifyConfig,
+    PlanfileConfig,
     ServiceTestConfig,
     VisualDiffConfig,
     WebConfig,
@@ -258,6 +259,26 @@ def validate_config(raw: dict) -> WupConfig:
         api_key=web_raw.get("api_key", ""),
     )
 
+    # Parse planfile config (ticket sink for Koru/Planfile workflows)
+    planfile_raw = raw.get("planfile", {})
+    env_planfile_enabled = os.environ.get("WUP_PLANFILE_ENABLED")
+    if env_planfile_enabled is None:
+        planfile_enabled = bool(planfile_raw.get("enabled", False))
+    else:
+        planfile_enabled = env_planfile_enabled.strip().lower() in {"1", "true", "yes", "on"}
+
+    labels_raw = planfile_raw.get("labels", ["koru", "llm-ready", "wup", "auto-diag"])
+    labels = [str(label) for label in labels_raw] if isinstance(labels_raw, list) else []
+    planfile = PlanfileConfig(
+        enabled=planfile_enabled,
+        command=planfile_raw.get("command", "planfile"),
+        sprint=planfile_raw.get("sprint", "current"),
+        priority=planfile_raw.get("priority", "normal"),
+        source=planfile_raw.get("source", "wup"),
+        dedupe_file=planfile_raw.get("dedupe_file", ".wup/planfile-tickets.json"),
+        labels=labels or ["koru", "llm-ready", "wup", "auto-diag"],
+    )
+
     return WupConfig(
         project=project,
         watch=watch,
@@ -266,6 +287,7 @@ def validate_config(raw: dict) -> WupConfig:
         testql=testql,
         visual_diff=visual_diff,
         web=web,
+        planfile=planfile,
     )
 
 
@@ -385,6 +407,15 @@ def save_config(config: WupConfig, output_path: Path):
             "endpoint_env": config.web.endpoint_env,
             "timeout_s": config.web.timeout_s,
             "api_key": config.web.api_key,
+        },
+        "planfile": {
+            "enabled": config.planfile.enabled,
+            "command": config.planfile.command,
+            "sprint": config.planfile.sprint,
+            "priority": config.planfile.priority,
+            "source": config.planfile.source,
+            "dedupe_file": config.planfile.dedupe_file,
+            "labels": config.planfile.labels,
         }
     }
     
