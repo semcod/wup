@@ -6,9 +6,11 @@ import hashlib
 import json
 import re
 import subprocess
+import time
 from pathlib import Path
 from typing import Any, Optional
 
+import yaml
 from rich.console import Console
 
 from .models.config import PlanfileConfig
@@ -85,6 +87,9 @@ class PlanfileReporter:
         self._save_dedupe(remaining)
 
     def _create_ticket(self, *, name: str, description: str, track_file: str = "") -> Optional[tuple[str, str]]:
+        if not self._wait_for_planfile_store_ready():
+            return None
+
         cmd = [
             self.config.command,
             "ticket",
@@ -123,8 +128,40 @@ class PlanfileReporter:
             self.console.print(f"[yellow]planfile ticket creation failed: {detail}[/yellow]")
             return None
 
+        if not self._wait_for_planfile_store_ready(timeout_s=10.0):
+            self.console.print("[yellow]planfile ticket created, but sprint YAML did not become readable[/yellow]")
+            return None
+
         ticket_id = self._parse_ticket_id(stdout) or self._parse_ticket_id(stderr) or "unknown"
         return ticket_id, stdout
+
+    def _wait_for_planfile_store_ready(self, timeout_s: float = 30.0) -> bool:
+        """Wait until the current sprint YAML is readable and not mid-write."""
+        sprint_path = self.project_root / ".planfile" / "sprints" / f"{self.config.sprint}.yaml"
+        if not sprint_path.exists():
+            return True
+
+        deadline = time.time() + timeout_s
+        last_signature: tuple[int, int] | None = None
+        while time.time() < deadline:
+            try:
+                stat = sprint_path.stat()
+                signature = (stat.st_size, stat.st_mtime_ns)
+                yaml.safe_load(sprint_path.read_text(encoding="utf-8")) or {}
+            except (OSError, yaml.YAMLError):
+                time.sleep(0.25)
+                last_signature = None
+                continue
+
+            if signature == last_signature:
+                return True
+            last_signature = signature
+            time.sleep(0.25)
+
+        self.console.print(
+            f"[yellow]planfile ticket creation skipped: {sprint_path} is not stable/readable[/yellow]"
+        )
+        return False
 
     def _load_dedupe(self) -> dict[str, dict[str, Any]]:
         if not self.dedupe_path.exists():
