@@ -1,4 +1,4 @@
-# wup | 49f 11010L | python:46,shell:2,less:1 | 2026-05-21
+# wup | 49f 11014L | python:46,shell:2,less:1 | 2026-05-21
 # stats: 153 func | 48 cls | 49 mod | CC̄=4.0 | critical:13 | cycles:0
 # alerts[5]: CC assign_probe_to_service=40; CC discover_docker_compose_services=20; CC build_monitoring_manifest=19; CC watch=15; CC parse_service_map_probes=15
 # hotspots[5]: status fan=35; sync_testql fan=28; watch fan=20; main fan=19; testql_endpoints fan=19
@@ -31,7 +31,7 @@ M[49]:
   tests/test_e2e.py,517
   tests/test_monitoring_manifest.py,73
   tests/test_testql_monitor.py,169
-  tests/test_testql_watcher.py,413
+  tests/test_testql_watcher.py,417
   tests/test_web_client.py,168
   tests/test_wup.py,1710
   tree.sh,2

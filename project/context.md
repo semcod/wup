@@ -10,7 +10,7 @@
 - **Total Functions**: 284
 - **Total Classes**: 32
 - **Modules**: 56
-- **Entry Points**: 217
+- **Entry Points**: 216
 
 ## Architecture by Module
 
@@ -63,6 +63,10 @@
 - **Classes**: 1
 - **File**: `webhook_notifications.py`
 
+### wup.cli
+- **Functions**: 9
+- **File**: `cli.py`
+
 ### wup._ast_detector
 - **Functions**: 9
 - **Classes**: 1
@@ -71,10 +75,6 @@
 ### examples.visual_diff_demo
 - **Functions**: 9
 - **File**: `visual_diff_demo.py`
-
-### wup.cli
-- **Functions**: 9
-- **File**: `cli.py`
 
 ### wup.anomaly_detector
 - **Functions**: 8
@@ -91,14 +91,14 @@
 - **Classes**: 1
 - **File**: `testql_discovery.py`
 
+### wup.config
+- **Functions**: 6
+- **File**: `config.py`
+
 ### examples.testql_integration
 - **Functions**: 6
 - **Classes**: 1
 - **File**: `testql_integration.py`
-
-### wup.config
-- **Functions**: 6
-- **File**: `config.py`
 
 ### examples.flask-app.app.auth.routes
 - **Functions**: 5
@@ -143,25 +143,25 @@ With ``--write``, appends/updates the auto-generated ``monitoring:`` block
 Returns list of diff results (one per page).
 - **Calls**: self._pages_for_service, max, wup.visual_diff._playwright_available, wup.visual_diff._warn_playwright_missing, int, len, results.append, console.print
 
-### examples.testql_integration.main
-> Run WUP + TestQL integration demo.
-- **Calls**: print, print, print, VisualDiffConfig, CustomTestQLWatcher, print, watcher.dependency_mapper.build_from_codebase, watcher.dependency_mapper.save
-
 ### wup.testql_monitor.TestQLMonitor.discover_probes_by_service
 > Discover monitoring probes grouped by WUP service name.
 - **Calls**: None.items, self.discovery.discover_scenarios, self._service_map_paths, set, None.add, None.append, self._resolve_base_url_for_service, ProbeTarget
+
+### examples.testql_integration.main
+> Run WUP + TestQL integration demo.
+- **Calls**: print, print, print, VisualDiffConfig, CustomTestQLWatcher, print, watcher.dependency_mapper.build_from_codebase, watcher.dependency_mapper.save
 
 ### wup.anomaly_detector.AnomalyDetector.print_report
 > Print formatted report of anomalies.
 - **Calls**: self.get_summary, console.print, console.print, Table, table.add_column, table.add_column, table.add_column, table.add_column
 
-### wup.assistant.WupAssistant._review_and_validate
-> Review and validate configuration.
-- **Calls**: console.print, console.print, console.print, console.print, console.print, console.print, console.print, self._validate_config
-
 ### wup.cli.map_deps
 > Build dependency map from codebase.
 - **Calls**: app.command, typer.Argument, typer.Option, typer.Option, None.resolve, console.print, console.print, console.print
+
+### wup.assistant.WupAssistant._review_and_validate
+> Review and validate configuration.
+- **Calls**: console.print, console.print, console.print, console.print, console.print, console.print, console.print, self._validate_config
 
 ### wup.assistant.WupAssistant._setup_anomaly_detection
 > Setup anomaly detection configuration.
@@ -202,6 +202,10 @@ Args:
 ### wup._yaml_detector.YAMLStructureDetector.detect
 - **Calls**: self._load_yaml, self._snapshot_path, self._extract_structure, snap_path.exists, snap_path.write_text, json.dumps, json.loads, self._compare_structures
 
+### wup.cli.init
+> Initialize a new wup.yaml configuration file.
+- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
+
 ### wup.assistant.WupAssistant._setup_visual_diff
 > Setup visual diff configuration.
 - **Calls**: console.print, Confirm.ask, console.print, Prompt.ask, console.print, enumerate, Confirm.ask, console.print
@@ -224,10 +228,6 @@ Returns:
 > Detect changes using hash comparison.
 - **Calls**: file_path.read_text, self._compute_hash, self._snapshot_path, snap_path.exists, file_path.exists, None.strip, snap_path.write_text, AnomalyResult
 
-### wup.cli.init
-> Initialize a new wup.yaml configuration file.
-- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
-
 ### wup._ast_detector.ASTDetector._extract_ast_info
 - **Calls**: ast.iter_child_nodes, _handlers.get, None.extend, None.append, None.append, None.append, type, handler
 
@@ -248,8 +248,8 @@ Args:
 > Run watcher with live dashboard.
 - **Calls**: self.build_watched_paths, WupEventHandler, Observer, observer.start, observer.join, observer.schedule, Live, None.exists
 
-### examples.visual_diff_demo.main
-- **Calls**: print, print, print, examples.visual_diff_demo.demo_diff_algorithm, examples.visual_diff_demo.demo_page_slug, examples.visual_diff_demo.demo_snapshot_persistence, examples.visual_diff_demo.demo_config_yaml_round_trip, examples.visual_diff_demo.demo_disabled_is_noop
+### wup.testql_watcher.TestQLWatcher._write_track
+- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
 
 ## Process Flows
 
@@ -303,14 +303,14 @@ discover_probes_by_service [wup.testql_monitor.TestQLMonitor]
 print_report [wup.anomaly_detector.AnomalyDetector]
 ```
 
-### Flow 9: _review_and_validate
-```
-_review_and_validate [wup.assistant.WupAssistant]
-```
-
-### Flow 10: map_deps
+### Flow 9: map_deps
 ```
 map_deps [wup.cli]
+```
+
+### Flow 10: _review_and_validate
+```
+_review_and_validate [wup.assistant.WupAssistant]
 ```
 
 ## Key Classes
@@ -439,6 +439,24 @@ Key functions that process and transform data:
 > Short human-readable summary for CLI.
 - **Output to**: lines.append, lines.append, manifest.get, sorted, None.join
 
+### wup.config.validate_config
+> Validate raw config dict and convert to WupConfig object.
+
+Args:
+    raw: Raw configuration dictiona
+- **Output to**: raw.get, ProjectConfig, raw.get, WatchConfig, raw.get
+
+### wup.testql_monitor._parse_api_lines
+- **Output to**: _API_LINE.findall, probes.append, int, ProbeTarget, target.strip
+
+### wup.testql_monitor.parse_scenario_probes
+> Extract API probe rows from a TestQL TOON scenario file.
+- **Output to**: wup.testql_monitor._parse_api_lines, scenario_path.read_text, str
+
+### wup.testql_monitor.parse_service_map_probes
+> Extract probes from c2004-style service map YAML (endpoints: list).
+- **Output to**: data.get, isinstance, yaml.safe_load, isinstance, None.rstrip
+
 ### wup.assistant.WupAssistant._review_and_validate
 > Review and validate configuration.
 - **Output to**: console.print, console.print, console.print, console.print, console.print
@@ -458,24 +476,6 @@ Args:
 
 ### wup.core.WupWatcher.process_test_queue_once
 - **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
-
-### wup.config.validate_config
-> Validate raw config dict and convert to WupConfig object.
-
-Args:
-    raw: Raw configuration dictiona
-- **Output to**: raw.get, ProjectConfig, raw.get, WatchConfig, raw.get
-
-### wup.testql_monitor._parse_api_lines
-- **Output to**: _API_LINE.findall, probes.append, int, ProbeTarget, target.strip
-
-### wup.testql_monitor.parse_scenario_probes
-> Extract API probe rows from a TestQL TOON scenario file.
-- **Output to**: wup.testql_monitor._parse_api_lines, scenario_path.read_text, str
-
-### wup.testql_monitor.parse_service_map_probes
-> Extract probes from c2004-style service map YAML (endpoints: list).
-- **Output to**: data.get, isinstance, yaml.safe_load, isinstance, None.rstrip
 
 ### wup.testql_watcher.TestQLWatcher.process_changed_file_once
 - **Output to**: self.on_file_change, len, self.process_test_queue_once, asyncio.sleep, str
@@ -507,8 +507,8 @@ Functions exposed as public API (no underscore prefix):
 - `wup.visual_diff.VisualDiffer.run_for_service` - 34 calls
 - `wup.monitoring_manifest.discover_docker_compose_services` - 31 calls
 - `wup.testql_monitor.assign_probe_to_service` - 29 calls
-- `examples.testql_integration.main` - 27 calls
 - `wup.testql_monitor.TestQLMonitor.discover_probes_by_service` - 27 calls
+- `examples.testql_integration.main` - 27 calls
 - `wup.anomaly_detector.AnomalyDetector.print_report` - 26 calls
 - `examples.c2004_monorepo_demo.analyze_monorepo` - 26 calls
 - `examples.visual_diff_demo.demo_snapshot_persistence` - 26 calls
@@ -521,11 +521,11 @@ Functions exposed as public API (no underscore prefix):
 - `examples.testql_demo.simulate_testql_analysis` - 18 calls
 - `wup._yaml_detector.YAMLStructureDetector.detect` - 17 calls
 - `examples.c2004_monorepo_demo.simulate_monorepo` - 17 calls
+- `wup.cli.init` - 16 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints` - 16 calls
 - `wup._hash_detector.HashDetector.detect` - 16 calls
 - `examples.visual_diff_demo.demo_diff_algorithm` - 16 calls
 - `examples.visual_diff_demo.demo_config_yaml_round_trip` - 16 calls
-- `wup.cli.init` - 16 calls
 - `wup.core.WupWatcher.infer_service` - 15 calls
 - `wup.core.WupWatcher.start_watching` - 15 calls
 - `wup.core.WupWatcher.run_with_dashboard` - 15 calls
@@ -565,13 +565,13 @@ graph TD
     run_for_service --> _playwright_availabl
     run_for_service --> _warn_playwright_mis
     run_for_service --> int
-    main --> VisualDiffConfig
-    main --> CustomTestQLWatcher
     discover_probes_by_s --> items
     discover_probes_by_s --> discover_scenarios
     discover_probes_by_s --> _service_map_paths
     discover_probes_by_s --> set
     discover_probes_by_s --> add
+    main --> VisualDiffConfig
+    main --> CustomTestQLWatcher
     print_report --> get_summary
 ```
 

@@ -26,14 +26,15 @@ def test_process_changed_file_creates_track_on_failure():
 
         scenario_dir = root / "testql-scenarios"
         scenario_dir.mkdir(parents=True, exist_ok=True)
-        failing_scenario = scenario_dir / "app-users.testql.toon.yaml"
+        failing_scenario = scenario_dir / "api-users-smoke.testql.toon.yaml"
         failing_scenario.write_text("name: failing\n", encoding="utf-8")
 
-        # Pass empty config to prevent loading from temp dir
-        from wup.models.config import TestQLConfig, WatchConfig
+        # Pass config with service to prevent loading from temp dir
+        from wup.models.config import TestQLConfig, WatchConfig, ServiceConfig
+        service_config = ServiceConfig(name="app/users", paths=["app/users"])
         empty_config = WupConfig(
             project=ProjectConfig(name="test"),
-            services=[],
+            services=[service_config],
             test_strategy=None,
             watch=WatchConfig(),  # Add watch config to avoid file filtering issues
             testql=TestQLConfig(scenario_dir="testql-scenarios")
@@ -54,6 +55,9 @@ def test_process_changed_file_creates_track_on_failure():
             return CompletedProcess(args=args, returncode=0, stdout="{}", stderr="")
 
         watcher._run_testql = fake_run_testql  # type: ignore[method-assign]
+        
+        # Mock scenario selection to return our failing scenario
+        watcher._select_scenarios_for_service = lambda service: [failing_scenario]  # type: ignore[method-assign]
 
         result = asyncio.run(watcher.process_changed_file_once(str(app_file)))
 

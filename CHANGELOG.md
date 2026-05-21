@@ -55,6 +55,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 - Updated README.md with new examples
 
+## [0.2.31] - 2026-05-21
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/context.md
+
+### Test
+- Update tests/test_testql_watcher.py
+
+### Other
+- Update .code2llm_cache/__init___1779357253934266966_994.pkl
+- Update .code2llm_cache/pyproject_1779357253932233637_1854.pkl
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- Update project/calls.yaml
+- Update project/compact_flow.mmd
+- Update project/compact_flow.png
+- ... and 8 more files
+
 ## [0.2.30] - 2026-05-21
 
 ### Docs

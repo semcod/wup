@@ -6,7 +6,7 @@ SUMMARY:
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       2614
+  scan_ms:       2376
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
