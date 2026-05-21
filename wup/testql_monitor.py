@@ -85,6 +85,27 @@ def parse_scenario_probes(scenario_path: Path) -> List[ProbeTarget]:
     return _parse_api_lines(content, source=str(scenario_path))
 
 
+def _extract_base_url(data: Dict[str, Any]) -> str:
+    """Read base_url / api_base_url from service map YAML header."""
+    service = data.get("service")
+    if isinstance(service, dict):
+        return str(service.get("base_url") or service.get("api_base_url") or "").rstrip("/")
+    return ""
+
+
+def _parse_endpoint_row(row: Any, base_url: str, source: str) -> Optional[ProbeTarget]:
+    """Convert a single endpoints list entry into a ProbeTarget."""
+    if not isinstance(row, dict):
+        return None
+    path = str(row.get("path") or "").strip()
+    if not path:
+        return None
+    method = str(row.get("method") or "GET").upper()
+    expected = int(row.get("expected_status") or 200)
+    url = path if path.startswith("http") else f"{base_url}{path}" if base_url else path
+    return ProbeTarget(url=url, method=method, expected_status=expected, source=source)
+
+
 def parse_service_map_probes(map_path: Path) -> List[ProbeTarget]:
     """Extract probes from c2004-style service map YAML (endpoints: list)."""
     try:
@@ -95,22 +116,13 @@ def parse_service_map_probes(map_path: Path) -> List[ProbeTarget]:
     if not isinstance(data, dict):
         return []
 
-    base_url = ""
-    service = data.get("service")
-    if isinstance(service, dict):
-        base_url = str(service.get("base_url") or service.get("api_base_url") or "").rstrip("/")
-
+    base_url = _extract_base_url(data)
+    source = str(map_path)
     probes: List[ProbeTarget] = []
     for row in data.get("endpoints") or []:
-        if not isinstance(row, dict):
-            continue
-        method = str(row.get("method") or "GET").upper()
-        path = str(row.get("path") or "").strip()
-        if not path:
-            continue
-        expected = int(row.get("expected_status") or 200)
-        url = path if path.startswith("http") else f"{base_url}{path}" if base_url else path
-        probes.append(ProbeTarget(url=url, method=method, expected_status=expected, source=str(map_path)))
+        probe = _parse_endpoint_row(row, base_url, source)
+        if probe is not None:
+            probes.append(probe)
     return probes
 
 
@@ -167,35 +179,39 @@ def _service_path_patterns(services: Sequence[ServiceConfig]) -> Dict[str, List[
     return patterns
 
 
-def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig]) -> Optional[str]:
-    """Map a probe URL/path to a configured WUP service name."""
+def _assign_http_probe(
+    probe: ProbeTarget, services: Sequence[ServiceConfig], path_lower: str
+) -> Optional[str]:
+    """Map an HTTP probe to a service based on port and path."""
     wup_names = {s.name.lower() for s in services}
-    path = urlparse(probe.url).path if probe.url.startswith("http") else probe.url
-    path_lower = path.lower()
+    parsed = urlparse(probe.url)
+    port = parsed.port
 
-    if probe.url.startswith("http"):
-        parsed = urlparse(probe.url)
-        port = parsed.port
-        if port == 8101 and "backend" in wup_names:
-            return next(s.name for s in services if s.name.lower() == "backend")
-        if port == 8202:
+    if port == 8101 and "backend" in wup_names:
+        return next(s.name for s in services if s.name.lower() == "backend")
+    if port == 8202:
+        for svc in services:
+            if "firmware" in svc.name.lower():
+                return svc.name
+    if port == 8100:
+        if path_lower.startswith("/firmware"):
             for svc in services:
                 if "firmware" in svc.name.lower():
                     return svc.name
-        if port == 8100:
-            if path_lower.startswith("/firmware"):
-                for svc in services:
-                    if "firmware" in svc.name.lower():
-                        return svc.name
-            if "frontend" in wup_names:
-                return next(s.name for s in services if s.name.lower() == "frontend")
-        # Connect-* backends on 8103+ — only if a matching WUP service exists
-        for svc in services:
-            token = svc.name.lower().replace("_", "-")
-            if token.startswith("connect-") and token.replace("connect-", "") in path_lower:
-                return svc.name
-        return None
+        if "frontend" in wup_names:
+            return next(s.name for s in services if s.name.lower() == "frontend")
+    # Connect-* backends on 8103+ — only if a matching WUP service exists
+    for svc in services:
+        token = svc.name.lower().replace("_", "-")
+        if token.startswith("connect-") and token.replace("connect-", "") in path_lower:
+            return svc.name
+    return None
 
+
+def _assign_by_longest_token(
+    path_lower: str, services: Sequence[ServiceConfig]
+) -> Optional[str]:
+    """Match path to service with the longest token match."""
     best: Optional[str] = None
     best_len = -1
     for svc in services:
@@ -205,10 +221,13 @@ def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig
             if token in path_lower and len(token) > best_len:
                 best = svc.name
                 best_len = len(token)
+    return best
 
-    if best:
-        return best
 
+def _assign_by_path_prefix(
+    path_lower: str, services: Sequence[ServiceConfig]
+) -> Optional[str]:
+    """Fallback mapping based on known path prefixes."""
     if path_lower.startswith("/connect-"):
         for svc in services:
             if svc.name.lower() == "frontend":
@@ -226,6 +245,44 @@ def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig
             if svc.name.lower() == "frontend":
                 return svc.name
     return None
+
+
+def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig]) -> Optional[str]:
+    """Map a probe URL/path to a configured WUP service name."""
+    path = urlparse(probe.url).path if probe.url.startswith("http") else probe.url
+    path_lower = path.lower()
+
+    if probe.url.startswith("http"):
+        result = _assign_http_probe(probe, services, path_lower)
+        if result:
+            return result
+        return None
+
+    best = _assign_by_longest_token(path_lower, services)
+    if best:
+        return best
+
+    return _assign_by_path_prefix(path_lower, services)
+
+
+class _ProbeAccumulator:
+    """Deduplicated probe collector for discover_probes_by_service."""
+
+    def __init__(self, services: Sequence[ServiceConfig]):
+        self.by_service: Dict[str, List[ProbeTarget]] = {
+            svc.name: [] for svc in services
+        }
+        self._seen: Dict[str, set] = {name: set() for name in self.by_service}
+
+    def add(self, service: str, probe: ProbeTarget) -> None:
+        if service not in self.by_service:
+            self.by_service[service] = []
+            self._seen[service] = set()
+        key = f"{probe.method}:{probe.url}"
+        if key in self._seen[service]:
+            return
+        self._seen[service].add(key)
+        self.by_service[service].append(probe)
 
 
 class TestQLMonitor:
@@ -247,24 +304,11 @@ class TestQLMonitor:
             paths.extend(sorted(self.project_root.glob(pattern)))
         return paths
 
-    def discover_probes_by_service(self) -> Dict[str, List[ProbeTarget]]:
-        """Discover monitoring probes grouped by WUP service name."""
-        by_service: Dict[str, List[ProbeTarget]] = {
-            svc.name: [] for svc in self.config.services
-        }
-        seen: Dict[str, set] = {name: set() for name in by_service}
-
-        def add(service: str, probe: ProbeTarget) -> None:
-            if service not in by_service:
-                by_service[service] = []
-                seen[service] = set()
-            key = f"{probe.method}:{probe.url}"
-            if key in seen[service]:
-                return
-            seen[service].add(key)
-            by_service[service].append(probe)
-
-        # 1) Config-declared endpoints (paths or full URLs) — per-service base URL
+    def _add_config_endpoints(
+        self,
+        accumulator: "_ProbeAccumulator",
+    ) -> None:
+        """Add config-declared endpoints (paths or full URLs) per-service base URL."""
         for svc_name, paths in (self.config.testql.endpoints_by_service or {}).items():
             base = self._resolve_base_url_for_service(svc_name)
             for path in paths:
@@ -273,7 +317,7 @@ class TestQLMonitor:
                     continue
                 probe = ProbeTarget(url=url, source="wup.yaml:endpoints_by_service")
                 if is_monitoring_probe(probe):
-                    add(svc_name, probe)
+                    accumulator.add(svc_name, probe)
 
         for path in self.config.testql.explicit_endpoints or []:
             probe = ProbeTarget(url=path, source="wup.yaml:explicit_endpoints")
@@ -286,30 +330,45 @@ class TestQLMonitor:
                 continue
             probe = ProbeTarget(url=url, source="wup.yaml:explicit_endpoints")
             if is_monitoring_probe(probe):
-                add(assigned, probe)
+                accumulator.add(assigned, probe)
 
-        if not self.config.testql.endpoint_discovery:
-            return by_service
-
-        # 2) TestQL scenarios — health/smoke API rows only
+    def _add_scenario_probes(
+        self,
+        accumulator: "_ProbeAccumulator",
+    ) -> None:
+        """Add TestQL scenario probes mapped to services."""
         for scenario in self.discovery.discover_scenarios():
             for probe in parse_scenario_probes(scenario):
                 if not is_monitoring_probe(probe):
                     continue
                 assigned = assign_probe_to_service(probe, self.config.services)
                 if assigned:
-                    add(assigned, probe)
+                    accumulator.add(assigned, probe)
 
-        # 3) Optional service-map TOON/YAML files
+    def _add_service_map_probes(
+        self,
+        accumulator: "_ProbeAccumulator",
+    ) -> None:
+        """Add service-map TOON/YAML probes mapped to services."""
         for map_path in self._service_map_paths():
             for probe in parse_service_map_probes(map_path):
                 if not is_monitoring_probe(probe):
                     continue
                 assigned = assign_probe_to_service(probe, self.config.services)
                 if assigned:
-                    add(assigned, probe)
+                    accumulator.add(assigned, probe)
 
-        return by_service
+    def discover_probes_by_service(self) -> Dict[str, List[ProbeTarget]]:
+        """Discover monitoring probes grouped by WUP service name."""
+        accumulator = _ProbeAccumulator(self.config.services)
+
+        self._add_config_endpoints(accumulator)
+
+        if self.config.testql.endpoint_discovery:
+            self._add_scenario_probes(accumulator)
+            self._add_service_map_probes(accumulator)
+
+        return accumulator.by_service
 
     def _resolve_base_url_for_service(self, service: str) -> str:
         tq = self.config.testql

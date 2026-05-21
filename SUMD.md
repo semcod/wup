@@ -21,7 +21,7 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.30`
+- **version**: `0.2.32`
 - **python_requires**: `>=3.9`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -41,7 +41,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.30;
+  version: 0.2.32;
 }
 
 dependencies {
@@ -215,7 +215,7 @@ ASSERT[72]{field, operator, expected}:
 ```yaml
 project:
   name: wup
-  version: 0.2.30
+  version: 0.2.32
   env: local
 ```
 
@@ -269,7 +269,7 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 49f 11014L | python:46,shell:2,less:1 | 2026-05-21
+# wup | 49f 11029L | python:46,shell:2,less:1 | 2026-05-21
 # stats: 153 func | 48 cls | 49 mod | CC̄=4.0 | critical:13 | cycles:0
 # alerts[5]: CC assign_probe_to_service=40; CC discover_docker_compose_services=20; CC build_monitoring_manifest=19; CC watch=15; CC parse_service_map_probes=15
 # hotspots[5]: status fan=35; sync_testql fan=28; watch fan=20; main fan=19; testql_endpoints fan=19
@@ -315,7 +315,7 @@ M[49]:
   wup/assistant.py,695
   wup/cli.py,621
   wup/config.py,434
-  wup/core.py,620
+  wup/core.py,635
   wup/dependency_mapper.py,285
   wup/models/__init__.py,35
   wup/models/config.py,148
@@ -537,7 +537,7 @@ D:
     save_config(config;output_path)
   wup/core.py:
     e: WupWatcher,WupEventHandler
-    WupWatcher: __init__(6),_to_relative_path(1),infer_service(1),_is_coincident_pair(2),detect_service_coincidences(1),_services_share_domain(2),get_service_config(1),should_test(1),schedule_quick_test(1),schedule_detail_test(1),process_test_queue_once(0),cpu_ok(0),run_quick_test(2),run_detail_test(2),test_loop(0),should_watch_file(1),on_file_change(1),build_watched_paths(0),start_watching(1),create_status_table(0),run_with_dashboard(0)  # Intelligent file watcher for regression testing.
+    WupWatcher: __init__(6),_to_relative_path(1),infer_service(1),_is_coincident_pair(2),detect_service_coincidences(1),_services_share_domain(2),get_service_config(1),should_test(1),schedule_quick_test(1),schedule_detail_test(1),process_test_queue_once(0),cpu_ok(0),run_quick_test(2),run_detail_test(2),test_loop(0),should_watch_file(1),on_file_change(1),build_watched_paths(0),_create_and_start_observer(2),start_watching(1),create_status_table(0),run_with_dashboard(0)  # Intelligent file watcher for regression testing.
     WupEventHandler: __init__(1),on_modified(1),on_created(1),on_deleted(1)  # File system event handler for WUP watcher.
   wup/dependency_mapper.py:
     e: DependencyMapper
@@ -683,9 +683,10 @@ class WupWatcher:  # Intelligent file watcher for regression testing.
     def should_watch_file(file_path)  # CC=3
     def on_file_change(file_path)  # CC=14 ⚠
     def build_watched_paths()  # CC=6
-    def start_watching(watch_paths)  # CC=8
+    def _create_and_start_observer(event_handler, watch_paths)  # CC=5
+    def start_watching(watch_paths)  # CC=7
     def create_status_table()  # CC=3
-    def run_with_dashboard()  # CC=6
+    def run_with_dashboard()  # CC=5
 class WupEventHandler:  # File system event handler for WUP watcher.
     def __init__(watcher)  # CC=1
     def on_modified(event)  # CC=2
@@ -824,22 +825,22 @@ HUBS[20]:
     CC=20  in:1  out:31  total:32
   wup.monitoring_manifest.build_monitoring_manifest
     CC=19  in:4  out:24  total:28
-  examples.visual_diff_demo.demo_snapshot_persistence
-    CC=3  in:1  out:26  total:27
-  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
-    CC=22  in:0  out:27  total:27
   examples.c2004_monorepo_demo.analyze_monorepo
     CC=2  in:1  out:26  total:27
+  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
+    CC=22  in:0  out:27  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:17  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
 
@@ -944,7 +945,6 @@ EDGES:
   wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._firmware_plugin_probe_without_runtime
   wup.testql_monitor.TestQLMonitor.discover_probes_by_service → wup.testql_monitor.assign_probe_to_service
   wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
-  wup.core.WupWatcher.__init__ → wup.config.load_config
   wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
   wup.web_client.WebClient.send_event → wup.web_client._normalize
   wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
@@ -977,6 +977,7 @@ EDGES:
   examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
 ```
 
 ## Test Contracts

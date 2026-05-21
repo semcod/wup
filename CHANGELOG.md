@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **inotify watch limit fallback**: `wup watch` no longer crashes with `OSError: [Errno 28] inotify watch limit reached`. When the system's inotify limits are exceeded, WUP automatically falls back to `watchdog.observers.polling.PollingObserver` with a clear console warning.
+
+### Refactored
+- Split 8 high cyclomatic-complexity methods into smaller helpers:
+  - `wup/testql_monitor.py`: `assign_probe_to_service` (CC 40→9) → `_assign_http_probe`, `_assign_by_longest_token`, `_assign_by_path_prefix`
+  - `wup/testql_monitor.py`: `discover_probes_by_service` (CC 22→6) → `_ProbeAccumulator`, `_add_config_endpoints`, `_add_scenario_probes`, `_add_service_map_probes`
+  - `wup/testql_monitor.py`: `parse_service_map_probes` (CC 15→5) → `_extract_base_url`, `_parse_endpoint_row`
+  - `wup/testql_watcher.py`: `_summarize_health_scenario_failure` (CC 19→5) → `_try_parse_json_summary`, `_try_find_line_summary`
+  - `wup/visual_diff.py`: `run_for_service` (CC 19→7) → `_categorize_page_result`, `_print_scan_summary`
+  - `wup/monitoring_manifest.py`: `discover_docker_compose_services` (CC 20→7) → `_load_compose_yaml`, `_extract_service_from_spec`, `_extract_healthcheck_test`
+  - `wup/monitoring_manifest.py`: `build_monitoring_manifest` (CC 19→6) → `_build_wup_service_dicts`, `_build_docker_rows`, `_build_scenario_rows`
+  - `wup/cli.py`: `watch` (CC 15→4) → `_load_watch_config`, `_print_watch_header`, `_refresh_monitoring_manifest`, `_create_watcher`
+
 ### Added
 - **New Examples**: Added comprehensive usage examples
   - `c2004_monorepo_demo.py`: Large monorepo analysis (21 connect-* modules)
@@ -54,6 +68,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Docs
 - Updated README.md with new examples
+
+## [0.2.33] - 2026-05-21
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_wup.py
+
+### Other
+- Update .code2llm_cache/__init___1779357396277625568_994.pkl
+- Update .code2llm_cache/core_1779357576743459926_23378.pkl
+- Update .code2llm_cache/pyproject_1779357396260771960_1830.pkl
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- Update project/calls.yaml
+- Update project/compact_flow.mmd
+- ... and 17 more files
 
 ## [0.2.32] - 2026-05-21
 

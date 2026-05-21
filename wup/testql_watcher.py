@@ -510,33 +510,52 @@ class TestQLWatcher(WupWatcher):
         return False
 
     @staticmethod
-    def _summarize_health_scenario_failure(result: subprocess.CompletedProcess) -> str:
-        """Extract a short human summary from TestQL --output json (avoid trailing '}')."""
-        blob = "\n".join(part for part in (result.stdout or "", result.stderr or "") if part).strip()
-        if not blob:
-            return "health_scenario failed"
-
+    def _try_parse_json_summary(blob: str) -> Optional[str]:
+        """Try to extract passed/failed summary from trailing JSON in blob."""
         start = blob.rfind("{")
-        if start >= 0:
-            try:
-                data = json.loads(blob[start:])
-            except json.JSONDecodeError:
-                data = None
-            if isinstance(data, dict):
-                passed = data.get("passed")
-                failed = data.get("failed")
-                if isinstance(passed, int) and isinstance(failed, int):
-                    total = passed + failed
-                    errors = data.get("errors") or []
-                    hint = f" — {errors[0]}" if errors else ""
-                    return f"{passed}/{total} passed, {failed} failed{hint}"
+        if start < 0:
+            return None
+        try:
+            data = json.loads(blob[start:])
+        except json.JSONDecodeError:
+            return None
+        if not isinstance(data, dict):
+            return None
+        passed = data.get("passed")
+        failed = data.get("failed")
+        if not isinstance(passed, int) or not isinstance(failed, int):
+            return None
+        total = passed + failed
+        errors = data.get("errors") or []
+        hint = f" — {errors[0]}" if errors else ""
+        return f"{passed}/{total} passed, {failed} failed{hint}"
 
+    @staticmethod
+    def _try_find_line_summary(blob: str) -> Optional[str]:
+        """Find a meaningful summary line by scanning from the end of blob."""
         for line in reversed(blob.splitlines()):
             stripped = line.strip()
             if not stripped or stripped in {"}", "{"}:
                 continue
             if "passed" in stripped.lower() or "failed" in stripped.lower() or "❌" in stripped:
                 return stripped
+        return None
+
+    @staticmethod
+    def _summarize_health_scenario_failure(result: subprocess.CompletedProcess) -> str:
+        """Extract a short human summary from TestQL --output json (avoid trailing '}')."""
+        blob = "\n".join(part for part in (result.stdout or "", result.stderr or "") if part).strip()
+        if not blob:
+            return "health_scenario failed"
+
+        summary = TestQLWatcher._try_parse_json_summary(blob)
+        if summary:
+            return summary
+
+        summary = TestQLWatcher._try_find_line_summary(blob)
+        if summary:
+            return summary
+
         return "health_scenario failed"
 
     async def _run_fleet_health_scenario(self) -> bool:

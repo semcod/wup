@@ -7,10 +7,10 @@
 - **Primary Language**: python
 - **Languages**: python: 37, yaml: 8, txt: 4, json: 2, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 284
+- **Total Functions**: 285
 - **Total Classes**: 32
 - **Modules**: 56
-- **Entry Points**: 216
+- **Entry Points**: 217
 
 ## Architecture by Module
 
@@ -20,7 +20,7 @@
 - **File**: `testql_watcher.py`
 
 ### wup.core
-- **Functions**: 25
+- **Functions**: 26
 - **Classes**: 2
 - **File**: `core.py`
 
@@ -190,6 +190,9 @@ Returns list of diff results (one per page).
 > Setup file watching configuration.
 - **Calls**: console.print, console.print, enumerate, Confirm.ask, console.print, Confirm.ask, console.print, IntPrompt.ask
 
+### wup._yaml_detector.YAMLStructureDetector.detect
+- **Calls**: self._load_yaml, self._snapshot_path, self._extract_structure, snap_path.exists, snap_path.write_text, json.dumps, json.loads, self._compare_structures
+
 ### wup.core.WupWatcher.__init__
 > Initialize the WUP watcher.
 
@@ -198,9 +201,6 @@ Args:
     deps_file: Path to the dependency map JSON file
     cpu_th
 - **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, None.exists, wup.config.load_config
-
-### wup._yaml_detector.YAMLStructureDetector.detect
-- **Calls**: self._load_yaml, self._snapshot_path, self._extract_structure, snap_path.exists, snap_path.write_text, json.dumps, json.loads, self._compare_structures
 
 ### wup.cli.init
 > Initialize a new wup.yaml configuration file.
@@ -231,25 +231,21 @@ Returns:
 ### wup._ast_detector.ASTDetector._extract_ast_info
 - **Calls**: ast.iter_child_nodes, _handlers.get, None.extend, None.append, None.append, None.append, type, handler
 
+### wup.testql_watcher.TestQLWatcher._write_track
+- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
+
+### wup.testql_watcher.TestQLWatcher._summarize_health_scenario_failure
+> Extract a short human summary from TestQL --output json (avoid trailing '}').
+- **Calls**: None.strip, blob.rfind, reversed, isinstance, blob.splitlines, line.strip, None.join, json.loads
+
+### examples.visual_diff_demo.main
+- **Calls**: print, print, print, examples.visual_diff_demo.demo_diff_algorithm, examples.visual_diff_demo.demo_page_slug, examples.visual_diff_demo.demo_snapshot_persistence, examples.visual_diff_demo.demo_config_yaml_round_trip, examples.visual_diff_demo.demo_disabled_is_noop
+
 ### wup.core.WupWatcher.infer_service
 > Infer service name from file path.
 
 Uses config services first, then dependency mapper, then heuristics.
 - **Calls**: self._to_relative_path, self.dependency_mapper.get_service_for_file, _re.match, len, None.is_file, None.join, None.lower, svc.name.lower
-
-### wup.core.WupWatcher.start_watching
-> Start watching for file changes.
-
-Args:
-    watch_paths: List of paths to watch (default: from config or common source directories)
-- **Calls**: WupEventHandler, Observer, observer.start, self.console.print, observer.join, self.build_watched_paths, self.console.print, observer.schedule
-
-### wup.core.WupWatcher.run_with_dashboard
-> Run watcher with live dashboard.
-- **Calls**: self.build_watched_paths, WupEventHandler, Observer, observer.start, observer.join, observer.schedule, Live, None.exists
-
-### wup.testql_watcher.TestQLWatcher._write_track
-- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
 
 ## Process Flows
 
@@ -331,7 +327,7 @@ _review_and_validate [wup.assistant.WupAssistant]
 
 Implements 3-layer testing:
 1. Detection Layer: Fi
-- **Methods**: 21
+- **Methods**: 22
 - **Key Methods**: wup.core.WupWatcher.__init__, wup.core.WupWatcher._to_relative_path, wup.core.WupWatcher.infer_service, wup.core.WupWatcher._is_coincident_pair, wup.core.WupWatcher.detect_service_coincidences, wup.core.WupWatcher._services_share_domain, wup.core.WupWatcher.get_service_config, wup.core.WupWatcher.should_test, wup.core.WupWatcher.schedule_quick_test, wup.core.WupWatcher.schedule_detail_test
 
 ### wup.dependency_mapper.DependencyMapper
@@ -474,11 +470,11 @@ Args:
 
 - **Output to**: list, re.compile, api_pattern.findall, set, open
 
-### wup.core.WupWatcher.process_test_queue_once
-- **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
-
 ### wup.testql_watcher.TestQLWatcher.process_changed_file_once
 - **Output to**: self.on_file_change, len, self.process_test_queue_once, asyncio.sleep, str
+
+### wup.core.WupWatcher.process_test_queue_once
+- **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
 
 ## Behavioral Patterns
 
@@ -526,16 +522,16 @@ Functions exposed as public API (no underscore prefix):
 - `wup._hash_detector.HashDetector.detect` - 16 calls
 - `examples.visual_diff_demo.demo_diff_algorithm` - 16 calls
 - `examples.visual_diff_demo.demo_config_yaml_round_trip` - 16 calls
-- `wup.core.WupWatcher.infer_service` - 15 calls
-- `wup.core.WupWatcher.start_watching` - 15 calls
-- `wup.core.WupWatcher.run_with_dashboard` - 15 calls
 - `examples.visual_diff_demo.main` - 15 calls
+- `wup.core.WupWatcher.infer_service` - 15 calls
 - `wup.monitoring_manifest.load_monitoring_manifest_from_yaml` - 14 calls
 - `wup.anomaly_detector.AnomalyDetector.scan_directory` - 14 calls
-- `wup.core.WupWatcher.run_detail_test` - 14 calls
 - `examples.visual_diff_demo.demo_live_page` - 14 calls
-- `wup.core.WupWatcher.create_status_table` - 13 calls
+- `wup.core.WupWatcher.run_detail_test` - 14 calls
 - `examples.testql_integration.CustomTestQLWatcher.run_detail_test` - 13 calls
+- `wup.core.WupWatcher.start_watching` - 13 calls
+- `wup.core.WupWatcher.create_status_table` - 13 calls
+- `wup.core.WupWatcher.run_with_dashboard` - 13 calls
 
 ## System Interactions
 

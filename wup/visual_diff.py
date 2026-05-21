@@ -349,57 +349,47 @@ class VisualDiffer:
                     result.append(url)
         return result
 
-    async def run_for_service(
-        self, service: str, endpoints: List[str]
-    ) -> List[Dict[str, Any]]:
-        """
-        Scan pages for *service*, diff against stored snapshots.
-        Returns list of diff results (one per page).
-        """
-        if not self.cfg.enabled:
-            return []
+    def _categorize_page_result(
+        self,
+        service: str,
+        url: str,
+        result: Dict[str, Any],
+        ok_urls: List[str],
+        new_urls: List[str],
+        error_results: List[Tuple[str, str]],
+    ) -> None:
+        """Classify a single page result and append to the appropriate bucket."""
+        status = result["diff"]["status"]
+        if status in {"changed", "issue"}:
+            self._write_diff_event(service, url, result)
+            if status == "issue":
+                console.print(
+                    f"[bold red]🚨 Page issue: {service} {url}[/bold red]  "
+                    f"{'; '.join(result['diff'].get('issues', []))}"
+                )
+            else:
+                console.print(
+                    f"[bold yellow]🔍 Visual diff: {service} {url}[/bold yellow]  "
+                    f"+{result['diff']['counts']['added']} "
+                    f"-{result['diff']['counts']['removed']} "
+                    f"~{result['diff']['counts']['changed_attrs']}"
+                )
+        elif status == "new":
+            new_urls.append(_short_url(url))
+        elif status == "error":
+            message = result["diff"].get("message", "scan failed")
+            error_results.append((_short_url(url), message))
+        elif status == "ok":
+            ok_urls.append(_short_url(url))
 
-        if not _playwright_available():
-            _warn_playwright_missing()
-            return []
-
-        if self.cfg.delay_seconds > 0:
-            await asyncio.sleep(self.cfg.delay_seconds)
-
-        pages = self._pages_for_service(service, endpoints)
-        max_pages = max(1, int(self.cfg.max_pages or 5))
-        if len(pages) > max_pages:
-            pages = pages[:max_pages]
-        results = []
-        ok_urls: List[str] = []
-        new_urls: List[str] = []
-        error_results: List[Tuple[str, str]] = []
-        for url in pages:
-            result = await self._check_page(service, url)
-            results.append(result)
-            status = result["diff"]["status"]
-            if status in {"changed", "issue"}:
-                self._write_diff_event(service, url, result)
-                if status == "issue":
-                    console.print(
-                        f"[bold red]🚨 Page issue: {service} {url}[/bold red]  "
-                        f"{'; '.join(result['diff'].get('issues', []))}"
-                    )
-                else:
-                    console.print(
-                        f"[bold yellow]🔍 Visual diff: {service} {url}[/bold yellow]  "
-                        f"+{result['diff']['counts']['added']} "
-                        f"-{result['diff']['counts']['removed']} "
-                        f"~{result['diff']['counts']['changed_attrs']}"
-                    )
-            elif status == "new":
-                new_urls.append(_short_url(url))
-            elif status == "error":
-                message = result["diff"].get("message", "scan failed")
-                error_results.append((_short_url(url), message))
-            elif status == "ok":
-                ok_urls.append(_short_url(url))
-
+    def _print_scan_summary(
+        self,
+        service: str,
+        ok_urls: List[str],
+        new_urls: List[str],
+        error_results: List[Tuple[str, str]],
+    ) -> None:
+        """Print summary after scanning all pages for a service."""
         if new_urls:
             console.print(
                 f"[dim]📷 Baseline snapshots for {service}: {len(new_urls)} page(s)"
@@ -425,6 +415,39 @@ class VisualDiffer:
                 f" failed to fetch — {message_summary}; sample: {_sample_list(failed_urls)}[/yellow]"
             )
 
+    async def run_for_service(
+        self, service: str, endpoints: List[str]
+    ) -> List[Dict[str, Any]]:
+        """
+        Scan pages for *service*, diff against stored snapshots.
+        Returns list of diff results (one per page).
+        """
+        if not self.cfg.enabled:
+            return []
+
+        if not _playwright_available():
+            _warn_playwright_missing()
+            return []
+
+        if self.cfg.delay_seconds > 0:
+            await asyncio.sleep(self.cfg.delay_seconds)
+
+        pages = self._pages_for_service(service, endpoints)
+        max_pages = max(1, int(self.cfg.max_pages or 5))
+        if len(pages) > max_pages:
+            pages = pages[:max_pages]
+
+        results: List[Dict[str, Any]] = []
+        ok_urls: List[str] = []
+        new_urls: List[str] = []
+        error_results: List[Tuple[str, str]] = []
+
+        for url in pages:
+            result = await self._check_page(service, url)
+            results.append(result)
+            self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+
+        self._print_scan_summary(service, ok_urls, new_urls, error_results)
         return results
 
     async def _check_page(self, service: str, url: str) -> Dict[str, Any]:

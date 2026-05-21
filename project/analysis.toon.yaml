@@ -1,6 +1,6 @@
-# code2llm | 56f 9217L | python:37,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
+# code2llm | 56f 9230L | python:37,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
 # generated in 0.02s
-# CC̄=4.6 | critical:8/284 | dups:0 | cycles:2
+# CC̄=4.6 | critical:8/285 | dups:0 | cycles:2
 
 HEALTH[8]:
   🟡 CC    discover_docker_compose_services CC=20 (limit:15)
@@ -16,7 +16,7 @@ REFACTOR[2]:
   1. split 8 high-CC methods  (CC>15)
   2. break 2 circular dependencies
 
-PIPELINES[207]:
+PIPELINES[208]:
   [1] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
   [2] Src [__init__]: __init__
@@ -35,8 +35,8 @@ LAYERS:
   wup/                            CC̄=5.3    ←in:9  →out:0
   │ !! testql_watcher             765L  2C   35m  CC=19     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
+  │ !! core                       634L  2C   26m  CC=14     ←0
   │ !! cli                        620L  0C    8m  CC=15     ←0
-  │ !! core                       619L  2C   25m  CC=14     ←0
   │ !! visual_diff                495L  1C   22m  CC=19     ←1
   │ config                     433L  0C    6m  CC=10     ←6
   │ !! testql_monitor             426L  2C   20m  CC=40     ←2
@@ -87,7 +87,7 @@ LAYERS:
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
   │ tree.txt                   116L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              77L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │

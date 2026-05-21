@@ -1,7 +1,9 @@
 """Tests for WUP (What's Up) - Intelligent file watcher for regression testing."""
 
+import errno
 import json
 import tempfile
+from unittest.mock import MagicMock, patch
 from pathlib import Path
 
 import pytest
@@ -608,6 +610,50 @@ class TestWupWatcher:
             watcher.on_file_change(md_file)
             
             # No filtering should occur
+
+    def test_create_and_start_observer_fallback_on_enospc(self):
+        """Fallback to PollingObserver when inotify watch limit is reached."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            watcher = WupWatcher(tmpdir)
+            event_handler = MagicMock()
+            fake_observer = MagicMock()
+            fake_observer.start.side_effect = OSError(errno.ENOSPC, "inotify watch limit reached")
+
+            with patch("wup.core.Observer", return_value=fake_observer):
+                with patch("wup.core.PollingObserver") as mock_polling:
+                    fake_polling = MagicMock()
+                    mock_polling.return_value = fake_polling
+                    result = watcher._create_and_start_observer(event_handler, [tmpdir])
+                    assert result is fake_polling
+                    fake_polling.start.assert_called_once()
+
+    def test_create_and_start_observer_fallback_on_emfile(self):
+        """Fallback to PollingObserver when inotify instance limit is reached."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            watcher = WupWatcher(tmpdir)
+            event_handler = MagicMock()
+            fake_observer = MagicMock()
+            fake_observer.start.side_effect = OSError(errno.EMFILE, "inotify instance limit reached")
+
+            with patch("wup.core.Observer", return_value=fake_observer):
+                with patch("wup.core.PollingObserver") as mock_polling:
+                    fake_polling = MagicMock()
+                    mock_polling.return_value = fake_polling
+                    result = watcher._create_and_start_observer(event_handler, [tmpdir])
+                    assert result is fake_polling
+                    fake_polling.start.assert_called_once()
+
+    def test_create_and_start_observer_reraises_other_oserror(self):
+        """Re-raise OSError that is not ENOSPC or EMFILE."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            watcher = WupWatcher(tmpdir)
+            event_handler = MagicMock()
+            fake_observer = MagicMock()
+            fake_observer.start.side_effect = OSError(errno.EACCES, "permission denied")
+
+            with patch("wup.core.Observer", return_value=fake_observer):
+                with pytest.raises(OSError, match="permission denied"):
+                    watcher._create_and_start_observer(event_handler, [tmpdir])
 
 
 class TestIntegrationWorkflow:

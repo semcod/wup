@@ -59,6 +59,7 @@
 │   └── webhook_notifications.py
 ├── goal.yaml
 ├── LICENSE
+├── poetry.lock
 ├── project.sh
 ├── pyproject.toml
 ├── README.md
@@ -113,4 +114,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-24 directories, 90 files
+24 directories, 91 files

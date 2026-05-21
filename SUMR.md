@@ -16,7 +16,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.30`
+- **version**: `0.2.32`
 - **python_requires**: `>=3.9`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -36,7 +36,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.30;
+  version: 0.2.32;
 }
 
 dependencies {
@@ -165,9 +165,10 @@ class WupWatcher:  # Intelligent file watcher for regression testing.
     def should_watch_file(file_path)  # CC=3
     def on_file_change(file_path)  # CC=14 ⚠
     def build_watched_paths()  # CC=6
-    def start_watching(watch_paths)  # CC=8
+    def _create_and_start_observer(event_handler, watch_paths)  # CC=5
+    def start_watching(watch_paths)  # CC=7
     def create_status_table()  # CC=3
-    def run_with_dashboard()  # CC=6
+    def run_with_dashboard()  # CC=5
 class WupEventHandler:  # File system event handler for WUP watcher.
     def __init__(watcher)  # CC=1
     def on_modified(event)  # CC=2
@@ -306,22 +307,22 @@ HUBS[20]:
     CC=20  in:1  out:31  total:32
   wup.monitoring_manifest.build_monitoring_manifest
     CC=19  in:4  out:24  total:28
-  examples.visual_diff_demo.demo_snapshot_persistence
-    CC=3  in:1  out:26  total:27
-  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
-    CC=22  in:0  out:27  total:27
   examples.c2004_monorepo_demo.analyze_monorepo
     CC=2  in:1  out:26  total:27
+  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
+    CC=22  in:0  out:27  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:17  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
 
@@ -426,7 +427,6 @@ EDGES:
   wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._firmware_plugin_probe_without_runtime
   wup.testql_monitor.TestQLMonitor.discover_probes_by_service → wup.testql_monitor.assign_probe_to_service
   wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
-  wup.core.WupWatcher.__init__ → wup.config.load_config
   wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
   wup.web_client.WebClient.send_event → wup.web_client._normalize
   wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
@@ -459,6 +459,7 @@ EDGES:
   examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
 ```
 
 ## Test Contracts
@@ -511,22 +512,22 @@ HUBS[20]:
     CC=20  in:1  out:31  total:32
   wup.monitoring_manifest.build_monitoring_manifest
     CC=19  in:4  out:24  total:28
-  examples.visual_diff_demo.demo_snapshot_persistence
-    CC=3  in:1  out:26  total:27
-  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
-    CC=22  in:0  out:27  total:27
   examples.c2004_monorepo_demo.analyze_monorepo
     CC=2  in:1  out:26  total:27
+  wup.testql_monitor.TestQLMonitor.discover_probes_by_service
+    CC=22  in:0  out:27  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:17  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:17  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
 
@@ -631,7 +632,6 @@ EDGES:
   wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._firmware_plugin_probe_without_runtime
   wup.testql_monitor.TestQLMonitor.discover_probes_by_service → wup.testql_monitor.assign_probe_to_service
   wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
-  wup.core.WupWatcher.__init__ → wup.config.load_config
   wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
   wup.web_client.WebClient.send_event → wup.web_client._normalize
   wup.testql_watcher.TestQLWatcher.__init__ → wup.config.load_config
@@ -664,14 +664,15 @@ EDGES:
   examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
   examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 56f 9217L | python:37,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
+# code2llm | 56f 9230L | python:37,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
 # generated in 0.02s
-# CC̄=4.6 | critical:8/284 | dups:0 | cycles:2
+# CC̄=4.6 | critical:8/285 | dups:0 | cycles:2
 
 HEALTH[8]:
   🟡 CC    discover_docker_compose_services CC=20 (limit:15)
@@ -687,7 +688,7 @@ REFACTOR[2]:
   1. split 8 high-CC methods  (CC>15)
   2. break 2 circular dependencies
 
-PIPELINES[207]:
+PIPELINES[208]:
   [1] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
   [2] Src [__init__]: __init__
@@ -706,8 +707,8 @@ LAYERS:
   wup/                            CC̄=5.3    ←in:9  →out:0
   │ !! testql_watcher             765L  2C   35m  CC=19     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
+  │ !! core                       634L  2C   26m  CC=14     ←0
   │ !! cli                        620L  0C    8m  CC=15     ←0
-  │ !! core                       619L  2C   25m  CC=14     ←0
   │ !! visual_diff                495L  1C   22m  CC=19     ←1
   │ config                     433L  0C    6m  CC=10     ←6
   │ !! testql_monitor             426L  2C   20m  CC=40     ←2
@@ -758,7 +759,7 @@ LAYERS:
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
   │ tree.txt                   116L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              77L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │
@@ -785,15 +786,15 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 4 groups | 35f 5939L | 2026-05-21
+# redup/duplication | 4 groups | 35f 5954L | 2026-05-21
 
 SUMMARY:
   files_scanned: 35
-  total_lines:   5939
+  total_lines:   5954
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       2376
+  scan_ms:       4040
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
@@ -858,7 +859,7 @@ METRICS-TARGET:
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 212 func | 15f | 2026-05-21
+# code2llm/evolution | 213 func | 15f | 2026-05-21
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
@@ -870,9 +871,9 @@ NEXT[10] (ranked by impact):
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [3] !! SPLIT           wup/cli.py
-      WHY: 620L, 0 classes, max CC=15
-      EFFORT: ~4h  IMPACT: 9300
+  [3] !! SPLIT           wup/core.py
+      WHY: 634L, 2 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 8876
 
   [4] !! SPLIT-FUNC      assign_probe_to_service  CC=40  fan=13
       WHY: CC=40 exceeds 15
@@ -906,7 +907,7 @@ NEXT[10] (ranked by impact):
 RISKS[3]:
   ⚠ Splitting wup/testql_watcher.py may break 35 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
-  ⚠ Splitting wup/cli.py may break 8 import paths
+  ⚠ Splitting wup/core.py may break 26 import paths
 
 METRICS-TARGET:
   CC̄:          5.3 → ≤3.7

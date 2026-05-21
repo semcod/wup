@@ -3,6 +3,7 @@ Core module for WUP (What's Up) - Intelligent file watcher for regression testin
 """
 
 import asyncio
+import errno
 import json
 import subprocess
 import time
@@ -18,6 +19,7 @@ from rich.live import Live
 from rich.table import Table
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+from watchdog.observers.polling import PollingObserver
 
 from .config import load_config
 from .dependency_mapper import DependencyMapper
@@ -496,6 +498,31 @@ class WupWatcher:
             str(self.project_root / "tests"),
         ]
     
+    def _create_and_start_observer(self, event_handler, watch_paths):
+        """
+        Create and start a file system observer, falling back to polling
+        if the inotify watch limit is reached.
+        """
+        observer = Observer()
+        for path in watch_paths:
+            observer.schedule(event_handler, path, recursive=True)
+        try:
+            observer.start()
+            return observer
+        except OSError as exc:
+            if exc.errno in (errno.ENOSPC, errno.EMFILE):
+                self.console.print(
+                    f"[yellow]⚠️  inotify limit reached ({exc.strerror}). "
+                    "Falling back to polling observer (higher CPU usage).[/yellow]"
+                )
+                observer.stop()
+                observer = PollingObserver()
+                for path in watch_paths:
+                    observer.schedule(event_handler, path, recursive=True)
+                observer.start()
+                return observer
+            raise
+
     def start_watching(self, watch_paths: Optional[List[str]] = None):
         """
         Start watching for file changes.
@@ -514,12 +541,7 @@ class WupWatcher:
             return
         
         event_handler = WupEventHandler(self)
-        observer = Observer()
-        
-        for path in watch_paths:
-            observer.schedule(event_handler, path, recursive=True)
-        
-        observer.start()
+        observer = self._create_and_start_observer(event_handler, watch_paths)
         self.console.print(f"[green]🕵️  Watching: {', '.join(watch_paths)}[/green]")
         
         try:
@@ -564,18 +586,11 @@ class WupWatcher:
     
     async def run_with_dashboard(self):
         """Run watcher with live dashboard."""
-        from watchdog.observers import Observer
-        
         watch_paths = self.build_watched_paths()
         watch_paths = [p for p in watch_paths if Path(p).exists()]
         
         event_handler = WupEventHandler(self)
-        observer = Observer()
-        
-        for path in watch_paths:
-            observer.schedule(event_handler, path, recursive=True)
-        
-        observer.start()
+        observer = self._create_and_start_observer(event_handler, watch_paths)
         
         with Live(self.create_status_table(), refresh_per_second=1) as live:
             try:

@@ -1,12 +1,12 @@
-# redup/duplication | 4 groups | 35f 5939L | 2026-05-21
+# redup/duplication | 4 groups | 35f 5954L | 2026-05-21
 
 SUMMARY:
   files_scanned: 35
-  total_lines:   5939
+  total_lines:   5954
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       2376
+  scan_ms:       4040
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)

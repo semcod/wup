@@ -1,4 +1,4 @@
-# code2llm/evolution | 212 func | 15f | 2026-05-21
+# code2llm/evolution | 213 func | 15f | 2026-05-21
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
@@ -10,9 +10,9 @@ NEXT[10] (ranked by impact):
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [3] !! SPLIT           wup/cli.py
-      WHY: 620L, 0 classes, max CC=15
-      EFFORT: ~4h  IMPACT: 9300
+  [3] !! SPLIT           wup/core.py
+      WHY: 634L, 2 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 8876
 
   [4] !! SPLIT-FUNC      assign_probe_to_service  CC=40  fan=13
       WHY: CC=40 exceeds 15
@@ -46,7 +46,7 @@ NEXT[10] (ranked by impact):
 RISKS[3]:
   ⚠ Splitting wup/testql_watcher.py may break 35 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
-  ⚠ Splitting wup/cli.py may break 8 import paths
+  ⚠ Splitting wup/core.py may break 26 import paths
 
 METRICS-TARGET:
   CC̄:          5.3 → ≤3.7

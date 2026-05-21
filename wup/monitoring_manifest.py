@@ -38,6 +38,51 @@ def _parse_port_mapping(raw: Any) -> List[str]:
     return []
 
 
+def _load_compose_yaml(compose_path: Path) -> Optional[Dict[str, Any]]:
+    """Load and validate a docker-compose YAML file."""
+    try:
+        data = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    services = data.get("services") or {}
+    if not isinstance(services, dict):
+        return None
+    return services
+
+
+def _extract_healthcheck_test(spec: Dict[str, Any]) -> str:
+    """Extract healthcheck test command from service spec."""
+    hc = spec.get("healthcheck") or {}
+    if not isinstance(hc, dict) or not hc.get("test"):
+        return ""
+    parts = hc["test"]
+    if isinstance(parts, list):
+        return " ".join(str(p) for p in parts)
+    return str(parts)
+
+
+def _extract_service_from_spec(
+    name: str, spec: Dict[str, Any], source_file: str
+) -> Optional[DockerComposeService]:
+    """Build a DockerComposeService from compose spec."""
+    if not isinstance(spec, dict):
+        return None
+    profiles = spec.get("profiles") or []
+    if isinstance(profiles, str):
+        profiles = [profiles]
+    return DockerComposeService(
+        compose_service=name,
+        container_name=str(spec.get("container_name") or ""),
+        image=str(spec.get("image") or ""),
+        host_ports=_parse_port_mapping(spec.get("ports")),
+        profiles=[str(p) for p in profiles],
+        healthcheck_test=_extract_healthcheck_test(spec),
+        source_file=source_file,
+    )
+
+
 def discover_docker_compose_services(project_root: Path) -> List[DockerComposeService]:
     """Parse docker-compose*.yml service definitions under project root."""
     patterns = ["docker-compose.yml", "docker-compose.*.yml", "docker-compose.*.yaml"]
@@ -50,44 +95,13 @@ def discover_docker_compose_services(project_root: Path) -> List[DockerComposeSe
             if key in seen:
                 continue
             seen.add(key)
-            try:
-                data = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
-            except (OSError, yaml.YAMLError):
+            services = _load_compose_yaml(compose_path)
+            if services is None:
                 continue
-            if not isinstance(data, dict):
-                continue
-
-            services = data.get("services") or {}
-            if not isinstance(services, dict):
-                continue
-
             for name, spec in services.items():
-                if not isinstance(spec, dict):
-                    continue
-                hc = spec.get("healthcheck") or {}
-                hc_test = ""
-                if isinstance(hc, dict) and hc.get("test"):
-                    parts = hc["test"]
-                    if isinstance(parts, list):
-                        hc_test = " ".join(str(p) for p in parts)
-                    else:
-                        hc_test = str(parts)
-
-                profiles = spec.get("profiles") or []
-                if isinstance(profiles, str):
-                    profiles = [profiles]
-
-                results.append(
-                    DockerComposeService(
-                        compose_service=name,
-                        container_name=str(spec.get("container_name") or ""),
-                        image=str(spec.get("image") or ""),
-                        host_ports=_parse_port_mapping(spec.get("ports")),
-                        profiles=[str(p) for p in profiles],
-                        healthcheck_test=hc_test,
-                        source_file=compose_path.name,
-                    )
-                )
+                svc = _extract_service_from_spec(name, spec, compose_path.name)
+                if svc is not None:
+                    results.append(svc)
     return results
 
 
@@ -136,27 +150,26 @@ def _probe_row(probe: ProbeTarget) -> Dict[str, Any]:
     }
 
 
-def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str, Any]:
-    """Assemble full monitoring manifest for wup.yaml (documentation + audit)."""
-    monitor = TestQLMonitor(project_root, config)
-    wup_names = [s.name for s in config.services]
-    docker_all = discover_docker_compose_services(project_root)
-
-    by_wup: Dict[str, Dict[str, Any]] = {
+def _build_wup_service_dicts(config: WupConfig) -> Dict[str, Dict[str, Any]]:
+    """Initialize per-service manifest buckets."""
+    return {
         name: {
-            "wup_paths": [],
+            "wup_paths": list(svc.paths),
             "docker": [],
             "live_probes": [],
             "testql_dry_run_scenarios": [],
         }
-        for name in wup_names
+        for name, svc in {s.name: s for s in config.services}.items()
     }
 
-    for svc in config.services:
-        by_wup[svc.name]["wup_paths"] = list(svc.paths)
 
-    # Docker rows grouped under WUP services (+ unmapped bucket)
-    unmapped_docker: List[Dict[str, Any]] = []
+def _build_docker_rows(
+    docker_all: List[DockerComposeService],
+    wup_names: List[str],
+    by_wup: Dict[str, Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Group docker-compose rows under WUP services; return unmapped leftovers."""
+    unmapped: List[Dict[str, Any]] = []
     for d in docker_all:
         row = {
             "compose_service": d.compose_service,
@@ -172,22 +185,43 @@ def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str
         if mapped:
             by_wup[mapped]["docker"].append(row)
         else:
-            unmapped_docker.append(row)
+            unmapped.append(row)
+    return unmapped
+
+
+def _build_scenario_rows(
+    monitor: TestQLMonitor,
+    project_root: Path,
+    wup_names: List[str],
+    by_wup: Dict[str, Dict[str, Any]],
+) -> None:
+    """Attach scenario file paths to the matching WUP service entries."""
+    if not monitor.discovery.scenarios_dir.exists():
+        return
+    for scenario in monitor.discovery.discover_scenarios():
+        rel = str(scenario.relative_to(project_root))
+        tokens = scenario.stem.lower()
+        for svc_name in wup_names:
+            token = svc_name.lower().replace("_", "-")
+            if token in tokens:
+                by_wup[svc_name]["testql_dry_run_scenarios"].append(rel)
+
+
+def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str, Any]:
+    """Assemble full monitoring manifest for wup.yaml (documentation + audit)."""
+    monitor = TestQLMonitor(project_root, config)
+    wup_names = [s.name for s in config.services]
+    docker_all = discover_docker_compose_services(project_root)
+
+    by_wup = _build_wup_service_dicts(config)
+    unmapped_docker = _build_docker_rows(docker_all, wup_names, by_wup)
 
     # Live HTTP probes (exactly what WUP will call)
     for svc_name in wup_names:
         probes = monitor.probes_for_service(svc_name)
         by_wup[svc_name]["live_probes"] = [_probe_row(p) for p in probes]
 
-    # Scenarios used for dry-run quick tests (informational)
-    if monitor.discovery.scenarios_dir.exists():
-        for scenario in monitor.discovery.discover_scenarios():
-            rel = str(scenario.relative_to(project_root))
-            tokens = scenario.stem.lower()
-            for svc_name in wup_names:
-                token = svc_name.lower().replace("_", "-")
-                if token in tokens:
-                    by_wup[svc_name]["testql_dry_run_scenarios"].append(rel)
+    _build_scenario_rows(monitor, project_root, wup_names, by_wup)
 
     tq = config.testql
     return {

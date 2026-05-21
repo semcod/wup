@@ -1,4 +1,4 @@
-# wup | 284 func | 32f | 9217L | python | 2026-05-21
+# wup | 285 func | 32f | 9230L | python | 2026-05-21
 # generated in 0.00s
 
 HEALTH:
@@ -19,8 +19,8 @@ ALERTS[20]:
 MODULES[56] (top by size):
   M[wup/testql_watcher.py] 765L C:2 F:35 CC↑19 D:0 (python)
   M[wup/assistant.py] 694L C:1 F:24 CC↑14 D:0 (python)
+  M[wup/core.py] 634L C:2 F:26 CC↑14 D:0 (python)
   M[wup/cli.py] 620L C:0 F:8 CC↑15 D:0 (python)
-  M[wup/core.py] 619L C:2 F:25 CC↑14 D:0 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
   M[wup/visual_diff.py] 495L C:1 F:22 CC↑19 D:1 (python)
   M[wup/config.py] 433L C:0 F:6 CC↑10 D:6 (python)
@@ -53,7 +53,7 @@ REFACTOR[15]:
   [2] H/H Split god module wup/testql_watcher.py (765L, 2 classes)
   [3] H/H Split god module wup/cli.py (620L, 0 classes)
   [4] H/H Split god module wup/assistant.py (694L, 1 classes)
-  [5] H/H Split god module wup/core.py (619L, 2 classes)
+  [5] H/H Split god module wup/core.py (634L, 2 classes)
 
 EVOLUTION:
-  2026-05-21 CC̄=4.6 crit=32 9217L // Automated analysis
+  2026-05-21 CC̄=4.6 crit=32 9230L // Automated analysis

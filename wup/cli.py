@@ -23,6 +23,100 @@ app = typer.Typer(
 console = Console()
 
 
+def _load_watch_config(
+    project_path: Path,
+    config_path: Optional[Path],
+    probe_interval: Optional[int],
+    mode: str,
+) -> WupConfig:
+    """Load wup.yaml config and apply CLI probe_interval override."""
+    wup_config = load_config(project_path, config_path)
+    if probe_interval is not None:
+        wup_config.testql.probe_interval_s = int(probe_interval)
+    elif mode.lower() == "testql" and not wup_config.testql.probe_interval_s:
+        wup_config.testql.probe_interval_s = 60
+    return wup_config
+
+
+def _print_watch_header(
+    wup_config: WupConfig,
+    cpu_throttle: float,
+    debounce: int,
+    cooldown: int,
+    config_path: Optional[Path],
+) -> None:
+    """Print watcher startup banner."""
+    console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
+    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
+    console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
+    console.print(f"[dim]CPU Throttle: {cpu_throttle * 100}%[/dim]")
+    console.print(f"[dim]Debounce: {debounce}s[/dim]")
+    console.print(f"[dim]Cooldown: {cooldown}s[/dim]")
+    if wup_config.testql.probe_interval_s:
+        console.print(f"[dim]Live probes: every {wup_config.testql.probe_interval_s}s[/dim]")
+    console.print(f"[dim]Config: {config_path or 'auto-detected'}[/dim]")
+    console.print()
+
+
+def _refresh_monitoring_manifest(
+    project_path: Path,
+    wup_config: WupConfig,
+    cfg_path: Optional[Path],
+) -> None:
+    """Rebuild and patch monitoring manifest into wup.yaml when possible."""
+    if not cfg_path:
+        return
+    from .monitoring_manifest import build_monitoring_manifest, patch_wup_yaml_monitoring
+    try:
+        manifest = build_monitoring_manifest(project_path, wup_config)
+        patch_wup_yaml_monitoring(cfg_path, manifest)
+        console.print("[dim]Refreshed monitoring manifest in wup.yaml[/dim]")
+    except OSError as exc:
+        console.print(f"[yellow]Could not refresh monitoring manifest: {exc}[/yellow]")
+
+
+def _create_watcher(
+    mode: str,
+    project_path: Path,
+    deps_file: str,
+    cpu_throttle: float,
+    debounce: int,
+    cooldown: int,
+    scenarios_dir: Optional[str],
+    testql_bin: str,
+    browser_service_url: Optional[str],
+    track_dir: str,
+    quick_limit: int,
+    config: WupConfig,
+) -> WupWatcher:
+    """Instantiate the correct watcher class for the chosen mode."""
+    if mode.lower() == "testql":
+        watcher = TestQLWatcher(
+            project_root=str(project_path),
+            deps_file=deps_file,
+            cpu_throttle=cpu_throttle,
+            debounce_seconds=debounce,
+            test_cooldown_seconds=cooldown,
+            scenarios_dir=scenarios_dir,
+            testql_bin=testql_bin,
+            browser_service_url=browser_service_url,
+            track_dir=track_dir,
+            quick_limit=quick_limit,
+            config=config,
+        )
+        console.print("[green]TestQL mode enabled[/green]")
+        return watcher
+
+    return WupWatcher(
+        project_root=str(project_path),
+        deps_file=deps_file,
+        cpu_throttle=cpu_throttle,
+        debounce_seconds=debounce,
+        test_cooldown_seconds=cooldown,
+        config=config,
+    )
+
+
 @app.command()
 def watch(
     project: str = typer.Argument(".", help="Path to the project root directory"),
@@ -60,67 +154,35 @@ def watch(
     ``--mode default`` for the legacy HTTP-only watcher without TestQL.
     """
     project_path = Path(project).resolve()
-    
+
     if not project_path.exists():
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
-    
-    # Load configuration
-    config_path = Path(config) if config else None
-    wup_config = load_config(project_path, config_path)
-    if probe_interval is not None:
-        wup_config.testql.probe_interval_s = int(probe_interval)
-    elif mode.lower() == "testql" and not wup_config.testql.probe_interval_s:
-        wup_config.testql.probe_interval_s = 60
 
+    config_path = Path(config) if config else None
+    wup_config = _load_watch_config(project_path, config_path, probe_interval, mode)
     effective_scenarios_dir = scenarios_dir or wup_config.testql.scenario_dir
 
-    console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
-    console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
-    console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
-    console.print(f"[dim]CPU Throttle: {cpu_throttle * 100}%[/dim]")
-    console.print(f"[dim]Debounce: {debounce}s[/dim]")
-    console.print(f"[dim]Cooldown: {cooldown}s[/dim]")
-    if wup_config.testql.probe_interval_s:
-        console.print(f"[dim]Live probes: every {wup_config.testql.probe_interval_s}s[/dim]")
-    console.print(f"[dim]Config: {config_path or 'auto-detected'}[/dim]")
-    console.print()
-    
-    cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
-    if cfg_path:
-        from .monitoring_manifest import build_monitoring_manifest, patch_wup_yaml_monitoring
-        try:
-            manifest = build_monitoring_manifest(project_path, wup_config)
-            patch_wup_yaml_monitoring(cfg_path, manifest)
-            console.print("[dim]Refreshed monitoring manifest in wup.yaml[/dim]")
-        except OSError as exc:
-            console.print(f"[yellow]Could not refresh monitoring manifest: {exc}[/yellow]")
+    _print_watch_header(wup_config, cpu_throttle, debounce, cooldown, config_path)
 
-    if mode.lower() == "testql":
-        watcher = TestQLWatcher(
-            project_root=str(project_path),
-            deps_file=deps_file,
-            cpu_throttle=cpu_throttle,
-            debounce_seconds=debounce,
-            test_cooldown_seconds=cooldown,
-            scenarios_dir=effective_scenarios_dir,
-            testql_bin=testql_bin,
-            browser_service_url=browser_service_url,
-            track_dir=track_dir,
-            quick_limit=quick_limit,
-            config=wup_config,
-        )
-        console.print("[green]TestQL mode enabled[/green]")
-    else:
-        watcher = WupWatcher(
-            project_root=str(project_path),
-            deps_file=deps_file,
-            cpu_throttle=cpu_throttle,
-            debounce_seconds=debounce,
-            test_cooldown_seconds=cooldown,
-            config=wup_config,
-        )
-    
+    cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
+    _refresh_monitoring_manifest(project_path, wup_config, cfg_path)
+
+    watcher = _create_watcher(
+        mode=mode,
+        project_path=project_path,
+        deps_file=deps_file,
+        cpu_throttle=cpu_throttle,
+        debounce=debounce,
+        cooldown=cooldown,
+        scenarios_dir=effective_scenarios_dir,
+        testql_bin=testql_bin,
+        browser_service_url=browser_service_url,
+        track_dir=track_dir,
+        quick_limit=quick_limit,
+        config=wup_config,
+    )
+
     if dashboard:
         console.print("[green]Starting watcher with live dashboard...[/green]")
         asyncio.run(watcher.run_with_dashboard())
