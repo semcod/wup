@@ -55,6 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Docs
 - Updated README.md with new examples
 
+## [0.2.32] - 2026-05-21
+
+### Docs
+- Update README.md
+
+### Other
+- Update poetry.lock
+
 ## [0.2.31] - 2026-05-21
 
 ### Docs
