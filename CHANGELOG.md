@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.41] - 2026-05-22
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+
+### Other
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health.json
+- Update .wup/tracks/1779486110_iter1-api_quick.json
+- Update .wup/tracks/1779486111_iter1-shell_quick.json
+- Update .wup/tracks/1779486112_iter7-auto_quick.json
+- Update .wup/tracks/1779486112_iter7-shell_quick.json
+- Update .wup/tracks/1779486113_wup-shell_quick.json
+- Update .wup/tracks/1779486124___home_quick.json
+- Update .wup/tracks/1779486127___home_detail.json
+- Update app.doql.less
+- ... and 6 more files
+
 ## [0.2.40] - 2026-05-22
 
 ### Docs

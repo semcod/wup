@@ -346,7 +346,11 @@ class TestQLWatcher(WupWatcher):
 
         # Filter scenarios by service type
         svc_type = svc_config.type if svc_config else "auto"
+        # Debug: print service type
+        import sys
+        print(f"DEBUG: service={service}, svc_type={svc_type}, svc_config={svc_config.type if svc_config else None}", file=sys.stderr)
         filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
+        print(f"DEBUG: all_scenarios={len(all_scenarios)}, filtered={len(filtered_scenarios)}", file=sys.stderr)
 
         tokens = self._tokenize_service(service)
         scored = sorted(
