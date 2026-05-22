@@ -152,6 +152,8 @@ def watch(
     Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
     (unless ``testql.probe_interval_s`` is set in wup.yaml). Use
     ``--mode default`` for the legacy HTTP-only watcher without TestQL.
+
+    If wup.yaml doesn't exist, it will be auto-generated based on project detection.
     """
     project_path = Path(project).resolve()
 
@@ -160,6 +162,14 @@ def watch(
         raise typer.Exit(1)
 
     config_path = Path(config) if config else None
+
+    # Auto-generate config if it doesn't exist
+    if not find_config_file(project_path):
+        console.print("[cyan]🔍 No wup.yaml found - auto-detecting project type...[/cyan]")
+        _auto_generate_config(project_path, mode)
+        console.print("[green]✓ Auto-generated wup.yaml configuration[/green]")
+        console.print()
+
     wup_config = _load_watch_config(project_path, config_path, probe_interval, mode)
     effective_scenarios_dir = scenarios_dir or wup_config.testql.scenario_dir
 
@@ -189,6 +199,32 @@ def watch(
     else:
         console.print("[green]Starting watcher...[/green]")
         watcher.start_watching()
+
+
+def _auto_generate_config(project_path: Path, mode: str):
+    """Auto-generate wup.yaml based on project detection."""
+    from .cli_scanner import CLIScanner
+    from .cli_config_generator import CLIConfigGenerator
+    from .config import save_config, get_default_config
+
+    # Try CLI detection first
+    scanner = CLIScanner(str(project_path))
+    packages = scanner.scan()
+
+    if packages:
+        console.print("[cyan]📦 Detected CLI package(s)[/cyan]")
+        for pkg in packages:
+            console.print(f"  - {pkg.name}: {len(pkg.commands)} command(s)")
+        console.print()
+
+        # Use CLI config generator
+        generator = CLIConfigGenerator(str(project_path))
+        generator.generate()
+    else:
+        # Use default config for web/mixed projects
+        console.print("[cyan]🌐 Using default configuration for web/mixed projects[/cyan]")
+        config = get_default_config(project_path)
+        save_config(config, project_path / "wup.yaml")
 
 
 @app.command()

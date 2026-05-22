@@ -312,6 +312,19 @@ class TestQLWatcher(WupWatcher):
         """Score a scenario by relevance to service tokens."""
         name = scenario.name.lower()
         score = 0
+        
+        # CLI scenarios require exact service name match
+        if name.startswith("cli-"):
+            # Extract service name from cli-{service}.testql.toon.yaml
+            scenario_service = name.replace("cli-", "").replace(".testql.toon.yaml", "")
+            # Score only if service name matches exactly
+            if scenario_service in tokens:
+                score += 10  # High score for exact match
+            else:
+                score = -10  # Penalize CLI scenarios that don't match
+            return score
+        
+        # Non-CLI scenarios use original scoring
         if any(token in name for token in tokens):
             score += 3
         if "api" in name or "endpoint" in name:
@@ -331,9 +344,13 @@ class TestQLWatcher(WupWatcher):
         limit = (svc_config.quick_tests.max_endpoints
                  if svc_config and svc_config.quick_tests else self.quick_limit)
 
+        # Filter scenarios by service type
+        svc_type = svc_config.type if svc_config else "auto"
+        filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
+
         tokens = self._tokenize_service(service)
         scored = sorted(
-            ((self._score_scenario(s, tokens), s) for s in all_scenarios),
+            ((self._score_scenario(s, tokens), s) for s in filtered_scenarios),
             key=lambda item: (item[0], item[1].name),
             reverse=True,
         )
@@ -346,9 +363,44 @@ class TestQLWatcher(WupWatcher):
             for base in (self.scenarios_dir, self.project_root):
                 candidate = base / smoke_name
                 if candidate.exists():
-                    return [candidate]
+                    # Only use smoke scenario if it matches service type
+                    if self._scenario_matches_type(candidate, svc_type):
+                        return [candidate]
+
+        # Fallback: don't return any scenarios for web services if no match found
+        # This prevents CLI scenarios from being assigned to web services
+        if svc_type == "web":
+            return []
 
         return []
+
+    def _filter_scenarios_by_type(self, scenarios: List[Path], svc_type: str) -> List[Path]:
+        """Filter scenarios by service type (web vs shell)."""
+        if svc_type == "auto":
+            return scenarios  # No filtering for auto type
+
+        cli_prefix = "cli-"
+        if svc_type == "shell":
+            # Shell services: only CLI scenarios
+            return [s for s in scenarios if s.name.startswith(cli_prefix)]
+        elif svc_type == "web":
+            # Web services: exclude CLI scenarios
+            return [s for s in scenarios if not s.name.startswith(cli_prefix)]
+        else:
+            return scenarios
+
+    def _scenario_matches_type(self, scenario: Path, svc_type: str) -> bool:
+        """Check if scenario matches service type."""
+        if svc_type == "auto":
+            return True
+
+        is_cli = scenario.name.startswith("cli-")
+        if svc_type == "shell":
+            return is_cli
+        elif svc_type == "web":
+            return not is_cli
+        else:
+            return True
 
     def _run_testql(self, args: Sequence[str], timeout: int) -> subprocess.CompletedProcess:
         cmd = [self.testql_bin, *args]

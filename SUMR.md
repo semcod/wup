@@ -16,12 +16,12 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.36`
+- **version**: `0.2.39`
 - **python_requires**: `>=3.9`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, testql(2), app.doql.less, goal.yaml, .env.example, src(17 mod), project/(5 analysis files)
+- **generated_from**: pyproject.toml, testql(4), app.doql.less, goal.yaml, .env.example, src(20 mod), project/(5 analysis files)
 
 ## Architecture
 
@@ -36,7 +36,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.36;
+  version: 0.2.39;
 }
 
 dependencies {
@@ -75,11 +75,14 @@ environment[name="local"] {
 - `wup.anomaly_models`
 - `wup.assistant`
 - `wup.cli`
+- `wup.cli_config_generator`
+- `wup.cli_scanner`
 - `wup.config`
 - `wup.core`
 - `wup.dependency_mapper`
 - `wup.monitoring_manifest`
 - `wup.planfile_reporter`
+- `wup.testql_cli_generator`
 - `wup.testql_discovery`
 - `wup.testql_monitor`
 - `wup.testql_watcher`
@@ -122,8 +125,10 @@ class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for chang
     def _to_full_url(endpoint)  # CC=5
     def _discover_scenarios()  # CC=2
     def get_service_config(service_name)  # CC=3
-    def _score_scenario(scenario, tokens)  # CC=8
-    def _select_scenarios_for_service(service)  # CC=12 ⚠
+    def _score_scenario(scenario, tokens)  # CC=10 ⚠
+    def _select_scenarios_for_service(service)  # CC=14 ⚠
+    def _filter_scenarios_by_type(scenarios, svc_type)  # CC=8
+    def _scenario_matches_type(scenario, svc_type)  # CC=4
     def _run_testql(args, timeout)  # CC=2
     def _write_track()  # CC=11 ⚠
     def _quick_timeout()  # CC=3
@@ -158,7 +163,13 @@ def _connect_module_api_on_frontend_proxy(probe)  # CC=5, fan=4
 def _firmware_plugin_probe_without_runtime(probe)  # CC=5, fan=4
 def is_monitoring_probe(probe)  # CC=9, fan=7
 def _service_path_patterns(services)  # CC=6, fan=7
-def _assign_http_probe(probe, services, path_lower)  # CC=19, fan=5 ⚠
+def _find_service_by_name(services, name)  # CC=3, fan=1
+def _find_service_by_token(services, token)  # CC=3, fan=1
+def _assign_by_port_8101(services)  # CC=1, fan=1
+def _assign_by_port_8202(services)  # CC=1, fan=1
+def _assign_by_port_8100(services, path_lower)  # CC=2, fan=3
+def _assign_by_connect_backend(services, path_lower)  # CC=4, fan=3
+def _assign_http_probe(probe, services, path_lower)  # CC=4, fan=5
 def _assign_by_longest_token(path_lower, services)  # CC=7, fan=3
 def _assign_by_path_prefix(path_lower, services)  # CC=13, fan=2 ⚠
 def assign_probe_to_service(probe, services)  # CC=5, fan=6
@@ -279,7 +290,7 @@ class VisualDiffer:  # Triggered by TestQLWatcher after a file change.
 
 ## Call Graph
 
-*96 nodes · 89 edges · 15 modules · CC̄=4.3*
+*104 nodes · 100 edges · 16 modules · CC̄=4.3*
 
 ### Hubs (by degree)
 
@@ -297,7 +308,7 @@ class VisualDiffer:  # Triggered by TestQLWatcher after a file change.
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.05s
-# nodes: 96 | edges: 89 | modules: 15
+# nodes: 104 | edges: 100 | modules: 16
 # CC̄=4.3
 
 HUBS[20]:
@@ -321,26 +332,26 @@ HUBS[20]:
     CC=3  in:1  out:26  total:27
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:18  total:18
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:18  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_config_yaml_round_trip
-    CC=6  in:1  out:16  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
-  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
-    CC=9  in:2  out:14  total:16
-  wup.config.load_config
-    CC=5  in:8  out:8  total:16
+  examples.visual_diff_demo.demo_config_yaml_round_trip
+    CC=6  in:1  out:16  total:17
   wup.cli.init
     CC=3  in:0  out:16  total:16
-  examples.visual_diff_demo.main
-    CC=2  in:0  out:15  total:15
+  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
+    CC=9  in:2  out:14  total:16
+  examples.visual_diff_demo.demo_live_page
+    CC=3  in:1  out:14  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -359,9 +370,8 @@ MODULES:
     _run_with_mock_services  CC=6  out:60
     simulate_testql_analysis  CC=2  out:18
     simulate_with_mock_data  CC=1  out:12
-  examples.visual_diff_demo  [9 funcs]
+  examples.visual_diff_demo  [8 funcs]
     _make_dom  CC=2  out:1
-    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -376,12 +386,15 @@ MODULES:
     main  CC=14  out:38
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.cli  [5 funcs]
+  wup.cli  [6 funcs]
+    _auto_generate_config  CC=3  out:13
     _load_watch_config  CC=4  out:3
     _refresh_monitoring_manifest  CC=3  out:4
     init  CC=3  out:16
     status  CC=5  out:121
     sync_testql  CC=13  out:45
+  wup.cli_config_generator  [1 funcs]
+    generate  CC=4  out:5
   wup.config  [6 funcs]
     _load_dotenv  CC=10  out:10
     find_config_file  CC=3  out:1
@@ -402,21 +415,21 @@ MODULES:
     _parse_port_mapping  CC=5  out:4
     build_monitoring_manifest  CC=9  out:15
     discover_docker_compose_services  CC=7  out:10
-  wup.testql_monitor  [18 funcs]
+  wup.testql_monitor  [23 funcs]
     _add_config_endpoints  CC=11  out:13
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
-    _resolve_base_url  CC=4  out:6
     probes_for_service  CC=9  out:11
+    _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_http_probe  CC=19  out:13
-    _connect_module_api_on_frontend_proxy  CC=5  out:5
-    _extract_base_url  CC=4  out:6
+    _assign_by_port_8100  CC=2  out:3
+    _assign_by_port_8101  CC=1  out:1
+    _assign_by_port_8202  CC=1  out:1
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:14
     _get_config_endpoints_for_service  CC=10  out:7
-  wup.visual_diff  [21 funcs]
+  wup.visual_diff  [23 funcs]
     __init__  CC=1  out:2
     _categorize_page_result  CC=6  out:12
     _check_page  CC=4  out:9
@@ -434,32 +447,6 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
-  wup.web_client.WebClient.send_event → wup.web_client._normalize
-  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
-  examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
-  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
-  examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
-  examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
-  examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
-  examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
-  examples.testql_demo.simulate_testql_analysis → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._run_with_mock_services
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_github_actions
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_gitlab_ci
-  examples.ci_cd_integration.main → examples.ci_cd_integration.show_ci_cd_demo
-  examples.webhook_notifications.main → examples.webhook_notifications.show_webhook_demo
-  scripts.run_probe_smoke.main → wup.config.load_config
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.build_monitoring_manifest
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.load_monitoring_manifest_from_yaml
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
   wup.monitoring_manifest.discover_docker_compose_services → wup.monitoring_manifest._load_compose_yaml
@@ -474,23 +461,53 @@ EDGES:
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
-  wup.cli._load_watch_config → wup.config.load_config
-  wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.build_monitoring_manifest
-  wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.patch_wup_yaml_monitoring
-  wup.cli.status → wup.config.load_config
-  wup.cli.init → wup.config.get_default_config
-  wup.cli.init → wup.config.save_config
-  wup.cli.sync_testql → wup.config.load_config
-  wup.cli.sync_testql → wup.monitoring_manifest.build_monitoring_manifest
-  wup.testql_monitor.parse_scenario_probes → wup.testql_monitor._parse_api_lines
-  wup.testql_monitor.parse_service_map_probes → wup.testql_monitor._extract_base_url
+  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
+  wup.web_client.WebClient.send_event → wup.web_client._normalize
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._warn_playwright_missing
+  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
+  wup.visual_diff._flatten → wup.visual_diff._node_signature
+  wup.visual_diff._diff_snapshots → wup.visual_diff._flatten
+  wup.visual_diff.VisualDiffer.__init__ → wup.visual_diff._resolve_base_url
+  wup.visual_diff.VisualDiffer._pages_for_service → wup.visual_diff._looks_like_visual_page
+  wup.visual_diff.VisualDiffer._categorize_page_result → wup.visual_diff._short_url
+  wup.visual_diff.VisualDiffer._print_scan_summary → wup.visual_diff._compact_error_message
+  wup.visual_diff.VisualDiffer._print_scan_summary → wup.visual_diff._sample_list
+  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._playwright_available
+  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._warn_playwright_missing
+  wup.visual_diff.VisualDiffer._check_page → wup._ast_detector.ASTDetector._snapshot_path
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._load_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._diff_snapshots
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._detect_content_issues
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._save_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._fetch_dom_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._compact_error_message
+  wup.visual_diff.VisualDiffer._write_diff_event → wup.visual_diff._page_slug
+  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
+  examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
+  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
+  examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
+  examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
+  examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
+  examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
 ```
 
 ## Test Contracts
 
 *Scenarios as contract signatures — what the system guarantees.*
 
-### Cli (1)
+### Cli (3)
+
+**`CLI Smoke Tests`**
+
+**`wup Command Tests`**
 
 **`CLI Command Tests`**
 
@@ -510,7 +527,7 @@ EDGES:
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.05s
-# nodes: 96 | edges: 89 | modules: 15
+# nodes: 104 | edges: 100 | modules: 16
 # CC̄=4.3
 
 HUBS[20]:
@@ -534,26 +551,26 @@ HUBS[20]:
     CC=3  in:1  out:26  total:27
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:18  total:18
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:18  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_config_yaml_round_trip
-    CC=6  in:1  out:16  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
-  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
-    CC=9  in:2  out:14  total:16
-  wup.config.load_config
-    CC=5  in:8  out:8  total:16
+  examples.visual_diff_demo.demo_config_yaml_round_trip
+    CC=6  in:1  out:16  total:17
   wup.cli.init
     CC=3  in:0  out:16  total:16
-  examples.visual_diff_demo.main
-    CC=2  in:0  out:15  total:15
+  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
+    CC=9  in:2  out:14  total:16
+  examples.visual_diff_demo.demo_live_page
+    CC=3  in:1  out:14  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -572,9 +589,8 @@ MODULES:
     _run_with_mock_services  CC=6  out:60
     simulate_testql_analysis  CC=2  out:18
     simulate_with_mock_data  CC=1  out:12
-  examples.visual_diff_demo  [9 funcs]
+  examples.visual_diff_demo  [8 funcs]
     _make_dom  CC=2  out:1
-    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -589,12 +605,15 @@ MODULES:
     main  CC=14  out:38
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.cli  [5 funcs]
+  wup.cli  [6 funcs]
+    _auto_generate_config  CC=3  out:13
     _load_watch_config  CC=4  out:3
     _refresh_monitoring_manifest  CC=3  out:4
     init  CC=3  out:16
     status  CC=5  out:121
     sync_testql  CC=13  out:45
+  wup.cli_config_generator  [1 funcs]
+    generate  CC=4  out:5
   wup.config  [6 funcs]
     _load_dotenv  CC=10  out:10
     find_config_file  CC=3  out:1
@@ -615,21 +634,21 @@ MODULES:
     _parse_port_mapping  CC=5  out:4
     build_monitoring_manifest  CC=9  out:15
     discover_docker_compose_services  CC=7  out:10
-  wup.testql_monitor  [18 funcs]
+  wup.testql_monitor  [23 funcs]
     _add_config_endpoints  CC=11  out:13
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
-    _resolve_base_url  CC=4  out:6
     probes_for_service  CC=9  out:11
+    _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_http_probe  CC=19  out:13
-    _connect_module_api_on_frontend_proxy  CC=5  out:5
-    _extract_base_url  CC=4  out:6
+    _assign_by_port_8100  CC=2  out:3
+    _assign_by_port_8101  CC=1  out:1
+    _assign_by_port_8202  CC=1  out:1
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:14
     _get_config_endpoints_for_service  CC=10  out:7
-  wup.visual_diff  [21 funcs]
+  wup.visual_diff  [23 funcs]
     __init__  CC=1  out:2
     _categorize_page_result  CC=6  out:12
     _check_page  CC=4  out:9
@@ -647,32 +666,6 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
-  wup.web_client.WebClient.send_event → wup.web_client._normalize
-  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
-  examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
-  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
-  examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
-  examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
-  examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
-  examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
-  examples.testql_demo.simulate_testql_analysis → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._run_with_mock_services
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_github_actions
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_gitlab_ci
-  examples.ci_cd_integration.main → examples.ci_cd_integration.show_ci_cd_demo
-  examples.webhook_notifications.main → examples.webhook_notifications.show_webhook_demo
-  scripts.run_probe_smoke.main → wup.config.load_config
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.build_monitoring_manifest
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.load_monitoring_manifest_from_yaml
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
   wup.monitoring_manifest.discover_docker_compose_services → wup.monitoring_manifest._load_compose_yaml
@@ -687,59 +680,85 @@ EDGES:
   wup.config.load_config → wup.config.validate_config
   wup.config.load_config → wup.config.find_config_file
   wup.config.load_config → wup.config.get_default_config
-  wup.cli._load_watch_config → wup.config.load_config
-  wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.build_monitoring_manifest
-  wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.patch_wup_yaml_monitoring
-  wup.cli.status → wup.config.load_config
-  wup.cli.init → wup.config.get_default_config
-  wup.cli.init → wup.config.save_config
-  wup.cli.sync_testql → wup.config.load_config
-  wup.cli.sync_testql → wup.monitoring_manifest.build_monitoring_manifest
-  wup.testql_monitor.parse_scenario_probes → wup.testql_monitor._parse_api_lines
-  wup.testql_monitor.parse_service_map_probes → wup.testql_monitor._extract_base_url
+  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
+  wup.web_client.WebClient.send_event → wup.web_client._normalize
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._playwright_available
+  wup.visual_diff._fetch_dom_snapshot → wup.visual_diff._warn_playwright_missing
+  wup.visual_diff._snapshot_path → wup.visual_diff._page_slug
+  wup.visual_diff._flatten → wup.visual_diff._node_signature
+  wup.visual_diff._diff_snapshots → wup.visual_diff._flatten
+  wup.visual_diff.VisualDiffer.__init__ → wup.visual_diff._resolve_base_url
+  wup.visual_diff.VisualDiffer._pages_for_service → wup.visual_diff._looks_like_visual_page
+  wup.visual_diff.VisualDiffer._categorize_page_result → wup.visual_diff._short_url
+  wup.visual_diff.VisualDiffer._print_scan_summary → wup.visual_diff._compact_error_message
+  wup.visual_diff.VisualDiffer._print_scan_summary → wup.visual_diff._sample_list
+  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._playwright_available
+  wup.visual_diff.VisualDiffer.run_for_service → wup.visual_diff._warn_playwright_missing
+  wup.visual_diff.VisualDiffer._check_page → wup._ast_detector.ASTDetector._snapshot_path
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._load_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._diff_snapshots
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._detect_content_issues
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._save_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._fetch_dom_snapshot
+  wup.visual_diff.VisualDiffer._check_page → wup.visual_diff._compact_error_message
+  wup.visual_diff.VisualDiffer._write_diff_event → wup.visual_diff._page_slug
+  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
+  examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
+  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
+  examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
+  examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
+  examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
+  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
+  examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
+  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 57f 9709L | python:38,yaml:8,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-21
+# code2llm | 62f 10682L | python:41,yaml:10,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-22
 # generated in 0.02s
-# CC̄=4.3 | critical:1/320 | dups:0 | cycles:2
+# CC̄=4.3 | critical:0/355 | dups:0 | cycles:0
 
-HEALTH[1]:
-  🟡 CC    _assign_http_probe CC=19 (limit:15)
+HEALTH[0]: ok
 
-REFACTOR[2]:
-  1. split 1 high-CC methods  (CC>15)
-  2. break 2 circular dependencies
+REFACTOR[0]: none needed
 
-PIPELINES[227]:
-  [1] Src [__init__]: __init__
+PIPELINES[253]:
+  [1] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
-  [2] Src [_should_scan]: _should_scan
+  [2] Src [__init__]: __init__
       PURITY: 100% pure
-  [3] Src [scan_file]: scan_file
+  [3] Src [_should_scan]: _should_scan
       PURITY: 100% pure
-  [4] Src [scan_directory]: scan_directory
+  [4] Src [scan_file]: scan_file
       PURITY: 100% pure
-  [5] Src [get_summary]: get_summary
+  [5] Src [scan_directory]: scan_directory
       PURITY: 100% pure
 
 LAYERS:
   scripts/                        CC̄=14.0   ←in:0  →out:3
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
-  wup/                            CC̄=4.9    ←in:9  →out:1
-  │ !! testql_watcher             795L  2C   37m  CC=13     ←0
+  wup/                            CC̄=4.7    ←in:9  →out:0
+  │ !! testql_watcher             829L  2C   39m  CC=14     ←0
+  │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! cli                        682L  0C   12m  CC=13     ←0
   │ !! core                       652L  2C   26m  CC=14     ←0
+  │ !! testql_monitor             521L  3C   36m  CC=13     ←1
   │ !! visual_diff                518L  1C   24m  CC=11     ←1
-  │ !! testql_monitor             485L  3C   30m  CC=19     ←2
-  │ config                     464L  0C    6m  CC=14     ←6
+  │ config                     464L  0C    6m  CC=14     ←7
   │ monitoring_manifest        340L  1C   16m  CC=11     ←2
+  │ cli_scanner                302L  3C   12m  CC=10     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
+  │ cli_config_generator       223L  1C    6m  CC=6      ←0
+  │ testql_cli_generator       215L  1C    6m  CC=6      ←0
   │ planfile_reporter          203L  1C   11m  CC=13     ←0
   │ web_client                 185L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
@@ -747,14 +766,14 @@ LAYERS:
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
-  │ __init__                    39L  0C    0m  CC=0.0    ←0
+  │ __init__                    46L  0C    1m  CC=2      ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.4    ←in:1  →out:6
+  examples/                       CC̄=2.4    ←in:0  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
   │ ci_cd_integration          339L  0C    4m  CC=3      ←0
-  │ visual_diff_demo           305L  0C    9m  CC=6      ←1
+  │ visual_diff_demo           305L  0C    9m  CC=6      ←0
   │ testql_integration         286L  1C    6m  CC=6      ←0
   │ c2004_monorepo_demo        258L  0C   10m  CC=7      ←0
   │ testql_demo                191L  0C    4m  CC=6      ←0
@@ -784,24 +803,26 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   117L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   118L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
+  │ cli-wup.testql.toon.yaml    21L  0C    0m  CC=0.0    ←0
   │ generated-cli-tests.testql.toon.yaml    20L  0C    0m  CC=0.0    ←0
+  │ cli-smoke.testql.toon.yaml    17L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
      examples/flask-app/app/__init__.py        0L
 
 COUPLING:
                  wup  examples   scripts
-       wup        ──         1        ←3  hub
+       wup        ──        ←6        ←3  hub
   examples         6        ──          
    scripts         3                  ──
-  CYCLES: 2
+  CYCLES: none
   HUB: wup/ (fan-in=9)
 
 EXTERNAL:
@@ -812,15 +833,15 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 4 groups | 36f 6343L | 2026-05-21
+# redup/duplication | 4 groups | 38f 6992L | 2026-05-22
 
 SUMMARY:
-  files_scanned: 36
-  total_lines:   6343
+  files_scanned: 38
+  total_lines:   6992
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       2311
+  scan_ms:       2809
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
@@ -885,37 +906,33 @@ METRICS-TARGET:
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 248 func | 16f | 2026-05-21
+# code2llm/evolution | 283 func | 20f | 2026-05-22
 # generated in 0.00s
 
-NEXT[4] (ranked by impact):
+NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/testql_watcher.py
-      WHY: 795L, 2 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 10335
+      WHY: 829L, 2 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 11606
 
-  [2] !! SPLIT           wup/assistant.py
+  [2] !! SPLIT           wup/cli.py
+      WHY: 799L, 0 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 10387
+
+  [3] !! SPLIT           wup/assistant.py
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [3] !! SPLIT           wup/cli.py
-      WHY: 682L, 0 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 8866
-
-  [4] !  SPLIT-FUNC      _assign_http_probe  CC=19  fan=8
-      WHY: CC=19 exceeds 15
-      EFFORT: ~1h  IMPACT: 152
-
 
 RISKS[3]:
-  ⚠ Splitting wup/testql_watcher.py may break 37 import paths
+  ⚠ Splitting wup/testql_watcher.py may break 39 import paths
+  ⚠ Splitting wup/cli.py may break 14 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
-  ⚠ Splitting wup/cli.py may break 12 import paths
 
 METRICS-TARGET:
-  CC̄:          4.9 → ≤3.4
-  max-CC:      19 → ≤9
-  god-modules: 6 → 0
-  high-CC(≥15): 1 → ≤0
+  CC̄:          4.7 → ≤3.3
+  max-CC:      14 → ≤7
+  god-modules: 7 → 0
+  high-CC(≥15): 0 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -943,7 +960,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.3 → now CC̄=4.9
+  prev CC̄=4.9 → now CC̄=4.7
 ```
 
 ## Intent

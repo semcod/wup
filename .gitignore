@@ -1,4 +1,21 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/config_1779485633797501415_6453.pkl
+.code2llm_cache/config_1779485903503139874_16729.pkl
+.code2llm_cache/testql_watcher_1779485964454000000_33378.pkl
+.code2llm_cache/tree_1779485611539296271_4265.pkl
+.code2llm_cache/wup_1779485971513156277_3016.pkl
+.code2llm_cache/__init___1779485018125999004_1238.pkl
+.code2llm_cache/cli-smoke.testql.toon_1779484925787312730_284.pkl
+.code2llm_cache/cli-wup.testql.toon_1779484926066103032_396.pkl
+.code2llm_cache/cli_1779485246734000000_32462.pkl
+.code2llm_cache/cli_config_generator_1779484950573000000_7595.pkl
+.code2llm_cache/cli_scanner_1779484665606000000_10660.pkl
+.code2llm_cache/pyproject_1779485018115981024_1830.pkl
+.code2llm_cache/testql_cli_generator_1779484676126000000_7095.pkl
+.code2llm_cache/testql_monitor_1779484477377000000_18998.pkl
+.code2llm_cache/testql_watcher_1779485318415000000_32577.pkl
+.code2llm_cache/tree_1779397235848584459_4060.pkl
+.code2llm_cache/wup_1779485328342655559_3016.pkl
 .code2llm_cache/__init___1779396843079217862_994.pkl
 .code2llm_cache/cli_1779358589700069902_27494.pkl
 .code2llm_cache/config_1779393825903947745_6450.pkl

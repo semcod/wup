@@ -5,25 +5,30 @@ flowchart TD
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
-        wup__web_client___httpx_available["_httpx_available"]
-        wup__web_client__resolve_endpoint["resolve_endpoint"]
-        wup__web_client___normalize["_normalize"]
-        wup__web_client__WebClient___headers["_headers"]
-        wup__web_client__WebClient__send_event["send_event"]
-        wup__web_client__WebClient__send_regression["send_regression"]
-        wup__web_client__WebClient__send_pass["send_pass"]
-        wup__web_client__WebClient__send_health_transition["send_health_transition"]
-        wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
+        wup__testql_cli_generator__TestQLCLIGenerator__generate["generate"]
+        wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario["_generate_smoke_scenario"]
+        wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario["_generate_command_scenario"]
+        wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario["generate_custom_scenario"]
+        wup__testql_cli_generator__TestQLCLIGenerator__print_summary["print_summary"]
         wup__cli___load_watch_config["_load_watch_config"]
         wup__cli___print_watch_header["_print_watch_header"]
         wup__cli___refresh_monitoring_manifest["_refresh_monitoring_manifest"]
         wup__cli___create_watcher["_create_watcher"]
         wup__cli__watch["watch"]
+        wup__cli___auto_generate_config["_auto_generate_config"]
         wup__cli__map_deps["map_deps"]
-        ...["+6 more"]
+        wup__cli__status["status"]
+        wup__cli__init["init"]
+        wup__cli__testql_endpoints["testql_endpoints"]
+        ...["+29 more"]
     end
 
     subgraph Core
+        wup__monitoring_manifest___parse_port_mapping["_parse_port_mapping"]
+        wup__monitoring_manifest___extract_service_from_spec["_extract_service_from_spec"]
+        wup__monitoring_manifest__discover_docker_compose_services["discover_docker_compose_servic"]
+        wup__monitoring_manifest___host_port_from_mapping["_host_port_from_mapping"]
+        wup__monitoring_manifest__build_monitoring_manifest("build_monitoring_manifest CC=9")
         wup__anomaly_detector__AnomalyDetector___should_scan["_should_scan"]
         wup__anomaly_detector__AnomalyDetector__scan_file["scan_file"]
         wup__anomaly_detector__AnomalyDetector__scan_directory["scan_directory"]
@@ -31,15 +36,10 @@ flowchart TD
         wup__anomaly_detector__AnomalyDetector__print_report["print_report"]
         wup__anomaly_detector__quick_scan["quick_scan"]
         wup__anomaly_detector__scan_yaml_changes["scan_yaml_changes"]
-        wup__assistant__WupAssistant___dispatch_menu_choice["_dispatch_menu_choice"]
-        wup__assistant__WupAssistant__run["run"]
-        wup__assistant__WupAssistant___init_project["_init_project"]
-        wup__assistant__WupAssistant___detect_framework["_detect_framework"]
-        wup__assistant__WupAssistant___auto_detect_services["_auto_detect_services"]
-        wup__assistant__WupAssistant___detect_service_type["_detect_service_type"]
-        wup__assistant__WupAssistant___configure_services["_configure_services"]
-        wup__assistant__WupAssistant___add_service_interactive["_add_service_interactive"]
+        wup__testql_monitor__ProbeTarget__probe["probe"]
+        wup__testql_monitor___ProbeAccumulator__add["add"]
+        wup__testql_monitor__TestQLMonitor___service_map_paths["_service_map_paths"]
         ...["+152 more"]
     end
 
-    class wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory,wup__anomaly_detector__AnomalyDetector__get_summary,wup__anomaly_detector__AnomalyDetector__print_report,wup__anomaly_detector__quick_scan,wup__anomaly_detector__scan_yaml_changes,wup__assistant__WupAssistant___dispatch_menu_choice,wup__assistant__WupAssistant__run,wup__assistant__WupAssistant___init_project entry
+    class wup__testql_cli_generator__TestQLCLIGenerator__generate,wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario,wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario,wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario,wup__testql_cli_generator__TestQLCLIGenerator__print_summary,wup__monitoring_manifest___host_port_from_mapping,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory,wup__anomaly_detector__AnomalyDetector__get_summary entry

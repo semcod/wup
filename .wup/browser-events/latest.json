@@ -1,0 +1,9 @@
+{
+  "timestamp": 1779485943,
+  "type": "wup_testql_error",
+  "service": "wup-shell",
+  "stage": "quick",
+  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485943_wup-shell_quick.json",
+  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+  "message": "Usage: testql run [OPTIONS] FILES..."
+}

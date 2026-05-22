@@ -69,6 +69,8 @@
 ├── SUMR.md
 ├── testql-deps.json
 ├── testql-scenarios
+│   ├── cli-smoke.testql.toon.yaml
+│   ├── cli-wup.testql.toon.yaml
 │   ├── generated-cli-tests.testql.toon.yaml
 │   └── generated-from-pytests.testql.toon.yaml
 ├── tests
@@ -88,7 +90,9 @@
 │   ├── anomaly_models.py
 │   ├── assistant.py
 │   ├── _ast_detector.py
+│   ├── cli_config_generator.py
 │   ├── cli.py
+│   ├── cli_scanner.py
 │   ├── config.py
 │   ├── core.py
 │   ├── dependency_mapper.py
@@ -99,6 +103,7 @@
 │   │   └── __init__.py
 │   ├── monitoring_manifest.py
 │   ├── planfile_reporter.py
+│   ├── testql_cli_generator.py
 │   ├── testql_discovery.py
 │   ├── testql_monitor.py
 │   ├── testql_watcher.py
@@ -115,4 +120,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-24 directories, 92 files
+24 directories, 97 files

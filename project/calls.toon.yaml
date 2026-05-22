@@ -1,6 +1,6 @@
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.05s
-# nodes: 96 | edges: 89 | modules: 15
+# nodes: 104 | edges: 100 | modules: 16
 # CC̄=4.3
 
 HUBS[20]:
@@ -18,32 +18,32 @@ HUBS[20]:
     CC=13  in:0  out:45  total:45
   scripts.run_probe_smoke.main
     CC=14  in:0  out:38  total:38
-  examples.c2004_monorepo_demo.analyze_monorepo
-    CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
-  wup.core.WupWatcher.__init__
-    CC=7  in:0  out:18  total:18
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
+  wup.core.WupWatcher.__init__
+    CC=7  in:0  out:18  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_config_yaml_round_trip
-    CC=6  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
+  examples.visual_diff_demo.demo_config_yaml_round_trip
+    CC=6  in:1  out:16  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
-  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
-    CC=9  in:2  out:14  total:16
-  wup.config.load_config
-    CC=5  in:8  out:8  total:16
   wup.cli.init
     CC=3  in:0  out:16  total:16
-  examples.visual_diff_demo.main
-    CC=2  in:0  out:15  total:15
+  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
+    CC=9  in:2  out:14  total:16
+  examples.visual_diff_demo.demo_live_page
+    CC=3  in:1  out:14  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -62,9 +62,8 @@ MODULES:
     _run_with_mock_services  CC=6  out:60
     simulate_testql_analysis  CC=2  out:18
     simulate_with_mock_data  CC=1  out:12
-  examples.visual_diff_demo  [9 funcs]
+  examples.visual_diff_demo  [8 funcs]
     _make_dom  CC=2  out:1
-    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -79,12 +78,15 @@ MODULES:
     main  CC=14  out:38
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.cli  [5 funcs]
+  wup.cli  [6 funcs]
+    _auto_generate_config  CC=3  out:13
     _load_watch_config  CC=4  out:3
     _refresh_monitoring_manifest  CC=3  out:4
     init  CC=3  out:16
     status  CC=5  out:121
     sync_testql  CC=13  out:45
+  wup.cli_config_generator  [1 funcs]
+    generate  CC=4  out:5
   wup.config  [6 funcs]
     _load_dotenv  CC=10  out:10
     find_config_file  CC=3  out:1
@@ -105,21 +107,21 @@ MODULES:
     _parse_port_mapping  CC=5  out:4
     build_monitoring_manifest  CC=9  out:15
     discover_docker_compose_services  CC=7  out:10
-  wup.testql_monitor  [18 funcs]
+  wup.testql_monitor  [24 funcs]
     _add_config_endpoints  CC=11  out:13
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
     _resolve_base_url  CC=4  out:6
     probes_for_service  CC=9  out:11
+    _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_http_probe  CC=19  out:13
-    _connect_module_api_on_frontend_proxy  CC=5  out:5
-    _extract_base_url  CC=4  out:6
+    _assign_by_port_8100  CC=2  out:3
+    _assign_by_port_8101  CC=1  out:1
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:14
     _get_config_endpoints_for_service  CC=10  out:7
-  wup.visual_diff  [21 funcs]
+  wup.visual_diff  [22 funcs]
     __init__  CC=1  out:2
     _categorize_page_result  CC=6  out:12
     _check_page  CC=4  out:9
@@ -137,32 +139,6 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
-  wup.web_client.WebClient.send_event → wup.web_client._normalize
-  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module
-  examples.c2004_monorepo_demo.analyze_monorepo → examples.c2004_monorepo_demo._discover_modules
-  examples.c2004_monorepo_demo.main → examples.c2004_monorepo_demo.analyze_monorepo
-  examples.visual_diff_demo.demo_diff_algorithm → examples.visual_diff_demo._make_dom
-  examples.visual_diff_demo.demo_diff_algorithm → wup.visual_diff._diff_snapshots
-  examples.visual_diff_demo.demo_page_slug → wup.visual_diff._page_slug
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.save_config
-  examples.visual_diff_demo.demo_config_yaml_round_trip → wup.config.load_config
-  examples.visual_diff_demo.demo_live_page → wup.visual_diff._playwright_available
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_diff_algorithm
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_page_slug
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_snapshot_persistence
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_config_yaml_round_trip
-  examples.visual_diff_demo.main → examples.visual_diff_demo.demo_disabled_is_noop
-  examples.testql_demo.simulate_testql_analysis → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._build_mock_services
-  examples.testql_demo.simulate_with_mock_data → examples.testql_demo._run_with_mock_services
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_github_actions
-  examples.ci_cd_integration.main → examples.ci_cd_integration.generate_gitlab_ci
-  examples.ci_cd_integration.main → examples.ci_cd_integration.show_ci_cd_demo
-  examples.webhook_notifications.main → examples.webhook_notifications.show_webhook_demo
-  scripts.run_probe_smoke.main → wup.config.load_config
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.build_monitoring_manifest
-  scripts.run_probe_smoke.main → wup.monitoring_manifest.load_monitoring_manifest_from_yaml
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
   wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
   wup.monitoring_manifest.discover_docker_compose_services → wup.monitoring_manifest._load_compose_yaml
@@ -173,13 +149,11 @@ EDGES:
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest._build_docker_rows
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest._build_scenario_rows
   wup.monitoring_manifest.patch_wup_yaml_monitoring → wup.monitoring_manifest.manifest_to_yaml_block
-  wup.config.load_config → wup.config._load_dotenv
-  wup.config.load_config → wup.config.validate_config
-  wup.config.load_config → wup.config.find_config_file
-  wup.config.load_config → wup.config.get_default_config
   wup.cli._load_watch_config → wup.config.load_config
   wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.build_monitoring_manifest
   wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.patch_wup_yaml_monitoring
+  wup.cli._auto_generate_config → wup.config.get_default_config
+  wup.cli._auto_generate_config → wup.config.save_config
   wup.cli.status → wup.config.load_config
   wup.cli.init → wup.config.get_default_config
   wup.cli.init → wup.config.save_config
@@ -187,3 +161,31 @@ EDGES:
   wup.cli.sync_testql → wup.monitoring_manifest.build_monitoring_manifest
   wup.testql_monitor.parse_scenario_probes → wup.testql_monitor._parse_api_lines
   wup.testql_monitor.parse_service_map_probes → wup.testql_monitor._extract_base_url
+  wup.testql_monitor.parse_service_map_probes → wup.testql_monitor._parse_endpoint_row
+  wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._connect_module_api_on_frontend_proxy
+  wup.testql_monitor.is_monitoring_probe → wup.testql_monitor._firmware_plugin_probe_without_runtime
+  wup.testql_monitor._assign_by_port_8101 → wup.testql_monitor._find_service_by_name
+  wup.testql_monitor._assign_by_port_8202 → wup.testql_monitor._find_service_by_token
+  wup.testql_monitor._assign_by_port_8100 → wup.testql_monitor._find_service_by_name
+  wup.testql_monitor._assign_by_port_8100 → wup.testql_monitor._find_service_by_token
+  wup.testql_monitor._assign_http_probe → wup.testql_monitor._assign_by_connect_backend
+  wup.testql_monitor._assign_http_probe → wup.testql_monitor._assign_by_port_8101
+  wup.testql_monitor._assign_http_probe → wup.testql_monitor._assign_by_port_8202
+  wup.testql_monitor._assign_http_probe → wup.testql_monitor._assign_by_port_8100
+  wup.testql_monitor._assign_by_longest_token → wup.testql_monitor._service_path_patterns
+  wup.testql_monitor.assign_probe_to_service → wup.testql_monitor._assign_by_longest_token
+  wup.testql_monitor.assign_probe_to_service → wup.testql_monitor._assign_by_path_prefix
+  wup.testql_monitor.assign_probe_to_service → wup.testql_monitor._assign_http_probe
+  wup.testql_monitor.TestQLMonitor._add_config_endpoints → wup.testql_monitor.assign_probe_to_service
+  wup.testql_monitor.TestQLMonitor._add_config_endpoints → wup.testql_monitor.is_monitoring_probe
+  wup.testql_monitor.TestQLMonitor._add_scenario_probes → wup.testql_monitor.parse_scenario_probes
+  wup.testql_monitor.TestQLMonitor._add_scenario_probes → wup.testql_monitor.assign_probe_to_service
+  wup.testql_monitor.TestQLMonitor._add_scenario_probes → wup.testql_monitor.is_monitoring_probe
+  wup.testql_monitor.TestQLMonitor._add_service_map_probes → wup.testql_monitor.parse_service_map_probes
+  wup.testql_monitor.TestQLMonitor._add_service_map_probes → wup.testql_monitor.assign_probe_to_service
+  wup.testql_monitor.TestQLMonitor._add_service_map_probes → wup.testql_monitor.is_monitoring_probe
+  wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
+  wup.cli_config_generator.CLIConfigGenerator.generate → wup.config.load_config
+  wup.core.WupWatcher.__init__ → wup.config.load_config
+  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
+  wup.web_client.WebClient.send_event → wup.web_client._normalize

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.40] - 2026-05-22
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .code2llm_cache/config_1779485633797501415_6453.pkl
+- Update .code2llm_cache/config_1779485903503139874_16729.pkl
+- Update .code2llm_cache/testql_watcher_1779485964454000000_33378.pkl
+- Update .code2llm_cache/tree_1779485611539296271_4265.pkl
+- Update .code2llm_cache/wup_1779485971513156277_3016.pkl
+- Update .gitignore
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health-events.jsonl
+- Update .wup/service-health.json
+- Update .wup/tracks/1779485019___home_quick.json
+- ... and 58 more files
+
 ## [0.2.39] - 2026-05-22
 
 ### Docs

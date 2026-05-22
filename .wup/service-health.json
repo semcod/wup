@@ -1,0 +1,44 @@
+{
+  "//home": {
+    "status": "down",
+    "updated_at": 1779485904,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485904___home_quick.json"
+  },
+  "iter1-api": {
+    "status": "down",
+    "updated_at": 1779485940,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485940_iter1-api_quick.json"
+  },
+  "iter1-shell": {
+    "status": "down",
+    "updated_at": 1779485941,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485941_iter1-shell_quick.json"
+  },
+  "iter7-auto": {
+    "status": "down",
+    "updated_at": 1779485942,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485942_iter7-auto_quick.json"
+  },
+  "iter7-shell": {
+    "status": "down",
+    "updated_at": 1779485942,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485942_iter7-shell_quick.json"
+  },
+  "wup-shell": {
+    "status": "down",
+    "updated_at": 1779485943,
+    "stage": "quick",
+    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779485943_wup-shell_quick.json"
+  }
+}
