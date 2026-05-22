@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.38] - 2026-05-22
+
+### Docs
+- Update README.md
+- Update docs/TESTQL_INTEGRATION.md
+- Update docs/WUP_ASSISTANT.md
+
+### Test
+- Update testql-scenarios/cli-smoke.testql.toon.yaml
+- Update testql-scenarios/cli-wup.testql.toon.yaml
+
+### Other
+- Update uv.lock
+- Update wup.yaml
+
 ## [0.2.37] - 2026-05-22
 
 ### Docs

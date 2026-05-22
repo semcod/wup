@@ -15,6 +15,19 @@ wup assistant --goal setup-project
 wup assistant --quick --template fastapi
 ```
 
+## CLI/Shell Testing Quick Setup
+
+For CLI projects, use the automated setup instead of the interactive assistant:
+
+```bash
+# Automatically detect CLI commands and generate configuration
+wup init-cli ./my-project
+
+# This scans pyproject.toml, setup.py, setup.cfg for entry points
+# Generates wup.yaml with shell service configuration
+# Creates TestQL scenarios in testql-scenarios/
+```
+
 ## Assistant Commands
 
 ### `help` - Show available commands

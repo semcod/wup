@@ -1,0 +1,21 @@
+# SCENARIO: wup Command Tests
+# TYPE: cli
+# GENERATED: true
+
+CONFIG[2]{key, value}:
+  cli_command, wup
+  timeout_ms, 30000
+
+# Test 1: wup --help
+SHELL "wup --help" 5000
+ASSERT_EXIT_CODE 0
+ASSERT_STDOUT_CONTAINS "usage"
+
+# Test 2: wup --version
+SHELL "wup --version" 5000
+ASSERT_EXIT_CODE 0
+
+
+# Test: wup with invalid flag (should fail)
+SHELL "wup --invalid-flag-xyz123" 5000
+ASSERT_EXIT_CODE != 0

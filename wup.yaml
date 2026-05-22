@@ -1,3 +1,7 @@
+# WUP Configuration for CLI Testing
+# Generated automatically by wup init-cli
+# Project: c2004
+
 project:
   name: c2004
   description: Auto-generated config for c2004
@@ -11,28 +15,58 @@ watch:
   - '*.txt'
   - tests/**
   - node_modules/**
+  file_types: []
 services:
-  # Services with auto-detection and coincidence detection
-  - name: "iter1-api"
-    type: "web"
-    quick_tests:
-      scope: "read"
-      max_endpoints: 3
-  - name: "iter1-shell"
-    type: "shell"
-    quick_tests:
-      scope: "all"
-      max_endpoints: 3
-  - name: "iter7-auto"
-    type: "web"
-    quick_tests:
-      scope: "read,write"
-      max_endpoints: 5
-  - name: "iter7-shell"
-    type: "shell"
-    quick_tests:
-      scope: "all"
-      max_endpoints: 5
+- name: iter1-api
+  type: web
+  paths: []
+  root: ''
+  quick_tests:
+    scope: read
+    max_endpoints: 3
+  detail_tests:
+    scope: all
+    max_endpoints: 10
+- name: iter1-shell
+  type: shell
+  paths: []
+  root: ''
+  quick_tests:
+    scope: all
+    max_endpoints: 3
+  detail_tests:
+    scope: all
+    max_endpoints: 10
+- name: iter7-auto
+  type: web
+  paths: []
+  root: ''
+  quick_tests:
+    scope: read,write
+    max_endpoints: 5
+  detail_tests:
+    scope: all
+    max_endpoints: 10
+- name: iter7-shell
+  type: shell
+  paths: []
+  root: ''
+  quick_tests:
+    scope: all
+    max_endpoints: 5
+  detail_tests:
+    scope: all
+    max_endpoints: 10
+- name: wup-shell
+  type: shell
+  paths: []
+  root: /home/tom/github/semcod/wup
+  quick_tests:
+    scope: all
+    max_endpoints: 1
+  detail_tests:
+    scope: all
+    max_endpoints: 2
 test_strategy:
   quick:
     debounce_s: 2
@@ -46,6 +80,4 @@ testql:
   scenario_dir: testql-scenarios
   smoke_scenario: iter1-api-v3-smoke.testql.toon.yaml
   output_format: json
-  extra_args:
-  - --timeout 10s
-  endpoint_discovery: true
+  probe_interval_s: 0

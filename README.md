@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.37-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.71-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-19.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.38-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.99-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-20.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.7096 (47 commits)
-- 👤 **Human dev:** ~$1947 (19.5h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.9855 (48 commits)
+- 👤 **Human dev:** ~$2047 (20.5h @ $100/h, 30min dedup)
 
 Generated on 2026-05-22 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.37-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.38-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -34,6 +34,7 @@ WUP monitors file changes and runs intelligent regression tests using a 3-layer 
 - ⚙️ **Configuration System**: Declarative configuration via `wup.yaml` file
 - 🎛️ **Per-Service Settings**: Custom test strategies per service
 - 🧪 **TestQL Integration**: Native support for TestQL scenarios
+- 🔧 **CLI/Shell Automation**: Auto-detection and configuration of CLI tools and shell scripts
 
 ## Installation
 
@@ -115,6 +116,12 @@ wup init
 
 # Generate with custom output path
 wup init --output .wup.yaml
+
+# Auto-detect and configure CLI/shell services
+wup init-cli ./my-project
+
+# Merge CLI configuration with existing wup.yaml
+wup init-cli ./my-project --merge
 ```
 
 ### Check Status
@@ -126,6 +133,35 @@ wup status
 # Custom deps file
 wup status --deps my-deps.json
 ```
+
+### CLI/Shell Automation
+
+WUP can automatically detect and configure CLI tools and shell scripts for testing:
+
+```bash
+# Auto-detect CLI commands and generate configuration
+wup init-cli ./my-project
+
+# Merge with existing wup.yaml
+wup init-cli ./my-project --merge
+
+# Custom output paths
+wup init-cli ./my-project --output-config custom.yaml --output-scenarios custom-scenarios
+
+# Skip argument inference (faster)
+wup init-cli ./my-project --no-infer-args
+```
+
+The `init-cli` command:
+- Scans `pyproject.toml`, `setup.py`, `setup.cfg` for entry points
+- Detects packages with `__main__.py` modules
+- Generates shell service configuration in `wup.yaml`
+- Creates TestQL scenarios for CLI commands in `testql-scenarios/`
+- Supports merging with existing configurations
+
+**Generated files:**
+- `cli-smoke.testql.toon.yaml` - Smoke tests for all CLI commands
+- `cli-{command}.testql.toon.yaml` - Detailed tests for each command
 
 ## Architecture
 
@@ -389,7 +425,10 @@ wup/
 │   ├── __init__.py            # Package exports
 │   ├── anomaly_detector.py    # AnomalyDetector: hash, YAML structure, AST diff
 │   ├── assistant.py           # WupAssistant: interactive configuration wizard
-│   ├── cli.py                 # CLI: watch, map-deps, status, init, testql-endpoints, assistant, version
+│   ├── cli.py                 # CLI: watch, map-deps, status, init, testql-endpoints, assistant, version, init-cli
+│   ├── cli_scanner.py         # CLIScanner: detects CLI commands from pyproject.toml, setup.py, etc.
+│   ├── cli_config_generator.py # CLIConfigGenerator: generates wup.yaml for shell services
+│   ├── testql_cli_generator.py # TestQLCliGenerator: generates TestQL scenarios for CLI commands
 │   ├── config.py              # Config loading/saving + .wup.env support
 │   ├── core.py                # WupWatcher: detection, inference, scheduling
 │   ├── dependency_mapper.py   # DependencyMapper: codebase → deps.json
@@ -491,6 +530,7 @@ Comprehensive documentation is available in the `docs/` directory:
   - `wup assistant` - Interactive configuration wizard
   - Auto-detects framework and services
   - Intelligent suggestions and validation
+  - `wup init-cli` - Automated CLI/shell project setup
 
 - **[Anomaly Detection](docs/ANOMALY_DETECTION.md)** - Fast alternatives to Playwright
   - Hash-based change detection (~1ms per file)
@@ -505,6 +545,9 @@ Comprehensive documentation is available in the `docs/` directory:
   - Browser Notifications API integration
 
 - **[TestQL Integration](docs/TESTQL_INTEGRATION.md)** - TestQL scenario support
+  - `wup init-cli` - Automated CLI command detection and TestQL scenario generation
+  - Shell service configuration for CLI tools
+  - TestQL scenarios for CLI commands
 
 ## License
 

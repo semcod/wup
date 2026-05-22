@@ -19,11 +19,67 @@ cd /home/tom/github/semcod/wup
 pip install -e .
 ```
 
-### 2. Build Dependency Map for TestQL
+### 2. For CLI/Shell Projects: Auto-Setup
+
+If your project is a CLI tool or shell script package, use the automated setup:
 
 ```bash
-# Navigate to TestQL project
-cd /home/tom/github/oqlos/testql
+# Automatically detect CLI commands and generate configuration
+wup init-cli /path/to/your/project
+
+# This scans pyproject.toml, setup.py, setup.cfg for entry points
+# Generates wup.yaml with shell service configuration
+# Creates TestQL scenarios in testql-scenarios/
+
+# Example output:
+# ✓ Found 1 package(s)
+#   mycli: 3 command(s)
+#     - mycli -> mycli.cli:main
+#     - mycli-build -> mycli.build:main
+#     - mycli-test -> mycli.test:main
+
+# Merge with existing wup.yaml
+wup init-cli /path/to/your/project --merge
+
+# Custom output paths
+wup init-cli /path/to/your/project --output-config custom.yaml --output-scenarios custom-scenarios
+
+# Skip argument inference (faster)
+wup init-cli /path/to/your/project --no-infer-args
+```
+
+**What `init-cli` does:**
+- Scans project for CLI entry points in `pyproject.toml`, `setup.py`, `setup.cfg`
+- Detects packages with `__main__.py` modules
+- Generates shell service configuration in `wup.yaml` with appropriate test settings
+- Creates TestQL scenarios for CLI commands:
+  - `cli-smoke.testql.toon.yaml` - Smoke tests for all commands
+  - `cli-{command}.testql.toon.yaml` - Detailed tests for each command
+- Automatically infers command arguments by inspection (can be disabled)
+- Supports merging with existing `wup.yaml` configurations
+
+**Generated TestQL Scenarios:**
+
+The generated scenarios use TestQL's SHELL directive to test CLI commands:
+
+```yaml
+# cli-smoke.testql.toon.yaml
+# Test: mycli --help
+SHELL "mycli --help" 5000
+ASSERT_EXIT_CODE 0
+ASSERT_STDOUT_CONTAINS "usage"
+
+# Test: mycli-build --help
+SHELL "mycli-build --help" 5000
+ASSERT_EXIT_CODE 0
+ASSERT_STDOUT_CONTAINS "build"
+```
+
+### 3. For Web/API Projects: Build Dependency Map
+
+```bash
+# Navigate to your project
+cd /path/to/your/project
 
 # Build the dependency map
 wup map-deps . --framework auto
