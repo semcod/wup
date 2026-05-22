@@ -3,8 +3,8 @@
 
 NEXT[4] (ranked by impact):
   [1] !! SPLIT           wup/testql_watcher.py
-      WHY: 847L, 2 classes, max CC=15
-      EFFORT: ~4h  IMPACT: 12705
+      WHY: 851L, 2 classes, max CC=16
+      EFFORT: ~4h  IMPACT: 13616
 
   [2] !! SPLIT           wup/cli.py
       WHY: 799L, 0 classes, max CC=13
@@ -14,9 +14,9 @@ NEXT[4] (ranked by impact):
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [4] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=15  fan=9
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 135
+  [4] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=16  fan=11
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 176
 
 
 RISKS[3]:
@@ -26,7 +26,7 @@ RISKS[3]:
 
 METRICS-TARGET:
   CC̄:          4.7 → ≤3.3
-  max-CC:      15 → ≤7
+  max-CC:      16 → ≤8
   god-modules: 7 → 0
   high-CC(≥15): 1 → ≤0
   hub-types:   0 → ≤0

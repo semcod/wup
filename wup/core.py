@@ -155,12 +155,8 @@ class WupWatcher:
         if service:
             return service
 
-        # Fallback: use first two meaningful parts (only if file exists)
-        if len(parts) >= 2:
-            # Check if file exists (absolute path)
-            if Path(file_path).is_file():
-                return "/".join(parts[:2])
-        
+        # Fallback: return None to let caller handle configured services
+        # Don't construct fake service names from path parts
         return None
     
     def _is_coincident_pair(self, type_a: str, type_b: str) -> bool:
@@ -478,6 +474,17 @@ class WupWatcher:
         
         # Infer service from file path
         service = self.infer_service(file_path)
+        
+        # If inference failed or returned invalid service, use configured services
+        # Invalid services: None, "//home", or other non-configured names
+        invalid_services = {None, "//home"}
+        if service in invalid_services and self.config.services:
+            for svc in self.config.services:
+                if self.should_test(svc.name):
+                    self.changed_services.add(svc.name)
+                    self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {svc.name}[/yellow]")
+                    self.schedule_quick_test(svc.name)
+            return
         
         if service and self.should_test(service):
             self.changed_services.add(service)

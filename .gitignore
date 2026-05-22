@@ -1,4 +1,8 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/__init___1779486150751966031_1238.pkl
+.code2llm_cache/pyproject_1779486150737995527_1830.pkl
+.code2llm_cache/testql_watcher_1779486123709000000_33681.pkl
+.code2llm_cache/wup_1779486342062745131_3017.pkl
 .code2llm_cache/config_1779485633797501415_6453.pkl
 .code2llm_cache/config_1779485903503139874_16729.pkl
 .code2llm_cache/testql_watcher_1779485964454000000_33378.pkl

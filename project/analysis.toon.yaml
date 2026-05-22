@@ -1,9 +1,9 @@
-# code2llm | 63f 10789L | python:40,yaml:11,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-22
-# generated in 0.02s
+# code2llm | 62f 10709L | python:41,yaml:10,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-22
+# generated in 0.03s
 # CC̄=4.3 | critical:1/355 | dups:0 | cycles:0
 
 HEALTH[1]:
-  🟡 CC    _select_scenarios_for_service CC=15 (limit:15)
+  🟡 CC    _select_scenarios_for_service CC=16 (limit:15)
 
 REFACTOR[1]:
   1. split 1 high-CC methods  (CC>15)
@@ -25,7 +25,7 @@ LAYERS:
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
   wup/                            CC̄=4.7    ←in:9  →out:0
-  │ !! testql_watcher             847L  2C   39m  CC=15     ←0
+  │ !! testql_watcher             851L  2C   39m  CC=16     ←0
   │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       652L  2C   26m  CC=14     ←0
@@ -45,9 +45,9 @@ LAYERS:
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
+  │ __init__                    46L  0C    1m  CC=2      ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    1m  CC=2      ←0
   │
   examples/                       CC̄=2.4    ←in:0  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
@@ -82,7 +82,6 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ wup.yaml                   130L  0C    0m  CC=0.0    ←0
   │ tree.txt                   123L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
@@ -96,7 +95,6 @@ LAYERS:
   │
   ── zero ──
      examples/flask-app/app/__init__.py        0L
-     wup/__init__.py                           0L
 
 COUPLING:
                  wup  examples   scripts

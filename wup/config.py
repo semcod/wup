@@ -175,7 +175,7 @@ def validate_config(raw: dict) -> WupConfig:
         scenario_dir=testql_raw.get("scenario_dir", "scenarios/tests"),
         smoke_scenario=testql_raw.get("smoke_scenario", "smoke.testql.toon.yaml"),
         output_format=testql_raw.get("output_format", "json"),
-        extra_args=testql_raw.get("extra_args", ["--timeout", "10s"]),
+        extra_args=testql_raw.get("extra_args", ["--timeout", "10"]),
         endpoint_discovery=testql_raw.get("endpoint_discovery", True),
         probe_interval_s=int(testql_raw.get("probe_interval_s", 0) or 0),
         health_scenario=testql_raw.get("health_scenario", ""),

@@ -952,11 +952,12 @@ class TestConfigModels:
             scenario_dir="scenarios/tests",
             smoke_scenario="smoke.testql.toon.yaml",
             output_format="json",
-            extra_args=["--timeout 10s"]
+            extra_args=["--timeout", "10"]
         )
         assert config.scenario_dir == "scenarios/tests"
+        assert config.smoke_scenario == "smoke.testql.toon.yaml"
         assert config.output_format == "json"
-        assert len(config.extra_args) == 1
+        assert len(config.extra_args) == 2
     
     def test_wup_config(self):
         """Test WupConfig dataclass."""
@@ -1283,7 +1284,8 @@ testql:
   smoke_scenario: "smoke.testql.toon.yaml"
   output_format: "json"
   extra_args:
-    - "--timeout 10s"
+    - "--timeout"
+    - "10"
 """
             config_path = Path(tmpdir) / "wup.yaml"
             config_path.write_text(config_content)
@@ -1694,7 +1696,7 @@ class TestTestQLWatcherConfig:
             testql_config = TestQLConfig(
                 scenario_dir="scenarios/tests",
                 smoke_scenario="smoke.testql.toon.yaml",
-                extra_args=["--timeout 10s"]
+                extra_args=["--timeout", "10"]
             )
             config = WupConfig(
                 project=ProjectConfig(name="test"),
@@ -1706,7 +1708,7 @@ class TestTestQLWatcherConfig:
             
             watcher = TestQLWatcher(tmpdir, config=config)
             assert watcher.config.project.name == "test"
-            assert watcher.testql_extra_args == ["--timeout 10s"]
+            assert watcher.testql_extra_args == ["--timeout", "10"]
     
     def test_testql_watcher_uses_config_scenarios_dir(self):
         """Test that TestQLWatcher uses config scenario directory."""

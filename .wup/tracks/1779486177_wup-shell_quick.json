@@ -1,0 +1,20 @@
+{
+  "service": "wup-shell",
+  "stage": "quick",
+  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+  "command": [
+    "testql",
+    "run",
+    "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+    "--dry-run",
+    "--timeout 10s"
+  ],
+  "returncode": 2,
+  "stderr_head": "Usage: testql run [OPTIONS] FILES...",
+  "stdout_head": "",
+  "track": {
+    "file": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+    "line": 1,
+    "hint": "cli-wup.testql.toon.yaml"
+  }
+}

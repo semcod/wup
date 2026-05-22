@@ -1,9 +1,9 @@
 {
-  "timestamp": 1779486127,
+  "timestamp": 1779486774,
   "type": "wup_testql_error",
-  "service": "//home",
+  "service": "wup-shell",
   "stage": "detail",
-  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486127___home_detail.json",
-  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-smoke.testql.toon.yaml",
-  "message": "Usage: testql run [OPTIONS] FILES..."
+  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486774_wup-shell_detail.json",
+  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+  "message": "\ud83d\udcdc OQL: cli-wup.testql.toon.yaml"
 }

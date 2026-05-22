@@ -61,7 +61,7 @@ class TestQLConfig:
     scenario_dir: str = "scenarios/tests"
     smoke_scenario: str = "smoke.testql.toon.yaml"
     output_format: str = "json"
-    extra_args: List[str] = field(default_factory=lambda: ["--timeout", "10s"])
+    extra_args: List[str] = field(default_factory=lambda: ["--timeout", "10"])
     endpoint_discovery: bool = True  # Merge health probes from scenarios + service maps
     probe_interval_s: int = 0  # Periodic live probes for all services (0 = file-change only)
     health_scenario: str = ""  # Fleet TestQL scenario on each periodic probe cycle (live run)

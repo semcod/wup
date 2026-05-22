@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.40', 'python').
+project_metadata('wup', '0.2.41', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 33, 'less').
@@ -52,7 +52,7 @@ project_file('wup/planfile_reporter.py', 204, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 848, 'python').
+project_file('wup/testql_watcher.py', 852, 'python').
 project_file('wup/visual_diff.py', 519, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
@@ -582,7 +582,7 @@ python_method('TestQLWatcher', '_to_full_url', 1, 5, 2).
 python_method('TestQLWatcher', '_discover_scenarios', 0, 2, 3).
 python_method('TestQLWatcher', 'get_service_config', 1, 3, 0).
 python_method('TestQLWatcher', '_score_scenario', 2, 10, 4).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 15, 9).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 16, 11).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 2, 2).

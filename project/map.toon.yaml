@@ -1,4 +1,4 @@
-# wup | 53f 12665L | python:50,shell:2,less:1 | 2026-05-22
+# wup | 53f 12669L | python:50,shell:2,less:1 | 2026-05-22
 # stats: 180 func | 56 cls | 53 mod | CC̄=3.7 | critical:9 | cycles:0
 # alerts[5]: CC main=14; CC validate_config=14; CC sync_testql=13; CC _assign_by_path_prefix=13; CC test_service_health_transitions_are_persisted=12
 # hotspots[5]: status fan=35; sync_testql fan=28; validate_config fan=21; main fan=19; testql_endpoints fan=19
@@ -55,7 +55,7 @@ M[53]:
   wup/testql_cli_generator.py,216
   wup/testql_discovery.py,230
   wup/testql_monitor.py,522
-  wup/testql_watcher.py,848
+  wup/testql_watcher.py,852
   wup/visual_diff.py,519
   wup/web_client.py,186
 D:

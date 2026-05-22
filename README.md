@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.41-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.18-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-20.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.42-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.09-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-20.5h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $3.1847 (51 commits)
+- 🤖 **LLM usage:** $3.0939 (52 commits)
 - 👤 **Human dev:** ~$2047 (20.5h @ $100/h, 30min dedup)
 
 Generated on 2026-05-22 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.41-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.42-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -433,9 +433,12 @@ wup/
 │   ├── core.py                # WupWatcher: detection, inference, scheduling
 │   ├── dependency_mapper.py   # DependencyMapper: codebase → deps.json
 │   ├── testql_discovery.py    # TestQLEndpointDiscovery: scenario parsing
+│   ├── testql_monitor.py      # TestQLMonitor: extracts live HTTP probes and Docker services
 │   ├── testql_watcher.py      # TestQLWatcher: scenario runner + health tracking
 │   ├── visual_diff.py         # VisualDiffer: Playwright DOM snapshot + diff engine
 │   ├── web_client.py          # WebClient: async HTTP event sink → wupbro
+│   ├── monitoring_manifest.py # Builds and patches the wup.yaml monitoring block
+│   ├── planfile_reporter.py   # PlanfileReporter: creates and deduplicates Planfile tickets
 │   └── models/
 │       ├── __init__.py
 │       └── config.py          # Dataclasses: WupConfig, ServiceConfig, WatchConfig, TestStrategyConfig, TestQLConfig, VisualDiffConfig, WebConfig, AnomalyDetectionConfig...

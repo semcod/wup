@@ -5,7 +5,7 @@
 
 - **Project**: /home/tom/github/semcod/wup
 - **Primary Language**: python
-- **Languages**: python: 40, yaml: 11, txt: 4, json: 2, toml: 1
+- **Languages**: python: 41, yaml: 10, txt: 4, json: 2, shell: 1
 - **Analysis Mode**: static
 - **Total Functions**: 355
 - **Total Classes**: 40
@@ -106,10 +106,9 @@
 - **Classes**: 1
 - **File**: `testql_cli_generator.py`
 
-### wup.cli_config_generator
+### wup.config
 - **Functions**: 6
-- **Classes**: 1
-- **File**: `cli_config_generator.py`
+- **File**: `config.py`
 
 ## Key Entry Points
 
@@ -447,6 +446,13 @@ Key functions that process and transform data:
 > Short human-readable summary for CLI.
 - **Output to**: lines.append, lines.append, manifest.get, sorted, None.join
 
+### wup.config.validate_config
+> Validate raw config dict and convert to WupConfig object.
+
+Args:
+    raw: Raw configuration dictiona
+- **Output to**: raw.get, ProjectConfig, raw.get, WatchConfig, raw.get
+
 ### wup.testql_monitor._parse_api_lines
 - **Output to**: _API_LINE.findall, probes.append, int, ProbeTarget, target.strip
 
@@ -488,13 +494,6 @@ Args:
 
 ### wup.core.WupWatcher.process_test_queue_once
 - **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
-
-### wup.config.validate_config
-> Validate raw config dict and convert to WupConfig object.
-
-Args:
-    raw: Raw configuration dictiona
-- **Output to**: raw.get, ProjectConfig, raw.get, WatchConfig, raw.get
 
 ### wup.testql_watcher.TestQLWatcher._try_parse_json_summary
 > Try to extract passed/failed summary from trailing JSON in blob.
@@ -556,9 +555,9 @@ Functions exposed as public API (no underscore prefix):
 - `wup.core.WupWatcher.create_status_table` - 13 calls
 - `wup.core.WupWatcher.run_with_dashboard` - 13 calls
 - `examples.testql_integration.CustomTestQLWatcher.run_detail_test` - 13 calls
+- `wup.config.save_config` - 12 calls
 - `wup.cli.assistant` - 12 calls
 - `wup.visual_diff.VisualDiffer.get_recent_diffs` - 12 calls
-- `examples.testql_demo.simulate_with_mock_data` - 12 calls
 
 ## System Interactions
 
