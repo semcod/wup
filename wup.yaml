@@ -7,9 +7,7 @@ project:
   description: Auto-generated config for c2004
 watch:
   paths:
-  - app/**
-  - src/**
-  - routes/**
+  - wup/**
   exclude_patterns:
   - '*.md'
   - '*.txt'
@@ -81,3 +79,52 @@ testql:
   smoke_scenario: iter1-api-v3-smoke.testql.toon.yaml
   output_format: json
   probe_interval_s: 0
+
+# BEGIN WUP MONITORING MANIFEST (auto-generated — do not edit; run: wup sync-testql --write)
+monitoring:
+  generated_at: '2026-05-22T21:22:16Z'
+  generated_by: wup sync-testql --write (or wup watch startup)
+  how_to_refresh: wup sync-testql . --write
+  probe_interval_s: 0
+  health_scenario: ''
+  base_url: (set testql.base_url or WUP_BASE_URL)
+  endpoint_discovery: true
+  scenario_dir: testql-scenarios
+  service_map_globs: []
+  docker_compose_files: []
+  wup_services:
+    iter1-api:
+      wup_paths: []
+      docker: []
+      live_probes: []
+      testql_dry_run_scenarios: []
+    iter1-shell:
+      wup_paths: []
+      docker: []
+      live_probes: []
+      testql_dry_run_scenarios: []
+    iter7-auto:
+      wup_paths: []
+      docker: []
+      live_probes: []
+      testql_dry_run_scenarios: []
+    iter7-shell:
+      wup_paths: []
+      docker: []
+      live_probes: []
+      testql_dry_run_scenarios: []
+    wup-shell:
+      wup_paths: []
+      docker: []
+      live_probes: []
+      testql_dry_run_scenarios: []
+  docker_not_mapped_to_wup: []
+  troubleshooting:
+    probe_failed_check:
+    - Czy kontener z sekcji docker jest uruchomiony (docker ps)?
+    - Czy host_ports mapuje na URL w live_probes (np. 8100 vs 8202)?
+    - Czy błąd dotyczy proxy frontendu (/firmware na :8100) vs bezpośredniego :8202?
+    - 'Czy endpoint jest w live_probes — jeśli nie, uruchom: wup sync-testql . --write'
+    config_vs_runtime: Pole live_probes to faktyczne żądania HTTP WUP. Jeśli endpointu
+      tu nie ma, WUP go nie sprawdza — to błąd konfiguracji, nie aplikacji.
+# END WUP MONITORING MANIFEST

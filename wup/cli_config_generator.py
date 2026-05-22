@@ -78,8 +78,8 @@ class CLIConfigGenerator:
                     description=f"CLI testing for {self.project_root.name}",
                 ),
                 watch=WatchConfig(
-                    paths=["**/*.py"],
-                    exclude_patterns=["*.md", "tests/**", ".venv/**", "venv/**"],
+                    paths=["**"],
+                    exclude_patterns=["*.md", "tests/**", ".venv/**", "venv/**", "node_modules/**"],
                     file_types=[".py"],
                 ),
                 test_strategy=TestStrategyConfig(

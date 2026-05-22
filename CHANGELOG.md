@@ -7,12 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.38] - 2026-05-22
+## [0.2.39] - 2026-05-22
 
 ### Docs
+- Update CHANGELOG.md
 - Update README.md
-- Update docs/TESTQL_INTEGRATION.md
-- Update docs/WUP_ASSISTANT.md
+
+### Other
+- Update uv.lock
+- Update wup.yaml
+- Update wup/cli_config_generator.py
+
+## [0.2.38] - 2026-05-22
+
+### Added
+- **CLI/Shell Automation**: New `wup init-cli` command for automatic detection and configuration of CLI tools and shell scripts
+  - `cli_scanner.py` - Detects CLI commands from pyproject.toml, setup.py, setup.cfg, and __main__.py modules
+  - `cli_config_generator.py` - Generates wup.yaml configuration for shell services
+  - `testql_cli_generator.py` - Generates TestQL scenarios for CLI commands
+  - Supports merging with existing wup.yaml configurations
+  - Auto-infers command arguments by inspection (can be disabled)
+
+### Changed
+- **Refactoring**: Reduced cyclomatic complexity of `_assign_http_probe` method in testql_monitor.py from CC=19 to CC<15
+  - Extracted helper methods: `_find_service_by_name`, `_find_service_by_token`, `_assign_by_port_8101`, `_assign_by_port_8202`, `_assign_by_port_8100`, `_assign_by_connect_backend`
+- **Refactoring**: Broke 2 circular dependencies
+  - Made `TestQLWatcher` import lazy in __init__.py via `__getattr__`
+  - Made `TestQLMonitor` import lazy in testql_watcher.py
+
+### Docs
+- Update README.md with CLI/Shell automation documentation
+- Update docs/TESTQL_INTEGRATION.md with init-cli command details
+- Update docs/WUP_ASSISTANT.md to reference init-cli
 
 ### Test
 - Update testql-scenarios/cli-smoke.testql.toon.yaml
