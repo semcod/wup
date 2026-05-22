@@ -1,10 +1,10 @@
-# code2llm/evolution | 287 func | 20f | 2026-05-22
+# code2llm/evolution | 298 func | 23f | 2026-05-23
 # generated in 0.00s
 
 NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/testql_watcher.py
-      WHY: 858L, 2 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 11154
+      WHY: 857L, 2 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 11141
 
   [2] !! SPLIT           wup/cli.py
       WHY: 799L, 0 classes, max CC=13
@@ -21,7 +21,7 @@ RISKS[3]:
   ⚠ Splitting wup/assistant.py may break 24 import paths
 
 METRICS-TARGET:
-  CC̄:          4.7 → ≤3.3
+  CC̄:          4.6 → ≤3.2
   max-CC:      14 → ≤7
   god-modules: 7 → 0
   high-CC(≥15): 0 → ≤0
@@ -52,4 +52,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.8 → now CC̄=4.7
+  prev CC̄=4.7 → now CC̄=4.6

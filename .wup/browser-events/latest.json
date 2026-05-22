@@ -1,9 +1,10 @@
 {
-  "timestamp": 1779487429,
-  "type": "wup_testql_error",
+  "timestamp": 1779491532,
+  "type": "wup_service_health_change",
   "service": "wup-shell",
-  "stage": "detail",
-  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779487429_wup-shell_detail.json",
-  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
-  "message": "\ud83d\udcdc OQL: cli-wup.testql.toon.yaml"
+  "status": "up",
+  "previous_status": "up",
+  "stage": "quick",
+  "message": "Quick TestQL passed",
+  "track_file": ""
 }

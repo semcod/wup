@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.44] - 2026-05-23
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update testql-scenarios/cli-smoke.testql.toon.yaml
+- Update testql-scenarios/cli-wup.testql.toon.yaml
+- Update testql-scenarios/generated-cli-tests.testql.toon.yaml
+- Update tests/test_testql_watcher.py
+
+### Other
+- Update .cursor/mcp.json
+- Update .gitignore
+- Update .koru/history.jsonl
+- Update .koru/onboarding.json
+- Update .koru/project.json
+- Update .planfile/.koru/autoloop-diag/wup-iter1-api.failed
+- Update .planfile/.koru/autoloop-diag/wup-iter1-shell.failed
+- Update .planfile/.koru/autoloop-diag/wup-iter7-auto.failed
+- Update .planfile/.koru/autoloop-diag/wup-iter7-shell.failed
+- Update .planfile/.koru/autonomous-state.json
+- ... and 121 more files
+
 ## [0.2.43] - 2026-05-23
 
 ### Docs

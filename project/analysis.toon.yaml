@@ -1,12 +1,12 @@
-# code2llm | 62f 10727L | python:41,yaml:10,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-22
+# code2llm | 67f 10949L | python:44,yaml:11,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-23
 # generated in 0.02s
-# CC̄=4.3 | critical:0/359 | dups:0 | cycles:0
+# CC̄=4.2 | critical:0/370 | dups:0 | cycles:0
 
 HEALTH[0]: ok
 
 REFACTOR[0]: none needed
 
-PIPELINES[257]:
+PIPELINES[264]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
   [2] Src [generate]: generate
@@ -22,8 +22,8 @@ LAYERS:
   scripts/                        CC̄=14.0   ←in:0  →out:3
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
-  wup/                            CC̄=4.7    ←in:9  →out:0
-  │ !! testql_watcher             858L  2C   41m  CC=13     ←0
+  wup/                            CC̄=4.6    ←in:9  →out:0
+  │ !! testql_watcher             857L  2C   41m  CC=13     ←0
   │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       663L  2C   28m  CC=11     ←0
@@ -43,9 +43,13 @@ LAYERS:
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
-  │ __init__                    46L  0C    1m  CC=2      ←0
+  │ bus                         61L  5C    5m  CC=3      ←0
+  │ event_handlers              49L  1C    4m  CC=3      ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
+  │ _base_detector              18L  1C    2m  CC=1      ←0
+  │ file_events                 10L  1C    0m  CC=0.0    ←0
+  │ __init__                     0L  0C    1m  CC=2      ←0
   │
   examples/                       CC̄=2.4    ←in:0  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
@@ -80,19 +84,21 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   123L  0C    0m  CC=0.0    ←0
+  │ wup.yaml                   130L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   129L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
-  │ cli-wup.testql.toon.yaml    21L  0C    0m  CC=0.0    ←0
   │ generated-cli-tests.testql.toon.yaml    20L  0C    0m  CC=0.0    ←0
   │ cli-smoke.testql.toon.yaml    17L  0C    0m  CC=0.0    ←0
+  │ cli-wup.testql.toon.yaml    16L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
      examples/flask-app/app/__init__.py        0L
+     wup/__init__.py                           0L
 
 COUPLING:
                  wup  examples   scripts

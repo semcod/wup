@@ -10,8 +10,8 @@ CONFIG[2]{key, value}:
 # Test: wup --help
 SHELL "wup --help" 5000
 ASSERT_EXIT_CODE 0
-ASSERT_STDOUT_CONTAINS "usage"
+ASSERT_STDOUT_CONTAINS "Usage"
 
 # Test: wup --version
-SHELL "wup --version" 5000
+SHELL "wup version" 5000
 ASSERT_EXIT_CODE 0

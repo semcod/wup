@@ -14,6 +14,8 @@ from urllib import error, request
 
 from .config import load_config
 from .core import WupWatcher
+from wup.bus import bus
+from wup.testing.events.test_results import ScenarioFailed, ScenarioPassed
 from .models.config import WupConfig, ServiceConfig
 from .visual_diff import VisualDiffer
 from .web_client import WebClient
@@ -29,6 +31,7 @@ class BrowserNotifier:
 
     def notify(self, payload: Dict) -> None:
         payload_with_ts = {"timestamp": int(time.time()), **payload}
+        self.events_file.parent.mkdir(parents=True, exist_ok=True)
         self.events_file.write_text(json.dumps(payload_with_ts, indent=2), encoding="utf-8")
 
         if not self.service_url:
@@ -94,12 +97,24 @@ class TestQLWatcher(WupWatcher):
         self.health_state_path = self.project_root / ".wup" / "service-health.json"
         self.health_events_path = self.project_root / ".wup" / "service-health-events.jsonl"
         self.health_state_path.parent.mkdir(parents=True, exist_ok=True)
-        self.service_health = self._load_service_health()
         self.config = config
         from .testql_monitor import TestQLMonitor
         self.monitor = TestQLMonitor(self.project_root, config) if config else None
         self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
         self.web_client = WebClient(config.web) if config and getattr(config, "web", None) else WebClient()
+        # Initialize EventBus Handlers
+        from wup.testing.handlers.event_handlers import register_testing_event_handlers
+        from wup.testing.handlers.health_handlers import register_health_handlers
+        from wup.event_store import EventStore
+        from wup.bus import bus
+        
+        register_testing_event_handlers(bus, self.planfile_reporter, self.web_client, self.console)
+        
+        self.event_store = EventStore(self.health_events_path)
+        self.health_projection = register_health_handlers(
+            bus, self.health_state_path, self.event_store, self.planfile_reporter, self.browser_notifier, self.web_client
+        )
+        
         self._probe_thread = None
         self._normalize_fleet_health_entry()
 
@@ -111,34 +126,27 @@ class TestQLWatcher(WupWatcher):
         if strict:
             return
         fleet = self.config.project.name
-        entry = self.service_health.get(fleet)
-        if not isinstance(entry, dict):
+        from wup.testing.queries.health_queries import GetServiceHealth
+        from wup.bus import bus
+        entry = bus.query(GetServiceHealth(fleet))
+        if not isinstance(entry, dict) or not entry:
             return
         if entry.get("stage") != "health_scenario":
             return
         if str(entry.get("status", "")).lower() != "down":
             return
-        entry = dict(entry)
-        entry["status"] = "degraded"
-        self.service_health[fleet] = entry
-        self._save_service_health()
+            
+        self._record_health_transition(
+            service=fleet,
+            status="degraded",
+            stage="health_scenario",
+            message=entry.get("message", "Stale down status auto-degraded"),
+            track_file=entry.get("track_file", ""),
+        )
 
     def _load_service_health(self) -> Dict[str, Dict]:
-        if not self.health_state_path.exists():
-            return {}
-        try:
-            payload = json.loads(self.health_state_path.read_text(encoding="utf-8"))
-            if isinstance(payload, dict):
-                return payload
-        except (json.JSONDecodeError, OSError):
-            return {}
+        # Legacy stub, now handled by projection but kept for backward compatibility if needed
         return {}
-
-    def _save_service_health(self) -> None:
-        self.health_state_path.write_text(
-            json.dumps(self.service_health, indent=2),
-            encoding="utf-8",
-        )
 
     def _record_health_transition(
         self,
@@ -149,71 +157,24 @@ class TestQLWatcher(WupWatcher):
         message: str = "",
         track_file: Optional[str] = None,
     ) -> None:
-        now = int(time.time())
-        previous = self.service_health.get(service, {})
+        from wup.testing.events.health_events import ServiceHealthChanged
+        from wup.testing.queries.health_queries import GetServiceHealth
+        from wup.bus import bus
+        
+        previous = bus.query(GetServiceHealth(service))
         previous_status = previous.get("status", "unknown")
-
-        self.service_health[service] = {
-            "status": status,
-            "updated_at": now,
-            "stage": stage,
-            "message": message,
-            "track_file": track_file or "",
-        }
-        self._save_service_health()
-
-        changed = previous_status != status
-        if not changed:
+        
+        if previous_status == status and previous.get("stage") == stage and previous.get("message") == message and previous.get("track_file") == track_file:
             return
-
-        event = {
-            "timestamp": now,
-            "service": service,
-            "status": status,
-            "previous_status": previous_status,
-            "stage": stage,
-            "message": message,
-            "track_file": track_file or "",
-        }
-        with self.health_events_path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(event) + "\n")
-
-        if status in {"down", "degraded"}:
-            self.planfile_reporter.report_failure(
-                service=service,
-                status=status,
-                stage=stage,
-                message=message,
-                track_file=track_file or "",
-            )
-        elif status == "up":
-            self.planfile_reporter.clear_service_stage(service=service, stage=stage)
-
-        self.browser_notifier.notify(
-            {
-                "type": "wup_service_health_change",
-                "service": service,
-                "status": status,
-                "previous_status": previous_status,
-                "stage": stage,
-                "message": message,
-                "track_file": track_file,
-            }
-        )
-
-        # Fire-and-forget: forward event to wupbro backend if active
-        if self.web_client.is_active:
-            try:
-                asyncio.ensure_future(
-                    self.web_client.send_health_transition(
-                        service=service,
-                        from_status=previous_status,
-                        to_status=status,
-                    )
-                )
-            except RuntimeError:
-                # No running event loop — skip silently
-                pass
+            
+        bus.publish(ServiceHealthChanged(
+            service=service,
+            status=status,
+            previous_status=previous_status,
+            stage=stage,
+            message=message,
+            track_file=track_file or ""
+        ))
 
     def _tokenize_service(self, service: str) -> List[str]:
         raw_tokens = re.split(r"[^a-zA-Z0-9]+", service.lower())
@@ -484,8 +445,8 @@ class TestQLWatcher(WupWatcher):
     async def _run_scenario_quick(
         self, service: str, scenario: Path, merged_endpoints: List[str]
     ) -> bool:
-        """Run a single scenario in quick (dry-run) mode. Returns False on failure."""
-        args = ["run", str(scenario), "--dry-run", *self.testql_extra_args]
+        """Run a single scenario in quick mode. Returns False on failure."""
+        args = ["run", str(scenario), *self.testql_extra_args]
         result = self._run_testql(args, timeout=self._quick_timeout())
         if result.returncode == 0:
             return True
@@ -493,14 +454,20 @@ class TestQLWatcher(WupWatcher):
         reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
         track_path = self._write_track(service=service, stage="quick",
                                        scenario=scenario, result=result)
+                                       
         self._record_health_transition(service=service, status="down", stage="quick",
                                        message=reason, track_file=str(track_path))
-        if self.web_client.is_active:
-            endpoint = merged_endpoints[0] if merged_endpoints else f"/{service}"
-            await self.web_client.send_regression(
-                service=service, file="", endpoint=endpoint, reason=reason, stage="quick"
-            )
-        self.console.print(f"[red]✗ Quick failed: {scenario.name} | track: {track_path}[/red]")
+
+        # Publish event through EventBus
+        bus.publish(ScenarioFailed(
+            service=service,
+            stage="quick",
+            scenario=scenario,
+            reason=reason,
+            track_file=str(track_path),
+            endpoints=merged_endpoints
+        ))
+        
         return False
 
     async def _quick_pass_actions(self, service: str, merged_endpoints: List[str]) -> None:
@@ -695,8 +662,28 @@ class TestQLWatcher(WupWatcher):
             self.console.print(
                 f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]"
             )
+            self._record_health_transition(service=service, status="up", stage="quick", message="Probes passed (no scenarios)")
+            if self.web_client.is_active:
+                await self.web_client.send_pass(service=service, stage="quick")
             if self.visual_differ and self.visual_differ.cfg.enabled:
-                visual_results = await self.visual_differ.run_for_service(service, merged_endpoints)
+                visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
+                visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
+                visual_issues = [
+                    item for item in visual_results
+                    if item.get("diff", {}).get("status") == "issue"
+                ]
+                if visual_issues:
+                    issue_text = "; ".join(
+                        ", ".join(item.get("diff", {}).get("issues", []) or ["visual page issue"])
+                        for item in visual_issues
+                    )
+                    self._record_health_transition(
+                        service=service,
+                        status="down",
+                        stage="visual",
+                        message=issue_text or "visual page issue",
+                        track_file="",
+                    )
                 await self._publish_visual_events(service, visual_results)
             return True
 
@@ -788,6 +775,17 @@ class TestQLWatcher(WupWatcher):
                 scenario=scenario,
                 result=result,
             )
+            
+            # Publish event through EventBus
+            bus.publish(ScenarioFailed(
+                service=service,
+                stage="detail",
+                scenario=scenario,
+                reason=result.stderr.strip() or result.stdout.strip() or "Detail test failed",
+                track_file=str(track_path),
+                endpoints=endpoints
+            ))
+            
             results["track_files"].append(str(track_path))
             self.console.print(
                 f"[red]✗ Detail failed: {scenario.name} | track: {track_path}[/red]"

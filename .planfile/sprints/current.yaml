@@ -1,0 +1,709 @@
+sprint:
+  id: current
+  name: Current
+  status: active
+  tickets:
+    PLF-001:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:37.585548+00:00'
+      description: 'Architektura: wprowadź CQRS + Event Sourcing
+
+
+        Wprowadź separację Command/Query oraz event-store dla wup. Pierwszy krok:
+        zidentyfikuj 1-2 ograniczone konteksty (np. <module>), wydziel `commands/`,
+        `queries/`, `events/`, dodaj event-bus.'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-22T23:12:38.569052Z'
+        max_attempts: 1
+        queue: default
+        state: done
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: 'Architektura: wprowadź CQRS + Event Sourcing
+
+
+          Wprowadź separację Command/Query oraz event-store dla wup. Pierwszy krok:
+          zidentyfikuj 1-2 ograniczone konteksty (np. <module>), wydziel `commands/`,
+          `queries/`, `events/`, dodaj event-bus.'
+        source: koru task
+        timestamp: '2026-05-22T22:09:37.585548+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-22T22:49:00.827518+00:00'
+      - action: update
+        changes:
+        - execution
+        source: planfile.store
+        timestamp: '2026-05-22T23:12:38.600931+00:00'
+      id: PLF-001
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: 'Architektura: wprowadź CQRS + Event Sourcing
+
+
+          Wprowadź separację Command/Query oraz event-store dla wup. Pierwszy krok:
+          zidentyfikuj 1-2 ograniczone konteksty (np. <module>), wydziel `commands/`,
+          `queries/`, `events/`, dodaj event-bus.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - architecture
+      - cqrs
+      - es
+      - koru-wizard
+      name: 'Architektura: wprowadź CQRS + Event Sourcing'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: 'Architektura: wprowadź CQRS + Event Sourcing
+
+
+            Wprowadź separację Command/Query oraz event-store dla wup. Pierwszy krok:
+            zidentyfikuj 1-2 ograniczone konteksty (np. <module>), wydziel `commands/`,
+            `queries/`, `events/`, dodaj event-bus.'
+        timestamp: '2026-05-22T22:09:37.585548+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: done
+      sync: {}
+      updated_at: '2026-05-22T23:12:38.600900+00:00'
+    PLF-002:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:41.941033+00:00'
+      description: '[OPERATOR] MCP „koru” w IDE: brak „koru” w .cursor/mcp.json /
+        .vscode/mcp.json — task koru:mcp:bootstrap, potem Reload Window
+
+
+        Shell: `task koru:mcp:bootstrap`'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-22T23:04:58.362218Z'
+        max_attempts: 1
+        queue: operator
+        state: done
+      executor:
+        kind: shell
+        mode: noninteractive
+      files: []
+      history:
+      - action: created
+        message: '[OPERATOR] MCP „koru” w IDE: brak „koru” w .cursor/mcp.json / .vscode/mcp.json
+          — task koru:mcp:bootstrap, potem Reload Window
+
+
+          Shell: `task koru:mcp:bootstrap`'
+        source: koru task
+        timestamp: '2026-05-22T22:09:41.941033+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-22T23:02:57.911014+00:00'
+      - action: update
+        changes:
+        - execution
+        source: planfile.store
+        timestamp: '2026-05-22T23:04:58.410724+00:00'
+      id: PLF-002
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[OPERATOR] MCP „koru” w IDE: brak „koru” w .cursor/mcp.json / .vscode/mcp.json
+          — task koru:mcp:bootstrap, potem Reload Window
+
+
+          Shell: `task koru:mcp:bootstrap`'
+        script: task koru:mcp:bootstrap
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - operator
+      - auto-pipeline
+      - step:mcp_koru
+      name: '[OPERATOR] MCP „koru” w IDE: brak „koru” w .cursor/mcp.json / .vscode/mcp.json
+        — task koru:mcp:bootstrap, potem Reloa...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          dedupe_key: koru-operator-pipeline:operator-mcp-koru-w-ide-brak-koru-w-.cursor/mcp.json-/-.vscode/mcp.json-task-koru-mcp-bootstrap-potem-reloa...
+          detail: brak „koru” w .cursor/mcp.json / .vscode/mcp.json — task koru:mcp:bootstrap,
+            potem Reload Window
+          input: '[OPERATOR] MCP „koru” w IDE: brak „koru” w .cursor/mcp.json / .vscode/mcp.json
+            — task koru:mcp:bootstrap, potem Reload Window
+
+
+            Shell: `task koru:mcp:bootstrap`'
+          step_id: mcp_koru
+          task_command: task koru:mcp:bootstrap
+        timestamp: '2026-05-22T22:09:41.941033+00:00'
+        tool: koru-operator-pipeline
+      sprint: current
+      status: done
+      sync: {}
+      updated_at: '2026-05-22T23:04:58.410677+00:00'
+    PLF-003:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:44.551454+00:00'
+      description: '`regix` is installed but no `regix.yaml` config exists in the
+        project root. Bootstrap with `task template:install:regix` (in koru) or follow
+        `workflows/on-change-gates.md`.
+
+
+        Role: regression metrics gate (CC / MI / coverage delta).'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '`regix` is installed but no `regix.yaml` config exists in the project
+          root. Bootstrap with `task template:install:regix` (in koru) or follow `workflows/on-change-gates.md`.
+
+
+          Role: regression metrics gate (CC / MI / coverage delta).'
+        source: koru task
+        timestamp: '2026-05-22T22:09:44.551454+00:00'
+      id: PLF-003
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '`regix` is installed but no `regix.yaml` config exists in the project
+          root. Bootstrap with `task template:install:regix` (in koru) or follow `workflows/on-change-gates.md`.
+
+
+          Role: regression metrics gate (CC / MI / coverage delta).'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - bootstrap
+      - gates
+      - scan
+      name: Bootstrap regix on-change gate
+      outputs:
+        artifacts: []
+        notes: []
+      priority: normal
+      source:
+        context:
+          dedupe_key: koru-scan:missing_gate:bootstrap regix on-change gate
+          input: '`regix` is installed but no `regix.yaml` config exists in the project
+            root. Bootstrap with `task template:install:regix` (in koru) or follow
+            `workflows/on-change-gates.md`.
+
+
+            Role: regression metrics gate (CC / MI / coverage delta).'
+          signal: missing_gate
+        timestamp: '2026-05-22T22:09:44.551454+00:00'
+        tool: koru-scan
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:44.551454+00:00'
+    PLF-004:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:44.606492+00:00'
+      description: koru writes ephemeral run logs to `.planfile/.koru/` but the project's
+        `.gitignore` does not exclude it. Add the entry so run history isn't accidentally
+        committed.
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files:
+      - .gitignore
+      history:
+      - action: created
+        message: koru writes ephemeral run logs to `.planfile/.koru/` but the project's
+          `.gitignore` does not exclude it. Add the entry so run history isn't accidentally
+          committed.
+        source: koru task
+        timestamp: '2026-05-22T22:09:44.606492+00:00'
+      id: PLF-004
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: koru writes ephemeral run logs to `.planfile/.koru/` but the project's
+          `.gitignore` does not exclude it. Add the entry so run history isn't accidentally
+          committed.
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - hygiene
+      - scan
+      name: Gitignore `.planfile/.koru/` runtime directory
+      outputs:
+        artifacts: []
+        notes: []
+      priority: low
+      source:
+        context:
+          dedupe_key: koru-scan:gitignore_drift:.gitignore
+          input: koru writes ephemeral run logs to `.planfile/.koru/` but the project's
+            `.gitignore` does not exclude it. Add the entry so run history isn't accidentally
+            committed.
+          signal: gitignore_drift
+        timestamp: '2026-05-22T22:09:44.606492+00:00'
+        tool: koru-scan
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:44.606492+00:00'
+    PLF-005:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:45.738233+00:00'
+      description: '[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter1-api stage=quick message=Usage: testql run [OPTIONS]
+        FILES...
+
+        Try ''testql run --help'' for help.
+
+
+        Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486565_iter1-api_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate.'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter1-api stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486565_iter1-api_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+        source: koru task
+        timestamp: '2026-05-22T22:09:45.738233+00:00'
+      id: PLF-005
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter1-api stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486565_iter1-api_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      name: '[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter1-api stage=qu...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: '[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=iter1-api stage=quick message=Usage: testql run [OPTIONS]
+            FILES...
+
+            Try ''testql run --help'' for help.
+
+
+            Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486565_iter1-api_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate.'
+        timestamp: '2026-05-22T22:09:45.738233+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:45.738233+00:00'
+    PLF-006:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:45.833929+00:00'
+      description: '[AUTO-DIAG] wup-iter1-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter1-shell stage=quick message=Usage: testql run [OPTIONS]
+        FILES...
+
+        Try ''testql run --help'' for help.
+
+
+        Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter1-shell_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate.'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[AUTO-DIAG] wup-iter1-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter1-shell stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter1-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+        source: koru task
+        timestamp: '2026-05-22T22:09:45.833929+00:00'
+      id: PLF-006
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[AUTO-DIAG] wup-iter1-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter1-shell stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter1-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      name: '[AUTO-DIAG] wup-iter1-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter1-shell stag...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: '[AUTO-DIAG] wup-iter1-shell needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=iter1-shell stage=quick message=Usage: testql run [OPTIONS]
+            FILES...
+
+            Try ''testql run --help'' for help.
+
+
+            Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter1-shell_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate.'
+        timestamp: '2026-05-22T22:09:45.833929+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:45.833929+00:00'
+    PLF-007:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:45.883921+00:00'
+      description: '[AUTO-DIAG] wup-iter7-auto needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter7-auto stage=quick message=Usage: testql run [OPTIONS]
+        FILES...
+
+        Try ''testql run --help'' for help.
+
+
+        Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter7-auto_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate.'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[AUTO-DIAG] wup-iter7-auto needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter7-auto stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter7-auto_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+        source: koru task
+        timestamp: '2026-05-22T22:09:45.883921+00:00'
+      id: PLF-007
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[AUTO-DIAG] wup-iter7-auto needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter7-auto stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter7-auto_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      name: '[AUTO-DIAG] wup-iter7-auto needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter7-auto stage=...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: '[AUTO-DIAG] wup-iter7-auto needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=iter7-auto stage=quick message=Usage: testql run [OPTIONS]
+            FILES...
+
+            Try ''testql run --help'' for help.
+
+
+            Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter7-auto_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate.'
+        timestamp: '2026-05-22T22:09:45.883921+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:45.883921+00:00'
+    PLF-008:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:45.969331+00:00'
+      description: '[AUTO-DIAG] wup-iter7-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter7-shell stage=quick message=Usage: testql run [OPTIONS]
+        FILES...
+
+        Try ''testql run --help'' for help.
+
+
+        Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486567_iter7-shell_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate.'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[AUTO-DIAG] wup-iter7-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter7-shell stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486567_iter7-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+        source: koru task
+        timestamp: '2026-05-22T22:09:45.969331+00:00'
+      id: PLF-008
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[AUTO-DIAG] wup-iter7-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=iter7-shell stage=quick message=Usage: testql run [OPTIONS]
+          FILES...
+
+          Try ''testql run --help'' for help.
+
+
+          Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486567_iter7-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      name: '[AUTO-DIAG] wup-iter7-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=iter7-shell stag...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: '[AUTO-DIAG] wup-iter7-shell needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=iter7-shell stage=quick message=Usage: testql run [OPTIONS]
+            FILES...
+
+            Try ''testql run --help'' for help.
+
+
+            Error: No such option: --timeout 10s Did you mean --timeout? track=/home/tom/github/semcod/wup/.wup/tracks/1779486567_iter7-shell_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate.'
+        timestamp: '2026-05-22T22:09:45.969331+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:45.969331+00:00'
+    PLF-009:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-22T22:09:46.085184+00:00'
+      description: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+        \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+        \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" =\
+        \ \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+        \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+        \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+        \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+        \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+        \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+        \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+        \ gate."
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: default
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+          \ gate."
+        source: koru task
+        timestamp: '2026-05-22T22:09:46.085184+00:00'
+      id: PLF-009
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+          \ gate."
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      name: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=wup-shell stage=qu...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          input: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+            \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+            \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+            \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅\
+            \ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB\
+            \ SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\
+            \U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌ Handler\
+            \ error for ASSERT_EXIT_CODE: invalid literal for int() with base 10:\
+            \ '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:\
+            \ 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+            \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+            \ gate."
+        timestamp: '2026-05-22T22:09:46.085184+00:00'
+        tool: koru-cli-nl
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-22T22:09:46.085184+00:00'

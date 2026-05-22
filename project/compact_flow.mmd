@@ -18,10 +18,10 @@ flowchart TD
     examples__visual_diff_demo -->|2| wup__config
     scripts__run_probe_smoke -->|2| wup__monitoring_manifest
     wup__cli_config_generator -->|1| wup__config
+    wup__core -->|1| wup__config
     wup__visual_diff -->|1| wup__testql_monitor
     wup__visual_diff -->|1| wup___ast_detector
     examples__c2004_monorepo_demo -->|1| wup__config
     scripts__run_probe_smoke -->|1| wup__config
-    wup__core -->|1| wup__config
     wup__testql_watcher -->|1| wup__config
     wup__testql_watcher -->|1| wup__testql_monitor

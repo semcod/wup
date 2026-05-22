@@ -29,6 +29,7 @@ flowchart TD
         wup__monitoring_manifest__discover_docker_compose_services["discover_docker_compose_servic"]
         wup__monitoring_manifest___host_port_from_mapping["_host_port_from_mapping"]
         wup__monitoring_manifest__build_monitoring_manifest("build_monitoring_manifest CC=9")
+        wup___base_detector__BaseDetector__detect["detect"]
         wup__anomaly_detector__AnomalyDetector___should_scan["_should_scan"]
         wup__anomaly_detector__AnomalyDetector__scan_file["scan_file"]
         wup__anomaly_detector__AnomalyDetector__scan_directory["scan_directory"]
@@ -38,8 +39,7 @@ flowchart TD
         wup__anomaly_detector__scan_yaml_changes["scan_yaml_changes"]
         wup__testql_monitor__ProbeTarget__probe["probe"]
         wup__testql_monitor___ProbeAccumulator__add["add"]
-        wup__testql_monitor__TestQLMonitor___service_map_paths["_service_map_paths"]
-        ...["+156 more"]
+        ...["+164 more"]
     end
 
-    class wup__testql_cli_generator__TestQLCLIGenerator__generate,wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario,wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario,wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario,wup__testql_cli_generator__TestQLCLIGenerator__print_summary,wup__monitoring_manifest___host_port_from_mapping,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory,wup__anomaly_detector__AnomalyDetector__get_summary entry
+    class wup__testql_cli_generator__TestQLCLIGenerator__generate,wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario,wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario,wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario,wup__testql_cli_generator__TestQLCLIGenerator__print_summary,wup__monitoring_manifest___host_port_from_mapping,wup___base_detector__BaseDetector__detect,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory entry

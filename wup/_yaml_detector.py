@@ -9,16 +9,16 @@ from typing import Any, Dict, List, Optional
 from rich.console import Console
 
 from .anomaly_models import AnomalyResult
+from ._base_detector import BaseDetector
 
 console = Console()
 
 
-class YAMLStructureDetector:
+class YAMLStructureDetector(BaseDetector):
     """Detect structural changes in YAML files."""
 
     def __init__(self, snapshot_dir: Path):
-        self.snapshot_dir = snapshot_dir / 'yaml_snapshots'
-        self.snapshot_dir.mkdir(parents=True, exist_ok=True)
+        super().__init__(snapshot_dir, 'yaml')
 
     def _load_yaml(self, file_path: Path) -> Optional[Dict]:
         try:

@@ -1,44 +1,37 @@
 {
-  "//home": {
-    "status": "down",
-    "updated_at": 1779486124,
+  "wup-shell": {
+    "status": "up",
+    "updated_at": 1779491532,
     "stage": "quick",
-    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486124___home_quick.json"
+    "message": "Quick TestQL passed",
+    "track_file": ""
   },
   "iter1-api": {
-    "status": "down",
-    "updated_at": 1779486565,
+    "status": "up",
+    "updated_at": 1779491531,
     "stage": "quick",
-    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486565_iter1-api_quick.json"
+    "message": "Probes passed (no scenarios)",
+    "track_file": ""
   },
   "iter1-shell": {
-    "status": "down",
-    "updated_at": 1779486566,
+    "status": "up",
+    "updated_at": 1779491531,
     "stage": "quick",
-    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter1-shell_quick.json"
+    "message": "Probes passed (no scenarios)",
+    "track_file": ""
   },
   "iter7-auto": {
-    "status": "down",
-    "updated_at": 1779486566,
+    "status": "up",
+    "updated_at": 1779491531,
     "stage": "quick",
-    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486566_iter7-auto_quick.json"
+    "message": "Probes passed (no scenarios)",
+    "track_file": ""
   },
   "iter7-shell": {
-    "status": "down",
-    "updated_at": 1779486567,
+    "status": "up",
+    "updated_at": 1779491531,
     "stage": "quick",
-    "message": "Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n\nError: No such option: --timeout 10s Did you mean --timeout?",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486567_iter7-shell_quick.json"
-  },
-  "wup-shell": {
-    "status": "down",
-    "updated_at": 1779487427,
-    "stage": "quick",
-    "message": "\ud83d\udcdc OQL: cli-wup.testql.toon.yaml\n\ud83d\udcdd SET \"cli_command\" = \"wup\"\n\ud83d\udcdd SET \"timeout_ms\" = \"30000\"\n\ud83d\udcbb SHELL \"wup --help\" [5000ms] (dry-run)\n  \u2705 ASSERT_EXIT_CODE 0\n  \u274c ASSERT_STDOUT_CONTAINS \"usage\"\n\ud83d\udcbb SHELL \"wup --version\" [5000ms] (dry-run)\n  \u2705 ASSERT_EXIT_CODE 0\n\ud83d\udcbb SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n\u274c Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base 10: '!= 0'\n\u274c L9: list.append() takes no keyword arguments\n\n\u274c cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (0ms)",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779487427_wup-shell_quick.json"
+    "message": "Probes passed (no scenarios)",
+    "track_file": ""
   }
 }

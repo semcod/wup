@@ -1,0 +1,12 @@
+{
+  "created_ticket_id": "PLF-001",
+  "created_ticket_title": "Architektura: wprowadź CQRS + Event Sourcing",
+  "project": "/home/tom/github/semcod/wup",
+  "schema": "koru.onboarding/v1",
+  "selected_ide": "antigravity",
+  "strategy_path": [
+    "architecture",
+    "cqrs_es"
+  ],
+  "updated_at": "2026-05-22T22:09:37.591581+00:00"
+}

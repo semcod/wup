@@ -7,14 +7,14 @@ from pathlib import Path
 from typing import Optional
 
 from .anomaly_models import AnomalyResult
+from ._base_detector import BaseDetector
 
 
-class HashDetector:
+class HashDetector(BaseDetector):
     """Fast anomaly detection using file hashes."""
 
     def __init__(self, snapshot_dir: Path):
-        self.snapshot_dir = snapshot_dir / 'hash_snapshots'
-        self.snapshot_dir.mkdir(parents=True, exist_ok=True)
+        super().__init__(snapshot_dir, 'hash')
 
     def _compute_hash(self, content: str) -> str:
         return hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]

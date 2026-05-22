@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.42', 'python').
+project_metadata('wup', '0.2.43', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 33, 'less').
@@ -25,8 +25,11 @@ project_file('examples/visual_diff_demo.py', 306, 'python').
 project_file('examples/webhook_notifications.py', 376, 'python').
 project_file('project.sh', 49, 'shell').
 project_file('scripts/run_probe_smoke.py', 65, 'python').
+project_file('tests/test_auto_detection.py', 195, 'python').
+project_file('tests/test_cli_filtering.py', 266, 'python').
 project_file('tests/test_e2e.py', 517, 'python').
 project_file('tests/test_monitoring_manifest.py', 73, 'python').
+project_file('tests/test_service_inference.py', 212, 'python').
 project_file('tests/test_testql_monitor.py', 169, 'python').
 project_file('tests/test_testql_watcher.py', 529, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
@@ -34,25 +37,30 @@ project_file('tests/test_wup.py', 1802, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
 project_file('wup/_ast_detector.py', 125, 'python').
+project_file('wup/_base_detector.py', 19, 'python').
 project_file('wup/_hash_detector.py', 73, 'python').
 project_file('wup/_yaml_detector.py', 129, 'python').
 project_file('wup/anomaly_detector.py', 176, 'python').
 project_file('wup/anomaly_models.py', 36, 'python').
 project_file('wup/assistant.py', 695, 'python').
+project_file('wup/bus.py', 62, 'python').
 project_file('wup/cli.py', 800, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
 project_file('wup/config.py', 465, 'python').
 project_file('wup/core.py', 664, 'python').
 project_file('wup/dependency_mapper.py', 285, 'python').
+project_file('wup/file_watcher/events/file_events.py', 11, 'python').
 project_file('wup/models/__init__.py', 35, 'python').
 project_file('wup/models/config.py', 166, 'python').
 project_file('wup/monitoring_manifest.py', 341, 'python').
 project_file('wup/planfile_reporter.py', 204, 'python').
+project_file('wup/testing/events/test_results.py', 23, 'python').
+project_file('wup/testing/handlers/event_handlers.py', 50, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 859, 'python').
+project_file('wup/testql_watcher.py', 857, 'python').
 project_file('wup/visual_diff.py', 519, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
@@ -119,9 +127,28 @@ python_function('examples/webhook_notifications.py', 'create_discord_payload', 1
 python_function('examples/webhook_notifications.py', 'show_webhook_demo', 0, 4, 16).
 python_function('examples/webhook_notifications.py', 'main', 0, 3, 5).
 python_function('scripts/run_probe_smoke.py', 'main', 0, 14, 19).
+python_function('tests/test_auto_detection.py', 'test_cli_scanner_detects_from_pyproject_toml', 0, 4, 7).
+python_function('tests/test_auto_detection.py', 'test_cli_scanner_detects_from_setup_py', 0, 5, 7).
+python_function('tests/test_auto_detection.py', 'test_cli_scanner_no_cli_packages', 0, 2, 7).
+python_function('tests/test_auto_detection.py', 'test_cli_config_generator_creates_shell_service', 0, 5, 9).
+python_function('tests/test_auto_detection.py', 'test_cli_config_generator_web_project_uses_default', 0, 4, 6).
+python_function('tests/test_auto_detection.py', 'test_auto_generate_config_detects_cli', 0, 4, 7).
+python_function('tests/test_auto_detection.py', 'test_auto_generate_config_web_uses_default', 0, 3, 6).
+python_function('tests/test_cli_filtering.py', 'test_filter_scenarios_web_service_excludes_cli_scenarios', 0, 4, 15).
+python_function('tests/test_cli_filtering.py', 'test_filter_scenarios_shell_service_only_cli_scenarios', 0, 4, 15).
+python_function('tests/test_cli_filtering.py', 'test_filter_scenarios_auto_service_all_scenarios', 0, 4, 15).
+python_function('tests/test_cli_filtering.py', 'test_score_scenario_cli_requires_exact_match', 0, 3, 12).
+python_function('tests/test_cli_filtering.py', 'test_score_scenario_non_cli_uses_original_scoring', 0, 2, 12).
+python_function('tests/test_cli_filtering.py', 'test_scenario_matches_type', 0, 6, 11).
 python_function('tests/test_e2e.py', 'run_wup_command', 5, 1, 5).
 python_function('tests/test_monitoring_manifest.py', 'test_discover_docker_compose', 0, 4, 5).
 python_function('tests/test_monitoring_manifest.py', 'test_patch_and_load_monitoring_block', 0, 7, 13).
+python_function('tests/test_service_inference.py', 'test_infer_service_with_empty_paths_uses_configured_services', 0, 2, 11).
+python_function('tests/test_service_inference.py', 'test_infer_service_with_explicit_paths_matches_path_patterns', 0, 2, 11).
+python_function('tests/test_service_inference.py', 'test_infer_service_with_auto_detection_matches_name_segments', 0, 2, 11).
+python_function('tests/test_service_inference.py', 'test_infer_service_returns_none_for_unmatched_files', 0, 2, 11).
+python_function('tests/test_service_inference.py', 'test_infer_service_with_duplicate_service_names', 0, 2, 11).
+python_function('tests/test_service_inference.py', 'test_file_change_uses_configured_services_when_inference_fails', 0, 2, 12).
 python_function('tests/test_testql_monitor.py', 'test_parse_scenario_probes_full_url', 0, 5, 9).
 python_function('tests/test_testql_monitor.py', 'test_firmware_plugin_health_on_8202_not_live_probe', 0, 3, 2).
 python_function('tests/test_testql_monitor.py', 'test_connect_api_paths_on_8100_are_not_monitoring_probes', 0, 3, 4).
@@ -199,6 +226,7 @@ python_function('wup/monitoring_manifest.py', 'manifest_to_yaml_block', 1, 1, 2)
 python_function('wup/monitoring_manifest.py', 'patch_wup_yaml_monitoring', 2, 5, 10).
 python_function('wup/monitoring_manifest.py', 'load_monitoring_manifest_from_yaml', 1, 9, 8).
 python_function('wup/monitoring_manifest.py', 'format_manifest_summary', 1, 10, 6).
+python_function('wup/testing/handlers/event_handlers.py', 'register_testing_event_handlers', 4, 1, 2).
 python_function('wup/testql_monitor.py', '_parse_api_lines', 2, 3, 6).
 python_function('wup/testql_monitor.py', 'parse_scenario_probes', 1, 2, 3).
 python_function('wup/testql_monitor.py', '_extract_base_url', 1, 4, 4).
@@ -380,7 +408,7 @@ python_method('TestTestQLWatcherConfig', 'test_testql_watcher_select_scenarios_u
 python_method('TestTestQLWatcherConfig', 'test_testql_watcher_uses_config_timeout', 0, 3, 7).
 python_method('TestTestQLWatcherConfig', 'test_testql_watcher_without_config_loads_default', 0, 3, 3).
 python_class('wup/_ast_detector.py', 'ASTDetector').
-python_method('ASTDetector', '__init__', 1, 1, 1).
+python_method('ASTDetector', '__init__', 1, 1, 2).
 python_method('ASTDetector', '_collect_import', 1, 2, 0).
 python_method('ASTDetector', '_collect_import_from', 1, 3, 1).
 python_method('ASTDetector', '_collect_class', 1, 5, 3).
@@ -389,13 +417,16 @@ python_method('ASTDetector', '_extract_ast_info', 1, 6, 11).
 python_method('ASTDetector', '_snapshot_path', 1, 1, 2).
 python_method('ASTDetector', '_compute_changes', 2, 11, 3).
 python_method('ASTDetector', 'detect', 1, 6, 13).
+python_class('wup/_base_detector.py', 'BaseDetector').
+python_method('BaseDetector', '__init__', 2, 1, 1).
+python_method('BaseDetector', 'detect', 1, 1, 0).
 python_class('wup/_hash_detector.py', 'HashDetector').
-python_method('HashDetector', '__init__', 1, 1, 1).
+python_method('HashDetector', '__init__', 1, 1, 2).
 python_method('HashDetector', '_compute_hash', 1, 1, 3).
 python_method('HashDetector', '_snapshot_path', 1, 1, 2).
 python_method('HashDetector', 'detect', 1, 5, 9).
 python_class('wup/_yaml_detector.py', 'YAMLStructureDetector').
-python_method('YAMLStructureDetector', '__init__', 1, 1, 1).
+python_method('YAMLStructureDetector', '__init__', 1, 1, 2).
 python_method('YAMLStructureDetector', '_load_yaml', 1, 2, 2).
 python_method('YAMLStructureDetector', '_extract_structure', 3, 6, 6).
 python_method('YAMLStructureDetector', '_snapshot_path', 1, 1, 2).
@@ -436,6 +467,16 @@ python_method('WupAssistant', '_save_draft', 0, 1, 4).
 python_method('WupAssistant', '_load_draft', 0, 2, 4).
 python_method('WupAssistant', '_config_to_dict', 1, 1, 4).
 python_method('WupAssistant', '_quick_setup', 1, 4, 7).
+python_class('wup/bus.py', 'Message').
+python_class('wup/bus.py', 'Command').
+python_class('wup/bus.py', 'Event').
+python_class('wup/bus.py', 'Query').
+python_class('wup/bus.py', 'EventBus').
+python_method('EventBus', '__init__', 0, 1, 0).
+python_method('EventBus', 'subscribe', 2, 2, 1).
+python_method('EventBus', 'publish', 1, 2, 3).
+python_method('EventBus', 'execute', 1, 3, 4).
+python_method('EventBus', 'query', 1, 3, 4).
 python_class('wup/cli_config_generator.py', 'CLIConfigGenerator').
 python_method('CLIConfigGenerator', '__init__', 1, 1, 3).
 python_method('CLIConfigGenerator', 'generate', 2, 4, 5).
@@ -505,6 +546,7 @@ python_method('DependencyMapper', 'to_dict', 0, 2, 5).
 python_method('DependencyMapper', 'save', 1, 1, 3).
 python_method('DependencyMapper', 'load', 1, 2, 6).
 python_method('DependencyMapper', 'build_from_testql_scenarios', 2, 3, 7).
+python_class('wup/file_watcher/events/file_events.py', 'FileChanged').
 python_class('wup/models/config.py', 'NotifyConfig').
 python_class('wup/models/config.py', 'ServiceTestConfig').
 python_class('wup/models/config.py', 'ServiceConfig').
@@ -531,6 +573,12 @@ python_method('PlanfileReporter', '_fingerprint', 0, 1, 5).
 python_method('PlanfileReporter', '_parse_ticket_id', 1, 2, 2).
 python_method('PlanfileReporter', '_ticket_name', 0, 1, 0).
 python_method('PlanfileReporter', '_ticket_description', 0, 3, 0).
+python_class('wup/testing/events/test_results.py', 'TestScenarioPassed').
+python_class('wup/testing/events/test_results.py', 'TestScenarioFailed').
+python_class('wup/testing/handlers/event_handlers.py', 'TestResultEventHandler').
+python_method('TestResultEventHandler', '__init__', 3, 1, 0).
+python_method('TestResultEventHandler', 'handle_test_failed', 1, 3, 5).
+python_method('TestResultEventHandler', 'handle_test_passed', 1, 1, 0).
 python_class('wup/testql_cli_generator.py', 'TestQLCLIGenerator').
 python_method('TestQLCLIGenerator', '__init__', 1, 1, 3).
 python_method('TestQLCLIGenerator', 'generate', 2, 6, 7).
@@ -586,14 +634,14 @@ python_method('TestQLWatcher', 'get_service_config', 1, 3, 0).
 python_method('TestQLWatcher', '_score_scenario', 2, 10, 4).
 python_method('TestQLWatcher', '_get_scored_scenarios', 3, 4, 2).
 python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 9, 8).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 8, 6).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 2, 2).
 python_method('TestQLWatcher', '_write_track', 0, 11, 9).
 python_method('TestQLWatcher', '_quick_timeout', 0, 3, 1).
 python_method('TestQLWatcher', '_merge_endpoints', 2, 3, 3).
-python_method('TestQLWatcher', '_run_scenario_quick', 3, 6, 8).
+python_method('TestQLWatcher', '_run_scenario_quick', 3, 4, 7).
 python_method('TestQLWatcher', '_quick_pass_actions', 2, 11, 8).
 python_method('TestQLWatcher', '_quick_probe_limit', 1, 3, 1).
 python_method('TestQLWatcher', '_quick_probe_timeout', 0, 3, 2).

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "koru": {
+      "command": "/home/tom/.venv/bin/koru",
+      "args": [
+        "mcp-serve"
+      ],
+      "transport": "stdio"
+    }
+  }
+}

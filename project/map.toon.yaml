@@ -1,10 +1,10 @@
-# wup | 53f 12689L | python:50,shell:2,less:1 | 2026-05-22
-# stats: 180 func | 56 cls | 53 mod | CC̄=3.7 | critical:9 | cycles:0
+# wup | 61f 13525L | python:58,shell:2,less:1 | 2026-05-23
+# stats: 200 func | 66 cls | 61 mod | CC̄=3.6 | critical:9 | cycles:0
 # alerts[5]: CC main=14; CC validate_config=14; CC sync_testql=13; CC _assign_by_path_prefix=13; CC test_service_health_transitions_are_persisted=12
 # hotspots[5]: status fan=35; sync_testql fan=28; validate_config fan=21; main fan=19; testql_endpoints fan=19
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[53]:
+M[61]:
   app.doql.less,33
   examples/c2004_monorepo_demo.py,259
   examples/ci_cd_integration.py,340
@@ -28,8 +28,11 @@ M[53]:
   examples/webhook_notifications.py,376
   project.sh,49
   scripts/run_probe_smoke.py,65
+  tests/test_auto_detection.py,195
+  tests/test_cli_filtering.py,266
   tests/test_e2e.py,517
   tests/test_monitoring_manifest.py,73
+  tests/test_service_inference.py,212
   tests/test_testql_monitor.py,169
   tests/test_testql_watcher.py,529
   tests/test_web_client.py,168
@@ -37,25 +40,30 @@ M[53]:
   tree.sh,2
   wup/__init__.py,47
   wup/_ast_detector.py,125
+  wup/_base_detector.py,19
   wup/_hash_detector.py,73
   wup/_yaml_detector.py,129
   wup/anomaly_detector.py,176
   wup/anomaly_models.py,36
   wup/assistant.py,695
+  wup/bus.py,62
   wup/cli.py,800
   wup/cli_config_generator.py,224
   wup/cli_scanner.py,303
   wup/config.py,465
   wup/core.py,664
   wup/dependency_mapper.py,285
+  wup/file_watcher/events/file_events.py,11
   wup/models/__init__.py,35
   wup/models/config.py,166
   wup/monitoring_manifest.py,341
   wup/planfile_reporter.py,204
+  wup/testing/events/test_results.py,23
+  wup/testing/handlers/event_handlers.py,50
   wup/testql_cli_generator.py,216
   wup/testql_discovery.py,230
   wup/testql_monitor.py,522
-  wup/testql_watcher.py,859
+  wup/testql_watcher.py,857
   wup/visual_diff.py,519
   wup/web_client.py,186
 D:
@@ -162,6 +170,23 @@ D:
   scripts/run_probe_smoke.py:
     e: main
     main()
+  tests/test_auto_detection.py:
+    e: test_cli_scanner_detects_from_pyproject_toml,test_cli_scanner_detects_from_setup_py,test_cli_scanner_no_cli_packages,test_cli_config_generator_creates_shell_service,test_cli_config_generator_web_project_uses_default,test_auto_generate_config_detects_cli,test_auto_generate_config_web_uses_default
+    test_cli_scanner_detects_from_pyproject_toml()
+    test_cli_scanner_detects_from_setup_py()
+    test_cli_scanner_no_cli_packages()
+    test_cli_config_generator_creates_shell_service()
+    test_cli_config_generator_web_project_uses_default()
+    test_auto_generate_config_detects_cli()
+    test_auto_generate_config_web_uses_default()
+  tests/test_cli_filtering.py:
+    e: test_filter_scenarios_web_service_excludes_cli_scenarios,test_filter_scenarios_shell_service_only_cli_scenarios,test_filter_scenarios_auto_service_all_scenarios,test_score_scenario_cli_requires_exact_match,test_score_scenario_non_cli_uses_original_scoring,test_scenario_matches_type
+    test_filter_scenarios_web_service_excludes_cli_scenarios()
+    test_filter_scenarios_shell_service_only_cli_scenarios()
+    test_filter_scenarios_auto_service_all_scenarios()
+    test_score_scenario_cli_requires_exact_match()
+    test_score_scenario_non_cli_uses_original_scoring()
+    test_scenario_matches_type()
   tests/test_e2e.py:
     e: run_wup_command,TestE2ECLI,TestE2EWorkflow,TestE2EIntegration,TestE2EErrorHandling,TestE2EPerformance,TestE2EConfigScenarios
     TestE2ECLI: test_cli_init_creates_config_file(0),test_cli_init_default_location(0),test_cli_map_deps_creates_dependency_file(0),test_cli_status_shows_dependency_info(0)  # End-to-end tests for CLI commands.
@@ -175,6 +200,14 @@ D:
     e: test_discover_docker_compose,test_patch_and_load_monitoring_block
     test_discover_docker_compose()
     test_patch_and_load_monitoring_block()
+  tests/test_service_inference.py:
+    e: test_infer_service_with_empty_paths_uses_configured_services,test_infer_service_with_explicit_paths_matches_path_patterns,test_infer_service_with_auto_detection_matches_name_segments,test_infer_service_returns_none_for_unmatched_files,test_infer_service_with_duplicate_service_names,test_file_change_uses_configured_services_when_inference_fails
+    test_infer_service_with_empty_paths_uses_configured_services()
+    test_infer_service_with_explicit_paths_matches_path_patterns()
+    test_infer_service_with_auto_detection_matches_name_segments()
+    test_infer_service_returns_none_for_unmatched_files()
+    test_infer_service_with_duplicate_service_names()
+    test_file_change_uses_configured_services_when_inference_fails()
   tests/test_testql_monitor.py:
     e: test_parse_scenario_probes_full_url,test_firmware_plugin_health_on_8202_not_live_probe,test_connect_api_paths_on_8100_are_not_monitoring_probes,test_connect_health_on_8103_not_assigned_to_backend,test_assign_firmware_service,test_monitor_merges_config_and_service_map,test_probes_for_service_ignores_non_health_extra_paths,test_live_probe_failure_updates_health
     test_parse_scenario_probes_full_url()
@@ -235,6 +268,9 @@ D:
   wup/_ast_detector.py:
     e: ASTDetector
     ASTDetector: __init__(1),_collect_import(1),_collect_import_from(1),_collect_class(1),_collect_function(1),_extract_ast_info(1),_snapshot_path(1),_compute_changes(2),detect(1)  # Detect changes in Python files using AST comparison.
+  wup/_base_detector.py:
+    e: BaseDetector
+    BaseDetector: __init__(2),detect(1)  # Base anomaly detector.
   wup/_hash_detector.py:
     e: HashDetector
     HashDetector: __init__(1),_compute_hash(1),_snapshot_path(1),detect(1)  # Fast anomaly detection using file hashes.
@@ -254,6 +290,13 @@ D:
     e: main,WupAssistant
     WupAssistant: __init__(1),_dispatch_menu_choice(2),run(2),_init_project(1),_detect_framework(0),_auto_detect_services(1),_detect_service_type(2),_configure_services(0),_add_service_interactive(0),_edit_service(1),_setup_watch(0),_configure_testql(0),_setup_web_dashboard(0),_setup_visual_diff(0),_setup_anomaly_detection(0),_review_and_validate(0),_validate_config(0),_generate_suggestions(0),_save_configuration(0),_save_draft(0),_load_draft(0),_config_to_dict(1),_quick_setup(1)  # Interactive configuration assistant.
     main()
+  wup/bus.py:
+    e: Message,Command,Event,Query,EventBus
+    Message:  # Base message type.
+    Command:  # Command changes state.
+    Event:  # Event indicates something happened.
+    Query:  # Query requests data without changing state.
+    EventBus: __init__(0),subscribe(2),publish(1),execute(1),query(1)  # Simple in-memory event bus and command/query dispatcher.
   wup/cli.py:
     e: _load_watch_config,_print_watch_header,_refresh_monitoring_manifest,_create_watcher,watch,_auto_generate_config,map_deps,status,init,testql_endpoints,map_deps,sync_testql,assistant,version,init_cli
     _load_watch_config(project_path;config_path;probe_interval;mode)
@@ -294,6 +337,9 @@ D:
   wup/dependency_mapper.py:
     e: DependencyMapper
     DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_search_codebase(1),_scan_endpoints(1),_scan_python_endpoints(1),_scan_js_endpoints(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing.
+  wup/file_watcher/events/file_events.py:
+    e: FileChanged
+    FileChanged:
   wup/models/__init__.py:
   wup/models/config.py:
     e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,PlanfileConfig,AnomalyDetectionConfig,ProjectConfig,WupConfig
@@ -331,6 +377,14 @@ D:
   wup/planfile_reporter.py:
     e: PlanfileReporter
     PlanfileReporter: __init__(3),enabled(0),report_failure(0),clear_service_stage(0),_create_ticket(0),_wait_for_planfile_store_ready(1),_load_dedupe(0),_save_dedupe(1),_fingerprint(0),_parse_ticket_id(1),_ticket_name(0),_ticket_description(0)  # Create deduplicated planfile tickets for WUP-detected failur
+  wup/testing/events/test_results.py:
+    e: TestScenarioPassed,TestScenarioFailed
+    TestScenarioPassed:
+    TestScenarioFailed:
+  wup/testing/handlers/event_handlers.py:
+    e: register_testing_event_handlers,TestResultEventHandler
+    TestResultEventHandler: __init__(3),handle_test_failed(1),handle_test_passed(1)  # Handles test result events to update planfile reporter and w
+    register_testing_event_handlers(bus;planfile_reporter;web_client;console)
   wup/testql_cli_generator.py:
     e: TestQLCLIGenerator
     TestQLCLIGenerator: __init__(1),generate(2),_generate_smoke_scenario(2),_generate_command_scenario(3),generate_custom_scenario(3),print_summary(1)  # Generate TestQL scenarios for CLI command testing.

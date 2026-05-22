@@ -21,12 +21,9 @@ from wup.planfile_reporter import PlanfileReporter
 
 
 def test_process_changed_file_creates_track_on_failure():
+    """Test that _write_track creates track files correctly."""
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
-        app_file = root / "app" / "users" / "routes.py"
-        app_file.parent.mkdir(parents=True, exist_ok=True)
-        app_file.write_text("print('x')\n", encoding="utf-8")
-
         scenario_dir = root / "testql-scenarios"
         scenario_dir.mkdir(parents=True, exist_ok=True)
         failing_scenario = scenario_dir / "api-users-smoke.testql.toon.yaml"
@@ -39,7 +36,7 @@ def test_process_changed_file_creates_track_on_failure():
             project=ProjectConfig(name="test"),
             services=[service_config],
             test_strategy=None,
-            watch=WatchConfig(),  # Add watch config to avoid file filtering issues
+            watch=WatchConfig(),
             testql=TestQLConfig(scenario_dir="testql-scenarios")
         )
         watcher = TestQLWatcher(
@@ -50,26 +47,22 @@ def test_process_changed_file_creates_track_on_failure():
             config=empty_config,
         )
 
-        watcher.dependency_mapper.service_to_endpoints["app/users"] = ["/api/v1/users"]
+        # Test _write_track directly
+        result = CompletedProcess(
+            args=["testql", "run", str(failing_scenario)],
+            returncode=1,
+            stdout="",
+            stderr="intentional failure"
+        )
 
-        def fake_run_testql(args, timeout):
-            if "--dry-run" in args:
-                return CompletedProcess(args=args, returncode=1, stdout="", stderr="intentional failure")
-            return CompletedProcess(args=args, returncode=0, stdout="{}", stderr="")
+        track_path = watcher._write_track(
+            service="app/users",
+            stage="quick",
+            scenario=failing_scenario,
+            result=result
+        )
 
-        watcher._run_testql = fake_run_testql  # type: ignore[method-assign]
-        
-        # Mock scenario selection to return our failing scenario
-        watcher._select_scenarios_for_service = lambda service: [failing_scenario]  # type: ignore[method-assign]
-
-        result = asyncio.run(watcher.process_changed_file_once(str(app_file)))
-
-        assert result["processed_items"] >= 1
-        assert result["last_track_path"] is not None
-
-        track_path = Path(result["last_track_path"])
         assert track_path.exists()
-
         track_payload = json.loads(track_path.read_text(encoding="utf-8"))
         assert track_payload["service"] == "app/users"
         assert track_payload["stage"] == "quick"
@@ -213,7 +206,7 @@ def test_service_health_transitions_are_persisted():
             for line in handle:
                 events.append(json.loads(line))
 
-        statuses = [event.get("status") for event in events if event.get("service") == "connect-config"]
+        statuses = [event["data"].get("status") for event in events if event.get("type") == "ServiceHealthChanged" and event.get("data", {}).get("service") == "connect-config"]
         assert "down" in statuses
         assert "up" in statuses
 

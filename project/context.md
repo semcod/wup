@@ -5,12 +5,12 @@
 
 - **Project**: /home/tom/github/semcod/wup
 - **Primary Language**: python
-- **Languages**: python: 41, yaml: 10, txt: 4, json: 2, toml: 1
+- **Languages**: python: 44, yaml: 11, txt: 4, json: 2, toml: 1
 - **Analysis Mode**: static
-- **Total Functions**: 359
-- **Total Classes**: 40
-- **Modules**: 62
-- **Entry Points**: 269
+- **Total Functions**: 370
+- **Total Classes**: 48
+- **Modules**: 66
+- **Entry Points**: 280
 
 ## Architecture by Module
 
@@ -180,10 +180,6 @@ Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
 > Detect changes in Python file structure.
 - **Calls**: None.endswith, file_path.read_text, ast.parse, self._extract_ast_info, self._snapshot_path, snap_path.exists, json.loads, self._compute_changes
 
-### examples.testql_demo.simulate_testql_analysis
-> Simulate WUP analysis on TestQL project.
-- **Calls**: print, print, print, print, Path, print, print, print
-
 ### wup.core.WupWatcher.__init__
 > Initialize the WUP watcher.
 
@@ -192,6 +188,10 @@ Args:
     deps_file: Path to the dependency map JSON file
     cpu_th
 - **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, PlanfileReporter, None.exists
+
+### examples.testql_demo.simulate_testql_analysis
+> Simulate WUP analysis on TestQL project.
+- **Calls**: print, print, print, print, Path, print, print, print
 
 ### wup.assistant.WupAssistant._setup_watch
 > Setup file watching configuration.
@@ -359,6 +359,7 @@ Implements 3-layer testing:
 > Detect changes in Python files using AST comparison.
 - **Methods**: 9
 - **Key Methods**: wup._ast_detector.ASTDetector.__init__, wup._ast_detector.ASTDetector._collect_import, wup._ast_detector.ASTDetector._collect_import_from, wup._ast_detector.ASTDetector._collect_class, wup._ast_detector.ASTDetector._collect_function, wup._ast_detector.ASTDetector._extract_ast_info, wup._ast_detector.ASTDetector._snapshot_path, wup._ast_detector.ASTDetector._compute_changes, wup._ast_detector.ASTDetector.detect
+- **Inherits**: BaseDetector
 
 ### wup.web_client.WebClient
 > Async event sink for the wupbro backend.
@@ -374,6 +375,7 @@ Usage::
 > Detect structural changes in YAML files.
 - **Methods**: 8
 - **Key Methods**: wup._yaml_detector.YAMLStructureDetector.__init__, wup._yaml_detector.YAMLStructureDetector._load_yaml, wup._yaml_detector.YAMLStructureDetector._extract_structure, wup._yaml_detector.YAMLStructureDetector._snapshot_path, wup._yaml_detector.YAMLStructureDetector._compare_structures, wup._yaml_detector.YAMLStructureDetector._compare_dict_structures, wup._yaml_detector.YAMLStructureDetector.detect, wup._yaml_detector.YAMLStructureDetector._generate_suggestions
+- **Inherits**: BaseDetector
 
 ### wup.visual_diff.VisualDiffer
 > Triggered by TestQLWatcher after a file change.
@@ -417,21 +419,22 @@ Overrides test methods to run actual Test
 - **Methods**: 5
 - **Key Methods**: examples.webhook_notifications.NotificationRouter.__init__, examples.webhook_notifications.NotificationRouter.add_slack, examples.webhook_notifications.NotificationRouter.add_teams, examples.webhook_notifications.NotificationRouter.add_discord, examples.webhook_notifications.NotificationRouter.send
 
+### wup.bus.EventBus
+> Simple in-memory event bus and command/query dispatcher.
+- **Methods**: 5
+- **Key Methods**: wup.bus.EventBus.__init__, wup.bus.EventBus.subscribe, wup.bus.EventBus.publish, wup.bus.EventBus.execute, wup.bus.EventBus.query
+
 ### wup._hash_detector.HashDetector
 > Fast anomaly detection using file hashes.
 - **Methods**: 4
 - **Key Methods**: wup._hash_detector.HashDetector.__init__, wup._hash_detector.HashDetector._compute_hash, wup._hash_detector.HashDetector._snapshot_path, wup._hash_detector.HashDetector.detect
+- **Inherits**: BaseDetector
 
 ### wup.core.WupEventHandler
 > File system event handler for WUP watcher.
 - **Methods**: 4
 - **Key Methods**: wup.core.WupEventHandler.__init__, wup.core.WupEventHandler.on_modified, wup.core.WupEventHandler.on_created, wup.core.WupEventHandler.on_deleted
 - **Inherits**: FileSystemEventHandler
-
-### wup.testql_monitor._ProbeAccumulator
-> Deduplicated probe collector for discover_probes_by_service.
-- **Methods**: 2
-- **Key Methods**: wup.testql_monitor._ProbeAccumulator.__init__, wup.testql_monitor._ProbeAccumulator.add
 
 ## Data Transformation Functions
 
@@ -539,19 +542,19 @@ Functions exposed as public API (no underscore prefix):
 - `wup.cli.init` - 16 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints` - 16 calls
 - `wup._hash_detector.HashDetector.detect` - 16 calls
+- `wup.core.WupWatcher.run_detail_test` - 16 calls
 - `examples.visual_diff_demo.demo_diff_algorithm` - 16 calls
 - `examples.visual_diff_demo.demo_config_yaml_round_trip` - 16 calls
-- `wup.core.WupWatcher.run_detail_test` - 16 calls
 - `wup.monitoring_manifest.build_monitoring_manifest` - 15 calls
 - `examples.visual_diff_demo.main` - 15 calls
 - `wup.monitoring_manifest.load_monitoring_manifest_from_yaml` - 14 calls
 - `wup.anomaly_detector.AnomalyDetector.scan_directory` - 14 calls
 - `examples.visual_diff_demo.demo_live_page` - 14 calls
 - `wup.cli_config_generator.CLIConfigGenerator.print_summary` - 13 calls
-- `examples.testql_integration.CustomTestQLWatcher.run_detail_test` - 13 calls
 - `wup.core.WupWatcher.start_watching` - 13 calls
 - `wup.core.WupWatcher.create_status_table` - 13 calls
 - `wup.core.WupWatcher.run_with_dashboard` - 13 calls
+- `examples.testql_integration.CustomTestQLWatcher.run_detail_test` - 13 calls
 - `wup.config.save_config` - 12 calls
 - `wup.cli.assistant` - 12 calls
 - `wup.visual_diff.VisualDiffer.get_recent_diffs` - 12 calls

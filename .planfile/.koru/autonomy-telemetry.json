@@ -1,0 +1,20 @@
+{
+  "cumulative": {
+    "autopilot_idle_streak_skips": 0,
+    "scan_after_idle_runs": 0,
+    "scan_after_idle_tickets_applied": 0
+  },
+  "cycle": 8,
+  "knobs": {
+    "autopilot_skip_drive_idle_streak": 0,
+    "scan_after_idle_min_interval_seconds": 0.0,
+    "scan_after_idle_queue": false
+  },
+  "last_cycle": {
+    "autopilot_skipped_idle_streak": false,
+    "scan_after_idle_applied": 0,
+    "scan_after_idle_run": false,
+    "scan_after_idle_skipped_rate_limit": false
+  },
+  "updated_at": "2026-05-22T23:06:16.710563+00:00"
+}

@@ -74,8 +74,13 @@
 │   ├── generated-cli-tests.testql.toon.yaml
 │   └── generated-from-pytests.testql.toon.yaml
 ├── tests
+│   ├── test_auto_detection.py
+│   ├── test_cli_filtering.py
 │   ├── test_e2e.py
 │   ├── test_monitoring_manifest.py
+│   ├── TEST_PLAN.md
+│   ├── test_service_inference.py
+│   ├── TEST_SUMMARY.md
 │   ├── test_testql_monitor.py
 │   ├── test_testql_watcher.py
 │   ├── test_web_client.py
@@ -90,12 +95,17 @@
 │   ├── anomaly_models.py
 │   ├── assistant.py
 │   ├── _ast_detector.py
+│   ├── _base_detector.py
+│   ├── bus.py
 │   ├── cli_config_generator.py
 │   ├── cli.py
 │   ├── cli_scanner.py
 │   ├── config.py
 │   ├── core.py
 │   ├── dependency_mapper.py
+│   ├── file_watcher
+│   │   └── events
+│   │       └── file_events.py
 │   ├── _hash_detector.py
 │   ├── __init__.py
 │   ├── models
@@ -103,6 +113,13 @@
 │   │   └── __init__.py
 │   ├── monitoring_manifest.py
 │   ├── planfile_reporter.py
+│   ├── testing
+│   │   ├── commands
+│   │   ├── events
+│   │   │   └── test_results.py
+│   │   ├── handlers
+│   │   │   └── event_handlers.py
+│   │   └── queries
 │   ├── testql_cli_generator.py
 │   ├── testql_discovery.py
 │   ├── testql_monitor.py
@@ -120,4 +137,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-24 directories, 97 files
+31 directories, 107 files

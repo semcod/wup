@@ -8,14 +8,14 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from .anomaly_models import AnomalyResult
+from ._base_detector import BaseDetector
 
 
-class ASTDetector:
+class ASTDetector(BaseDetector):
     """Detect changes in Python files using AST comparison."""
 
     def __init__(self, snapshot_dir: Path):
-        self.snapshot_dir = snapshot_dir / 'ast_snapshots'
-        self.snapshot_dir.mkdir(parents=True, exist_ok=True)
+        super().__init__(snapshot_dir, 'ast')
 
     @staticmethod
     def _collect_import(node: ast.Import) -> List[str]:
