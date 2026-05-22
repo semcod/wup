@@ -82,10 +82,10 @@ testql:
 
 # BEGIN WUP MONITORING MANIFEST (auto-generated — do not edit; run: wup sync-testql --write)
 monitoring:
-  generated_at: '2026-05-22T21:52:23Z'
+  generated_at: '2026-05-22T22:03:26Z'
   generated_by: wup sync-testql --write (or wup watch startup)
   how_to_refresh: wup sync-testql . --write
-  probe_interval_s: 0
+  probe_interval_s: 60
   health_scenario: ''
   base_url: (set testql.base_url or WUP_BASE_URL)
   endpoint_discovery: true

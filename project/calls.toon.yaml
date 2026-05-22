@@ -1,5 +1,5 @@
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.10s
+# generated in 0.08s
 # nodes: 104 | edges: 100 | modules: 16
 # CC̄=4.3
 
@@ -18,32 +18,32 @@ HUBS[20]:
     CC=13  in:0  out:45  total:45
   scripts.run_probe_smoke.main
     CC=14  in:0  out:38  total:38
-  examples.c2004_monorepo_demo.analyze_monorepo
-    CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
-  examples.testql_demo.simulate_testql_analysis
-    CC=2  in:0  out:18  total:18
   wup.core.WupWatcher.__init__
     CC=7  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_diff_algorithm
-    CC=3  in:1  out:16  total:17
+  examples.testql_demo.simulate_testql_analysis
+    CC=2  in:0  out:18  total:18
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.config.load_config
-    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
+  examples.visual_diff_demo.demo_diff_algorithm
+    CC=3  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   wup.cli.init
     CC=3  in:0  out:16  total:16
   wup.monitoring_manifest.load_monitoring_manifest_from_yaml
     CC=9  in:2  out:14  total:16
-  examples.visual_diff_demo.demo_live_page
-    CC=3  in:1  out:14  total:15
+  wup.config.save_config
+    CC=2  in:3  out:12  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]

@@ -434,6 +434,37 @@ class WupWatcher:
         file_suffix = Path(file_path).suffix.lower()
         return file_suffix in self.config.watch.file_types
     
+    def _is_file_ignored(self, rel_path: Path) -> bool:
+        """Check if a file should be ignored based on paths and types."""
+        skip_dirs = {".git", "__pycache__", "node_modules", ".venv", "dist", "build"}
+        if any(part in skip_dirs for part in rel_path.parts):
+            return True
+        
+        for pattern in self.config.watch.exclude_patterns:
+            if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
+                return True
+            if pattern in str(rel_path):
+                return True
+        
+        if self.config.watch.file_types:
+            file_ext = rel_path.suffix if rel_path.suffix else ""
+            if not file_ext.startswith("."):
+                file_ext = f".{file_ext}"
+            if file_ext not in self.config.watch.file_types:
+                return True
+        
+        return False
+
+    def _notify_all_configured_services(self, rel_path: Path):
+        """Notify all configured services about a file change."""
+        if not self.config.services:
+            return
+        for svc in self.config.services:
+            if self.should_test(svc.name):
+                self.changed_services.add(svc.name)
+                self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {svc.name}[/yellow]")
+                self.schedule_quick_test(svc.name)
+
     def on_file_change(self, file_path: str):
         """
         Handle file change event.
@@ -441,52 +472,25 @@ class WupWatcher:
         Args:
             file_path: Path to the changed file
         """
-        # Check file type filter
         if not self.should_watch_file(file_path):
             return
         
-        # Only watch relevant directories
         rel_path = self._to_relative_path(file_path)
-        parts = rel_path.parts
-        
-        # Skip certain directories
-        skip_dirs = {".git", "__pycache__", "node_modules", ".venv", "dist", "build"}
-        if any(part in skip_dirs for part in parts):
+        if self._is_file_ignored(rel_path):
             return
         
-        # Check exclude patterns from config
-        for pattern in self.config.watch.exclude_patterns:
-            if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
-                return
-            if pattern in str(rel_path):
-                return
-        
-        # Filter by file type if specified in config
-        if self.config.watch.file_types:
-            # Ensure file extensions start with dot
-            file_ext = rel_path.suffix if rel_path.suffix else ""
-            if not file_ext.startswith("."):
-                file_ext = f".{file_ext}"
-            
-            # Check if file extension matches any of the configured types
-            if file_ext not in self.config.watch.file_types:
-                return
-        
-        # Infer service from file path
         service = self.infer_service(file_path)
         
-        # If inference failed or returned invalid service, use configured services
-        # Invalid services: None, "//home", or other non-configured names
-        invalid_services = {None, "//home"}
-        if service in invalid_services and self.config.services:
+        service_matches_config = False
+        if service and self.config.services:
             for svc in self.config.services:
-                if self.should_test(svc.name):
-                    self.changed_services.add(svc.name)
-                    self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {svc.name}[/yellow]")
-                    self.schedule_quick_test(svc.name)
-            return
+                if service == svc.name:
+                    service_matches_config = True
+                    break
         
-        if service and self.should_test(service):
+        if not service or not service_matches_config:
+            self._notify_all_configured_services(rel_path)
+        elif service and self.should_test(service):
             self.changed_services.add(service)
             self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {service}[/yellow]")
             self.schedule_quick_test(service)

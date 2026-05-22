@@ -1,4 +1,4 @@
-# wup | 355 func | 37f | 10709L | python | 2026-05-22
+# wup | 359 func | 37f | 10727L | python | 2026-05-22
 # generated in 0.00s
 
 HEALTH:
@@ -17,10 +17,10 @@ ALERTS[20]:
   !!  high_fan_out     show_webhook_demo = 16 (limit:10)
 
 MODULES[62] (top by size):
-  M[wup/testql_watcher.py] 851L C:2 F:39 CC↑16 D:0 (python)
+  M[wup/testql_watcher.py] 858L C:2 F:41 CC↑13 D:0 (python)
   M[wup/cli.py] 799L C:0 F:14 CC↑13 D:0 (python)
   M[wup/assistant.py] 694L C:1 F:24 CC↑14 D:0 (python)
-  M[wup/core.py] 652L C:2 F:26 CC↑14 D:0 (python)
+  M[wup/core.py] 663L C:2 F:28 CC↑11 D:0 (python)
   M[wup/testql_monitor.py] 521L C:3 F:36 CC↑13 D:2 (python)
   M[wup/visual_diff.py] 518L C:1 F:24 CC↑11 D:1 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
@@ -46,12 +46,12 @@ With ``--write``, ap
   ★ main fan=21  // Orchestrates 21 calls
   ★ testql_endpoints fan=20  // Discover endpoints from TestQL scenario files and build dependency map.
 
-REFACTOR[11]:
-  [1] H/H Split god module wup/testql_watcher.py (851L, 2 classes)
-  [2] H/H Split god module wup/assistant.py (694L, 1 classes)
-  [3] H/H Split god module wup/core.py (652L, 2 classes)
-  [4] H/H Split god module wup/cli.py (799L, 0 classes)
-  [5] H/H Split god module wup/testql_monitor.py (521L, 3 classes)
+REFACTOR[10]:
+  [1] H/H Split god module wup/assistant.py (694L, 1 classes)
+  [2] H/H Split god module wup/cli.py (799L, 0 classes)
+  [3] H/H Split god module wup/testql_monitor.py (521L, 3 classes)
+  [4] H/H Split god module wup/testql_watcher.py (858L, 2 classes)
+  [5] H/H Split god module wup/core.py (663L, 2 classes)
 
 EVOLUTION:
-  2026-05-22 CC̄=4.3 crit=29 10709L // Automated analysis
+  2026-05-22 CC̄=4.3 crit=29 10727L // Automated analysis

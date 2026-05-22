@@ -21,7 +21,7 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 ## Metadata
 
 - **name**: `wup`
-- **version**: `0.2.41`
+- **version**: `0.2.42`
 - **python_requires**: `>=3.9`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
@@ -41,7 +41,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: wup;
-  version: 0.2.41;
+  version: 0.2.42;
 }
 
 dependencies {
@@ -267,7 +267,7 @@ ASSERT[72]{field, operator, expected}:
 ```yaml
 project:
   name: wup
-  version: 0.2.41
+  version: 0.2.42
   env: local
 ```
 
@@ -321,7 +321,7 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 53f 12669L | python:50,shell:2,less:1 | 2026-05-22
+# wup | 53f 12689L | python:50,shell:2,less:1 | 2026-05-22
 # stats: 180 func | 56 cls | 53 mod | CC̄=3.7 | critical:9 | cycles:0
 # alerts[5]: CC main=14; CC validate_config=14; CC sync_testql=13; CC _assign_by_path_prefix=13; CC test_service_health_transitions_are_persisted=12
 # hotspots[5]: status fan=35; sync_testql fan=28; validate_config fan=21; main fan=19; testql_endpoints fan=19
@@ -356,7 +356,7 @@ M[53]:
   tests/test_testql_monitor.py,169
   tests/test_testql_watcher.py,529
   tests/test_web_client.py,168
-  tests/test_wup.py,1800
+  tests/test_wup.py,1802
   tree.sh,2
   wup/__init__.py,47
   wup/_ast_detector.py,125
@@ -369,7 +369,7 @@ M[53]:
   wup/cli_config_generator.py,224
   wup/cli_scanner.py,303
   wup/config.py,465
-  wup/core.py,653
+  wup/core.py,664
   wup/dependency_mapper.py,285
   wup/models/__init__.py,35
   wup/models/config.py,166
@@ -378,7 +378,7 @@ M[53]:
   wup/testql_cli_generator.py,216
   wup/testql_discovery.py,230
   wup/testql_monitor.py,522
-  wup/testql_watcher.py,852
+  wup/testql_watcher.py,859
   wup/visual_diff.py,519
   wup/web_client.py,186
 D:
@@ -612,7 +612,7 @@ D:
     save_config(config;output_path)
   wup/core.py:
     e: WupWatcher,WupEventHandler
-    WupWatcher: __init__(6),_to_relative_path(1),infer_service(1),_is_coincident_pair(2),detect_service_coincidences(1),_services_share_domain(2),get_service_config(1),should_test(1),schedule_quick_test(1),schedule_detail_test(1),process_test_queue_once(0),cpu_ok(0),run_quick_test(2),run_detail_test(2),test_loop(0),should_watch_file(1),on_file_change(1),build_watched_paths(0),_create_and_start_observer(2),start_watching(1),create_status_table(0),run_with_dashboard(0)  # Intelligent file watcher for regression testing.
+    WupWatcher: __init__(6),_to_relative_path(1),infer_service(1),_is_coincident_pair(2),detect_service_coincidences(1),_services_share_domain(2),get_service_config(1),should_test(1),schedule_quick_test(1),schedule_detail_test(1),process_test_queue_once(0),cpu_ok(0),run_quick_test(2),run_detail_test(2),test_loop(0),should_watch_file(1),_is_file_ignored(1),_notify_all_configured_services(1),on_file_change(1),build_watched_paths(0),_create_and_start_observer(2),start_watching(1),create_status_table(0),run_with_dashboard(0)  # Intelligent file watcher for regression testing.
     WupEventHandler: __init__(1),on_modified(1),on_created(1),on_deleted(1)  # File system event handler for WUP watcher.
   wup/dependency_mapper.py:
     e: DependencyMapper
@@ -687,7 +687,7 @@ D:
   wup/testql_watcher.py:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file
-    TestQLWatcher: __init__(7),_normalize_fleet_health_entry(0),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_to_full_url_for_service(2),_resolve_base_url_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_score_scenario(2),_select_scenarios_for_service(1),_filter_scenarios_by_type(2),_scenario_matches_type(2),_run_testql(2),_write_track(0),_quick_timeout(0),_merge_endpoints(2),_run_scenario_quick(3),_quick_pass_actions(2),_quick_probe_limit(1),_quick_probe_timeout(0),_run_live_http_probes(2),_try_parse_json_summary(1),_try_find_line_summary(1),_summarize_health_scenario_failure(1),_run_fleet_health_scenario(0),run_quick_test(2),_publish_visual_events(2),run_detail_test(2),process_changed_file_once(1),_run_periodic_probes_once(0),_start_periodic_probe_thread(0),start_watching(1)  # WUP watcher running selective TestQL scenarios for changed s
+    TestQLWatcher: __init__(7),_normalize_fleet_health_entry(0),_load_service_health(0),_save_service_health(0),_record_health_transition(0),_tokenize_service(1),_get_config_endpoints_for_service(1),_to_full_url_for_service(2),_resolve_base_url_for_service(1),_resolve_base_url(0),_to_full_url(1),_discover_scenarios(0),get_service_config(1),_score_scenario(2),_get_scored_scenarios(3),_get_smoke_fallback(1),_select_scenarios_for_service(1),_filter_scenarios_by_type(2),_scenario_matches_type(2),_run_testql(2),_write_track(0),_quick_timeout(0),_merge_endpoints(2),_run_scenario_quick(3),_quick_pass_actions(2),_quick_probe_limit(1),_quick_probe_timeout(0),_run_live_http_probes(2),_try_parse_json_summary(1),_try_find_line_summary(1),_summarize_health_scenario_failure(1),_run_fleet_health_scenario(0),run_quick_test(2),_publish_visual_events(2),run_detail_test(2),process_changed_file_once(1),_run_periodic_probes_once(0),_start_periodic_probe_thread(0),start_watching(1)  # WUP watcher running selective TestQL scenarios for changed s
   wup/visual_diff.py:
     e: _playwright_available,_warn_playwright_missing,_fetch_dom_snapshot,_detect_content_issues,_page_slug,_short_url,_compact_error_message,_sample_list,_looks_like_visual_page,_snapshot_path,_load_snapshot,_save_snapshot,_node_signature,_flatten,_diff_snapshots,_resolve_base_url,VisualDiffer
     VisualDiffer: __init__(2),_pages_for_service(2),_categorize_page_result(6),_print_scan_summary(4),run_for_service(2),_check_page(2),_write_diff_event(3),get_recent_diffs(1)  # Triggered by TestQLWatcher after a file change.
@@ -719,7 +719,7 @@ D:
 
 ```prolog markpact:analysis path=project/logic.pl
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.41', 'python').
+project_metadata('wup', '0.2.42', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 33, 'less').
@@ -750,7 +750,7 @@ project_file('tests/test_monitoring_manifest.py', 73, 'python').
 project_file('tests/test_testql_monitor.py', 169, 'python').
 project_file('tests/test_testql_watcher.py', 529, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
-project_file('tests/test_wup.py', 1800, 'python').
+project_file('tests/test_wup.py', 1802, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
 project_file('wup/_ast_detector.py', 125, 'python').
@@ -763,7 +763,7 @@ project_file('wup/cli.py', 800, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
 project_file('wup/config.py', 465, 'python').
-project_file('wup/core.py', 653, 'python').
+project_file('wup/core.py', 664, 'python').
 project_file('wup/dependency_mapper.py', 285, 'python').
 project_file('wup/models/__init__.py', 35, 'python').
 project_file('wup/models/config.py', 166, 'python').
@@ -772,7 +772,7 @@ project_file('wup/planfile_reporter.py', 204, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 852, 'python').
+project_file('wup/testql_watcher.py', 859, 'python').
 project_file('wup/visual_diff.py', 519, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
@@ -1046,7 +1046,7 @@ python_method('TestConfigModels', 'test_service_test_config', 0, 3, 1).
 python_method('TestConfigModels', 'test_service_config', 0, 5, 4).
 python_method('TestConfigModels', 'test_watch_config', 0, 3, 2).
 python_method('TestConfigModels', 'test_test_strategy_config', 0, 3, 1).
-python_method('TestConfigModels', 'test_testql_config', 0, 4, 2).
+python_method('TestConfigModels', 'test_testql_config', 0, 5, 2).
 python_method('TestConfigModels', 'test_wup_config', 0, 6, 8).
 python_method('TestConfigModels', 'test_visual_diff_config_defaults', 0, 11, 1).
 python_method('TestConfigModels', 'test_visual_diff_config_custom', 0, 5, 1).
@@ -1181,7 +1181,7 @@ python_method('CLIScanner', 'to_dict', 0, 3, 0).
 python_class('wup/core.py', 'WupWatcher').
 python_method('WupWatcher', '__init__', 6, 1, 15).
 python_method('WupWatcher', '_to_relative_path', 1, 2, 2).
-python_method('WupWatcher', 'infer_service', 1, 12, 13).
+python_method('WupWatcher', 'infer_service', 1, 10, 9).
 python_method('WupWatcher', '_is_coincident_pair', 2, 6, 0).
 python_method('WupWatcher', 'detect_service_coincidences', 1, 9, 3).
 python_method('WupWatcher', '_services_share_domain', 2, 1, 3).
@@ -1195,7 +1195,9 @@ python_method('WupWatcher', 'run_quick_test', 2, 6, 5).
 python_method('WupWatcher', 'run_detail_test', 2, 10, 10).
 python_method('WupWatcher', 'test_loop', 0, 2, 2).
 python_method('WupWatcher', 'should_watch_file', 1, 3, 4).
-python_method('WupWatcher', 'on_file_change', 1, 14, 10).
+python_method('WupWatcher', '_is_file_ignored', 1, 11, 3).
+python_method('WupWatcher', '_notify_all_configured_services', 1, 4, 4).
+python_method('WupWatcher', 'on_file_change', 1, 11, 9).
 python_method('WupWatcher', 'build_watched_paths', 0, 6, 6).
 python_method('WupWatcher', '_create_and_start_observer', 2, 5, 6).
 python_method('WupWatcher', 'start_watching', 1, 7, 11).
@@ -1302,7 +1304,9 @@ python_method('TestQLWatcher', '_to_full_url', 1, 5, 2).
 python_method('TestQLWatcher', '_discover_scenarios', 0, 2, 3).
 python_method('TestQLWatcher', 'get_service_config', 1, 3, 0).
 python_method('TestQLWatcher', '_score_scenario', 2, 10, 4).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 16, 11).
+python_method('TestQLWatcher', '_get_scored_scenarios', 3, 4, 2).
+python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 9, 8).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 2, 2).
@@ -1408,7 +1412,9 @@ class TestQLWatcher:  # WUP watcher running selective TestQL scenarios for chang
     def _discover_scenarios()  # CC=2
     def get_service_config(service_name)  # CC=3
     def _score_scenario(scenario, tokens)  # CC=10 ⚠
-    def _select_scenarios_for_service(service)  # CC=16 ⚠
+    def _get_scored_scenarios(scenarios, tokens, limit)  # CC=4
+    def _get_smoke_fallback(svc_type)  # CC=6
+    def _select_scenarios_for_service(service)  # CC=9
     def _filter_scenarios_by_type(scenarios, svc_type)  # CC=8
     def _scenario_matches_type(scenario, svc_type)  # CC=4
     def _run_testql(args, timeout)  # CC=2
@@ -1483,7 +1489,7 @@ class TestQLMonitor:  # Build and run live probes from TestQL scenarios + WUP co
 class WupWatcher:  # Intelligent file watcher for regression testing.
     def __init__(project_root, deps_file, cpu_throttle, debounce_seconds, test_cooldown_seconds, config)  # CC=1
     def _to_relative_path(file_path)  # CC=2
-    def infer_service(file_path)  # CC=12 ⚠
+    def infer_service(file_path)  # CC=10 ⚠
     def _is_coincident_pair(type_a, type_b)  # CC=6
     def detect_service_coincidences(changed_service)  # CC=9
     def _services_share_domain(service1, service2)  # CC=1
@@ -1497,7 +1503,9 @@ class WupWatcher:  # Intelligent file watcher for regression testing.
     def run_detail_test(service, endpoints)  # CC=10 ⚠
     def test_loop()  # CC=2
     def should_watch_file(file_path)  # CC=3
-    def on_file_change(file_path)  # CC=14 ⚠
+    def _is_file_ignored(rel_path)  # CC=11 ⚠
+    def _notify_all_configured_services(rel_path)  # CC=4
+    def on_file_change(file_path)  # CC=11 ⚠
     def build_watched_paths()  # CC=6
     def _create_and_start_observer(event_handler, watch_paths)  # CC=5
     def start_watching(watch_paths)  # CC=7
@@ -1585,11 +1593,11 @@ class VisualDiffer:  # Triggered by TestQLWatcher after a file change.
 | `_run_with_mock_services` *(in examples.testql_demo)* | 6 | 2 | 60 | **62** |
 | `sync_testql` *(in wup.cli)* | 13 ⚠ | 0 | 45 | **45** |
 | `main` *(in scripts.run_probe_smoke)* | 14 ⚠ | 0 | 38 | **38** |
-| `analyze_monorepo` *(in examples.c2004_monorepo_demo)* | 2 | 1 | 26 | **27** |
+| `demo_snapshot_persistence` *(in examples.visual_diff_demo)* | 3 | 1 | 26 | **27** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.10s
+# generated in 0.08s
 # nodes: 104 | edges: 100 | modules: 16
 # CC̄=4.3
 
@@ -1608,32 +1616,32 @@ HUBS[20]:
     CC=13  in:0  out:45  total:45
   scripts.run_probe_smoke.main
     CC=14  in:0  out:38  total:38
-  examples.c2004_monorepo_demo.analyze_monorepo
-    CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
   wup.visual_diff._fetch_dom_snapshot
     CC=9  in:1  out:17  total:18
-  examples.testql_demo.simulate_testql_analysis
-    CC=2  in:0  out:18  total:18
   wup.core.WupWatcher.__init__
     CC=7  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_diff_algorithm
-    CC=3  in:1  out:16  total:17
+  examples.testql_demo.simulate_testql_analysis
+    CC=2  in:0  out:18  total:18
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
-  wup.config.load_config
-    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
+  examples.visual_diff_demo.demo_diff_algorithm
+    CC=3  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   wup.cli.init
     CC=3  in:0  out:16  total:16
   wup.monitoring_manifest.load_monitoring_manifest_from_yaml
     CC=9  in:2  out:14  total:16
-  examples.visual_diff_demo.demo_live_page
-    CC=3  in:1  out:14  total:15
+  wup.config.save_config
+    CC=2  in:3  out:12  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]

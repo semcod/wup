@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.41', 'python').
+project_metadata('wup', '0.2.42', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 33, 'less').
@@ -30,7 +30,7 @@ project_file('tests/test_monitoring_manifest.py', 73, 'python').
 project_file('tests/test_testql_monitor.py', 169, 'python').
 project_file('tests/test_testql_watcher.py', 529, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
-project_file('tests/test_wup.py', 1800, 'python').
+project_file('tests/test_wup.py', 1802, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
 project_file('wup/_ast_detector.py', 125, 'python').
@@ -43,7 +43,7 @@ project_file('wup/cli.py', 800, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
 project_file('wup/config.py', 465, 'python').
-project_file('wup/core.py', 653, 'python').
+project_file('wup/core.py', 664, 'python').
 project_file('wup/dependency_mapper.py', 285, 'python').
 project_file('wup/models/__init__.py', 35, 'python').
 project_file('wup/models/config.py', 166, 'python').
@@ -52,7 +52,7 @@ project_file('wup/planfile_reporter.py', 204, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 852, 'python').
+project_file('wup/testql_watcher.py', 859, 'python').
 project_file('wup/visual_diff.py', 519, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
@@ -326,7 +326,7 @@ python_method('TestConfigModels', 'test_service_test_config', 0, 3, 1).
 python_method('TestConfigModels', 'test_service_config', 0, 5, 4).
 python_method('TestConfigModels', 'test_watch_config', 0, 3, 2).
 python_method('TestConfigModels', 'test_test_strategy_config', 0, 3, 1).
-python_method('TestConfigModels', 'test_testql_config', 0, 4, 2).
+python_method('TestConfigModels', 'test_testql_config', 0, 5, 2).
 python_method('TestConfigModels', 'test_wup_config', 0, 6, 8).
 python_method('TestConfigModels', 'test_visual_diff_config_defaults', 0, 11, 1).
 python_method('TestConfigModels', 'test_visual_diff_config_custom', 0, 5, 1).
@@ -461,7 +461,7 @@ python_method('CLIScanner', 'to_dict', 0, 3, 0).
 python_class('wup/core.py', 'WupWatcher').
 python_method('WupWatcher', '__init__', 6, 1, 15).
 python_method('WupWatcher', '_to_relative_path', 1, 2, 2).
-python_method('WupWatcher', 'infer_service', 1, 12, 13).
+python_method('WupWatcher', 'infer_service', 1, 10, 9).
 python_method('WupWatcher', '_is_coincident_pair', 2, 6, 0).
 python_method('WupWatcher', 'detect_service_coincidences', 1, 9, 3).
 python_method('WupWatcher', '_services_share_domain', 2, 1, 3).
@@ -475,7 +475,9 @@ python_method('WupWatcher', 'run_quick_test', 2, 6, 5).
 python_method('WupWatcher', 'run_detail_test', 2, 10, 10).
 python_method('WupWatcher', 'test_loop', 0, 2, 2).
 python_method('WupWatcher', 'should_watch_file', 1, 3, 4).
-python_method('WupWatcher', 'on_file_change', 1, 14, 10).
+python_method('WupWatcher', '_is_file_ignored', 1, 11, 3).
+python_method('WupWatcher', '_notify_all_configured_services', 1, 4, 4).
+python_method('WupWatcher', 'on_file_change', 1, 11, 9).
 python_method('WupWatcher', 'build_watched_paths', 0, 6, 6).
 python_method('WupWatcher', '_create_and_start_observer', 2, 5, 6).
 python_method('WupWatcher', 'start_watching', 1, 7, 11).
@@ -582,7 +584,9 @@ python_method('TestQLWatcher', '_to_full_url', 1, 5, 2).
 python_method('TestQLWatcher', '_discover_scenarios', 0, 2, 3).
 python_method('TestQLWatcher', 'get_service_config', 1, 3, 0).
 python_method('TestQLWatcher', '_score_scenario', 2, 10, 4).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 16, 11).
+python_method('TestQLWatcher', '_get_scored_scenarios', 3, 4, 2).
+python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 9, 8).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 2, 2).

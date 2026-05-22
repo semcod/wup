@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.43] - 2026-05-23
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/TEST_PLAN.md
+- Update tests/TEST_SUMMARY.md
+- Update tests/test_auto_detection.py
+- Update tests/test_cli_filtering.py
+- Update tests/test_service_inference.py
+
+### Other
+- Update .gitignore
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health.json
+- Update .wup/tracks/1779487305_wup-shell_quick.json
+- Update .wup/tracks/1779487406_wup-shell_quick.json
+- Update .wup/tracks/1779487427_wup-shell_quick.json
+- Update .wup/tracks/1779487429_wup-shell_detail.json
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- ... and 19 more files
+
 ## [0.2.42] - 2026-05-22
 
 ### Docs

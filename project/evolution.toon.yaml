@@ -1,10 +1,10 @@
-# code2llm/evolution | 283 func | 20f | 2026-05-22
+# code2llm/evolution | 287 func | 20f | 2026-05-22
 # generated in 0.00s
 
-NEXT[4] (ranked by impact):
+NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/testql_watcher.py
-      WHY: 851L, 2 classes, max CC=16
-      EFFORT: ~4h  IMPACT: 13616
+      WHY: 858L, 2 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 11154
 
   [2] !! SPLIT           wup/cli.py
       WHY: 799L, 0 classes, max CC=13
@@ -14,21 +14,17 @@ NEXT[4] (ranked by impact):
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [4] !  SPLIT-FUNC      TestQLWatcher._select_scenarios_for_service  CC=16  fan=11
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 176
-
 
 RISKS[3]:
-  ⚠ Splitting wup/testql_watcher.py may break 39 import paths
+  ⚠ Splitting wup/testql_watcher.py may break 41 import paths
   ⚠ Splitting wup/cli.py may break 14 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
 
 METRICS-TARGET:
   CC̄:          4.7 → ≤3.3
-  max-CC:      16 → ≤8
+  max-CC:      14 → ≤7
   god-modules: 7 → 0
-  high-CC(≥15): 1 → ≤0
+  high-CC(≥15): 0 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -56,4 +52,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.7 → now CC̄=4.7
+  prev CC̄=4.8 → now CC̄=4.7

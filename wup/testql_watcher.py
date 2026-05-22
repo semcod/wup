@@ -335,6 +335,24 @@ class TestQLWatcher(WupWatcher):
             score -= 5
         return score
 
+    def _get_scored_scenarios(self, scenarios: List[Path], tokens: Set[str], limit: int) -> List[Path]:
+        scored = sorted(
+            ((self._score_scenario(s, tokens), s) for s in scenarios),
+            key=lambda item: (item[0], item[1].name),
+            reverse=True,
+        )
+        return [s for score, s in scored if score > 0][:limit]
+
+    def _get_smoke_fallback(self, svc_type: str) -> List[Path]:
+        smoke_name = (self.config.testql.smoke_scenario or "").strip()
+        if not smoke_name:
+            return []
+        for base in (self.scenarios_dir, self.project_root):
+            candidate = base / smoke_name
+            if candidate.exists() and self._scenario_matches_type(candidate, svc_type):
+                return [candidate]
+        return []
+
     def _select_scenarios_for_service(self, service: str) -> List[Path]:
         all_scenarios = self._discover_scenarios()
         if not all_scenarios:
@@ -346,30 +364,15 @@ class TestQLWatcher(WupWatcher):
 
         # Filter scenarios by service type
         svc_type = svc_config.type if svc_config else "auto"
-        # Debug: print service type
-        import sys
-        print(f"DEBUG: service={service}, svc_type={svc_type}, svc_config={svc_config.type if svc_config else None}", file=sys.stderr)
         filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
-        print(f"DEBUG: all_scenarios={len(all_scenarios)}, filtered={len(filtered_scenarios)}", file=sys.stderr)
 
-        tokens = self._tokenize_service(service)
-        scored = sorted(
-            ((self._score_scenario(s, tokens), s) for s in filtered_scenarios),
-            key=lambda item: (item[0], item[1].name),
-            reverse=True,
-        )
-        selected = [s for score, s in scored if score > 0][:limit]
+        selected = self._get_scored_scenarios(filtered_scenarios, self._tokenize_service(service), limit)
         if selected:
             return selected
 
-        smoke_name = (self.config.testql.smoke_scenario or "").strip()
-        if smoke_name:
-            for base in (self.scenarios_dir, self.project_root):
-                candidate = base / smoke_name
-                if candidate.exists():
-                    # Only use smoke scenario if it matches service type
-                    if self._scenario_matches_type(candidate, svc_type):
-                        return [candidate]
+        smoke = self._get_smoke_fallback(svc_type)
+        if smoke:
+            return smoke
 
         # Fallback: don't return any scenarios for web services if no match found
         # This prevents CLI scenarios from being assigned to web services

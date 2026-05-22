@@ -1,9 +1,9 @@
 {
-  "timestamp": 1779486774,
+  "timestamp": 1779487429,
   "type": "wup_testql_error",
   "service": "wup-shell",
   "stage": "detail",
-  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486774_wup-shell_detail.json",
+  "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779487429_wup-shell_detail.json",
   "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
   "message": "\ud83d\udcdc OQL: cli-wup.testql.toon.yaml"
 }

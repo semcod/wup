@@ -1,14 +1,12 @@
-# code2llm | 62f 10709L | python:41,yaml:10,txt:4,json:2,shell:1,yml:1,toml:1 | 2026-05-22
-# generated in 0.03s
-# CC̄=4.3 | critical:1/355 | dups:0 | cycles:0
+# code2llm | 62f 10727L | python:41,yaml:10,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-22
+# generated in 0.02s
+# CC̄=4.3 | critical:0/359 | dups:0 | cycles:0
 
-HEALTH[1]:
-  🟡 CC    _select_scenarios_for_service CC=16 (limit:15)
+HEALTH[0]: ok
 
-REFACTOR[1]:
-  1. split 1 high-CC methods  (CC>15)
+REFACTOR[0]: none needed
 
-PIPELINES[253]:
+PIPELINES[257]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
   [2] Src [generate]: generate
@@ -25,10 +23,10 @@ LAYERS:
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
   wup/                            CC̄=4.7    ←in:9  →out:0
-  │ !! testql_watcher             851L  2C   39m  CC=16     ←0
+  │ !! testql_watcher             858L  2C   41m  CC=13     ←0
   │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! core                       652L  2C   26m  CC=14     ←0
+  │ !! core                       663L  2C   28m  CC=11     ←0
   │ !! testql_monitor             521L  3C   36m  CC=13     ←2
   │ !! visual_diff                518L  1C   24m  CC=11     ←1
   │ config                     464L  0C    6m  CC=14     ←7

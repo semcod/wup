@@ -36,9 +36,9 @@
   },
   "wup-shell": {
     "status": "down",
-    "updated_at": 1779486769,
+    "updated_at": 1779487427,
     "stage": "quick",
     "message": "\ud83d\udcdc OQL: cli-wup.testql.toon.yaml\n\ud83d\udcdd SET \"cli_command\" = \"wup\"\n\ud83d\udcdd SET \"timeout_ms\" = \"30000\"\n\ud83d\udcbb SHELL \"wup --help\" [5000ms] (dry-run)\n  \u2705 ASSERT_EXIT_CODE 0\n  \u274c ASSERT_STDOUT_CONTAINS \"usage\"\n\ud83d\udcbb SHELL \"wup --version\" [5000ms] (dry-run)\n  \u2705 ASSERT_EXIT_CODE 0\n\ud83d\udcbb SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n\u274c Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base 10: '!= 0'\n\u274c L9: list.append() takes no keyword arguments\n\n\u274c cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (0ms)",
-    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779486769_wup-shell_quick.json"
+    "track_file": "/home/tom/github/semcod/wup/.wup/tracks/1779487427_wup-shell_quick.json"
   }
 }
