@@ -179,33 +179,69 @@ def _service_path_patterns(services: Sequence[ServiceConfig]) -> Dict[str, List[
     return patterns
 
 
-def _assign_http_probe(
-    probe: ProbeTarget, services: Sequence[ServiceConfig], path_lower: str
-) -> Optional[str]:
-    """Map an HTTP probe to a service based on port and path."""
-    wup_names = {s.name.lower() for s in services}
-    parsed = urlparse(probe.url)
-    port = parsed.port
+def _find_service_by_name(services: Sequence[ServiceConfig], name: str) -> Optional[str]:
+    """Find a service by case-insensitive name match."""
+    name_lower = name.lower()
+    for svc in services:
+        if svc.name.lower() == name_lower:
+            return svc.name
+    return None
 
-    if port == 8101 and "backend" in wup_names:
-        return next(s.name for s in services if s.name.lower() == "backend")
-    if port == 8202:
-        for svc in services:
-            if "firmware" in svc.name.lower():
-                return svc.name
-    if port == 8100:
-        if path_lower.startswith("/firmware"):
-            for svc in services:
-                if "firmware" in svc.name.lower():
-                    return svc.name
-        if "frontend" in wup_names:
-            return next(s.name for s in services if s.name.lower() == "frontend")
-    # Connect-* backends on 8103+ — only if a matching WUP service exists
+
+def _find_service_by_token(services: Sequence[ServiceConfig], token: str) -> Optional[str]:
+    """Find a service by checking if token is in its name."""
+    token_lower = token.lower()
+    for svc in services:
+        if token_lower in svc.name.lower():
+            return svc.name
+    return None
+
+
+def _assign_by_port_8101(services: Sequence[ServiceConfig]) -> Optional[str]:
+    """Assign probe to backend service for port 8101."""
+    return _find_service_by_name(services, "backend")
+
+
+def _assign_by_port_8202(services: Sequence[ServiceConfig]) -> Optional[str]:
+    """Assign probe to firmware service for port 8202."""
+    return _find_service_by_token(services, "firmware")
+
+
+def _assign_by_port_8100(
+    services: Sequence[ServiceConfig], path_lower: str
+) -> Optional[str]:
+    """Assign probe for port 8100 (frontend proxy)."""
+    if path_lower.startswith("/firmware"):
+        return _find_service_by_token(services, "firmware")
+    return _find_service_by_name(services, "frontend")
+
+
+def _assign_by_connect_backend(
+    services: Sequence[ServiceConfig], path_lower: str
+) -> Optional[str]:
+    """Assign probe to connect-* backend services."""
     for svc in services:
         token = svc.name.lower().replace("_", "-")
         if token.startswith("connect-") and token.replace("connect-", "") in path_lower:
             return svc.name
     return None
+
+
+def _assign_http_probe(
+    probe: ProbeTarget, services: Sequence[ServiceConfig], path_lower: str
+) -> Optional[str]:
+    """Map an HTTP probe to a service based on port and path."""
+    parsed = urlparse(probe.url)
+    port = parsed.port
+
+    if port == 8101:
+        return _assign_by_port_8101(services)
+    if port == 8202:
+        return _assign_by_port_8202(services)
+    if port == 8100:
+        return _assign_by_port_8100(services, path_lower)
+    
+    return _assign_by_connect_backend(services, path_lower)
 
 
 def _assign_by_longest_token(

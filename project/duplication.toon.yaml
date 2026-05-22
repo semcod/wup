@@ -1,20 +1,20 @@
-# redup/duplication | 4 groups | 35f 5954L | 2026-05-21
+# redup/duplication | 4 groups | 36f 6343L | 2026-05-21
 
 SUMMARY:
-  files_scanned: 35
-  total_lines:   5954
+  files_scanned: 36
+  total_lines:   6343
   dup_groups:    4
   dup_fragments: 10
   saved_lines:   20
-  scan_ms:       4040
+  scan_ms:       2311
 
 HOTSPOTS[6] (files with most duplication):
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
   wup/_ast_detector.py  dup=6L  groups=2  frags=2  (0.1%)
   wup/_hash_detector.py  dup=6L  groups=2  frags=2  (0.1%)
   wup/_yaml_detector.py  dup=6L  groups=2  frags=2  (0.1%)
-  examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.1%)
-  wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.1%)
+  examples/visual_diff_demo.py  dup=3L  groups=1  frags=1  (0.0%)
+  wup/visual_diff.py  dup=3L  groups=1  frags=1  (0.0%)
 
 DUPLICATES[4] (ranked by impact):
   [b5eae728fdce70c7]   STRU  __init__  L=3 N=3 saved=6 sim=1.00

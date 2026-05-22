@@ -15,7 +15,6 @@ from urllib import error, request
 from .config import load_config
 from .core import WupWatcher
 from .models.config import WupConfig, ServiceConfig
-from .testql_monitor import TestQLMonitor
 from .visual_diff import VisualDiffer
 from .web_client import WebClient
 
@@ -97,6 +96,7 @@ class TestQLWatcher(WupWatcher):
         self.health_state_path.parent.mkdir(parents=True, exist_ok=True)
         self.service_health = self._load_service_health()
         self.config = config
+        from .testql_monitor import TestQLMonitor
         self.monitor = TestQLMonitor(self.project_root, config) if config else None
         self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
         self.web_client = WebClient(config.web) if config and getattr(config, "web", None) else WebClient()

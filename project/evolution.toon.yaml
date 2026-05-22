@@ -1,58 +1,34 @@
-# code2llm/evolution | 213 func | 15f | 2026-05-21
+# code2llm/evolution | 248 func | 16f | 2026-05-21
 # generated in 0.00s
 
-NEXT[10] (ranked by impact):
+NEXT[4] (ranked by impact):
   [1] !! SPLIT           wup/testql_watcher.py
-      WHY: 765L, 2 classes, max CC=19
-      EFFORT: ~4h  IMPACT: 14535
+      WHY: 795L, 2 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 10335
 
   [2] !! SPLIT           wup/assistant.py
       WHY: 694L, 1 classes, max CC=14
       EFFORT: ~4h  IMPACT: 9716
 
-  [3] !! SPLIT           wup/core.py
-      WHY: 634L, 2 classes, max CC=14
-      EFFORT: ~4h  IMPACT: 8876
+  [3] !! SPLIT           wup/cli.py
+      WHY: 682L, 0 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 8866
 
-  [4] !! SPLIT-FUNC      assign_probe_to_service  CC=40  fan=13
-      WHY: CC=40 exceeds 15
-      EFFORT: ~1h  IMPACT: 520
-
-  [5] !  SPLIT-FUNC      build_monitoring_manifest  CC=19  fan=21
+  [4] !  SPLIT-FUNC      _assign_http_probe  CC=19  fan=8
       WHY: CC=19 exceeds 15
-      EFFORT: ~1h  IMPACT: 399
-
-  [6] !  SPLIT-FUNC      VisualDiffer.run_for_service  CC=19  fan=21
-      WHY: CC=19 exceeds 15
-      EFFORT: ~1h  IMPACT: 399
-
-  [7] !  SPLIT-FUNC      discover_docker_compose_services  CC=20  fan=17
-      WHY: CC=20 exceeds 15
-      EFFORT: ~1h  IMPACT: 340
-
-  [8] !  SPLIT-FUNC      watch  CC=15  fan=21
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 315
-
-  [9] !  SPLIT-FUNC      TestQLMonitor.discover_probes_by_service  CC=22  fan=14
-      WHY: CC=22 exceeds 15
-      EFFORT: ~1h  IMPACT: 308
-
-  [10] !  SPLIT-FUNC      parse_service_map_probes  CC=15  fan=14
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 210
+      EFFORT: ~1h  IMPACT: 152
 
 
 RISKS[3]:
-  ⚠ Splitting wup/testql_watcher.py may break 35 import paths
+  ⚠ Splitting wup/testql_watcher.py may break 37 import paths
   ⚠ Splitting wup/assistant.py may break 24 import paths
-  ⚠ Splitting wup/core.py may break 26 import paths
+  ⚠ Splitting wup/cli.py may break 12 import paths
 
 METRICS-TARGET:
-  CC̄:          5.3 → ≤3.7
-  max-CC:      40 → ≤20
-  god-modules: 5 → 0
-  high-CC(≥15): 8 → ≤4
+  CC̄:          4.9 → ≤3.4
+  max-CC:      19 → ≤9
+  god-modules: 6 → 0
+  high-CC(≥15): 1 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -80,4 +56,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.3 → now CC̄=5.3
+  prev CC̄=5.3 → now CC̄=4.9

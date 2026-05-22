@@ -678,5 +678,86 @@ def version():
     console.print(f"[bold cyan]WUP[/bold cyan] version [green]{__version__}[/green]")
 
 
+@app.command("init-cli")
+def init_cli(
+    project: str = typer.Argument(".", help="Path to the project root directory"),
+    output_config: Optional[str] = typer.Option(None, "--output-config", "-c", help="Path for wup.yaml output"),
+    output_scenarios: Optional[str] = typer.Option(None, "--output-scenarios", "-s", help="Path for testql-scenarios directory"),
+    merge: bool = typer.Option(False, "--merge", "-m", help="Merge with existing wup.yaml"),
+    infer_args: bool = typer.Option(True, "--infer-args/--no-infer-args", help="Infer command arguments by inspection"),
+):
+    """
+    Automatically generate wup.yaml configuration and TestQL scenarios for CLI/shell services.
+
+    Scans the project for CLI commands (entry points, setup.py, pyproject.toml) and generates:
+    - wup.yaml with shell service configuration
+    - TestQL scenarios in testql-scenarios/ directory
+
+    Example:
+        wup init-cli ./my-project
+        wup init-cli ./my-project --merge
+    """
+    from pathlib import Path
+    from .cli_scanner import CLIScanner
+    from .cli_config_generator import CLIConfigGenerator
+    from .testql_cli_generator import TestQLCLIGenerator
+
+    project_path = Path(project).resolve()
+
+    if not project_path.exists():
+        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+        raise typer.Exit(1)
+
+    console.print(f"[cyan]🔍 Scanning project for CLI commands...[/cyan]")
+    console.print(f"[dim]Project: {project_path}[/dim]\n")
+
+    try:
+        # Scan for CLI commands
+        scanner = CLIScanner(str(project_path))
+        packages = scanner.scan()
+
+        if not packages:
+            console.print("[yellow]⚠ No CLI packages found in project[/yellow]")
+            console.print("[dim]Looking for: setup.py, pyproject.toml, or packages with __main__.py[/dim]")
+            raise typer.Exit(1)
+
+        console.print(f"[green]✓ Found {len(packages)} package(s)[/green]")
+        for pkg in packages:
+            console.print(f"  [cyan]{pkg.name}[/cyan]: {len(pkg.commands)} command(s)")
+            for cmd in pkg.commands:
+                console.print(f"    - {cmd.name} -> {cmd.entry_point}")
+        console.print()
+
+        # Generate wup.yaml
+        config_generator = CLIConfigGenerator(str(project_path))
+        config_output = Path(output_config) if output_config else None
+        config = config_generator.generate(output_path=config_output, merge_existing=merge)
+        config_generator.print_summary(config)
+
+        # Generate TestQL scenarios
+        console.print()
+        console.print(f"[cyan]🧪 Generating TestQL scenarios...[/cyan]")
+        scenarios_output = Path(output_scenarios) if output_scenarios else None
+        testql_generator = TestQLCLIGenerator(str(project_path))
+        generated_files = testql_generator.generate(
+            output_dir=scenarios_output,
+            infer_args=infer_args,
+        )
+        testql_generator.print_summary(generated_files)
+
+        console.print()
+        console.print("[bold green]✅ CLI testing setup complete![/bold green]")
+        console.print()
+        console.print("[dim]Next steps:[/dim]")
+        console.print("  1. Review generated wup.yaml")
+        console.print("  2. Review testql-scenarios/*.testql.toon.yaml")
+        console.print("  3. Run: wup watch . --mode testql")
+        console.print("  4. Or run individual scenario: testql run testql-scenarios/cli-smoke.testql.toon.yaml")
+
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()

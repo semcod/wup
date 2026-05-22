@@ -98,6 +98,7 @@
 │   │   ├── config.py
 │   │   └── __init__.py
 │   ├── monitoring_manifest.py
+│   ├── planfile_reporter.py
 │   ├── testql_discovery.py
 │   ├── testql_monitor.py
 │   ├── testql_watcher.py
@@ -114,4 +115,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-24 directories, 91 files
+24 directories, 92 files

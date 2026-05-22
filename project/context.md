@@ -5,19 +5,24 @@
 
 - **Project**: /home/tom/github/semcod/wup
 - **Primary Language**: python
-- **Languages**: python: 37, yaml: 8, txt: 4, json: 2, shell: 1
+- **Languages**: python: 38, yaml: 8, txt: 4, json: 2, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 285
-- **Total Classes**: 32
-- **Modules**: 56
-- **Entry Points**: 217
+- **Total Functions**: 320
+- **Total Classes**: 35
+- **Modules**: 57
+- **Entry Points**: 238
 
 ## Architecture by Module
 
 ### wup.testql_watcher
-- **Functions**: 35
+- **Functions**: 37
 - **Classes**: 2
 - **File**: `testql_watcher.py`
+
+### wup.testql_monitor
+- **Functions**: 30
+- **Classes**: 3
+- **File**: `testql_monitor.py`
 
 ### wup.core
 - **Functions**: 26
@@ -30,14 +35,9 @@
 - **File**: `assistant.py`
 
 ### wup.visual_diff
-- **Functions**: 22
+- **Functions**: 24
 - **Classes**: 1
 - **File**: `visual_diff.py`
-
-### wup.testql_monitor
-- **Functions**: 20
-- **Classes**: 2
-- **File**: `testql_monitor.py`
 
 ### wup.dependency_mapper
 - **Functions**: 16
@@ -45,9 +45,18 @@
 - **File**: `dependency_mapper.py`
 
 ### wup.monitoring_manifest
-- **Functions**: 10
+- **Functions**: 16
 - **Classes**: 1
 - **File**: `monitoring_manifest.py`
+
+### wup.cli
+- **Functions**: 13
+- **File**: `cli.py`
+
+### wup.planfile_reporter
+- **Functions**: 11
+- **Classes**: 1
+- **File**: `planfile_reporter.py`
 
 ### wup.web_client
 - **Functions**: 10
@@ -62,10 +71,6 @@
 - **Functions**: 10
 - **Classes**: 1
 - **File**: `webhook_notifications.py`
-
-### wup.cli
-- **Functions**: 9
-- **File**: `cli.py`
 
 ### wup._ast_detector
 - **Functions**: 9
@@ -91,22 +96,17 @@
 - **Classes**: 1
 - **File**: `testql_discovery.py`
 
-### wup.config
-- **Functions**: 6
-- **File**: `config.py`
-
 ### examples.testql_integration
 - **Functions**: 6
 - **Classes**: 1
 - **File**: `testql_integration.py`
 
+### wup.config
+- **Functions**: 6
+- **File**: `config.py`
+
 ### examples.flask-app.app.auth.routes
 - **Functions**: 5
-- **File**: `routes.py`
-
-### examples.fastapi-app.app.users.routes
-- **Functions**: 5
-- **Classes**: 1
 - **File**: `routes.py`
 
 ## Key Entry Points
@@ -116,13 +116,6 @@ Main execution flows into the system:
 ### wup.cli.status
 > Show dependency map status and configuration.
 - **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, None.resolve
-
-### wup.cli.watch
-> Watch project for file changes and run regression tests.
-
-Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
-(unless ``testql.
-- **Calls**: app.command, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
 
 ### wup.cli.sync_testql
 > Discover monitoring targets and document them in wup.yaml.
@@ -138,14 +131,12 @@ With ``--write``, appends/updates the auto-generated ``monitoring:`` block
 ### scripts.run_probe_smoke.main
 - **Calls**: None.resolve, wup.config.load_config, wup.monitoring_manifest.build_monitoring_manifest, print, sorted, TestQLWatcher, print, print
 
-### wup.visual_diff.VisualDiffer.run_for_service
-> Scan pages for *service*, diff against stored snapshots.
-Returns list of diff results (one per page).
-- **Calls**: self._pages_for_service, max, wup.visual_diff._playwright_available, wup.visual_diff._warn_playwright_missing, int, len, results.append, console.print
+### wup.cli.watch
+> Watch project for file changes and run regression tests.
 
-### wup.testql_monitor.TestQLMonitor.discover_probes_by_service
-> Discover monitoring probes grouped by WUP service name.
-- **Calls**: None.items, self.discovery.discover_scenarios, self._service_map_paths, set, None.add, None.append, self._resolve_base_url_for_service, ProbeTarget
+Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
+(unless ``testql.
+- **Calls**: app.command, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
 
 ### examples.testql_integration.main
 > Run WUP + TestQL integration demo.
@@ -155,13 +146,13 @@ Returns list of diff results (one per page).
 > Print formatted report of anomalies.
 - **Calls**: self.get_summary, console.print, console.print, Table, table.add_column, table.add_column, table.add_column, table.add_column
 
-### wup.cli.map_deps
-> Build dependency map from codebase.
-- **Calls**: app.command, typer.Argument, typer.Option, typer.Option, None.resolve, console.print, console.print, console.print
-
 ### wup.assistant.WupAssistant._review_and_validate
 > Review and validate configuration.
 - **Calls**: console.print, console.print, console.print, console.print, console.print, console.print, console.print, self._validate_config
+
+### wup.cli.map_deps
+> Build dependency map from codebase.
+- **Calls**: app.command, typer.Argument, typer.Option, typer.Option, None.resolve, console.print, console.print, console.print
 
 ### wup.assistant.WupAssistant._setup_anomaly_detection
 > Setup anomaly detection configuration.
@@ -186,13 +177,6 @@ Returns list of diff results (one per page).
 > Simulate WUP analysis on TestQL project.
 - **Calls**: print, print, print, print, Path, print, print, print
 
-### wup.assistant.WupAssistant._setup_watch
-> Setup file watching configuration.
-- **Calls**: console.print, console.print, enumerate, Confirm.ask, console.print, Confirm.ask, console.print, IntPrompt.ask
-
-### wup._yaml_detector.YAMLStructureDetector.detect
-- **Calls**: self._load_yaml, self._snapshot_path, self._extract_structure, snap_path.exists, snap_path.write_text, json.dumps, json.loads, self._compare_structures
-
 ### wup.core.WupWatcher.__init__
 > Initialize the WUP watcher.
 
@@ -200,11 +184,14 @@ Args:
     project_root: Path to the project root directory
     deps_file: Path to the dependency map JSON file
     cpu_th
-- **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, None.exists, wup.config.load_config
+- **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, PlanfileReporter, None.exists
 
-### wup.cli.init
-> Initialize a new wup.yaml configuration file.
-- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
+### wup.assistant.WupAssistant._setup_watch
+> Setup file watching configuration.
+- **Calls**: console.print, console.print, enumerate, Confirm.ask, console.print, Confirm.ask, console.print, IntPrompt.ask
+
+### wup._yaml_detector.YAMLStructureDetector.detect
+- **Calls**: self._load_yaml, self._snapshot_path, self._extract_structure, snap_path.exists, snap_path.write_text, json.dumps, json.loads, self._compare_structures
 
 ### wup.assistant.WupAssistant._setup_visual_diff
 > Setup visual diff configuration.
@@ -228,15 +215,23 @@ Returns:
 > Detect changes using hash comparison.
 - **Calls**: file_path.read_text, self._compute_hash, self._snapshot_path, snap_path.exists, file_path.exists, None.strip, snap_path.write_text, AnomalyResult
 
+### wup.cli.init
+> Initialize a new wup.yaml configuration file.
+- **Calls**: app.command, typer.Argument, typer.Option, None.resolve, Path, output_path.exists, wup.config.get_default_config, wup.config.save_config
+
+### wup.core.WupWatcher.run_detail_test
+> Run a detailed test for a service with blame report.
+
+Args:
+    service: Service name
+    endpoints: List of endpoints to test
+
+Returns:
+    Dictionar
+- **Calls**: self.console.print, len, self.console.print, self.planfile_reporter.report_failure, self.console.print, urllib.request.Request, subprocess.run, len
+
 ### wup._ast_detector.ASTDetector._extract_ast_info
 - **Calls**: ast.iter_child_nodes, _handlers.get, None.extend, None.append, None.append, None.append, type, handler
-
-### wup.testql_watcher.TestQLWatcher._write_track
-- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
-
-### wup.testql_watcher.TestQLWatcher._summarize_health_scenario_failure
-> Extract a short human summary from TestQL --output json (avoid trailing '}').
-- **Calls**: None.strip, blob.rfind, reversed, isinstance, blob.splitlines, line.strip, None.join, json.loads
 
 ### examples.visual_diff_demo.main
 - **Calls**: print, print, print, examples.visual_diff_demo.demo_diff_algorithm, examples.visual_diff_demo.demo_page_slug, examples.visual_diff_demo.demo_snapshot_persistence, examples.visual_diff_demo.demo_config_yaml_round_trip, examples.visual_diff_demo.demo_disabled_is_noop
@@ -247,6 +242,17 @@ Returns:
 Uses config services first, then dependency mapper, then heuristics.
 - **Calls**: self._to_relative_path, self.dependency_mapper.get_service_for_file, _re.match, len, None.is_file, None.join, None.lower, svc.name.lower
 
+### wup.testql_watcher.TestQLWatcher._write_track
+- **Calls**: int, None.replace, track_path.write_text, self.browser_notifier.notify, time.time, None.splitlines, None.splitlines, json.dumps
+
+### wup.anomaly_detector.AnomalyDetector.scan_directory
+> Scan directory for anomalies.
+- **Calls**: Path, list, console.print, directory.exists, list, files.extend, results.extend, directory.rglob
+
+### wup.assistant.WupAssistant._init_project
+> Initialize project configuration.
+- **Calls**: console.print, Prompt.ask, Prompt.ask, console.print, self._detect_framework, self._auto_detect_services, console.print, Prompt.ask
+
 ## Process Flows
 
 Key execution flows identified:
@@ -256,22 +262,17 @@ Key execution flows identified:
 status [wup.cli]
 ```
 
-### Flow 2: watch
-```
-watch [wup.cli]
-```
-
-### Flow 3: sync_testql
+### Flow 2: sync_testql
 ```
 sync_testql [wup.cli]
 ```
 
-### Flow 4: testql_endpoints
+### Flow 3: testql_endpoints
 ```
 testql_endpoints [wup.cli]
 ```
 
-### Flow 5: main
+### Flow 4: main
 ```
 main [scripts.run_probe_smoke]
   └─ →> load_config
@@ -279,41 +280,44 @@ main [scripts.run_probe_smoke]
       └─> validate_config
   └─ →> build_monitoring_manifest
       └─> discover_docker_compose_services
-      └─> _map_docker_to_wup_service
+      └─> _build_wup_service_dicts
 ```
 
-### Flow 6: run_for_service
+### Flow 5: watch
 ```
-run_for_service [wup.visual_diff.VisualDiffer]
-  └─ →> _playwright_available
-  └─ →> _warn_playwright_missing
+watch [wup.cli]
 ```
 
-### Flow 7: discover_probes_by_service
-```
-discover_probes_by_service [wup.testql_monitor.TestQLMonitor]
-```
-
-### Flow 8: print_report
+### Flow 6: print_report
 ```
 print_report [wup.anomaly_detector.AnomalyDetector]
 ```
 
-### Flow 9: map_deps
+### Flow 7: _review_and_validate
+```
+_review_and_validate [wup.assistant.WupAssistant]
+```
+
+### Flow 8: map_deps
 ```
 map_deps [wup.cli]
 ```
 
-### Flow 10: _review_and_validate
+### Flow 9: _setup_anomaly_detection
 ```
-_review_and_validate [wup.assistant.WupAssistant]
+_setup_anomaly_detection [wup.assistant.WupAssistant]
+```
+
+### Flow 10: _configure_services
+```
+_configure_services [wup.assistant.WupAssistant]
 ```
 
 ## Key Classes
 
 ### wup.testql_watcher.TestQLWatcher
 > WUP watcher running selective TestQL scenarios for changed services.
-- **Methods**: 33
+- **Methods**: 35
 - **Key Methods**: wup.testql_watcher.TestQLWatcher.__init__, wup.testql_watcher.TestQLWatcher._normalize_fleet_health_entry, wup.testql_watcher.TestQLWatcher._load_service_health, wup.testql_watcher.TestQLWatcher._save_service_health, wup.testql_watcher.TestQLWatcher._record_health_transition, wup.testql_watcher.TestQLWatcher._tokenize_service, wup.testql_watcher.TestQLWatcher._get_config_endpoints_for_service, wup.testql_watcher.TestQLWatcher._to_full_url_for_service, wup.testql_watcher.TestQLWatcher._resolve_base_url_for_service, wup.testql_watcher.TestQLWatcher._resolve_base_url
 - **Inherits**: WupWatcher
 
@@ -337,8 +341,13 @@ Implements 3-layer testing:
 
 ### wup.testql_monitor.TestQLMonitor
 > Build and run live probes from TestQL scenarios + WUP config.
-- **Methods**: 11
-- **Key Methods**: wup.testql_monitor.TestQLMonitor.__init__, wup.testql_monitor.TestQLMonitor._service_map_paths, wup.testql_monitor.TestQLMonitor.discover_probes_by_service, wup.testql_monitor.TestQLMonitor._resolve_base_url_for_service, wup.testql_monitor.TestQLMonitor._probeable_url, wup.testql_monitor.TestQLMonitor.probes_for_service, wup.testql_monitor.TestQLMonitor._sort_probes_for_live, wup.testql_monitor.TestQLMonitor.run_probes, wup.testql_monitor.TestQLMonitor.suggested_endpoints_by_service, wup.testql_monitor.TestQLMonitor._resolve_base_url
+- **Methods**: 14
+- **Key Methods**: wup.testql_monitor.TestQLMonitor.__init__, wup.testql_monitor.TestQLMonitor._service_map_paths, wup.testql_monitor.TestQLMonitor._add_config_endpoints, wup.testql_monitor.TestQLMonitor._add_scenario_probes, wup.testql_monitor.TestQLMonitor._add_service_map_probes, wup.testql_monitor.TestQLMonitor.discover_probes_by_service, wup.testql_monitor.TestQLMonitor._resolve_base_url_for_service, wup.testql_monitor.TestQLMonitor._probeable_url, wup.testql_monitor.TestQLMonitor.probes_for_service, wup.testql_monitor.TestQLMonitor._sort_probes_for_live
+
+### wup.planfile_reporter.PlanfileReporter
+> Create deduplicated planfile tickets for WUP-detected failures.
+- **Methods**: 12
+- **Key Methods**: wup.planfile_reporter.PlanfileReporter.__init__, wup.planfile_reporter.PlanfileReporter.enabled, wup.planfile_reporter.PlanfileReporter.report_failure, wup.planfile_reporter.PlanfileReporter.clear_service_stage, wup.planfile_reporter.PlanfileReporter._create_ticket, wup.planfile_reporter.PlanfileReporter._wait_for_planfile_store_ready, wup.planfile_reporter.PlanfileReporter._load_dedupe, wup.planfile_reporter.PlanfileReporter._save_dedupe, wup.planfile_reporter.PlanfileReporter._fingerprint, wup.planfile_reporter.PlanfileReporter._parse_ticket_id
 
 ### wup._ast_detector.ASTDetector
 > Detect changes in Python files using AST comparison.
@@ -360,6 +369,15 @@ Usage::
 - **Methods**: 8
 - **Key Methods**: wup._yaml_detector.YAMLStructureDetector.__init__, wup._yaml_detector.YAMLStructureDetector._load_yaml, wup._yaml_detector.YAMLStructureDetector._extract_structure, wup._yaml_detector.YAMLStructureDetector._snapshot_path, wup._yaml_detector.YAMLStructureDetector._compare_structures, wup._yaml_detector.YAMLStructureDetector._compare_dict_structures, wup._yaml_detector.YAMLStructureDetector.detect, wup._yaml_detector.YAMLStructureDetector._generate_suggestions
 
+### wup.visual_diff.VisualDiffer
+> Triggered by TestQLWatcher after a file change.
+
+Usage::
+
+    differ = VisualDiffer(project_root, co
+- **Methods**: 8
+- **Key Methods**: wup.visual_diff.VisualDiffer.__init__, wup.visual_diff.VisualDiffer._pages_for_service, wup.visual_diff.VisualDiffer._categorize_page_result, wup.visual_diff.VisualDiffer._print_scan_summary, wup.visual_diff.VisualDiffer.run_for_service, wup.visual_diff.VisualDiffer._check_page, wup.visual_diff.VisualDiffer._write_diff_event, wup.visual_diff.VisualDiffer.get_recent_diffs
+
 ### wup.testql_discovery.TestQLEndpointDiscovery
 > Discover endpoints from TestQL scenario files.
 - **Methods**: 7
@@ -369,15 +387,6 @@ Usage::
 > Main anomaly detector combining multiple detection methods.
 - **Methods**: 6
 - **Key Methods**: wup.anomaly_detector.AnomalyDetector.__init__, wup.anomaly_detector.AnomalyDetector._should_scan, wup.anomaly_detector.AnomalyDetector.scan_file, wup.anomaly_detector.AnomalyDetector.scan_directory, wup.anomaly_detector.AnomalyDetector.get_summary, wup.anomaly_detector.AnomalyDetector.print_report
-
-### wup.visual_diff.VisualDiffer
-> Triggered by TestQLWatcher after a file change.
-
-Usage::
-
-    differ = VisualDiffer(project_root, co
-- **Methods**: 6
-- **Key Methods**: wup.visual_diff.VisualDiffer.__init__, wup.visual_diff.VisualDiffer._pages_for_service, wup.visual_diff.VisualDiffer.run_for_service, wup.visual_diff.VisualDiffer._check_page, wup.visual_diff.VisualDiffer._write_diff_event, wup.visual_diff.VisualDiffer.get_recent_diffs
 
 ### examples.testql_integration.CustomTestQLWatcher
 > Custom WUP watcher integrated with TestQL test framework.
@@ -403,6 +412,11 @@ Overrides test methods to run actual Test
 - **Key Methods**: wup.core.WupEventHandler.__init__, wup.core.WupEventHandler.on_modified, wup.core.WupEventHandler.on_created, wup.core.WupEventHandler.on_deleted
 - **Inherits**: FileSystemEventHandler
 
+### wup.testql_monitor._ProbeAccumulator
+> Deduplicated probe collector for discover_probes_by_service.
+- **Methods**: 2
+- **Key Methods**: wup.testql_monitor._ProbeAccumulator.__init__, wup.testql_monitor._ProbeAccumulator.add
+
 ### wup.testql_watcher.BrowserNotifier
 > Send watcher events to browser-facing service and local file.
 - **Methods**: 2
@@ -413,20 +427,30 @@ Overrides test methods to run actual Test
 - **Methods**: 1
 - **Key Methods**: wup.testql_monitor.ProbeTarget.probe
 
-### wup.monitoring_manifest.DockerComposeService
-- **Methods**: 0
-
 ### wup.anomaly_models.AnomalyResult
 > Result of anomaly detection.
-- **Methods**: 0
-
-### wup.anomaly_models.YAMLAnomalyConfig
-> Configuration for YAML anomaly detection.
 - **Methods**: 0
 
 ## Data Transformation Functions
 
 Key functions that process and transform data:
+
+### wup.assistant.WupAssistant._review_and_validate
+> Review and validate configuration.
+- **Output to**: console.print, console.print, console.print, console.print, console.print
+
+### wup.assistant.WupAssistant._validate_config
+> Validate current configuration.
+- **Output to**: issues.append, issues.append, issues.append, None.replace, resolved.exists
+
+### wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
+> Extract endpoints from a TestQL scenario file.
+
+Args:
+    scenario_path: Path to scenario file
+    
+
+- **Output to**: list, re.compile, api_pattern.findall, set, open
 
 ### wup.monitoring_manifest._parse_port_mapping
 - **Output to**: isinstance, isinstance, str, str
@@ -449,32 +473,26 @@ Args:
 > Extract API probe rows from a TestQL TOON scenario file.
 - **Output to**: wup.testql_monitor._parse_api_lines, scenario_path.read_text, str
 
+### wup.testql_monitor._parse_endpoint_row
+> Convert a single endpoints list entry into a ProbeTarget.
+- **Output to**: None.strip, None.upper, int, ProbeTarget, isinstance
+
 ### wup.testql_monitor.parse_service_map_probes
 > Extract probes from c2004-style service map YAML (endpoints: list).
-- **Output to**: data.get, isinstance, yaml.safe_load, isinstance, None.rstrip
+- **Output to**: wup.testql_monitor._extract_base_url, str, yaml.safe_load, isinstance, data.get
 
-### wup.assistant.WupAssistant._review_and_validate
-> Review and validate configuration.
-- **Output to**: console.print, console.print, console.print, console.print, console.print
-
-### wup.assistant.WupAssistant._validate_config
-> Validate current configuration.
-- **Output to**: issues.append, issues.append, issues.append, None.replace, resolved.exists
-
-### wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
-> Extract endpoints from a TestQL scenario file.
-
-Args:
-    scenario_path: Path to scenario file
-    
-
-- **Output to**: list, re.compile, api_pattern.findall, set, open
-
-### wup.testql_watcher.TestQLWatcher.process_changed_file_once
-- **Output to**: self.on_file_change, len, self.process_test_queue_once, asyncio.sleep, str
+### wup.planfile_reporter.PlanfileReporter._parse_ticket_id
+- **Output to**: re.search, match.group
 
 ### wup.core.WupWatcher.process_test_queue_once
 - **Output to**: self.test_queue.popleft, self.console.print, self.cpu_ok, self.run_quick_test, self.schedule_detail_test
+
+### wup.testql_watcher.TestQLWatcher._try_parse_json_summary
+> Try to extract passed/failed summary from trailing JSON in blob.
+- **Output to**: blob.rfind, data.get, data.get, json.loads, isinstance
+
+### wup.testql_watcher.TestQLWatcher.process_changed_file_once
+- **Output to**: self.on_file_change, len, self.process_test_queue_once, asyncio.sleep, str
 
 ## Behavioral Patterns
 
@@ -493,45 +511,45 @@ Args:
 Functions exposed as public API (no underscore prefix):
 
 - `wup.cli.status` - 121 calls
-- `wup.config.validate_config` - 103 calls
+- `wup.config.validate_config` - 118 calls
 - `examples.ci_cd_integration.show_ci_cd_demo` - 69 calls
 - `examples.webhook_notifications.show_webhook_demo` - 68 calls
-- `wup.cli.watch` - 50 calls
 - `wup.cli.sync_testql` - 45 calls
 - `wup.cli.testql_endpoints` - 40 calls
 - `scripts.run_probe_smoke.main` - 38 calls
-- `wup.visual_diff.VisualDiffer.run_for_service` - 34 calls
-- `wup.monitoring_manifest.discover_docker_compose_services` - 31 calls
-- `wup.testql_monitor.assign_probe_to_service` - 29 calls
-- `wup.testql_monitor.TestQLMonitor.discover_probes_by_service` - 27 calls
+- `wup.cli.watch` - 32 calls
 - `examples.testql_integration.main` - 27 calls
 - `wup.anomaly_detector.AnomalyDetector.print_report` - 26 calls
 - `examples.c2004_monorepo_demo.analyze_monorepo` - 26 calls
 - `examples.visual_diff_demo.demo_snapshot_persistence` - 26 calls
 - `wup.monitoring_manifest.format_manifest_summary` - 25 calls
 - `wup.cli.map_deps` - 25 calls
-- `wup.monitoring_manifest.build_monitoring_manifest` - 24 calls
-- `wup.testql_monitor.parse_service_map_probes` - 23 calls
 - `wup.testql_watcher.TestQLWatcher.run_detail_test` - 20 calls
 - `wup._ast_detector.ASTDetector.detect` - 19 calls
 - `examples.testql_demo.simulate_testql_analysis` - 18 calls
 - `wup._yaml_detector.YAMLStructureDetector.detect` - 17 calls
 - `examples.c2004_monorepo_demo.simulate_monorepo` - 17 calls
-- `wup.cli.init` - 16 calls
 - `wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints` - 16 calls
 - `wup._hash_detector.HashDetector.detect` - 16 calls
 - `examples.visual_diff_demo.demo_diff_algorithm` - 16 calls
 - `examples.visual_diff_demo.demo_config_yaml_round_trip` - 16 calls
+- `wup.cli.init` - 16 calls
+- `wup.core.WupWatcher.run_detail_test` - 16 calls
 - `examples.visual_diff_demo.main` - 15 calls
+- `wup.monitoring_manifest.build_monitoring_manifest` - 15 calls
 - `wup.core.WupWatcher.infer_service` - 15 calls
-- `wup.monitoring_manifest.load_monitoring_manifest_from_yaml` - 14 calls
 - `wup.anomaly_detector.AnomalyDetector.scan_directory` - 14 calls
 - `examples.visual_diff_demo.demo_live_page` - 14 calls
-- `wup.core.WupWatcher.run_detail_test` - 14 calls
+- `wup.monitoring_manifest.load_monitoring_manifest_from_yaml` - 14 calls
 - `examples.testql_integration.CustomTestQLWatcher.run_detail_test` - 13 calls
 - `wup.core.WupWatcher.start_watching` - 13 calls
 - `wup.core.WupWatcher.create_status_table` - 13 calls
 - `wup.core.WupWatcher.run_with_dashboard` - 13 calls
+- `examples.testql_demo.simulate_with_mock_data` - 12 calls
+- `examples.testql_integration.CustomTestQLWatcher.run_quick_test` - 12 calls
+- `wup.config.save_config` - 12 calls
+- `wup.cli.assistant` - 12 calls
+- `wup.testql_watcher.TestQLWatcher.run_quick_test` - 12 calls
 
 ## System Interactions
 
@@ -541,9 +559,6 @@ How components interact:
 graph TD
     status --> command
     status --> Option
-    watch --> command
-    watch --> Argument
-    watch --> Option
     sync_testql --> command
     sync_testql --> Argument
     sync_testql --> Option
@@ -556,19 +571,22 @@ graph TD
     main --> build_monitoring_man
     main --> print
     main --> sorted
-    run_for_service --> _pages_for_service
-    run_for_service --> max
-    run_for_service --> _playwright_availabl
-    run_for_service --> _warn_playwright_mis
-    run_for_service --> int
-    discover_probes_by_s --> items
-    discover_probes_by_s --> discover_scenarios
-    discover_probes_by_s --> _service_map_paths
-    discover_probes_by_s --> set
-    discover_probes_by_s --> add
+    watch --> command
+    watch --> Argument
+    watch --> Option
     main --> VisualDiffConfig
     main --> CustomTestQLWatcher
     print_report --> get_summary
+    print_report --> print
+    print_report --> Table
+    print_report --> add_column
+    _review_and_validate --> print
+    map_deps --> command
+    map_deps --> Argument
+    map_deps --> Option
+    map_deps --> resolve
+    _setup_anomaly_detec --> print
+    _setup_anomaly_detec --> ask
 ```
 
 ## Reverse Engineering Guidelines
