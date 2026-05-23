@@ -380,15 +380,30 @@ class TestQLWatcher(WupWatcher):
                 text=True,
                 timeout=timeout,
             )
+        except subprocess.TimeoutExpired:
+            return subprocess.CompletedProcess(
+                args=cmd,
+                returncode=124,
+                stdout="",
+                stderr=f"Error: TestQL command timed out after {timeout} seconds",
+            )
         except FileNotFoundError:
             fallback_cmd = ["python3", "-m", "testql.cli", *args]
-            return subprocess.run(
-                fallback_cmd,
-                cwd=str(self.project_root),
-                capture_output=True,
-                text=True,
-                timeout=timeout,
-            )
+            try:
+                return subprocess.run(
+                    fallback_cmd,
+                    cwd=str(self.project_root),
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout,
+                )
+            except subprocess.TimeoutExpired:
+                return subprocess.CompletedProcess(
+                    args=fallback_cmd,
+                    returncode=124,
+                    stdout="",
+                    stderr=f"Error: TestQL command timed out after {timeout} seconds",
+                )
 
     def _write_track(self, *, service: str, stage: str, scenario: Optional[Path], result: subprocess.CompletedProcess) -> Path:
         ts = int(time.time())

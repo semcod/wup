@@ -171,11 +171,55 @@ def validate_config(raw: dict) -> WupConfig:
     
     # Parse testql config
     testql_raw = raw.get("testql", {})
+    extra_args_raw = testql_raw.get("extra_args", ["--timeout", "10"])
+    extra_args = []
+    if isinstance(extra_args_raw, str):
+        extra_args_raw = extra_args_raw.split()
+    elif isinstance(extra_args_raw, list):
+        temp = []
+        for arg in extra_args_raw:
+            if isinstance(arg, str):
+                temp.extend(arg.split())
+            else:
+                temp.append(str(arg))
+        extra_args_raw = temp
+    else:
+        extra_args_raw = ["--timeout", "10"]
+
+    normalized_extra_args = []
+    i = 0
+    while i < len(extra_args_raw):
+        arg = extra_args_raw[i]
+        if arg == "--timeout" and i + 1 < len(extra_args_raw):
+            val = extra_args_raw[i+1]
+            if val.endswith("s"):
+                try:
+                    seconds = float(val[:-1])
+                    val = str(int(seconds * 1000))
+                except ValueError:
+                    pass
+            normalized_extra_args.append(arg)
+            normalized_extra_args.append(val)
+            i += 2
+        elif arg.startswith("--timeout="):
+            val = arg.partition("=")[2]
+            if val.endswith("s"):
+                try:
+                    seconds = float(val[:-1])
+                    val = str(int(seconds * 1000))
+                except ValueError:
+                    pass
+            normalized_extra_args.append(f"--timeout={val}")
+            i += 1
+        else:
+            normalized_extra_args.append(arg)
+            i += 1
+
     testql = TestQLConfig(
         scenario_dir=testql_raw.get("scenario_dir", "scenarios/tests"),
         smoke_scenario=testql_raw.get("smoke_scenario", "smoke.testql.toon.yaml"),
         output_format=testql_raw.get("output_format", "json"),
-        extra_args=testql_raw.get("extra_args", ["--timeout", "10"]),
+        extra_args=normalized_extra_args,
         endpoint_discovery=testql_raw.get("endpoint_discovery", True),
         probe_interval_s=int(testql_raw.get("probe_interval_s", 0) or 0),
         health_scenario=testql_raw.get("health_scenario", ""),

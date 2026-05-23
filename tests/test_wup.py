@@ -1345,6 +1345,23 @@ project:
             with pytest.raises(ValueError, match="project.name"):
                 load_config(Path(tmpdir), config_path)
 
+    def test_load_config_extra_args_normalization(self):
+        """Test that testql.extra_args parses space-separated strings and converts seconds to milliseconds."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_content = """
+project:
+  name: "test-project"
+testql:
+  extra_args:
+    - "--timeout 10s"
+    - "--other-arg"
+    - "--timeout=5s"
+"""
+            config_path = Path(tmpdir) / "wup.yaml"
+            config_path.write_text(config_content)
+            config = load_config(Path(tmpdir), config_path)
+            assert config.testql.extra_args == ["--timeout", "10000", "--other-arg", "--timeout=5000"]
+
     def test_save_and_load_visual_diff_config(self):
         """Test that visual_diff section is correctly saved and reloaded."""
         with tempfile.TemporaryDirectory() as tmpdir:
