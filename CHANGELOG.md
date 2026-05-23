@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.45] - 2026-05-23
+
+### Docs
+- Update README.md
+
+### Other
+- Update .gitignore
+- Update .planfile/sprints/current.yaml
+- Update regix.yaml
+- Update uv.lock
+
 ## [0.2.44] - 2026-05-23
 
 ### Docs

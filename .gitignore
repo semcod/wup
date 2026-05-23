@@ -332,3 +332,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Planfile Koru runtime logs
+.planfile/.koru/
