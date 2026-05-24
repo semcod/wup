@@ -1,8 +1,8 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.48', 'python').
+project_metadata('wup', '0.2.52', 'python').
 
 % ── Project Files ────────────────────────────────────────
-project_file('app.doql.less', 33, 'less').
+project_file('app.doql.less', 63, 'less').
 project_file('examples/c2004_monorepo_demo.py', 259, 'python').
 project_file('examples/ci_cd_integration.py', 340, 'python').
 project_file('examples/fastapi-app/app/__init__.py', 1, 'python').
@@ -28,12 +28,15 @@ project_file('scripts/run_probe_smoke.py', 65, 'python').
 project_file('tests/test_auto_detection.py', 195, 'python').
 project_file('tests/test_cli_filtering.py', 266, 'python').
 project_file('tests/test_e2e.py', 517, 'python').
+project_file('tests/test_health_summary_passed.py', 54, 'python').
 project_file('tests/test_monitoring_manifest.py', 73, 'python').
+project_file('tests/test_probe_mutex.py', 39, 'python').
 project_file('tests/test_service_inference.py', 212, 'python').
 project_file('tests/test_testql_monitor.py', 169, 'python').
 project_file('tests/test_testql_watcher.py', 560, 'python').
 project_file('tests/test_visual_diff_periodic_skip.py', 41, 'python').
-project_file('tests/test_visual_diff_progress.py', 40, 'python').
+project_file('tests/test_visual_diff_progress.py', 57, 'python').
+project_file('tests/test_watch_exclude.py', 35, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
 project_file('tests/test_wup.py', 1819, 'python').
 project_file('tree.sh', 2, 'shell').
@@ -49,13 +52,13 @@ project_file('wup/bus.py', 66, 'python').
 project_file('wup/cli.py', 800, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
-project_file('wup/config.py', 518, 'python').
-project_file('wup/core.py', 664, 'python').
+project_file('wup/config.py', 528, 'python').
+project_file('wup/core.py', 676, 'python').
 project_file('wup/dependency_mapper.py', 285, 'python').
 project_file('wup/event_store.py', 42, 'python').
 project_file('wup/file_watcher/events/file_events.py', 11, 'python').
 project_file('wup/models/__init__.py', 35, 'python').
-project_file('wup/models/config.py', 169, 'python').
+project_file('wup/models/config.py', 170, 'python').
 project_file('wup/monitoring_manifest.py', 341, 'python').
 project_file('wup/planfile_reporter.py', 204, 'python').
 project_file('wup/testing/events/health_events.py', 12, 'python').
@@ -66,8 +69,8 @@ project_file('wup/testing/queries/health_queries.py', 8, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 907, 'python').
-project_file('wup/visual_diff.py', 557, 'python').
+project_file('wup/testql_watcher.py', 959, 'python').
+project_file('wup/visual_diff.py', 582, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
 % ── Python Functions ─────────────────────────────────────
@@ -147,8 +150,12 @@ python_function('tests/test_cli_filtering.py', 'test_score_scenario_cli_requires
 python_function('tests/test_cli_filtering.py', 'test_score_scenario_non_cli_uses_original_scoring', 0, 2, 12).
 python_function('tests/test_cli_filtering.py', 'test_scenario_matches_type', 0, 6, 11).
 python_function('tests/test_e2e.py', 'run_wup_command', 5, 1, 5).
+python_function('tests/test_health_summary_passed.py', 'test_health_summary_all_passed_parser', 0, 3, 1).
+python_function('tests/test_health_summary_passed.py', 'test_fleet_health_nonzero_exit_all_passed_counts_as_up', 0, 4, 15).
 python_function('tests/test_monitoring_manifest.py', 'test_discover_docker_compose', 0, 4, 5).
 python_function('tests/test_monitoring_manifest.py', 'test_patch_and_load_monitoring_block', 0, 7, 13).
+python_function('tests/test_probe_mutex.py', '_minimal_watcher', 0, 1, 7).
+python_function('tests/test_probe_mutex.py', 'test_periodic_probe_skipped_when_watch_lock_held', 0, 3, 7).
 python_function('tests/test_service_inference.py', 'test_infer_service_with_empty_paths_uses_configured_services', 0, 2, 11).
 python_function('tests/test_service_inference.py', 'test_infer_service_with_explicit_paths_matches_path_patterns', 0, 2, 11).
 python_function('tests/test_service_inference.py', 'test_infer_service_with_auto_detection_matches_name_segments', 0, 2, 11).
@@ -187,6 +194,11 @@ python_function('tests/test_visual_diff_progress.py', '_make_differ', 1, 1, 3).
 python_function('tests/test_visual_diff_progress.py', 'test_progress_returned_for_big_scans', 2, 3, 3).
 python_function('tests/test_visual_diff_progress.py', 'test_progress_skipped_for_small_scans', 1, 2, 2).
 python_function('tests/test_visual_diff_progress.py', 'test_progress_can_be_disabled_via_env', 2, 2, 3).
+python_function('tests/test_visual_diff_progress.py', 'test_progress_uses_injected_console', 1, 3, 6).
+python_function('tests/test_watch_exclude.py', '_watcher', 0, 1, 4).
+python_function('tests/test_watch_exclude.py', 'test_nested_tests_directory_ignored', 0, 2, 3).
+python_function('tests/test_watch_exclude.py', 'test_src_file_not_ignored', 0, 2, 3).
+python_function('tests/test_watch_exclude.py', 'test_glob_exclude_pattern', 0, 2, 3).
 python_function('tests/test_web_client.py', '_make_handler', 2, 1, 10).
 python_function('tests/test_web_client.py', 'recorder_server', 0, 1, 7).
 python_function('tests/test_web_client.py', 'test_resolve_endpoint_from_config', 0, 2, 2).
@@ -227,7 +239,10 @@ python_function('wup/config.py', '_parse_project_config', 1, 2, 3).
 python_function('wup/config.py', '_parse_watch_config', 1, 1, 2).
 python_function('wup/config.py', '_parse_services_config', 1, 3, 5).
 python_function('wup/config.py', '_parse_strategy_config', 1, 1, 2).
-python_function('wup/config.py', '_parse_testql_config', 1, 14, 14).
+python_function('wup/config.py', '_normalize_testql_timeout', 1, 3, 4).
+python_function('wup/config.py', '_parse_testql_extra_args', 1, 5, 5).
+python_function('wup/config.py', '_normalize_testql_extra_args', 1, 5, 5).
+python_function('wup/config.py', '_parse_testql_config', 1, 2, 6).
 python_function('wup/config.py', '_parse_visual_diff_config', 1, 6, 7).
 python_function('wup/config.py', '_parse_web_config', 1, 1, 3).
 python_function('wup/config.py', '_parse_planfile_config', 1, 5, 7).
@@ -542,6 +557,7 @@ python_method('WupWatcher', 'run_quick_test', 2, 6, 5).
 python_method('WupWatcher', 'run_detail_test', 2, 10, 10).
 python_method('WupWatcher', 'test_loop', 0, 2, 2).
 python_method('WupWatcher', 'should_watch_file', 1, 3, 4).
+python_method('WupWatcher', '_path_matches_exclude_pattern', 2, 5, 4).
 python_method('WupWatcher', '_is_file_ignored', 1, 11, 3).
 python_method('WupWatcher', '_notify_all_configured_services', 1, 4, 4).
 python_method('WupWatcher', 'on_file_change', 1, 11, 9).
@@ -656,7 +672,7 @@ python_class('wup/testql_watcher.py', 'BrowserNotifier').
 python_method('BrowserNotifier', '__init__', 2, 13, 1).
 python_method('BrowserNotifier', 'notify', 1, 3, 8).
 python_class('wup/testql_watcher.py', 'TestQLWatcher').
-python_method('TestQLWatcher', '__init__', 7, 13, 14).
+python_method('TestQLWatcher', '__init__', 7, 13, 15).
 python_method('TestQLWatcher', '_normalize_fleet_health_entry', 0, 7, 9).
 python_method('TestQLWatcher', '_load_service_health', 0, 1, 0).
 python_method('TestQLWatcher', '_record_health_transition', 0, 6, 5).
@@ -671,7 +687,8 @@ python_method('TestQLWatcher', 'get_service_config', 1, 3, 0).
 python_method('TestQLWatcher', '_score_scenario', 2, 10, 4).
 python_method('TestQLWatcher', '_get_scored_scenarios', 3, 4, 2).
 python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 8, 6).
+python_method('TestQLWatcher', '_health_summary_all_passed', 1, 5, 4).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 10, 7).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 4, 3).
@@ -689,20 +706,24 @@ python_method('TestQLWatcher', '_try_parse_json_summary', 1, 8, 4).
 python_method('TestQLWatcher', '_try_find_line_summary', 1, 7, 4).
 python_method('TestQLWatcher', '_summarize_testql_failure', 1, 3, 2).
 python_method('TestQLWatcher', '_summarize_health_scenario_failure', 1, 8, 4).
-python_method('TestQLWatcher', '_run_fleet_health_scenario', 0, 10, 16).
-python_method('TestQLWatcher', 'run_quick_test', 2, 17, 15).
+python_method('TestQLWatcher', '_run_fleet_health_scenario', 0, 12, 17).
+python_method('TestQLWatcher', '_run_quick_test_no_scenarios', 2, 11, 8).
+python_method('TestQLWatcher', '_get_quick_scenarios', 1, 3, 2).
+python_method('TestQLWatcher', '_run_quick_scenarios_loop', 3, 3, 1).
+python_method('TestQLWatcher', 'run_quick_test', 2, 4, 8).
 python_method('TestQLWatcher', '_publish_visual_events', 2, 6, 4).
 python_method('TestQLWatcher', 'run_detail_test', 2, 11, 14).
+python_method('TestQLWatcher', 'process_test_queue_once', 0, 4, 5).
 python_method('TestQLWatcher', 'process_changed_file_once', 1, 4, 5).
-python_method('TestQLWatcher', '_run_periodic_probes_once', 0, 5, 4).
+python_method('TestQLWatcher', '_run_periodic_probes_once', 0, 6, 6).
 python_method('TestQLWatcher', '_start_periodic_probe_thread', 0, 3, 6).
 python_method('TestQLWatcher', 'start_watching', 1, 1, 3).
 python_class('wup/visual_diff.py', 'VisualDiffer').
-python_method('VisualDiffer', '__init__', 2, 1, 2).
+python_method('VisualDiffer', '__init__', 2, 2, 3).
 python_method('VisualDiffer', '_pages_for_service', 2, 11, 4).
-python_method('VisualDiffer', '_categorize_page_result', 6, 6, 6).
+python_method('VisualDiffer', '_categorize_page_result', 7, 7, 6).
 python_method('VisualDiffer', '_print_scan_summary', 4, 8, 7).
-python_method('VisualDiffer', 'run_for_service', 2, 9, 16).
+python_method('VisualDiffer', 'run_for_service', 2, 10, 17).
 python_method('VisualDiffer', '_build_progress', 2, 3, 7).
 python_method('VisualDiffer', '_check_page', 2, 4, 9).
 python_method('VisualDiffer', '_write_diff_event', 3, 1, 6).
@@ -722,6 +743,12 @@ python_method('WebClient', 'send_visual_diff', 3, 1, 1).
 % ── Makefile Targets ─────────────────────────────────────
 
 % ── Taskfile Tasks ───────────────────────────────────────
+taskfile_task('', 'Watch project for file changes and run WUP regression tests').
+taskfile_task('', 'Show dependency map status and configuration').
+taskfile_task('', 'Discover monitoring targets and update wup.yaml manifest').
+taskfile_task('', 'Verify TestQL scenarios and discover endpoints').
+taskfile_task('', 'Build dependency map from codebase').
+taskfile_task('', 'Run WUP pytest test suite').
 
 % ── Environment Variables ────────────────────────────────
 env_variable('OPENROUTER_API_KEY', '*(not set)*', 'Required: OpenRouter API key (https://openrouter.ai/keys)').
@@ -748,10 +775,23 @@ sumd_declared_file('testql-scenarios/cli-smoke.testql.toon.yaml', 'testql').
 sumd_declared_file('testql-scenarios/cli-wup.testql.toon.yaml', 'testql').
 sumd_declared_file('testql-scenarios/generated-cli-tests.testql.toon.yaml', 'testql').
 sumd_declared_file('testql-scenarios/generated-from-pytests.testql.toon.yaml', 'testql').
+sumd_declared_file('Taskfile.yml', 'taskfile').
 sumd_declared_file('project/map.toon.yaml', 'analysis').
 sumd_declared_file('project/logic.pl', 'analysis').
 sumd_declared_file('project/calls.toon.yaml', 'analysis').
 sumd_interface('api', '').
 sumd_interface('cli', 'argparse').
 sumd_interface('cli', '').
+sumd_workflow('wup:watch', 'manual').
+sumd_workflow_step('wup:watch', 1, 'poetry run wup watch').
+sumd_workflow('wup:status', 'manual').
+sumd_workflow_step('wup:status', 1, 'poetry run wup status').
+sumd_workflow('wup:sync', 'manual').
+sumd_workflow_step('wup:sync', 1, 'poetry run wup sync-testql . --write').
+sumd_workflow('wup:endpoints', 'manual').
+sumd_workflow_step('wup:endpoints', 1, 'poetry run wup testql-endpoints').
+sumd_workflow('wup:map', 'manual').
+sumd_workflow_step('wup:map', 1, 'poetry run wup map-deps').
+sumd_workflow('test', 'manual').
+sumd_workflow_step('test', 1, 'poetry run pytest').
 

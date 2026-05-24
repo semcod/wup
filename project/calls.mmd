@@ -1,33 +1,34 @@
 flowchart LR
 %% generated in 0.01s
     subgraph examples__c2004_monorepo_demo
-        examples__c2004_monorepo_demo__main["main"]
-        examples__c2004_monorepo_demo___discover_modules["_discover_modules"]
         examples__c2004_monorepo_demo___analyze_module["_analyze_module"]
-        examples__c2004_monorepo_demo__analyze_monorepo["analyze_monorepo"]
         examples__c2004_monorepo_demo___analyze_module_structure["_analyze_module_structure"]
+        examples__c2004_monorepo_demo__main["main"]
+        examples__c2004_monorepo_demo__analyze_monorepo["analyze_monorepo"]
+        examples__c2004_monorepo_demo___discover_modules["_discover_modules"]
     end
     subgraph examples__ci_cd_integration
         examples__ci_cd_integration__main["main"]
         examples__ci_cd_integration__show_ci_cd_demo["show_ci_cd_demo"]
-        examples__ci_cd_integration__generate_github_actions["generate_github_actions"]
         examples__ci_cd_integration__generate_gitlab_ci["generate_gitlab_ci"]
+        examples__ci_cd_integration__generate_github_actions["generate_github_actions"]
     end
     subgraph examples__testql_demo
-        examples__testql_demo___run_with_mock_services["_run_with_mock_services"]
-        examples__testql_demo___build_mock_services["_build_mock_services"]
         examples__testql_demo__simulate_testql_analysis["simulate_testql_analysis"]
         examples__testql_demo__simulate_with_mock_data["simulate_with_mock_data"]
+        examples__testql_demo___run_with_mock_services["_run_with_mock_services"]
+        examples__testql_demo___build_mock_services["_build_mock_services"]
     end
     subgraph examples__visual_diff_demo
-        examples__visual_diff_demo__demo_config_yaml_round_trip["demo_config_yaml_round_trip"]
+        examples__visual_diff_demo__demo_disabled_is_noop["demo_disabled_is_noop"]
+        examples__visual_diff_demo__demo_snapshot_persistence["demo_snapshot_persistence"]
+        examples__visual_diff_demo___make_dom["_make_dom"]
         examples__visual_diff_demo__main["main"]
         examples__visual_diff_demo__demo_page_slug["demo_page_slug"]
+        examples__visual_diff_demo___save_snapshot["_save_snapshot"]
         examples__visual_diff_demo__demo_diff_algorithm["demo_diff_algorithm"]
-        examples__visual_diff_demo___make_dom["_make_dom"]
-        examples__visual_diff_demo__demo_snapshot_persistence["demo_snapshot_persistence"]
-        examples__visual_diff_demo__demo_disabled_is_noop["demo_disabled_is_noop"]
         examples__visual_diff_demo__demo_live_page["demo_live_page"]
+        examples__visual_diff_demo__demo_config_yaml_round_trip["demo_config_yaml_round_trip"]
     end
     subgraph examples__webhook_notifications
         examples__webhook_notifications__show_webhook_demo["show_webhook_demo"]
@@ -40,105 +41,115 @@ flowchart LR
         wup___ast_detector__ASTDetector___snapshot_path["_snapshot_path"]
     end
     subgraph wup__cli
-        wup__cli__status["status"]
         wup__cli___refresh_monitoring_manifest["_refresh_monitoring_manifest"]
-        wup__cli___auto_generate_config["_auto_generate_config"]
-        wup__cli__init["init"]
+        wup__cli__status["status"]
         wup__cli___load_watch_config["_load_watch_config"]
         wup__cli__sync_testql["sync_testql"]
+        wup__cli__init["init"]
+        wup__cli___auto_generate_config["_auto_generate_config"]
     end
     subgraph wup__cli_config_generator
         wup__cli_config_generator__CLIConfigGenerator__generate["generate"]
     end
     subgraph wup__config
-        wup__config__validate_config["validate_config"]
-        wup__config__load_config["load_config"]
-        wup__config__find_config_file["find_config_file"]
+        wup__config___parse_testql_extra_args["_parse_testql_extra_args"]
+        wup__config___parse_web_config["_parse_web_config"]
+        wup__config___normalize_testql_extra_args["_normalize_testql_extra_args"]
         wup__config___load_dotenv["_load_dotenv"]
+        wup__config___parse_strategy_config["_parse_strategy_config"]
+        wup__config__validate_config["validate_config"]
         wup__config__save_config["save_config"]
+        wup__config___parse_planfile_config["_parse_planfile_config"]
+        wup__config___parse_visual_diff_config["_parse_visual_diff_config"]
+        wup__config___parse_services_config["_parse_services_config"]
+        wup__config___normalize_testql_timeout["_normalize_testql_timeout"]
+        wup__config___parse_project_config["_parse_project_config"]
+        wup__config___parse_testql_config["_parse_testql_config"]
         wup__config__get_default_config["get_default_config"]
+        wup__config___parse_watch_config["_parse_watch_config"]
+        wup__config__find_config_file["find_config_file"]
+        wup__config__load_config["load_config"]
     end
     subgraph wup__core
         wup__core__WupWatcher____init__["__init__"]
     end
     subgraph wup__monitoring_manifest
-        wup__monitoring_manifest___extract_healthcheck_test["_extract_healthcheck_test"]
         wup__monitoring_manifest__discover_docker_compose_services["discover_docker_compose_servic"]
         wup__monitoring_manifest__load_monitoring_manifest_from_yaml["load_monitoring_manifest_from_"]
-        wup__monitoring_manifest___build_docker_rows["_build_docker_rows"]
+        wup__monitoring_manifest__manifest_to_yaml_block["manifest_to_yaml_block"]
+        wup__monitoring_manifest__patch_wup_yaml_monitoring["patch_wup_yaml_monitoring"]
         wup__monitoring_manifest___parse_port_mapping["_parse_port_mapping"]
         wup__monitoring_manifest___build_scenario_rows["_build_scenario_rows"]
         wup__monitoring_manifest___map_docker_to_wup_service["_map_docker_to_wup_service"]
-        wup__monitoring_manifest__patch_wup_yaml_monitoring["patch_wup_yaml_monitoring"]
+        wup__monitoring_manifest___extract_healthcheck_test["_extract_healthcheck_test"]
         wup__monitoring_manifest___load_compose_yaml["_load_compose_yaml"]
-        wup__monitoring_manifest___build_wup_service_dicts["_build_wup_service_dicts"]
         wup__monitoring_manifest___extract_service_from_spec["_extract_service_from_spec"]
-        wup__monitoring_manifest__manifest_to_yaml_block["manifest_to_yaml_block"]
         wup__monitoring_manifest__build_monitoring_manifest["build_monitoring_manifest"]
+        wup__monitoring_manifest___build_wup_service_dicts["_build_wup_service_dicts"]
+        wup__monitoring_manifest___build_docker_rows["_build_docker_rows"]
     end
     subgraph wup__testing
-        wup__testing__handlers__event_handlers__register_testing_event_handlers["register_testing_event_handler"]
         wup__testing__handlers__health_handlers__register_health_handlers["register_health_handlers"]
+        wup__testing__handlers__event_handlers__register_testing_event_handlers["register_testing_event_handler"]
     end
     subgraph wup__testql_monitor
-        wup__testql_monitor___assign_by_longest_token["_assign_by_longest_token"]
-        wup__testql_monitor__TestQLMonitor___resolve_base_url["_resolve_base_url"]
-        wup__testql_monitor___assign_by_port_8202["_assign_by_port_8202"]
         wup__testql_monitor___parse_api_lines["_parse_api_lines"]
-        wup__testql_monitor___extract_base_url["_extract_base_url"]
-        wup__testql_monitor__is_monitoring_probe["is_monitoring_probe"]
         wup__testql_monitor__assign_probe_to_service["assign_probe_to_service"]
         wup__testql_monitor__parse_service_map_probes["parse_service_map_probes"]
-        wup__testql_monitor__TestQLMonitor___add_config_endpoints["_add_config_endpoints"]
-        wup__testql_monitor___assign_http_probe["_assign_http_probe"]
-        wup__testql_monitor___firmware_plugin_probe_without_runtime["_firmware_plugin_probe_without"]
-        wup__testql_monitor___assign_by_path_prefix["_assign_by_path_prefix"]
+        wup__testql_monitor___assign_by_longest_token["_assign_by_longest_token"]
         wup__testql_monitor___assign_by_connect_backend["_assign_by_connect_backend"]
         wup__testql_monitor___parse_endpoint_row["_parse_endpoint_row"]
-        wup__testql_monitor___connect_module_api_on_frontend_proxy["_connect_module_api_on_fronten"]
-        wup__testql_monitor___service_path_patterns["_service_path_patterns"]
         wup__testql_monitor__TestQLMonitor___add_scenario_probes["_add_scenario_probes"]
-        wup__testql_monitor__TestQLMonitor___add_service_map_probes["_add_service_map_probes"]
-        wup__testql_monitor___assign_by_port_8100["_assign_by_port_8100"]
-        wup__testql_monitor__parse_scenario_probes["parse_scenario_probes"]
         wup__testql_monitor__TestQLMonitor__probes_for_service["probes_for_service"]
+        wup__testql_monitor__parse_scenario_probes["parse_scenario_probes"]
+        wup__testql_monitor___assign_by_path_prefix["_assign_by_path_prefix"]
         wup__testql_monitor___find_service_by_token["_find_service_by_token"]
+        wup__testql_monitor___assign_by_port_8202["_assign_by_port_8202"]
+        wup__testql_monitor___assign_by_port_8100["_assign_by_port_8100"]
+        wup__testql_monitor__TestQLMonitor___add_service_map_probes["_add_service_map_probes"]
         wup__testql_monitor___find_service_by_name["_find_service_by_name"]
+        wup__testql_monitor___extract_base_url["_extract_base_url"]
+        wup__testql_monitor__TestQLMonitor___resolve_base_url["_resolve_base_url"]
+        wup__testql_monitor___assign_http_probe["_assign_http_probe"]
+        wup__testql_monitor___service_path_patterns["_service_path_patterns"]
+        wup__testql_monitor___connect_module_api_on_frontend_proxy["_connect_module_api_on_fronten"]
         wup__testql_monitor___assign_by_port_8101["_assign_by_port_8101"]
+        wup__testql_monitor__is_monitoring_probe["is_monitoring_probe"]
+        wup__testql_monitor___firmware_plugin_probe_without_runtime["_firmware_plugin_probe_without"]
+        wup__testql_monitor__TestQLMonitor___add_config_endpoints["_add_config_endpoints"]
     end
     subgraph wup__testql_watcher
-        wup__testql_watcher__TestQLWatcher____init__["__init__"]
         wup__testql_watcher__TestQLWatcher___get_config_endpoints_for_service["_get_config_endpoints_for_serv"]
+        wup__testql_watcher__TestQLWatcher____init__["__init__"]
     end
     subgraph wup__visual_diff
-        wup__visual_diff___short_url["_short_url"]
-        wup__visual_diff___compact_error_message["_compact_error_message"]
-        wup__visual_diff___fetch_dom_snapshot["_fetch_dom_snapshot"]
         wup__visual_diff__VisualDiffer___categorize_page_result["_categorize_page_result"]
-        wup__visual_diff___diff_snapshots["_diff_snapshots"]
         wup__visual_diff__VisualDiffer___pages_for_service["_pages_for_service"]
-        wup__visual_diff___warn_playwright_missing["_warn_playwright_missing"]
-        wup__visual_diff___detect_content_issues["_detect_content_issues"]
-        wup__visual_diff___page_slug["_page_slug"]
         wup__visual_diff__VisualDiffer___write_diff_event["_write_diff_event"]
-        wup__visual_diff___node_signature["_node_signature"]
-        wup__visual_diff__VisualDiffer__run_for_service["run_for_service"]
-        wup__visual_diff__VisualDiffer____init__["__init__"]
-        wup__visual_diff___playwright_available["_playwright_available"]
-        wup__visual_diff___snapshot_path["_snapshot_path"]
-        wup__visual_diff___save_snapshot["_save_snapshot"]
-        wup__visual_diff__VisualDiffer___print_scan_summary["_print_scan_summary"]
+        wup__visual_diff___diff_snapshots["_diff_snapshots"]
         wup__visual_diff___sample_list["_sample_list"]
-        wup__visual_diff___load_snapshot["_load_snapshot"]
         wup__visual_diff___flatten["_flatten"]
-        wup__visual_diff__VisualDiffer___check_page["_check_page"]
         wup__visual_diff___looks_like_visual_page["_looks_like_visual_page"]
+        wup__visual_diff__VisualDiffer___print_scan_summary["_print_scan_summary"]
+        wup__visual_diff___fetch_dom_snapshot["_fetch_dom_snapshot"]
+        wup__visual_diff___warn_playwright_missing["_warn_playwright_missing"]
+        wup__visual_diff___playwright_available["_playwright_available"]
+        wup__visual_diff__VisualDiffer____init__["__init__"]
+        wup__visual_diff__VisualDiffer___check_page["_check_page"]
+        wup__visual_diff___load_snapshot["_load_snapshot"]
+        wup__visual_diff__VisualDiffer__run_for_service["run_for_service"]
+        wup__visual_diff___page_slug["_page_slug"]
+        wup__visual_diff___detect_content_issues["_detect_content_issues"]
+        wup__visual_diff___compact_error_message["_compact_error_message"]
+        wup__visual_diff___node_signature["_node_signature"]
+        wup__visual_diff___snapshot_path["_snapshot_path"]
+        wup__visual_diff___short_url["_short_url"]
     end
     subgraph wup__web_client
         wup__web_client__WebClient__send_event["send_event"]
         wup__web_client__WebClient____init__["__init__"]
-        wup__web_client__resolve_endpoint["resolve_endpoint"]
         wup__web_client___normalize["_normalize"]
+        wup__web_client__resolve_endpoint["resolve_endpoint"]
     end
     wup__monitoring_manifest___extract_service_from_spec --> wup__monitoring_manifest___parse_port_mapping
     wup__monitoring_manifest___extract_service_from_spec --> wup__monitoring_manifest___extract_healthcheck_test
@@ -150,10 +161,6 @@ flowchart LR
     wup__monitoring_manifest__build_monitoring_manifest --> wup__monitoring_manifest___build_docker_rows
     wup__monitoring_manifest__build_monitoring_manifest --> wup__monitoring_manifest___build_scenario_rows
     wup__monitoring_manifest__patch_wup_yaml_monitoring --> wup__monitoring_manifest__manifest_to_yaml_block
-    wup__config__load_config --> wup__config___load_dotenv
-    wup__config__load_config --> wup__config__validate_config
-    wup__config__load_config --> wup__config__find_config_file
-    wup__config__load_config --> wup__config__get_default_config
     wup__cli___load_watch_config --> wup__config__load_config
     wup__cli___refresh_monitoring_manifest --> wup__monitoring_manifest__build_monitoring_manifest
     wup__cli___refresh_monitoring_manifest --> wup__monitoring_manifest__patch_wup_yaml_monitoring
@@ -191,33 +198,8 @@ flowchart LR
     wup__testql_monitor__TestQLMonitor___add_service_map_probes --> wup__testql_monitor__is_monitoring_probe
     wup__testql_monitor__TestQLMonitor__probes_for_service --> wup__testql_monitor__is_monitoring_probe
     wup__cli_config_generator__CLIConfigGenerator__generate --> wup__config__load_config
-    wup__core__WupWatcher____init__ --> wup__config__load_config
     wup__web_client__WebClient____init__ --> wup__web_client__resolve_endpoint
     wup__web_client__WebClient__send_event --> wup__web_client___normalize
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__testing__handlers__event_handlers__register_testing_event_handlers
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__testing__handlers__health_handlers__register_health_handlers
-    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
-    wup__testql_watcher__TestQLWatcher___get_config_endpoints_for_service --> wup__testql_monitor__assign_probe_to_service
-    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
-    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___warn_playwright_missing
-    wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
-    wup__visual_diff___flatten --> wup__visual_diff___node_signature
-    wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
-    wup__visual_diff__VisualDiffer____init__ --> wup__testql_monitor__TestQLMonitor___resolve_base_url
-    wup__visual_diff__VisualDiffer___pages_for_service --> wup__visual_diff___looks_like_visual_page
-    wup__visual_diff__VisualDiffer___categorize_page_result --> wup__visual_diff___short_url
-    wup__visual_diff__VisualDiffer___print_scan_summary --> wup__visual_diff___compact_error_message
-    wup__visual_diff__VisualDiffer___print_scan_summary --> wup__visual_diff___sample_list
-    wup__visual_diff__VisualDiffer__run_for_service --> wup__visual_diff___playwright_available
-    wup__visual_diff__VisualDiffer__run_for_service --> wup__visual_diff___warn_playwright_missing
-    wup__visual_diff__VisualDiffer___check_page --> wup___ast_detector__ASTDetector___snapshot_path
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___detect_content_issues
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___save_snapshot
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___fetch_dom_snapshot
-    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___compact_error_message
-    wup__visual_diff__VisualDiffer___write_diff_event --> wup__visual_diff___page_slug
     examples__c2004_monorepo_demo___analyze_module_structure --> examples__c2004_monorepo_demo___analyze_module
     examples__c2004_monorepo_demo__analyze_monorepo --> examples__c2004_monorepo_demo___discover_modules
     examples__c2004_monorepo_demo__main --> examples__c2004_monorepo_demo__analyze_monorepo
@@ -242,3 +224,43 @@ flowchart LR
     scripts__run_probe_smoke__main --> wup__config__load_config
     scripts__run_probe_smoke__main --> wup__monitoring_manifest__build_monitoring_manifest
     scripts__run_probe_smoke__main --> wup__monitoring_manifest__load_monitoring_manifest_from_yaml
+    wup__config__load_config --> wup__config___load_dotenv
+    wup__config__load_config --> wup__config__validate_config
+    wup__config__load_config --> wup__config__find_config_file
+    wup__config__load_config --> wup__config__get_default_config
+    wup__config___normalize_testql_extra_args --> wup__config___normalize_testql_timeout
+    wup__config___parse_testql_config --> wup__config___parse_testql_extra_args
+    wup__config___parse_testql_config --> wup__config___normalize_testql_extra_args
+    wup__config__validate_config --> wup__config___parse_project_config
+    wup__config__validate_config --> wup__config___parse_watch_config
+    wup__config__validate_config --> wup__config___parse_services_config
+    wup__config__validate_config --> wup__config___parse_strategy_config
+    wup__config__validate_config --> wup__config___parse_testql_config
+    wup__config__validate_config --> wup__config___parse_visual_diff_config
+    wup__config__validate_config --> wup__config___parse_web_config
+    wup__config__validate_config --> wup__config___parse_planfile_config
+    wup__core__WupWatcher____init__ --> wup__config__load_config
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__testing__handlers__event_handlers__register_testing_event_handlers
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__testing__handlers__health_handlers__register_health_handlers
+    wup__testql_watcher__TestQLWatcher____init__ --> wup__config__load_config
+    wup__testql_watcher__TestQLWatcher___get_config_endpoints_for_service --> wup__testql_monitor__assign_probe_to_service
+    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___playwright_available
+    wup__visual_diff___fetch_dom_snapshot --> wup__visual_diff___warn_playwright_missing
+    wup__visual_diff___snapshot_path --> wup__visual_diff___page_slug
+    wup__visual_diff___flatten --> wup__visual_diff___node_signature
+    wup__visual_diff___diff_snapshots --> wup__visual_diff___flatten
+    wup__visual_diff__VisualDiffer____init__ --> wup__testql_monitor__TestQLMonitor___resolve_base_url
+    wup__visual_diff__VisualDiffer___pages_for_service --> wup__visual_diff___looks_like_visual_page
+    wup__visual_diff__VisualDiffer___categorize_page_result --> wup__visual_diff___short_url
+    wup__visual_diff__VisualDiffer___print_scan_summary --> wup__visual_diff___compact_error_message
+    wup__visual_diff__VisualDiffer___print_scan_summary --> wup__visual_diff___sample_list
+    wup__visual_diff__VisualDiffer__run_for_service --> wup__visual_diff___playwright_available
+    wup__visual_diff__VisualDiffer__run_for_service --> wup__visual_diff___warn_playwright_missing
+    wup__visual_diff__VisualDiffer___check_page --> wup___ast_detector__ASTDetector___snapshot_path
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___load_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___diff_snapshots
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___detect_content_issues
+    wup__visual_diff__VisualDiffer___check_page --> examples__visual_diff_demo___save_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___fetch_dom_snapshot
+    wup__visual_diff__VisualDiffer___check_page --> wup__visual_diff___compact_error_message
+    wup__visual_diff__VisualDiffer___write_diff_event --> wup__visual_diff___page_slug

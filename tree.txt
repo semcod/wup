@@ -69,6 +69,7 @@
 │   └── run_probe_smoke.py
 ├── SUMD.md
 ├── SUMR.md
+├── Taskfile.yml
 ├── testql-deps.json
 ├── testql-scenarios
 │   ├── cli-smoke.testql.toon.yaml
@@ -79,14 +80,17 @@
 │   ├── test_auto_detection.py
 │   ├── test_cli_filtering.py
 │   ├── test_e2e.py
+│   ├── test_health_summary_passed.py
 │   ├── test_monitoring_manifest.py
 │   ├── TEST_PLAN.md
+│   ├── test_probe_mutex.py
 │   ├── test_service_inference.py
 │   ├── TEST_SUMMARY.md
 │   ├── test_testql_monitor.py
 │   ├── test_testql_watcher.py
 │   ├── test_visual_diff_periodic_skip.py
 │   ├── test_visual_diff_progress.py
+│   ├── test_watch_exclude.py
 │   ├── test_web_client.py
 │   └── test_wup.py
 ├── TODO.md
@@ -145,4 +149,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-31 directories, 115 files
+31 directories, 119 files

@@ -1,39 +1,36 @@
-# code2llm | 115f 22880L | python:52,yaml:20,json:13,md:13,txt:7,yml:2,toml:1,shell:1,perl:1 | 2026-05-24
-# CC̄=1.6 | critical:0/1047 | dups:0 | cycles:0
+# code2llm | 72f 11398L | python:49,yaml:11,txt:4,json:2,yml:2,shell:1,toml:1 | 2026-05-24
+# generated in 0.03s
+# CC̄=4.1 | critical:0/399 | dups:0 | cycles:0
 
-HEALTH[2]:
-  🔴 GOD   SUMR.md = 997L, 9 classes, 142m, max CC=0.0
-  🔴 GOD   SUMD.md = 2002L, 9 classes, 304m, max CC=0.0
+HEALTH[0]: ok
 
-REFACTOR[2]:
-  1. split SUMR.md  (god module)
-  2. split SUMD.md  (god module)
+REFACTOR[0]: none needed
 
-PIPELINES[303]:
+PIPELINES[280]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [__init__]: __init__
+  [2] Src [generate]: generate
       PURITY: 100% pure
-  [3] Src [_compute_hash]: _compute_hash
+  [3] Src [_generate_smoke_scenario]: _generate_smoke_scenario
       PURITY: 100% pure
-  [4] Src [_snapshot_path]: _snapshot_path
+  [4] Src [_generate_command_scenario]: _generate_command_scenario
       PURITY: 100% pure
-  [5] Src [detect]: detect
+  [5] Src [generate_custom_scenario]: generate_custom_scenario
       PURITY: 100% pure
 
 LAYERS:
-  scripts/                        CC̄=14.0   ←in:0  →out:14  !! split
+  scripts/                        CC̄=14.0   ←in:0  →out:3
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
-  wup/                            CC̄=4.5    ←in:0  →out:62  !! split
+  wup/                            CC̄=4.5    ←in:9  →out:3
   │ !! testql_watcher             958L  2C   48m  CC=13     ←0
   │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       675L  2C   29m  CC=11     ←0
-  │ !! visual_diff                581L  1C   25m  CC=11     ←0
-  │ !! config                     527L  0C   17m  CC=10     ←0
-  │ !! testql_monitor             521L  3C   36m  CC=13     ←0
-  │ monitoring_manifest        340L  1C   16m  CC=11     ←0
+  │ !! visual_diff                581L  1C   25m  CC=11     ←1
+  │ !! config                     527L  0C   17m  CC=10     ←7
+  │ !! testql_monitor             521L  3C   36m  CC=13     ←2
+  │ monitoring_manifest        340L  1C   16m  CC=11     ←2
   │ cli_scanner                302L  3C   12m  CC=10     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
@@ -44,11 +41,11 @@ LAYERS:
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
   │ config                     169L  12C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
-  │ _ast_detector              124L  1C    9m  CC=11     ←0
-  │ health_handlers            119L  1C    6m  CC=6      ←0
+  │ _ast_detector              124L  1C    9m  CC=11     ←1
+  │ health_handlers            119L  1C    6m  CC=6      ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
   │ bus                         65L  5C    5m  CC=4      ←0
-  │ event_handlers              55L  1C    4m  CC=5      ←0
+  │ event_handlers              55L  1C    4m  CC=5      ←1
   │ __init__                    46L  0C    1m  CC=2      ←0
   │ event_store                 41L  1C    3m  CC=4      ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
@@ -58,20 +55,20 @@ LAYERS:
   │ file_events                 10L  1C    0m  CC=0.0    ←0
   │ health_queries               7L  1C    0m  CC=0.0    ←0
   │
-  examples/                       CC̄=2.4    ←in:0  →out:336  !! split
+  examples/                       CC̄=2.4    ←in:1  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
   │ ci_cd_integration          339L  0C    4m  CC=3      ←0
-  │ visual_diff_demo           305L  0C    9m  CC=6      ←0
+  │ visual_diff_demo           305L  0C    9m  CC=6      ←1
   │ testql_integration         286L  1C    6m  CC=6      ←0
   │ c2004_monorepo_demo        258L  0C   10m  CC=7      ←0
   │ testql_demo                191L  0C    4m  CC=6      ←0
-  │ README.md                   51L  0C    0m  CC=0.0    ←0
-  │ README.md                   51L  0C    0m  CC=0.0    ←0
   │ routes                      38L  1C    5m  CC=1      ←0
   │ routes                      33L  0C    5m  CC=2      ←0
   │ docker-compose.yml          33L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
+  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
@@ -85,63 +82,18 @@ LAYERS:
   │ routes                      13L  0C    2m  CC=1      ←0
   │ requirements.txt             3L  0C    0m  CC=0.0    ←0
   │ requirements.txt             2L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             2L  0C    0m  CC=0.0    ←0
   │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                   0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
   │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ !! SUMD.md                   2002L  9C  304m  CC=0.0    ←8
-  │ !! CHANGELOG.md              1052L  0C    0m  CC=0.0    ←0
-  │ !! SUMR.md                    997L  9C  142m  CC=0.0    ←4
-  │ !! README.md                  580L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
   │ tree.txt                   148L  0C    0m  CC=0.0    ←0
-  │ TODO.md                     88L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
   │ regix.yaml                  51L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ Taskfile.yml                32L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
-  │
-  docs/                           CC̄=0.0    ←in:346  →out:0
-  │ WUP_ASSISTANT.md           381L  0C    0m  CC=0.0    ←0
-  │ NOTIFICATIONS.md           363L  0C    3m  CC=0.0    ←8
-  │ TESTQL_INTEGRATION.md      321L  1C    0m  CC=0.0    ←0
-  │ ANOMALY_DETECTION.md       233L  1C    1m  CC=0.0    ←0
-  │
-  project/                        CC̄=0.0    ←in:0  →out:0
-  │ !! calls.yaml                1472L  0C    0m  CC=0.0    ←0
-  │ !! logic.pl                   757L  0C    0m  CC=0.0    ←0
-  │ !! context.md                 615L  0C    0m  CC=0.0    ←0
-  │ map.toon.yaml              487L  0C  198m  CC=0.0    ←0
-  │ README.md                  340L  0C    0m  CC=0.0    ←0
-  │ calls.toon.yaml            195L  0C    0m  CC=0.0    ←0
-  │ analysis.toon.yaml         120L  0C    0m  CC=0.0    ←0
-  │ evolution.toon.yaml         63L  0C    0m  CC=0.0    ←0
-  │ duplication.toon.yaml       58L  0C    0m  CC=0.0    ←0
-  │ project.toon.yaml           57L  0C    0m  CC=0.0    ←0
-  │ prompt.txt                  48L  0C    0m  CC=0.0    ←0
-  │
-  .cursor/                        CC̄=0.0    ←in:0  →out:0
-  │ mcp.json                    11L  0C    0m  CC=0.0    ←0
-  │
-  .planfile/                      CC̄=0.0    ←in:0  →out:0
-  │ !! current.yaml               969L  0C    0m  CC=0.0    ←0
-  │ config.yaml                  3L  0C    0m  CC=0.0    ←0
-  │
-  .koru/                          CC̄=0.0    ←in:0  →out:0
-  │ onboarding.json             12L  0C    0m  CC=0.0    ←0
-  │ project.json                 8L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
@@ -149,44 +101,17 @@ LAYERS:
   │ cli-smoke.testql.toon.yaml    17L  0C    0m  CC=0.0    ←0
   │ cli-wup.testql.toon.yaml    16L  0C    0m  CC=0.0    ←0
   │
-  .wup/                           CC̄=0.0    ←in:0  →out:0
-  │ service-health.json         37L  0C    0m  CC=0.0    ←0
-  │ 1779637235_wup-shell_detail.json    29L  0C    0m  CC=0.0    ←0
-  │ 1779637233_wup-shell_quick.json    27L  0C    0m  CC=0.0    ←0
-  │ 1779637085_wup-shell_quick.json    27L  0C    0m  CC=0.0    ←0
-  │ 1779637234_wup-shell_quick.json    27L  0C    0m  CC=0.0    ←0
-  │ 1779637173_wup-shell_quick.json    27L  0C    0m  CC=0.0    ←0
-  │ latest.json                 10L  0C    0m  CC=0.0    ←0
-  │
-  .zed/                           CC̄=0.0    ←in:0  →out:0
-  │ settings.json               13L  0C    0m  CC=0.0    ←0
-  │
   ── zero ──
-     examples/fastapi-app/Dockerfile           0L
-     examples/fastapi-app/app/__init__.py      0L
-     examples/fastapi-app/app/users/__init__.py  0L
-     examples/flask-app/Dockerfile             0L
      examples/flask-app/app/__init__.py        0L
-     examples/flask-app/app/auth/__init__.py   0L
-     examples/multi-service/auth-service/Dockerfile  0L
-     examples/multi-service/payments-service/Dockerfile  0L
-     examples/multi-service/users-service/Dockerfile  0L
 
 COUPLING:
-                docs  examples       wup      SUMR      SUMD   scripts
-      docs        ──      ←330        ←5                           ←11  hub
-  examples       330        ──                   3         3            !! fan-out
-       wup         5                  ──        32        25            !! fan-out
-      SUMR                  ←3       ←32        ──                      hub
-      SUMD                  ←3       ←25                  ──        ←3  hub
-   scripts        11                                       3        ──  !! fan-out
+                       wup     examples      scripts  wup.testing
+          wup           ──            1           ←3            2  hub
+     examples            6           ──                          
+      scripts            3                        ──             
+  wup.testing           ←2                                     ──
   CYCLES: none
-  HUB: SUMD/ (fan-in=31)
-  HUB: SUMR/ (fan-in=35)
-  HUB: docs/ (fan-in=346)
-  SMELL: scripts/ fan-out=14 → split needed
-  SMELL: examples/ fan-out=336 → split needed
-  SMELL: wup/ fan-out=62 → split needed
+  HUB: wup/ (fan-in=9)
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

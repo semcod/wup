@@ -1,11 +1,9 @@
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.06s
-# nodes: 106 | edges: 102 | modules: 18
-# CC̄=4.2
+# generated in 0.11s
+# nodes: 117 | edges: 113 | modules: 18
+# CC̄=4.1
 
 HUBS[20]:
-  wup.config.validate_config
-    CC=26  in:1  out:144  total:145
   wup.cli.status
     CC=5  in:0  out:121  total:121
   examples.ci_cd_integration.show_ci_cd_demo
@@ -16,34 +14,36 @@ HUBS[20]:
     CC=6  in:2  out:60  total:62
   wup.cli.sync_testql
     CC=13  in:0  out:45  total:45
+  wup.config._parse_visual_diff_config
+    CC=6  in:1  out:42  total:43
   scripts.run_probe_smoke.main
     CC=14  in:0  out:38  total:38
-  examples.c2004_monorepo_demo.analyze_monorepo
-    CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
+  wup.config._parse_testql_config
+    CC=2  in:1  out:23  total:24
+  wup.config._parse_services_config
+    CC=3  in:1  out:21  total:22
   wup.visual_diff.VisualDiffer.run_for_service
-    CC=9  in:0  out:21  total:21
+    CC=10  in:0  out:22  total:22
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
-  wup.visual_diff._fetch_dom_snapshot
-    CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
+  wup.visual_diff._fetch_dom_snapshot
+    CC=9  in:1  out:17  total:18
   wup.core.WupWatcher.__init__
     CC=7  in:0  out:18  total:18
-  examples.visual_diff_demo.demo_config_yaml_round_trip
-    CC=6  in:1  out:16  total:17
-  wup.config.load_config
-    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=13  in:0  out:17  total:17
   examples.visual_diff_demo.demo_diff_algorithm
     CC=3  in:1  out:16  total:17
-  wup.testql_watcher.TestQLWatcher.__init__
-    CC=13  in:0  out:16  total:16
-  wup.monitoring_manifest.load_monitoring_manifest_from_yaml
-    CC=9  in:2  out:14  total:16
+  examples.visual_diff_demo.demo_config_yaml_round_trip
+    CC=6  in:1  out:16  total:17
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -62,8 +62,9 @@ MODULES:
     _run_with_mock_services  CC=6  out:60
     simulate_testql_analysis  CC=2  out:18
     simulate_with_mock_data  CC=1  out:12
-  examples.visual_diff_demo  [8 funcs]
+  examples.visual_diff_demo  [9 funcs]
     _make_dom  CC=2  out:1
+    _save_snapshot  CC=1  out:3
     demo_config_yaml_round_trip  CC=6  out:16
     demo_diff_algorithm  CC=3  out:16
     demo_disabled_is_noop  CC=2  out:11
@@ -87,13 +88,17 @@ MODULES:
     sync_testql  CC=13  out:45
   wup.cli_config_generator  [1 funcs]
     generate  CC=4  out:5
-  wup.config  [6 funcs]
+  wup.config  [17 funcs]
     _load_dotenv  CC=10  out:10
-    find_config_file  CC=3  out:1
-    get_default_config  CC=1  out:5
-    load_config  CC=5  out:8
-    save_config  CC=2  out:12
-    validate_config  CC=26  out:144
+    _normalize_testql_extra_args  CC=5  out:10
+    _normalize_testql_timeout  CC=3  out:4
+    _parse_planfile_config  CC=5  out:15
+    _parse_project_config  CC=2  out:5
+    _parse_services_config  CC=3  out:21
+    _parse_strategy_config  CC=1  out:4
+    _parse_testql_config  CC=2  out:23
+    _parse_testql_extra_args  CC=5  out:8
+    _parse_visual_diff_config  CC=6  out:42
   wup.core  [1 funcs]
     __init__  CC=7  out:18
   wup.monitoring_manifest  [13 funcs]
@@ -123,16 +128,16 @@ MODULES:
     _assign_by_port_8100  CC=2  out:3
     _assign_by_port_8101  CC=1  out:1
   wup.testql_watcher  [2 funcs]
-    __init__  CC=13  out:16
+    __init__  CC=13  out:17
     _get_config_endpoints_for_service  CC=10  out:7
-  wup.visual_diff  [22 funcs]
-    __init__  CC=1  out:2
-    _categorize_page_result  CC=6  out:12
+  wup.visual_diff  [21 funcs]
+    __init__  CC=2  out:3
+    _categorize_page_result  CC=7  out:12
     _check_page  CC=4  out:9
     _pages_for_service  CC=11  out:8
     _print_scan_summary  CC=8  out:13
     _write_diff_event  CC=1  out:6
-    run_for_service  CC=9  out:21
+    run_for_service  CC=10  out:22
     _compact_error_message  CC=3  out:3
     _detect_content_issues  CC=6  out:11
     _diff_snapshots  CC=11  out:15
@@ -153,10 +158,6 @@ EDGES:
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest._build_docker_rows
   wup.monitoring_manifest.build_monitoring_manifest → wup.monitoring_manifest._build_scenario_rows
   wup.monitoring_manifest.patch_wup_yaml_monitoring → wup.monitoring_manifest.manifest_to_yaml_block
-  wup.config.load_config → wup.config._load_dotenv
-  wup.config.load_config → wup.config.validate_config
-  wup.config.load_config → wup.config.find_config_file
-  wup.config.load_config → wup.config.get_default_config
   wup.cli._load_watch_config → wup.config.load_config
   wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.build_monitoring_manifest
   wup.cli._refresh_monitoring_manifest → wup.monitoring_manifest.patch_wup_yaml_monitoring
@@ -193,3 +194,7 @@ EDGES:
   wup.testql_monitor.TestQLMonitor._add_service_map_probes → wup.testql_monitor.assign_probe_to_service
   wup.testql_monitor.TestQLMonitor._add_service_map_probes → wup.testql_monitor.is_monitoring_probe
   wup.testql_monitor.TestQLMonitor.probes_for_service → wup.testql_monitor.is_monitoring_probe
+  wup.cli_config_generator.CLIConfigGenerator.generate → wup.config.load_config
+  wup.web_client.WebClient.__init__ → wup.web_client.resolve_endpoint
+  wup.web_client.WebClient.send_event → wup.web_client._normalize
+  examples.c2004_monorepo_demo._analyze_module_structure → examples.c2004_monorepo_demo._analyze_module

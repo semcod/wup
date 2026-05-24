@@ -2,7 +2,7 @@
 
 app {
   name: wup;
-  version: 0.2.48;
+  version: 0.2.52;
 }
 
 dependencies {
@@ -19,6 +19,36 @@ interface[type="cli"] {
 }
 interface[type="cli"] page[name="wup"] {
 
+}
+
+workflow[name="wup:watch"] {
+  trigger: manual;
+  step-1: run cmd=poetry run wup watch;
+}
+
+workflow[name="wup:status"] {
+  trigger: manual;
+  step-1: run cmd=poetry run wup status;
+}
+
+workflow[name="wup:sync"] {
+  trigger: manual;
+  step-1: run cmd=poetry run wup sync-testql . --write;
+}
+
+workflow[name="wup:endpoints"] {
+  trigger: manual;
+  step-1: run cmd=poetry run wup testql-endpoints;
+}
+
+workflow[name="wup:map"] {
+  trigger: manual;
+  step-1: run cmd=poetry run wup map-deps;
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=poetry run pytest;
 }
 
 deploy {

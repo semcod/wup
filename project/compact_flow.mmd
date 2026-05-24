@@ -6,24 +6,25 @@ flowchart TD
     wup___ast_detector["wup._ast_detector<br/>9 funcs"]
     wup__cli["wup.cli<br/>14 funcs"]
     wup__cli_config_generator["wup.cli_config_generator<br/>6 funcs"]
-    wup__config["wup.config<br/>6 funcs"]
-    wup__core["wup.core<br/>28 funcs"]
+    wup__config["wup.config<br/>17 funcs"]
+    wup__core["wup.core<br/>29 funcs"]
     wup__monitoring_manifest["wup.monitoring_manifest<br/>16 funcs"]
     wup__testing["wup.testing<br/>10 funcs"]
     wup__testql_monitor["wup.testql_monitor<br/>36 funcs"]
-    wup__testql_watcher["wup.testql_watcher<br/>43 funcs"]
+    wup__testql_watcher["wup.testql_watcher<br/>48 funcs"]
     wup__visual_diff["wup.visual_diff<br/>25 funcs"]
     wup__cli ==>|11| wup__config
     wup__cli ==>|7| wup__monitoring_manifest
     examples__visual_diff_demo -->|3| wup__visual_diff
-    wup__testql_watcher -->|2| wup__testing
     examples__visual_diff_demo -->|2| wup__config
     scripts__run_probe_smoke -->|2| wup__monitoring_manifest
+    wup__testql_watcher -->|2| wup__testing
     wup__cli_config_generator -->|1| wup__config
+    examples__c2004_monorepo_demo -->|1| wup__config
+    scripts__run_probe_smoke -->|1| wup__config
     wup__core -->|1| wup__config
     wup__testql_watcher -->|1| wup__config
     wup__testql_watcher -->|1| wup__testql_monitor
     wup__visual_diff -->|1| wup__testql_monitor
     wup__visual_diff -->|1| wup___ast_detector
-    examples__c2004_monorepo_demo -->|1| wup__config
-    scripts__run_probe_smoke -->|1| wup__config
+    wup__visual_diff -->|1| examples__visual_diff_demo

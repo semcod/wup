@@ -1,57 +1,56 @@
-# wup | 382 func | 42f | 11258L | python | 2026-05-24
+# wup | 399 func | 42f | 11398L | python | 2026-05-24
 # generated in 0.00s
 
 HEALTH:
-  CC̄=4.2  critical=31 (limit:10)  dup=0  cycles=0
+  CC̄=4.1  critical=32 (limit:10)  dup=0  cycles=0
 
 ALERTS[20]:
   !!! high_fan_out     status = 47 (limit:10)
-  !!! high_fan_out     validate_config = 44 (limit:10)
   !!! high_fan_out     sync_testql = 29 (limit:10)
-  !!! cc_exceeded      validate_config = 26 (limit:15)
   !!! high_fan_out     main = 21 (limit:10)
   !!! high_fan_out     testql_endpoints = 20 (limit:10)
   !!  high_fan_out     watch = 18 (limit:10)
   !!  high_fan_out     init_cli = 18 (limit:10)
-  !!  high_fan_out     TestQLWatcher._run_fleet_health_scenario = 17 (limit:10)
+  !!  high_fan_out     TestQLWatcher._run_fleet_health_scenario = 18 (limit:10)
   !!  high_fan_out     demo_snapshot_persistence = 17 (limit:10)
+  !!  high_fan_out     VisualDiffer.run_for_service = 17 (limit:10)
+  !!  high_fan_out     show_webhook_demo = 16 (limit:10)
 
-MODULES[71] (top by size):
-  M[wup/testql_watcher.py] 906L C:2 F:43 CC↑17 D:0 (python)
+MODULES[72] (top by size):
+  M[wup/testql_watcher.py] 958L C:2 F:48 CC↑13 D:0 (python)
   M[wup/cli.py] 799L C:0 F:14 CC↑13 D:0 (python)
   M[wup/assistant.py] 694L C:1 F:24 CC↑14 D:0 (python)
-  M[wup/core.py] 663L C:2 F:28 CC↑11 D:0 (python)
-  M[wup/visual_diff.py] 556L C:1 F:25 CC↑11 D:1 (python)
+  M[wup/core.py] 675L C:2 F:29 CC↑11 D:0 (python)
+  M[wup/visual_diff.py] 581L C:1 F:25 CC↑11 D:1 (python)
+  M[wup/config.py] 527L C:0 F:17 CC↑10 D:7 (python)
   M[wup/testql_monitor.py] 521L C:3 F:36 CC↑13 D:2 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
-  M[wup/config.py] 509L C:0 F:6 CC↑26 D:7 (python)
   M[examples/webhook_notifications.py] 375L C:1 F:10 CC↑6 D:0 (python)
   M[wup/monitoring_manifest.py] 340L C:1 F:16 CC↑11 D:2 (python)
   M[examples/ci_cd_integration.py] 339L C:0 F:4 CC↑3 D:0 (python)
   M[testql-deps.json] 311L C:0 F:0 CC↑0 D:0 (json)
-  M[examples/visual_diff_demo.py] 305L C:0 F:9 CC↑6 D:0 (python)
+  M[examples/visual_diff_demo.py] 305L C:0 F:9 CC↑6 D:1 (python)
   M[wup/cli_scanner.py] 302L C:3 F:12 CC↑10 D:0 (python)
   M[examples/testql_integration.py] 286L C:1 F:6 CC↑6 D:0 (python)
-  LANGS: python:49/yaml:11/txt:4/json:2/other:2/yml:1/shell:1/toml:1
+  LANGS: python:49/yaml:11/txt:4/yml:2/json:2/other:2/shell:1/toml:1
 
 HOTSPOTS[10]:
   ★ status fan=47  // Show dependency map status and configuration.
-  ★ validate_config fan=44  // Validate raw config dict and convert to WupConfig object.
-
-Args:
-    raw: Raw co
   ★ sync_testql fan=29  // Discover monitoring targets and document them in wup.yaml.
 
 With ``--write``, ap
   ★ main fan=21  // Orchestrates 21 calls
   ★ testql_endpoints fan=20  // Discover endpoints from TestQL scenario files and build dependency map.
+  ★ watch fan=18  // Watch project for file changes and run regression tests.
 
-REFACTOR[13]:
-  [1] H/L Split validate_config (CC=26)
-  [2] H/H Split god module wup/config.py (509L, 0 classes)
-  [3] H/H Split god module wup/testql_watcher.py (906L, 2 classes)
-  [4] H/H Split god module wup/assistant.py (694L, 1 classes)
-  [5] H/H Split god module wup/cli.py (799L, 0 classes)
+Defaults (no extra fla
+
+REFACTOR[11]:
+  [1] H/H Split god module wup/assistant.py (694L, 1 classes)
+  [2] H/H Split god module wup/cli.py (799L, 0 classes)
+  [3] H/H Split god module wup/testql_monitor.py (521L, 3 classes)
+  [4] H/H Split god module wup/testql_watcher.py (958L, 2 classes)
+  [5] H/H Split god module wup/core.py (675L, 2 classes)
 
 EVOLUTION:
-  2026-05-24 CC̄=4.2 crit=31 11258L // Automated analysis
+  2026-05-24 CC̄=4.1 crit=32 11398L // Automated analysis
