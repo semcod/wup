@@ -1,5 +1,5 @@
 {
-  "timestamp": 1779638402,
+  "timestamp": 1779638586,
   "type": "wup_service_health_change",
   "service": "wup-shell",
   "status": "up",
