@@ -100,6 +100,9 @@ class VisualDiffConfig:
         "[class*='error'][class*='container']",
     ])
     headless: bool = True
+    # Run visual_diff during periodic probe cycles too. Default false: visual_diff
+    # only runs when something on disk actually changed (or on first cycle).
+    run_on_periodic_probe: bool = False
 
 
 @dataclass

@@ -117,6 +117,7 @@ class TestQLWatcher(WupWatcher):
         )
         
         self._probe_thread = None
+        self._periodic_probe_in_progress = False
         self._normalize_fleet_health_entry()
 
     def _normalize_fleet_health_entry(self) -> None:
@@ -502,6 +503,13 @@ class TestQLWatcher(WupWatcher):
         
         return False
 
+    def _should_run_visual_diff(self) -> bool:
+        if not (self.visual_differ and self.visual_differ.cfg.enabled):
+            return False
+        if not getattr(self, "_periodic_probe_in_progress", False):
+            return True
+        return bool(getattr(self.visual_differ.cfg, "run_on_periodic_probe", False))
+
     async def _quick_pass_actions(self, service: str, merged_endpoints: List[str]) -> None:
         """Actions to perform after all quick scenarios pass."""
         self._record_health_transition(service=service, status="up", stage="quick",
@@ -509,7 +517,7 @@ class TestQLWatcher(WupWatcher):
         if self.web_client.is_active:
             await self.web_client.send_pass(service=service, stage="quick")
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
-        if self.visual_differ and self.visual_differ.cfg.enabled:
+        if self._should_run_visual_diff():
             visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
             visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
             visual_issues = [
@@ -861,15 +869,19 @@ class TestQLWatcher(WupWatcher):
         if not self.config.services:
             return
         self.console.print("[cyan]⟳ Periodic live probe cycle[/cyan]")
+        self._periodic_probe_in_progress = True
         try:
-            asyncio.run(self._run_fleet_health_scenario())
-        except Exception as exc:  # noqa: BLE001
-            self.console.print(f"[red]Fleet health scenario error: {exc}[/red]")
-        for svc in self.config.services:
             try:
-                asyncio.run(self.run_quick_test(svc.name, []))
+                asyncio.run(self._run_fleet_health_scenario())
             except Exception as exc:  # noqa: BLE001
-                self.console.print(f"[red]Probe error for {svc.name}: {exc}[/red]")
+                self.console.print(f"[red]Fleet health scenario error: {exc}[/red]")
+            for svc in self.config.services:
+                try:
+                    asyncio.run(self.run_quick_test(svc.name, []))
+                except Exception as exc:  # noqa: BLE001
+                    self.console.print(f"[red]Probe error for {svc.name}: {exc}[/red]")
+        finally:
+            self._periodic_probe_in_progress = False
 
     def _start_periodic_probe_thread(self) -> None:
         import threading
