@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.51] - 2026-05-24
+
+### Docs
+- Update README.md
+
+### Other
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health-events.jsonl
+- Update .wup/service-health.json
+- Update uv.lock
+- Update wup.yaml
+
 ## [0.2.50] - 2026-05-24
 
 ### Docs
