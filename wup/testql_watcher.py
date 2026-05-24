@@ -419,8 +419,10 @@ class TestQLWatcher(WupWatcher):
         ts = int(time.time())
         safe_service = service.replace("/", "_").replace("\\", "_")
         scenario_name = scenario.name if scenario else "unknown"
-        stderr_line = (result.stderr or "").strip().splitlines()[:1]
-        stdout_line = (result.stdout or "").strip().splitlines()[:1]
+        stderr_lines = (result.stderr or "").strip().splitlines()
+        stdout_lines = (result.stdout or "").strip().splitlines()
+        stderr_tail = stderr_lines[-3:] if stderr_lines else []
+        stdout_tail = stdout_lines[-5:] if stdout_lines else []
 
         payload = {
             "service": service,
@@ -428,8 +430,11 @@ class TestQLWatcher(WupWatcher):
             "scenario": str(scenario) if scenario else None,
             "command": result.args,
             "returncode": result.returncode,
-            "stderr_head": stderr_line[0] if stderr_line else "",
-            "stdout_head": stdout_line[0] if stdout_line else "",
+            "stderr_head": stderr_lines[0] if stderr_lines else "",
+            "stdout_head": stdout_lines[0] if stdout_lines else "",
+            "stderr_tail": stderr_tail,
+            "stdout_tail": stdout_tail,
+            "failure_summary": self._summarize_testql_failure(result),
             "track": {
                 "file": str(scenario) if scenario else "",
                 "line": 1,
@@ -478,7 +483,7 @@ class TestQLWatcher(WupWatcher):
         if self._is_interrupted_result(result):
             raise KeyboardInterrupt
 
-        reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
+        reason = self._summarize_testql_failure(result)
         track_path = self._write_track(service=service, stage="quick",
                                        scenario=scenario, result=result)
                                        
@@ -604,6 +609,16 @@ class TestQLWatcher(WupWatcher):
             if "passed" in stripped.lower() or "failed" in stripped.lower() or "❌" in stripped:
                 return stripped
         return None
+
+    @staticmethod
+    def _summarize_testql_failure(result: subprocess.CompletedProcess) -> str:
+        """Short failure line for tracks and console (last lines of testql output)."""
+        if int(result.returncode) == 124:
+            return "TestQL subprocess timed out"
+        summary = TestQLWatcher._summarize_health_scenario_failure(result)
+        if summary != "health_scenario failed":
+            return summary
+        return "TestQL command failed"
 
     @staticmethod
     def _summarize_health_scenario_failure(result: subprocess.CompletedProcess) -> str:

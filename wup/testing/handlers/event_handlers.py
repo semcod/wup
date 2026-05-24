@@ -35,7 +35,13 @@ class TestResultEventHandler:
                 )
             )
             
-        self.console.print(f"[red]✗ {event.stage.capitalize()} failed: {event.scenario.name} | track: {event.track_file}[/red]")
+        reason = (event.reason or "TestQL failed").strip().splitlines()[-1]
+        if len(reason) > 160:
+            reason = reason[:157] + "..."
+        self.console.print(
+            f"[red]✗ {event.stage.capitalize()} failed: {event.scenario.name} — {reason}[/red]\n"
+            f"[dim]  track: {event.track_file}[/dim]"
+        )
 
     def handle_test_passed(self, event: ScenarioPassed) -> None:
         """Handle scenario pass."""
