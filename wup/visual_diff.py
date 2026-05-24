@@ -24,6 +24,14 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 from rich.console import Console
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 
 from .models.config import VisualDiffConfig
 
@@ -442,13 +450,43 @@ class VisualDiffer:
         new_urls: List[str] = []
         error_results: List[Tuple[str, str]] = []
 
-        for url in pages:
-            result = await self._check_page(service, url)
-            results.append(result)
-            self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+        progress = self._build_progress(service, len(pages))
+        if progress is None:
+            for url in pages:
+                result = await self._check_page(service, url)
+                results.append(result)
+                self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+        else:
+            with progress:
+                task_id = progress.add_task(
+                    f"[cyan]🔍 Visual diff {service}", total=len(pages), url=""
+                )
+                for url in pages:
+                    progress.update(task_id, url=_short_url(url))
+                    result = await self._check_page(service, url)
+                    results.append(result)
+                    self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+                    progress.advance(task_id)
 
         self._print_scan_summary(service, ok_urls, new_urls, error_results)
         return results
+
+    def _build_progress(self, service: str, total: int) -> Optional[Progress]:
+        """Return a rich Progress for big scans; None for tiny ones (avoid noise)."""
+        if total < 5 or os.environ.get("WUP_VISUAL_DIFF_PROGRESS", "1") == "0":
+            return None
+        return Progress(
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(bar_width=None),
+            MofNCompleteColumn(),
+            TextColumn("[dim]{task.fields[url]}"),
+            TimeElapsedColumn(),
+            TextColumn("eta"),
+            TimeRemainingColumn(),
+            console=console,
+            transient=True,
+            refresh_per_second=4,
+        )
 
     async def _check_page(self, service: str, url: str) -> Dict[str, Any]:
         snap_path = _snapshot_path(self.snapshot_dir, service, url)
