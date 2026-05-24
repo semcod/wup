@@ -327,12 +327,19 @@ class VisualDiffer:
         results = await differ.run_for_service(service, changed_endpoints)
     """
 
-    def __init__(self, project_root: str, cfg: VisualDiffConfig) -> None:
+    def __init__(
+        self,
+        project_root: str,
+        cfg: VisualDiffConfig,
+        *,
+        console: Console | None = None,
+    ) -> None:
         self.project_root = Path(project_root)
         self.cfg = cfg
         self.snapshot_dir = self.project_root / cfg.snapshot_dir
         self.diff_dir = self.project_root / cfg.diff_dir
         self.base_url = _resolve_base_url(cfg)
+        self._console = console or globals()["console"]
 
     def _pages_for_service(self, service: str, endpoints: List[str]) -> List[str]:
         """Build list of full URLs to scan for this service."""
@@ -365,23 +372,28 @@ class VisualDiffer:
         ok_urls: List[str],
         new_urls: List[str],
         error_results: List[Tuple[str, str]],
+        pending_notices: List[str] | None = None,
     ) -> None:
         """Classify a single page result and append to the appropriate bucket."""
         status = result["diff"]["status"]
         if status in {"changed", "issue"}:
             self._write_diff_event(service, url, result)
             if status == "issue":
-                console.print(
+                line = (
                     f"[bold red]🚨 Page issue: {service} {url}[/bold red]  "
                     f"{'; '.join(result['diff'].get('issues', []))}"
                 )
             else:
-                console.print(
+                line = (
                     f"[bold yellow]🔍 Visual diff: {service} {url}[/bold yellow]  "
                     f"+{result['diff']['counts']['added']} "
                     f"-{result['diff']['counts']['removed']} "
                     f"~{result['diff']['counts']['changed_attrs']}"
                 )
+            if pending_notices is not None:
+                pending_notices.append(line)
+            else:
+                self._console.print(line)
         elif status == "new":
             new_urls.append(_short_url(url))
         elif status == "error":
@@ -399,12 +411,12 @@ class VisualDiffer:
     ) -> None:
         """Print summary after scanning all pages for a service."""
         if new_urls:
-            console.print(
+            self._console.print(
                 f"[dim]📷 Baseline snapshots for {service}: {len(new_urls)} page(s)"
                 f" — {_sample_list(new_urls)}[/dim]"
             )
         if ok_urls:
-            console.print(
+            self._console.print(
                 f"[dim green]✓ No DOM change for {service}: {len(ok_urls)} page(s)"
                 f" — {_sample_list(ok_urls)}[/dim green]"
             )
@@ -418,7 +430,7 @@ class VisualDiffer:
             ]
             message_summary = "; ".join(top_messages)
             failed_urls = [url for url, _ in error_results]
-            console.print(
+            self._console.print(
                 f"[yellow]⚠ Visual diff skipped for {service}: {len(error_results)} page(s)"
                 f" failed to fetch — {message_summary}; sample: {_sample_list(failed_urls)}[/yellow]"
             )
@@ -451,11 +463,14 @@ class VisualDiffer:
         error_results: List[Tuple[str, str]] = []
 
         progress = self._build_progress(service, len(pages))
+        pending_notices: List[str] = []
         if progress is None:
             for url in pages:
                 result = await self._check_page(service, url)
                 results.append(result)
-                self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+                self._categorize_page_result(
+                    service, url, result, ok_urls, new_urls, error_results
+                )
         else:
             with progress:
                 task_id = progress.add_task(
@@ -465,8 +480,18 @@ class VisualDiffer:
                     progress.update(task_id, url=_short_url(url))
                     result = await self._check_page(service, url)
                     results.append(result)
-                    self._categorize_page_result(service, url, result, ok_urls, new_urls, error_results)
+                    self._categorize_page_result(
+                        service,
+                        url,
+                        result,
+                        ok_urls,
+                        new_urls,
+                        error_results,
+                        pending_notices=pending_notices,
+                    )
                     progress.advance(task_id)
+            for line in pending_notices:
+                self._console.print(line)
 
         self._print_scan_summary(service, ok_urls, new_urls, error_results)
         return results
@@ -483,7 +508,7 @@ class VisualDiffer:
             TimeElapsedColumn(),
             TextColumn("eta"),
             TimeRemainingColumn(),
-            console=console,
+            console=self._console,
             transient=True,
             refresh_per_second=4,
         )

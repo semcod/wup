@@ -161,50 +161,58 @@ def _parse_strategy_config(raw: dict) -> TestStrategyConfig:
     )
 
 
-def _parse_testql_config(raw: dict) -> TestQLConfig:
-    testql_raw = raw.get("testql", {})
-    extra_args_raw = testql_raw.get("extra_args", ["--timeout", "10"])
+def _normalize_testql_timeout(val: str) -> str:
+    """Normalize timeout value to milliseconds if it ends with 's'."""
+    if val.endswith("s"):
+        try:
+            seconds = float(val[:-1])
+            return str(int(seconds * 1000))
+        except ValueError:
+            pass
+    return val
+
+
+def _parse_testql_extra_args(extra_args_raw) -> List[str]:
+    """Parse raw extra args into a flat list of string tokens."""
     if isinstance(extra_args_raw, str):
-        extra_args_raw = extra_args_raw.split()
-    elif isinstance(extra_args_raw, list):
+        return extra_args_raw.split()
+    if isinstance(extra_args_raw, list):
         temp = []
         for arg in extra_args_raw:
             if isinstance(arg, str):
                 temp.extend(arg.split())
             else:
                 temp.append(str(arg))
-        extra_args_raw = temp
-    else:
-        extra_args_raw = ["--timeout", "10"]
+        return temp
+    return ["--timeout", "10"]
 
+
+def _normalize_testql_extra_args(extra_args_raw: List[str]) -> List[str]:
+    """Normalize extra args list (e.g. converting seconds to milliseconds)."""
     normalized_extra_args = []
     i = 0
     while i < len(extra_args_raw):
         arg = extra_args_raw[i]
         if arg == "--timeout" and i + 1 < len(extra_args_raw):
-            val = extra_args_raw[i+1]
-            if val.endswith("s"):
-                try:
-                    seconds = float(val[:-1])
-                    val = str(int(seconds * 1000))
-                except ValueError:
-                    pass
+            val = _normalize_testql_timeout(extra_args_raw[i+1])
             normalized_extra_args.append(arg)
             normalized_extra_args.append(val)
             i += 2
         elif arg.startswith("--timeout="):
-            val = arg.partition("=")[2]
-            if val.endswith("s"):
-                try:
-                    seconds = float(val[:-1])
-                    val = str(int(seconds * 1000))
-                except ValueError:
-                    pass
+            val = _normalize_testql_timeout(arg.partition("=")[2])
             normalized_extra_args.append(f"--timeout={val}")
             i += 1
         else:
             normalized_extra_args.append(arg)
             i += 1
+    return normalized_extra_args
+
+
+def _parse_testql_config(raw: dict) -> TestQLConfig:
+    testql_raw = raw.get("testql", {})
+    extra_args_raw = testql_raw.get("extra_args", ["--timeout", "10"])
+    parsed_args = _parse_testql_extra_args(extra_args_raw)
+    normalized_extra_args = _normalize_testql_extra_args(parsed_args)
 
     return TestQLConfig(
         scenario_dir=testql_raw.get("scenario_dir", "scenarios/tests"),
@@ -215,6 +223,7 @@ def _parse_testql_config(raw: dict) -> TestQLConfig:
         probe_interval_s=int(testql_raw.get("probe_interval_s", 0) or 0),
         health_scenario=testql_raw.get("health_scenario", ""),
         health_scenario_strict=bool(testql_raw.get("health_scenario_strict", False)),
+        quick_smoke_only=bool(testql_raw.get("quick_smoke_only", False)),
         service_map_globs=testql_raw.get("service_map_globs", []),
         base_url=testql_raw.get("base_url", ""),
         api_base_url=testql_raw.get("api_base_url", ""),
@@ -223,6 +232,7 @@ def _parse_testql_config(raw: dict) -> TestQLConfig:
         explicit_endpoints=testql_raw.get("explicit_endpoints", []),
         endpoints_by_service=testql_raw.get("endpoints_by_service", {})
     )
+
 
 
 def _parse_visual_diff_config(raw: dict) -> VisualDiffConfig:

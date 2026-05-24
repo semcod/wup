@@ -66,6 +66,7 @@ class TestQLConfig:
     probe_interval_s: int = 0  # Periodic live probes for all services (0 = file-change only)
     health_scenario: str = ""  # Fleet TestQL scenario on each periodic probe cycle (live run)
     health_scenario_strict: bool = False  # If false, fleet scenario failure is logged but does not block per-service probes
+    quick_smoke_only: bool = False  # Quick TestQL uses smoke_scenario only (skip auto-api scoring)
     service_map_globs: List[str] = field(default_factory=list)  # e.g. testql-testing/service-map/*.yaml
     base_url: str = ""
     api_base_url: str = ""  # Core API (c2004: http://localhost:8101) — used for backend probes

@@ -4,17 +4,19 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 11,
+  "cycle": 18,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
     "scan_after_idle_min_interval_seconds": 0.0,
     "scan_after_idle_queue": false
   },
   "last_cycle": {
+    "autopilot_chat_activity_last_event": "drive.ack",
+    "autopilot_skipped_chat_activity": true,
     "autopilot_skipped_idle_streak": false,
     "scan_after_idle_applied": 0,
     "scan_after_idle_run": false,
     "scan_after_idle_skipped_rate_limit": false
   },
-  "updated_at": "2026-05-24T12:29:57.798014+00:00"
+  "updated_at": "2026-05-24T15:55:44.292702+00:00"
 }

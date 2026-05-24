@@ -1,0 +1,27 @@
+{
+  "service": "wup-shell",
+  "stage": "quick",
+  "scenario": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+  "command": [
+    "/home/tom/github/semcod/wup/.venv/bin/koru-wup-testql",
+    "run",
+    "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+    "--timeout",
+    "10"
+  ],
+  "returncode": 2,
+  "stderr_head": "Usage: testql run [OPTIONS] FILE",
+  "stdout_head": "",
+  "stderr_tail": [
+    "Try 'testql run --help' for help.",
+    "",
+    "Error: No such option: --timeout"
+  ],
+  "stdout_tail": [],
+  "failure_summary": "TestQL command failed",
+  "track": {
+    "file": "/home/tom/github/semcod/wup/testql-scenarios/cli-wup.testql.toon.yaml",
+    "line": 1,
+    "hint": "cli-wup.testql.toon.yaml"
+  }
+}

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import io
 import os
+
+from rich.console import Console
 
 from wup.models.config import VisualDiffConfig
 from wup.visual_diff import VisualDiffer
@@ -37,3 +40,17 @@ def test_progress_can_be_disabled_via_env(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("WUP_VISUAL_DIFF_PROGRESS", "0")
     differ = _make_differ(tmp_path)
     assert differ._build_progress("frontend", total=50) is None
+
+
+def test_progress_uses_injected_console(tmp_path) -> None:
+    custom = Console(file=io.StringIO(), width=80)
+    cfg = VisualDiffConfig(
+        enabled=True,
+        base_url="http://localhost:8100",
+        snapshot_dir=str(tmp_path / "snap"),
+        diff_dir=str(tmp_path / "diff"),
+    )
+    differ = VisualDiffer(str(tmp_path), cfg, console=custom)
+    progress = differ._build_progress("frontend", total=10)
+    assert progress is not None
+    assert progress.console is custom

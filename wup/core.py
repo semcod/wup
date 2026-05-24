@@ -4,6 +4,7 @@ Core module for WUP (What's Up) - Intelligent file watcher for regression testin
 
 import asyncio
 import errno
+import fnmatch
 import json
 import subprocess
 import time
@@ -434,16 +435,27 @@ class WupWatcher:
         file_suffix = Path(file_path).suffix.lower()
         return file_suffix in self.config.watch.file_types
     
+    def _path_matches_exclude_pattern(self, rel_path: Path, pattern: str) -> bool:
+        """Return True when *rel_path* matches a watch exclude pattern."""
+        path_str = str(rel_path).replace("\\", "/")
+        if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
+            return True
+        if fnmatch.fnmatch(path_str, pattern):
+            return True
+        if fnmatch.fnmatch(path_str, f"**/{pattern}"):
+            return True
+        return pattern in path_str
+
     def _is_file_ignored(self, rel_path: Path) -> bool:
         """Check if a file should be ignored based on paths and types."""
         skip_dirs = {".git", "__pycache__", "node_modules", ".venv", "dist", "build"}
         if any(part in skip_dirs for part in rel_path.parts):
             return True
-        
+        if "tests" in rel_path.parts or "test" in rel_path.parts:
+            return True
+
         for pattern in self.config.watch.exclude_patterns:
-            if pattern.startswith("*") and rel_path.suffix == pattern[1:]:
-                return True
-            if pattern in str(rel_path):
+            if self._path_matches_exclude_pattern(rel_path, pattern):
                 return True
         
         if self.config.watch.file_types:

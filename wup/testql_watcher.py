@@ -101,7 +101,11 @@ class TestQLWatcher(WupWatcher):
         self.config = config
         from .testql_monitor import TestQLMonitor
         self.monitor = TestQLMonitor(self.project_root, config) if config else None
-        self.visual_differ = VisualDiffer(project_root, config.visual_diff) if config and config.visual_diff else None
+        self.visual_differ = (
+            VisualDiffer(project_root, config.visual_diff, console=self.console)
+            if config and config.visual_diff
+            else None
+        )
         self.web_client = WebClient(config.web) if config and getattr(config, "web", None) else WebClient()
         # Initialize EventBus Handlers
         from wup.testing.handlers.event_handlers import register_testing_event_handlers
@@ -118,6 +122,9 @@ class TestQLWatcher(WupWatcher):
         
         self._probe_thread = None
         self._periodic_probe_in_progress = False
+        import threading
+
+        self._watch_work_lock = threading.Lock()
         self._normalize_fleet_health_entry()
 
     def _normalize_fleet_health_entry(self) -> None:
@@ -316,6 +323,15 @@ class TestQLWatcher(WupWatcher):
                 return [candidate]
         return []
 
+    @staticmethod
+    def _health_summary_all_passed(summary: str) -> bool:
+        """True when summary looks like N/N passed with zero failures."""
+        match = re.search(r"(\d+)/(\d+)\s+passed,\s*(\d+)\s+failed", summary, re.IGNORECASE)
+        if not match:
+            return False
+        passed, total, failed = (int(match.group(i)) for i in range(1, 4))
+        return failed == 0 and passed >= total and total > 0
+
     def _select_scenarios_for_service(self, service: str) -> List[Path]:
         all_scenarios = self._discover_scenarios()
         if not all_scenarios:
@@ -327,6 +343,11 @@ class TestQLWatcher(WupWatcher):
 
         # Filter scenarios by service type
         svc_type = svc_config.type if svc_config else "auto"
+        if getattr(self.config.testql, "quick_smoke_only", False):
+            smoke = self._get_smoke_fallback(svc_type)
+            if smoke:
+                return smoke[:limit]
+
         filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
 
         selected = self._get_scored_scenarios(filtered_scenarios, self._tokenize_service(service), limit)
@@ -666,18 +687,18 @@ class TestQLWatcher(WupWatcher):
         fleet = self.config.project.name
         args = ["run", str(scenario_path), "--output", "json", *self.testql_extra_args]
         result = self._run_testql(args, timeout=max(int(self._quick_probe_timeout()), 120))
-        if result.returncode == 0:
+        summary = self._summarize_health_scenario_failure(result)
+        if result.returncode == 0 or self._health_summary_all_passed(summary):
             self._record_health_transition(
                 service=fleet,
                 status="up",
                 stage="health_scenario",
-                message="Fleet health scenario passed",
+                message=summary if summary else "Fleet health scenario passed",
             )
             return True
 
-        summary = self._summarize_health_scenario_failure(result)
-        track_path = self._write_track(service=fleet, stage="health_scenario", scenario=scenario_path, result=result)
         strict = bool(getattr(self.config.testql, "health_scenario_strict", False))
+        track_path = self._write_track(service=fleet, stage="health_scenario", scenario=scenario_path, result=result)
         # Non-strict: informational only — must not mark fleet "down" (koru reads service-health.json).
         fleet_status = "down" if strict else "degraded"
         self._record_health_transition(
@@ -725,18 +746,30 @@ class TestQLWatcher(WupWatcher):
             await self._publish_visual_events(service, visual_results)
         return True
 
+    def _get_quick_scenarios(self, service: str) -> List[Path]:
+        """Get list of scenarios for a service limited by quick tests configuration."""
+        scenarios = self._select_scenarios_for_service(service)
+        svc_config = self.get_service_config(service)
+        limit = (svc_config.quick_tests.max_endpoints
+                 if svc_config and svc_config.quick_tests else self.quick_limit)
+        return scenarios[:limit]
+
+    async def _run_quick_scenarios_loop(
+        self, service: str, scenarios: List[Path], merged_endpoints: List[str]
+    ) -> bool:
+        """Execute quick scenarios sequentially."""
+        for scenario in scenarios:
+            if not await self._run_scenario_quick(service, scenario, merged_endpoints):
+                return False
+        return True
+
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         merged_endpoints = self._merge_endpoints(service, endpoints)
 
         if not await self._run_live_http_probes(service, merged_endpoints):
             return False
 
-        scenarios = self._select_scenarios_for_service(service)
-        svc_config = self.get_service_config(service)
-        limit = (svc_config.quick_tests.max_endpoints
-                 if svc_config and svc_config.quick_tests else self.quick_limit)
-        scenarios = scenarios[:limit]
-
+        scenarios = self._get_quick_scenarios(service)
         if not scenarios:
             return await self._run_quick_test_no_scenarios(service, merged_endpoints)
 
@@ -745,9 +778,8 @@ class TestQLWatcher(WupWatcher):
             f"({len(scenarios)} scenarios / {len(merged_endpoints)} endpoints)[/cyan]"
         )
 
-        for scenario in scenarios:
-            if not await self._run_scenario_quick(service, scenario, merged_endpoints):
-                return False
+        if not await self._run_quick_scenarios_loop(service, scenarios, merged_endpoints):
+            return False
 
         await self._quick_pass_actions(service, merged_endpoints)
         return True
@@ -851,6 +883,17 @@ class TestQLWatcher(WupWatcher):
 
         return results
 
+    async def process_test_queue_once(self) -> None:
+        """Process one queued test; skip while periodic probe cycle holds the lock."""
+        if not self.test_queue or not await self.cpu_ok():
+            return
+        if not self._watch_work_lock.acquire(blocking=False):
+            return
+        try:
+            await super().process_test_queue_once()
+        finally:
+            self._watch_work_lock.release()
+
     async def process_changed_file_once(self, file_path: str) -> Dict:
         self.on_file_change(file_path)
 
@@ -871,6 +914,11 @@ class TestQLWatcher(WupWatcher):
         """Run live probes for every configured service (ignores file-change cooldown)."""
         if not self.config.services:
             return
+        if not self._watch_work_lock.acquire(blocking=False):
+            self.console.print(
+                "[dim]⟳ Periodic probe skipped (file-change tests in progress)[/dim]"
+            )
+            return
         self.console.print("[cyan]⟳ Periodic live probe cycle[/cyan]")
         self._periodic_probe_in_progress = True
         try:
@@ -885,6 +933,7 @@ class TestQLWatcher(WupWatcher):
                     self.console.print(f"[red]Probe error for {svc.name}: {exc}[/red]")
         finally:
             self._periodic_probe_in_progress = False
+            self._watch_work_lock.release()
 
     def _start_periodic_probe_thread(self) -> None:
         import threading
