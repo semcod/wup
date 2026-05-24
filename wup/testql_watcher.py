@@ -696,6 +696,35 @@ class TestQLWatcher(WupWatcher):
         )
         return True
 
+    async def _run_quick_test_no_scenarios(self, service: str, merged_endpoints: List[str]) -> bool:
+        self.console.print(
+            f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]"
+        )
+        self._record_health_transition(service=service, status="up", stage="quick", message="Probes passed (no scenarios)")
+        if self.web_client.is_active:
+            await self.web_client.send_pass(service=service, stage="quick")
+        if self.visual_differ and self.visual_differ.cfg.enabled:
+            visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
+            visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
+            visual_issues = [
+                item for item in visual_results
+                if item.get("diff", {}).get("status") == "issue"
+            ]
+            if visual_issues:
+                issue_text = "; ".join(
+                    ", ".join(item.get("diff", {}).get("issues", []) or ["visual page issue"])
+                    for item in visual_issues
+                )
+                self._record_health_transition(
+                    service=service,
+                    status="down",
+                    stage="visual",
+                    message=issue_text or "visual page issue",
+                    track_file="",
+                )
+            await self._publish_visual_events(service, visual_results)
+        return True
+
     async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
         merged_endpoints = self._merge_endpoints(service, endpoints)
 
@@ -709,33 +738,7 @@ class TestQLWatcher(WupWatcher):
         scenarios = scenarios[:limit]
 
         if not scenarios:
-            self.console.print(
-                f"[yellow]⚠ No TestQL scenarios found for {service} — running visual diff only[/yellow]"
-            )
-            self._record_health_transition(service=service, status="up", stage="quick", message="Probes passed (no scenarios)")
-            if self.web_client.is_active:
-                await self.web_client.send_pass(service=service, stage="quick")
-            if self.visual_differ and self.visual_differ.cfg.enabled:
-                visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
-                visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
-                visual_issues = [
-                    item for item in visual_results
-                    if item.get("diff", {}).get("status") == "issue"
-                ]
-                if visual_issues:
-                    issue_text = "; ".join(
-                        ", ".join(item.get("diff", {}).get("issues", []) or ["visual page issue"])
-                        for item in visual_issues
-                    )
-                    self._record_health_transition(
-                        service=service,
-                        status="down",
-                        stage="visual",
-                        message=issue_text or "visual page issue",
-                        track_file="",
-                    )
-                await self._publish_visual_events(service, visual_results)
-            return True
+            return await self._run_quick_test_no_scenarios(service, merged_endpoints)
 
         self.console.print(
             f"[cyan]🧪 Quick TestQL for {service} "

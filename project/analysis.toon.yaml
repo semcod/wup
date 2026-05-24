@@ -1,12 +1,15 @@
-# code2llm | 67f 10949L | python:44,yaml:11,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-23
-# generated in 0.02s
-# CC̄=4.2 | critical:0/370 | dups:0 | cycles:0
+# code2llm | 71f 11258L | python:49,yaml:11,txt:4,json:2,toml:1,shell:1,yml:1 | 2026-05-24
+# generated in 0.03s
+# CC̄=4.2 | critical:2/382 | dups:0 | cycles:0
 
-HEALTH[0]: ok
+HEALTH[2]:
+  🟡 CC    validate_config CC=26 (limit:15)
+  🟡 CC    run_quick_test CC=17 (limit:15)
 
-REFACTOR[0]: none needed
+REFACTOR[1]:
+  1. split 2 high-CC methods  (CC>15)
 
-PIPELINES[264]:
+PIPELINES[273]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
   [2] Src [generate]: generate
@@ -22,14 +25,14 @@ LAYERS:
   scripts/                        CC̄=14.0   ←in:0  →out:3
   │ run_probe_smoke             64L  0C    1m  CC=14     ←0
   │
-  wup/                            CC̄=4.6    ←in:9  →out:0
-  │ !! testql_watcher             857L  2C   41m  CC=13     ←0
+  wup/                            CC̄=4.6    ←in:9  →out:2
+  │ !! testql_watcher             906L  2C   43m  CC=17     ←0
   │ !! cli                        799L  0C   14m  CC=13     ←0
   │ !! assistant                  694L  1C   24m  CC=14     ←0
   │ !! core                       663L  2C   28m  CC=11     ←0
+  │ !! visual_diff                556L  1C   25m  CC=11     ←1
   │ !! testql_monitor             521L  3C   36m  CC=13     ←2
-  │ !! visual_diff                518L  1C   24m  CC=11     ←1
-  │ config                     464L  0C    6m  CC=14     ←7
+  │ !! config                     509L  0C    6m  CC=26     ←7
   │ monitoring_manifest        340L  1C   16m  CC=11     ←2
   │ cli_scanner                302L  3C   12m  CC=10     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
@@ -39,17 +42,21 @@ LAYERS:
   │ planfile_reporter          203L  1C   11m  CC=13     ←0
   │ web_client                 185L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ config                     165L  12C    0m  CC=0.0    ←0
+  │ config                     168L  12C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
   │ _ast_detector              124L  1C    9m  CC=11     ←1
+  │ health_handlers            119L  1C    6m  CC=6      ←1
   │ _hash_detector              72L  1C    4m  CC=5      ←0
-  │ bus                         61L  5C    5m  CC=3      ←0
-  │ event_handlers              49L  1C    4m  CC=3      ←0
+  │ bus                         65L  5C    5m  CC=4      ←0
+  │ event_handlers              55L  1C    4m  CC=5      ←1
+  │ __init__                    46L  0C    1m  CC=2      ←0
+  │ event_store                 41L  1C    3m  CC=4      ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
   │ __init__                    34L  0C    0m  CC=0.0    ←0
   │ _base_detector              18L  1C    2m  CC=1      ←0
+  │ health_events               11L  1C    0m  CC=0.0    ←0
   │ file_events                 10L  1C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    1m  CC=2      ←0
+  │ health_queries               7L  1C    0m  CC=0.0    ←0
   │
   examples/                       CC̄=2.4    ←in:0  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
@@ -84,9 +91,9 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ wup.yaml                   130L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   129L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   148L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
+  │ regix.yaml                  51L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
   │
@@ -98,13 +105,13 @@ LAYERS:
   │
   ── zero ──
      examples/flask-app/app/__init__.py        0L
-     wup/__init__.py                           0L
 
 COUPLING:
-                 wup  examples   scripts
-       wup        ──        ←6        ←3  hub
-  examples         6        ──          
-   scripts         3                  ──
+                       wup     examples      scripts  wup.testing
+          wup           ──           ←6           ←3            2  hub
+     examples            6           ──                          
+      scripts            3                        ──             
+  wup.testing           ←2                                     ──
   CYCLES: none
   HUB: wup/ (fan-in=9)
 

@@ -30,16 +30,16 @@ flowchart TD
         wup__monitoring_manifest___host_port_from_mapping["_host_port_from_mapping"]
         wup__monitoring_manifest__build_monitoring_manifest("build_monitoring_manifest CC=9")
         wup___base_detector__BaseDetector__detect["detect"]
+        wup__bus__EventBus__subscribe["subscribe"]
+        wup__bus__EventBus__publish["publish"]
+        wup__bus__EventBus__execute["execute"]
+        wup__bus__EventBus__query["query"]
+        wup__config__validate_config{{validate_config CC=26}}
         wup__anomaly_detector__AnomalyDetector___should_scan["_should_scan"]
         wup__anomaly_detector__AnomalyDetector__scan_file["scan_file"]
         wup__anomaly_detector__AnomalyDetector__scan_directory["scan_directory"]
         wup__anomaly_detector__AnomalyDetector__get_summary["get_summary"]
-        wup__anomaly_detector__AnomalyDetector__print_report["print_report"]
-        wup__anomaly_detector__quick_scan["quick_scan"]
-        wup__anomaly_detector__scan_yaml_changes["scan_yaml_changes"]
-        wup__testql_monitor__ProbeTarget__probe["probe"]
-        wup__testql_monitor___ProbeAccumulator__add["add"]
-        ...["+164 more"]
+        ...["+173 more"]
     end
 
-    class wup__testql_cli_generator__TestQLCLIGenerator__generate,wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario,wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario,wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario,wup__testql_cli_generator__TestQLCLIGenerator__print_summary,wup__monitoring_manifest___host_port_from_mapping,wup___base_detector__BaseDetector__detect,wup__anomaly_detector__AnomalyDetector___should_scan,wup__anomaly_detector__AnomalyDetector__scan_file,wup__anomaly_detector__AnomalyDetector__scan_directory entry
+    class wup__testql_cli_generator__TestQLCLIGenerator__generate,wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario,wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario,wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario,wup__testql_cli_generator__TestQLCLIGenerator__print_summary,wup__monitoring_manifest___host_port_from_mapping,wup___base_detector__BaseDetector__detect,wup__bus__EventBus__subscribe,wup__bus__EventBus__publish,wup__bus__EventBus__execute entry

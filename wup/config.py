@@ -6,7 +6,7 @@ Handles loading and validation of wup.yaml configuration files.
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 import yaml
 
@@ -98,38 +98,27 @@ def load_config(project_root: Path, config_path: Optional[Path] = None) -> WupCo
     return validate_config(raw_config)
 
 
-def validate_config(raw: dict) -> WupConfig:
-    """
-    Validate raw config dict and convert to WupConfig object.
-    
-    Args:
-        raw: Raw configuration dictionary from YAML
-        
-    Returns:
-        Validated WupConfig object
-        
-    Raises:
-        ValueError: If config is invalid
-    """
-    # Parse project config
+def _parse_project_config(raw: dict) -> ProjectConfig:
     project_raw = raw.get("project", {})
     if not project_raw.get("name"):
         raise ValueError("Config must contain project.name")
     
-    project = ProjectConfig(
+    return ProjectConfig(
         name=project_raw["name"],
         description=project_raw.get("description", "")
     )
-    
-    # Parse watch config
+
+
+def _parse_watch_config(raw: dict) -> WatchConfig:
     watch_raw = raw.get("watch", {})
-    watch = WatchConfig(
+    return WatchConfig(
         paths=watch_raw.get("paths", []),
         exclude_patterns=watch_raw.get("exclude_patterns", ["*.md", "*.txt"]),
         file_types=watch_raw.get("file_types", [])
     )
-    
-    # Parse services
+
+
+def _parse_services_config(raw: dict) -> List[ServiceConfig]:
     services_raw = raw.get("services", [])
     services = []
     for svc_raw in services_raw:
@@ -161,18 +150,20 @@ def validate_config(raw: dict) -> WupConfig:
             )
         )
         services.append(service)
-    
-    # Parse test strategy
+    return services
+
+
+def _parse_strategy_config(raw: dict) -> TestStrategyConfig:
     strategy_raw = raw.get("test_strategy", {})
-    test_strategy = TestStrategyConfig(
+    return TestStrategyConfig(
         quick=strategy_raw.get("quick", {"debounce_s": 2, "max_queue": 5, "timeout_s": 10}),
         detail=strategy_raw.get("detail", {"debounce_s": 10, "max_queue": 1, "timeout_s": 30})
     )
-    
-    # Parse testql config
+
+
+def _parse_testql_config(raw: dict) -> TestQLConfig:
     testql_raw = raw.get("testql", {})
     extra_args_raw = testql_raw.get("extra_args", ["--timeout", "10"])
-    extra_args = []
     if isinstance(extra_args_raw, str):
         extra_args_raw = extra_args_raw.split()
     elif isinstance(extra_args_raw, list):
@@ -215,7 +206,7 @@ def validate_config(raw: dict) -> WupConfig:
             normalized_extra_args.append(arg)
             i += 1
 
-    testql = TestQLConfig(
+    return TestQLConfig(
         scenario_dir=testql_raw.get("scenario_dir", "scenarios/tests"),
         smoke_scenario=testql_raw.get("smoke_scenario", "smoke.testql.toon.yaml"),
         output_format=testql_raw.get("output_format", "json"),
@@ -233,7 +224,8 @@ def validate_config(raw: dict) -> WupConfig:
         endpoints_by_service=testql_raw.get("endpoints_by_service", {})
     )
 
-    # Parse visual_diff config
+
+def _parse_visual_diff_config(raw: dict) -> VisualDiffConfig:
     vd_raw = raw.get("visual_diff", {})
     env_visual_enabled = os.environ.get("WUP_VISUAL_DIFF_ENABLED")
     env_visual_delay = os.environ.get("WUP_VISUAL_DIFF_DELAY_SECONDS")
@@ -268,7 +260,7 @@ def validate_config(raw: dict) -> WupConfig:
             env_visual_pages_from_endpoints.strip().lower() in {"1", "true", "yes", "on"}
         )
 
-    visual_diff = VisualDiffConfig(
+    return VisualDiffConfig(
         enabled=visual_enabled,
         base_url=vd_raw.get("base_url", ""),
         base_url_env=vd_raw.get("base_url_env", "WUP_BASE_URL"),
@@ -291,11 +283,13 @@ def validate_config(raw: dict) -> WupConfig:
             "[class*='error'][class*='container']",
         ]),
         headless=vd_raw.get("headless", True),
+        run_on_periodic_probe=bool(vd_raw.get("run_on_periodic_probe", False)),
     )
 
-    # Parse web config (event sink)
+
+def _parse_web_config(raw: dict) -> WebConfig:
     web_raw = raw.get("web", {})
-    web = WebConfig(
+    return WebConfig(
         enabled=web_raw.get("enabled", False),
         endpoint=web_raw.get("endpoint", ""),
         endpoint_env=web_raw.get("endpoint_env", "WUPBRO_ENDPOINT"),
@@ -303,7 +297,8 @@ def validate_config(raw: dict) -> WupConfig:
         api_key=web_raw.get("api_key", ""),
     )
 
-    # Parse planfile config (ticket sink for Koru/Planfile workflows)
+
+def _parse_planfile_config(raw: dict) -> PlanfileConfig:
     planfile_raw = raw.get("planfile", {})
     env_planfile_enabled = os.environ.get("WUP_PLANFILE_ENABLED")
     if env_planfile_enabled is None:
@@ -313,7 +308,7 @@ def validate_config(raw: dict) -> WupConfig:
 
     labels_raw = planfile_raw.get("labels", ["koru", "llm-ready", "wup", "auto-diag"])
     labels = [str(label) for label in labels_raw] if isinstance(labels_raw, list) else []
-    planfile = PlanfileConfig(
+    return PlanfileConfig(
         enabled=planfile_enabled,
         command=planfile_raw.get("command", "planfile"),
         sprint=planfile_raw.get("sprint", "current"),
@@ -323,15 +318,29 @@ def validate_config(raw: dict) -> WupConfig:
         labels=labels or ["koru", "llm-ready", "wup", "auto-diag"],
     )
 
+
+def validate_config(raw: dict) -> WupConfig:
+    """
+    Validate raw config dict and convert to WupConfig object.
+    
+    Args:
+        raw: Raw configuration dictionary from YAML
+        
+    Returns:
+        Validated WupConfig object
+        
+    Raises:
+        ValueError: If config is invalid
+    """
     return WupConfig(
-        project=project,
-        watch=watch,
-        services=services,
-        test_strategy=test_strategy,
-        testql=testql,
-        visual_diff=visual_diff,
-        web=web,
-        planfile=planfile,
+        project=_parse_project_config(raw),
+        watch=_parse_watch_config(raw),
+        services=_parse_services_config(raw),
+        test_strategy=_parse_strategy_config(raw),
+        testql=_parse_testql_config(raw),
+        visual_diff=_parse_visual_diff_config(raw),
+        web=_parse_web_config(raw),
+        planfile=_parse_planfile_config(raw),
     )
 
 

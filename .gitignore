@@ -1,4 +1,21 @@
 # Byte-compiled / optimized / DLL files
+.code2llm_cache/__init___1779633223887205757_1238.pkl
+.code2llm_cache/bus_1779489415288193825_2098.pkl
+.code2llm_cache/config_1779633129431234972_6652.pkl
+.code2llm_cache/config_1779634444095070015_18262.pkl
+.code2llm_cache/event_handlers_1779628261284558283_2275.pkl
+.code2llm_cache/event_store_1779489269252115997_1232.pkl
+.code2llm_cache/goal_1779628397955000000_12278.pkl
+.code2llm_cache/health_events_1779489271266136494_217.pkl
+.code2llm_cache/health_handlers_1779489465508106915_4077.pkl
+.code2llm_cache/health_queries_1779489273309872972_165.pkl
+.code2llm_cache/pyproject_1779633223866205539_1830.pkl
+.code2llm_cache/regix_1779491920929978634_1429.pkl
+.code2llm_cache/testql_watcher_1779633154645663184_36505.pkl
+.code2llm_cache/tree_1779488956156991648_4891.pkl
+.code2llm_cache/tree_1779634872113585434_5225.pkl
+.code2llm_cache/visual_diff_1779628074810099647_19348.pkl
+.code2llm_cache/wup_1779625750684554689_3017.pkl
 .vscode/mcp.json
 .code2llm_cache/bus_1779488878684009534_1902.pkl
 .code2llm_cache/event_handlers_1779488897754301483_2088.pkl

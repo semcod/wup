@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.43', 'python').
+project_metadata('wup', '0.2.48', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 33, 'less').
@@ -31,9 +31,11 @@ project_file('tests/test_e2e.py', 517, 'python').
 project_file('tests/test_monitoring_manifest.py', 73, 'python').
 project_file('tests/test_service_inference.py', 212, 'python').
 project_file('tests/test_testql_monitor.py', 169, 'python').
-project_file('tests/test_testql_watcher.py', 529, 'python').
+project_file('tests/test_testql_watcher.py', 560, 'python').
+project_file('tests/test_visual_diff_periodic_skip.py', 41, 'python').
+project_file('tests/test_visual_diff_progress.py', 40, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
-project_file('tests/test_wup.py', 1802, 'python').
+project_file('tests/test_wup.py', 1819, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
 project_file('wup/_ast_detector.py', 125, 'python').
@@ -43,25 +45,29 @@ project_file('wup/_yaml_detector.py', 129, 'python').
 project_file('wup/anomaly_detector.py', 176, 'python').
 project_file('wup/anomaly_models.py', 36, 'python').
 project_file('wup/assistant.py', 695, 'python').
-project_file('wup/bus.py', 62, 'python').
+project_file('wup/bus.py', 66, 'python').
 project_file('wup/cli.py', 800, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
-project_file('wup/config.py', 465, 'python').
+project_file('wup/config.py', 518, 'python').
 project_file('wup/core.py', 664, 'python').
 project_file('wup/dependency_mapper.py', 285, 'python').
+project_file('wup/event_store.py', 42, 'python').
 project_file('wup/file_watcher/events/file_events.py', 11, 'python').
 project_file('wup/models/__init__.py', 35, 'python').
-project_file('wup/models/config.py', 166, 'python').
+project_file('wup/models/config.py', 169, 'python').
 project_file('wup/monitoring_manifest.py', 341, 'python').
 project_file('wup/planfile_reporter.py', 204, 'python').
+project_file('wup/testing/events/health_events.py', 12, 'python').
 project_file('wup/testing/events/test_results.py', 23, 'python').
-project_file('wup/testing/handlers/event_handlers.py', 50, 'python').
+project_file('wup/testing/handlers/event_handlers.py', 56, 'python').
+project_file('wup/testing/handlers/health_handlers.py', 120, 'python').
+project_file('wup/testing/queries/health_queries.py', 8, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
 project_file('wup/testql_monitor.py', 522, 'python').
-project_file('wup/testql_watcher.py', 857, 'python').
-project_file('wup/visual_diff.py', 519, 'python').
+project_file('wup/testql_watcher.py', 907, 'python').
+project_file('wup/visual_diff.py', 557, 'python').
 project_file('wup/web_client.py', 186, 'python').
 
 % ── Python Functions ─────────────────────────────────────
@@ -157,11 +163,11 @@ python_function('tests/test_testql_monitor.py', 'test_assign_firmware_service', 
 python_function('tests/test_testql_monitor.py', 'test_monitor_merges_config_and_service_map', 0, 5, 11).
 python_function('tests/test_testql_monitor.py', 'test_probes_for_service_ignores_non_health_extra_paths', 0, 3, 9).
 python_function('tests/test_testql_monitor.py', 'test_live_probe_failure_updates_health', 0, 4, 15).
-python_function('tests/test_testql_watcher.py', 'test_process_changed_file_creates_track_on_failure', 0, 7, 17).
+python_function('tests/test_testql_watcher.py', 'test_process_changed_file_creates_track_on_failure', 0, 5, 16).
 python_function('tests/test_testql_watcher.py', 'test_browser_event_file_is_written_without_service_url', 0, 5, 11).
 python_function('tests/test_testql_watcher.py', 'test_config_endpoints_use_base_url_from_yaml_config', 0, 3, 9).
 python_function('tests/test_testql_watcher.py', 'test_config_endpoints_use_base_url_from_env_when_yaml_missing', 0, 3, 11).
-python_function('tests/test_testql_watcher.py', 'test_service_health_transitions_are_persisted', 0, 12, 15).
+python_function('tests/test_testql_watcher.py', 'test_service_health_transitions_are_persisted', 0, 13, 15).
 python_function('tests/test_testql_watcher.py', 'test_planfile_reporter_creates_deduped_ticket', 1, 9, 9).
 python_function('tests/test_testql_watcher.py', 'test_planfile_reporter_clears_dedupe_after_recovery', 1, 4, 10).
 python_function('tests/test_testql_watcher.py', 'test_health_transition_creates_planfile_ticket', 1, 1, 13).
@@ -171,6 +177,16 @@ python_function('tests/test_testql_watcher.py', 'test_visual_differ_disabled_by_
 python_function('tests/test_testql_watcher.py', 'test_visual_differ_initialized_when_enabled', 0, 4, 9).
 python_function('tests/test_testql_watcher.py', 'test_get_config_endpoints_for_service_keeps_connect_pages_on_frontend', 0, 5, 10).
 python_function('tests/test_testql_watcher.py', 'test_quick_pass_actions_prefer_config_endpoints_for_visual_diff', 0, 2, 14).
+python_function('tests/test_testql_watcher.py', 'test_quick_interrupt_does_not_create_failure_track', 0, 2, 17).
+python_function('tests/test_visual_diff_periodic_skip.py', '_make_watcher', 1, 1, 3).
+python_function('tests/test_visual_diff_periodic_skip.py', 'test_visual_diff_runs_on_file_change_cycles', 1, 2, 2).
+python_function('tests/test_visual_diff_periodic_skip.py', 'test_visual_diff_skipped_on_periodic_probe_by_default', 1, 2, 2).
+python_function('tests/test_visual_diff_periodic_skip.py', 'test_visual_diff_runs_on_periodic_probe_when_opted_in', 1, 2, 2).
+python_function('tests/test_visual_diff_periodic_skip.py', 'test_visual_diff_skipped_when_disabled', 1, 2, 2).
+python_function('tests/test_visual_diff_progress.py', '_make_differ', 1, 1, 3).
+python_function('tests/test_visual_diff_progress.py', 'test_progress_returned_for_big_scans', 2, 3, 3).
+python_function('tests/test_visual_diff_progress.py', 'test_progress_skipped_for_small_scans', 1, 2, 2).
+python_function('tests/test_visual_diff_progress.py', 'test_progress_can_be_disabled_via_env', 2, 2, 3).
 python_function('tests/test_web_client.py', '_make_handler', 2, 1, 10).
 python_function('tests/test_web_client.py', 'recorder_server', 0, 1, 7).
 python_function('tests/test_web_client.py', 'test_resolve_endpoint_from_config', 0, 2, 2).
@@ -207,7 +223,15 @@ python_function('wup/cli.py', 'init_cli', 5, 8, 16).
 python_function('wup/config.py', 'find_config_file', 1, 3, 1).
 python_function('wup/config.py', '_load_dotenv', 1, 10, 6).
 python_function('wup/config.py', 'load_config', 2, 5, 8).
-python_function('wup/config.py', 'validate_config', 1, 14, 21).
+python_function('wup/config.py', '_parse_project_config', 1, 2, 3).
+python_function('wup/config.py', '_parse_watch_config', 1, 1, 2).
+python_function('wup/config.py', '_parse_services_config', 1, 3, 5).
+python_function('wup/config.py', '_parse_strategy_config', 1, 1, 2).
+python_function('wup/config.py', '_parse_testql_config', 1, 14, 14).
+python_function('wup/config.py', '_parse_visual_diff_config', 1, 6, 7).
+python_function('wup/config.py', '_parse_web_config', 1, 1, 3).
+python_function('wup/config.py', '_parse_planfile_config', 1, 5, 7).
+python_function('wup/config.py', 'validate_config', 1, 1, 9).
 python_function('wup/config.py', 'get_default_config', 1, 1, 5).
 python_function('wup/config.py', 'save_config', 2, 2, 11).
 python_function('wup/monitoring_manifest.py', '_parse_port_mapping', 1, 5, 2).
@@ -227,6 +251,7 @@ python_function('wup/monitoring_manifest.py', 'patch_wup_yaml_monitoring', 2, 5,
 python_function('wup/monitoring_manifest.py', 'load_monitoring_manifest_from_yaml', 1, 9, 8).
 python_function('wup/monitoring_manifest.py', 'format_manifest_summary', 1, 10, 6).
 python_function('wup/testing/handlers/event_handlers.py', 'register_testing_event_handlers', 4, 1, 2).
+python_function('wup/testing/handlers/health_handlers.py', 'register_health_handlers', 6, 1, 2).
 python_function('wup/testql_monitor.py', '_parse_api_lines', 2, 3, 6).
 python_function('wup/testql_monitor.py', 'parse_scenario_probes', 1, 2, 3).
 python_function('wup/testql_monitor.py', '_extract_base_url', 1, 4, 4).
@@ -384,6 +409,7 @@ python_method('TestConfigLoader', 'test_load_config_auto_detect', 0, 2, 4).
 python_method('TestConfigLoader', 'test_load_config_no_file_returns_default', 0, 3, 4).
 python_method('TestConfigLoader', 'test_load_config_invalid_yaml', 0, 1, 5).
 python_method('TestConfigLoader', 'test_load_config_missing_project_name', 0, 1, 5).
+python_method('TestConfigLoader', 'test_load_config_extra_args_normalization', 0, 2, 4).
 python_method('TestConfigLoader', 'test_save_and_load_visual_diff_config', 0, 10, 7).
 python_method('TestConfigLoader', 'test_load_config_visual_diff_from_yaml', 0, 14, 4).
 python_method('TestConfigLoader', 'test_load_config_visual_diff_defaults_when_section_absent', 0, 7, 4).
@@ -473,7 +499,7 @@ python_class('wup/bus.py', 'Event').
 python_class('wup/bus.py', 'Query').
 python_class('wup/bus.py', 'EventBus').
 python_method('EventBus', '__init__', 0, 1, 0).
-python_method('EventBus', 'subscribe', 2, 2, 1).
+python_method('EventBus', 'subscribe', 2, 4, 2).
 python_method('EventBus', 'publish', 1, 2, 3).
 python_method('EventBus', 'execute', 1, 3, 4).
 python_method('EventBus', 'query', 1, 3, 4).
@@ -546,6 +572,10 @@ python_method('DependencyMapper', 'to_dict', 0, 2, 5).
 python_method('DependencyMapper', 'save', 1, 1, 3).
 python_method('DependencyMapper', 'load', 1, 2, 6).
 python_method('DependencyMapper', 'build_from_testql_scenarios', 2, 3, 7).
+python_class('wup/event_store.py', 'EventStore').
+python_method('EventStore', '__init__', 1, 1, 1).
+python_method('EventStore', 'append', 1, 2, 8).
+python_method('EventStore', 'read_all', 0, 4, 5).
 python_class('wup/file_watcher/events/file_events.py', 'FileChanged').
 python_class('wup/models/config.py', 'NotifyConfig').
 python_class('wup/models/config.py', 'ServiceTestConfig').
@@ -573,12 +603,20 @@ python_method('PlanfileReporter', '_fingerprint', 0, 1, 5).
 python_method('PlanfileReporter', '_parse_ticket_id', 1, 2, 2).
 python_method('PlanfileReporter', '_ticket_name', 0, 1, 0).
 python_method('PlanfileReporter', '_ticket_description', 0, 3, 0).
-python_class('wup/testing/events/test_results.py', 'TestScenarioPassed').
-python_class('wup/testing/events/test_results.py', 'TestScenarioFailed').
+python_class('wup/testing/events/health_events.py', 'ServiceHealthChanged').
+python_class('wup/testing/events/test_results.py', 'ScenarioPassed').
+python_class('wup/testing/events/test_results.py', 'ScenarioFailed').
 python_class('wup/testing/handlers/event_handlers.py', 'TestResultEventHandler').
 python_method('TestResultEventHandler', '__init__', 3, 1, 0).
-python_method('TestResultEventHandler', 'handle_test_failed', 1, 3, 5).
+python_method('TestResultEventHandler', 'handle_test_failed', 1, 5, 8).
 python_method('TestResultEventHandler', 'handle_test_passed', 1, 1, 0).
+python_class('wup/testing/handlers/health_handlers.py', 'ServiceHealthProjection').
+python_method('ServiceHealthProjection', '__init__', 5, 1, 1).
+python_method('ServiceHealthProjection', '_load_initial_state', 0, 3, 3).
+python_method('ServiceHealthProjection', '_save_state', 0, 1, 3).
+python_method('ServiceHealthProjection', 'handle_health_changed', 1, 6, 9).
+python_method('ServiceHealthProjection', 'handle_get_health', 1, 2, 1).
+python_class('wup/testing/queries/health_queries.py', 'GetServiceHealth').
 python_class('wup/testql_cli_generator.py', 'TestQLCLIGenerator').
 python_method('TestQLCLIGenerator', '__init__', 1, 1, 3).
 python_method('TestQLCLIGenerator', 'generate', 2, 6, 7).
@@ -616,13 +654,12 @@ python_method('TestQLMonitor', '_resolve_base_url', 0, 4, 3).
 python_method('TestQLMonitor', '_join_base', 2, 5, 1).
 python_class('wup/testql_watcher.py', 'BrowserNotifier').
 python_method('BrowserNotifier', '__init__', 2, 13, 1).
-python_method('BrowserNotifier', 'notify', 1, 3, 7).
+python_method('BrowserNotifier', 'notify', 1, 3, 8).
 python_class('wup/testql_watcher.py', 'TestQLWatcher').
-python_method('TestQLWatcher', '__init__', 7, 13, 12).
-python_method('TestQLWatcher', '_normalize_fleet_health_entry', 0, 6, 8).
-python_method('TestQLWatcher', '_load_service_health', 0, 4, 4).
-python_method('TestQLWatcher', '_save_service_health', 0, 1, 2).
-python_method('TestQLWatcher', '_record_health_transition', 0, 9, 12).
+python_method('TestQLWatcher', '__init__', 7, 13, 14).
+python_method('TestQLWatcher', '_normalize_fleet_health_entry', 0, 7, 9).
+python_method('TestQLWatcher', '_load_service_health', 0, 1, 0).
+python_method('TestQLWatcher', '_record_health_transition', 0, 6, 5).
 python_method('TestQLWatcher', '_tokenize_service', 1, 3, 3).
 python_method('TestQLWatcher', '_get_config_endpoints_for_service', 1, 10, 5).
 python_method('TestQLWatcher', '_to_full_url_for_service', 2, 5, 2).
@@ -637,22 +674,25 @@ python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
 python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 8, 6).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
-python_method('TestQLWatcher', '_run_testql', 2, 2, 2).
-python_method('TestQLWatcher', '_write_track', 0, 11, 9).
+python_method('TestQLWatcher', '_run_testql', 2, 4, 3).
+python_method('TestQLWatcher', '_is_interrupted_result', 1, 4, 1).
+python_method('TestQLWatcher', '_write_track', 0, 13, 10).
 python_method('TestQLWatcher', '_quick_timeout', 0, 3, 1).
 python_method('TestQLWatcher', '_merge_endpoints', 2, 3, 3).
-python_method('TestQLWatcher', '_run_scenario_quick', 3, 4, 7).
-python_method('TestQLWatcher', '_quick_pass_actions', 2, 11, 8).
+python_method('TestQLWatcher', '_run_scenario_quick', 3, 3, 9).
+python_method('TestQLWatcher', '_should_run_visual_diff', 0, 4, 2).
+python_method('TestQLWatcher', '_quick_pass_actions', 2, 10, 9).
 python_method('TestQLWatcher', '_quick_probe_limit', 1, 3, 1).
 python_method('TestQLWatcher', '_quick_probe_timeout', 0, 3, 2).
 python_method('TestQLWatcher', '_run_live_http_probes', 2, 6, 7).
 python_method('TestQLWatcher', '_try_parse_json_summary', 1, 8, 4).
 python_method('TestQLWatcher', '_try_find_line_summary', 1, 7, 4).
+python_method('TestQLWatcher', '_summarize_testql_failure', 1, 3, 2).
 python_method('TestQLWatcher', '_summarize_health_scenario_failure', 1, 8, 4).
 python_method('TestQLWatcher', '_run_fleet_health_scenario', 0, 10, 16).
-python_method('TestQLWatcher', 'run_quick_test', 2, 9, 10).
+python_method('TestQLWatcher', 'run_quick_test', 2, 17, 15).
 python_method('TestQLWatcher', '_publish_visual_events', 2, 6, 4).
-python_method('TestQLWatcher', 'run_detail_test', 2, 9, 11).
+python_method('TestQLWatcher', 'run_detail_test', 2, 11, 14).
 python_method('TestQLWatcher', 'process_changed_file_once', 1, 4, 5).
 python_method('TestQLWatcher', '_run_periodic_probes_once', 0, 5, 4).
 python_method('TestQLWatcher', '_start_periodic_probe_thread', 0, 3, 6).
@@ -662,7 +702,8 @@ python_method('VisualDiffer', '__init__', 2, 1, 2).
 python_method('VisualDiffer', '_pages_for_service', 2, 11, 4).
 python_method('VisualDiffer', '_categorize_page_result', 6, 6, 6).
 python_method('VisualDiffer', '_print_scan_summary', 4, 8, 7).
-python_method('VisualDiffer', 'run_for_service', 2, 7, 11).
+python_method('VisualDiffer', 'run_for_service', 2, 9, 16).
+python_method('VisualDiffer', '_build_progress', 2, 3, 7).
 python_method('VisualDiffer', '_check_page', 2, 4, 9).
 python_method('VisualDiffer', '_write_diff_event', 3, 1, 6).
 python_method('VisualDiffer', 'get_recent_diffs', 1, 7, 11).

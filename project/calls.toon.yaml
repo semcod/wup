@@ -1,13 +1,13 @@
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.05s
-# nodes: 104 | edges: 100 | modules: 16
+# generated in 0.06s
+# nodes: 106 | edges: 102 | modules: 18
 # CC̄=4.2
 
 HUBS[20]:
+  wup.config.validate_config
+    CC=26  in:1  out:144  total:145
   wup.cli.status
     CC=5  in:0  out:121  total:121
-  wup.config.validate_config
-    CC=14  in:1  out:118  total:119
   examples.ci_cd_integration.show_ci_cd_demo
     CC=2  in:1  out:69  total:70
   examples.webhook_notifications.show_webhook_demo
@@ -22,28 +22,28 @@ HUBS[20]:
     CC=2  in:1  out:26  total:27
   examples.visual_diff_demo.demo_snapshot_persistence
     CC=3  in:1  out:26  total:27
+  wup.visual_diff.VisualDiffer.run_for_service
+    CC=9  in:0  out:21  total:21
   wup.monitoring_manifest.build_monitoring_manifest
     CC=9  in:4  out:15  total:19
+  wup.visual_diff._fetch_dom_snapshot
+    CC=9  in:1  out:17  total:18
   examples.testql_demo.simulate_testql_analysis
     CC=2  in:0  out:18  total:18
   wup.core.WupWatcher.__init__
     CC=7  in:0  out:18  total:18
-  wup.visual_diff._fetch_dom_snapshot
-    CC=9  in:1  out:17  total:18
-  examples.visual_diff_demo.demo_diff_algorithm
-    CC=3  in:1  out:16  total:17
-  wup.config.load_config
-    CC=5  in:9  out:8  total:17
   examples.visual_diff_demo.demo_config_yaml_round_trip
     CC=6  in:1  out:16  total:17
+  wup.config.load_config
+    CC=5  in:9  out:8  total:17
   wup.visual_diff._diff_snapshots
     CC=11  in:2  out:15  total:17
+  examples.visual_diff_demo.demo_diff_algorithm
+    CC=3  in:1  out:16  total:17
+  wup.testql_watcher.TestQLWatcher.__init__
+    CC=13  in:0  out:16  total:16
   wup.monitoring_manifest.load_monitoring_manifest_from_yaml
     CC=9  in:2  out:14  total:16
-  wup.cli.init
-    CC=3  in:0  out:16  total:16
-  wup.config.save_config
-    CC=2  in:3  out:12  total:15
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -93,7 +93,7 @@ MODULES:
     get_default_config  CC=1  out:5
     load_config  CC=5  out:8
     save_config  CC=2  out:12
-    validate_config  CC=14  out:118
+    validate_config  CC=26  out:144
   wup.core  [1 funcs]
     __init__  CC=7  out:18
   wup.monitoring_manifest  [13 funcs]
@@ -107,6 +107,10 @@ MODULES:
     _parse_port_mapping  CC=5  out:4
     build_monitoring_manifest  CC=9  out:15
     discover_docker_compose_services  CC=7  out:10
+  wup.testing.handlers.event_handlers  [1 funcs]
+    register_testing_event_handlers  CC=1  out:3
+  wup.testing.handlers.health_handlers  [1 funcs]
+    register_health_handlers  CC=1  out:3
   wup.testql_monitor  [24 funcs]
     _add_config_endpoints  CC=11  out:13
     _add_scenario_probes  CC=5  out:5
@@ -119,7 +123,7 @@ MODULES:
     _assign_by_port_8100  CC=2  out:3
     _assign_by_port_8101  CC=1  out:1
   wup.testql_watcher  [2 funcs]
-    __init__  CC=13  out:14
+    __init__  CC=13  out:16
     _get_config_endpoints_for_service  CC=10  out:7
   wup.visual_diff  [22 funcs]
     __init__  CC=1  out:2
@@ -128,7 +132,7 @@ MODULES:
     _pages_for_service  CC=11  out:8
     _print_scan_summary  CC=8  out:13
     _write_diff_event  CC=1  out:6
-    run_for_service  CC=7  out:11
+    run_for_service  CC=9  out:21
     _compact_error_message  CC=3  out:3
     _detect_content_issues  CC=6  out:11
     _diff_snapshots  CC=11  out:15

@@ -1,0 +1,32 @@
+version: '3'
+
+tasks:
+  wup:watch:
+    desc: "Watch project for file changes and run WUP regression tests"
+    cmds:
+      - poetry run wup watch
+
+  wup:status:
+    desc: "Show dependency map status and configuration"
+    cmds:
+      - poetry run wup status
+
+  wup:sync:
+    desc: "Discover monitoring targets and update wup.yaml manifest"
+    cmds:
+      - poetry run wup sync-testql . --write
+
+  wup:endpoints:
+    desc: "Verify TestQL scenarios and discover endpoints"
+    cmds:
+      - poetry run wup testql-endpoints
+
+  wup:map:
+    desc: "Build dependency map from codebase"
+    cmds:
+      - poetry run wup map-deps
+
+  test:
+    desc: "Run WUP pytest test suite"
+    cmds:
+      - poetry run pytest

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.49] - 2026-05-24
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .gitignore
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health-events.jsonl
+- Update .wup/service-health.json
+- Update Taskfile.yml
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- ... and 19 more files
+
 ## [0.2.48] - 2026-05-24
 
 ### Docs

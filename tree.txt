@@ -63,7 +63,9 @@
 ├── project.sh
 ├── pyproject.toml
 ├── README.md
+├── regix.yaml
 ├── scripts
+│   ├── goal-local
 │   └── run_probe_smoke.py
 ├── SUMD.md
 ├── SUMR.md
@@ -83,6 +85,8 @@
 │   ├── TEST_SUMMARY.md
 │   ├── test_testql_monitor.py
 │   ├── test_testql_watcher.py
+│   ├── test_visual_diff_periodic_skip.py
+│   ├── test_visual_diff_progress.py
 │   ├── test_web_client.py
 │   └── test_wup.py
 ├── TODO.md
@@ -103,6 +107,7 @@
 │   ├── config.py
 │   ├── core.py
 │   ├── dependency_mapper.py
+│   ├── event_store.py
 │   ├── file_watcher
 │   │   └── events
 │   │       └── file_events.py
@@ -116,10 +121,13 @@
 │   ├── testing
 │   │   ├── commands
 │   │   ├── events
+│   │   │   ├── health_events.py
 │   │   │   └── test_results.py
 │   │   ├── handlers
-│   │   │   └── event_handlers.py
+│   │   │   ├── event_handlers.py
+│   │   │   └── health_handlers.py
 │   │   └── queries
+│   │       └── health_queries.py
 │   ├── testql_cli_generator.py
 │   ├── testql_discovery.py
 │   ├── testql_monitor.py
@@ -137,4 +145,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-31 directories, 107 files
+31 directories, 115 files
