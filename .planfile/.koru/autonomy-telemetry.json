@@ -4,7 +4,7 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 8,
+  "cycle": 11,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
     "scan_after_idle_min_interval_seconds": 0.0,
@@ -16,5 +16,5 @@
     "scan_after_idle_run": false,
     "scan_after_idle_skipped_rate_limit": false
   },
-  "updated_at": "2026-05-22T23:06:16.710563+00:00"
+  "updated_at": "2026-05-24T12:29:57.798014+00:00"
 }

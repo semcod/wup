@@ -1,14 +1,14 @@
 {
-  "cycle": 8,
-  "saved_at": 1779491176.710795,
-  "queue_status": "waiting_input",
-  "waiting_ticket": "PLF-005",
+  "cycle": 11,
+  "saved_at": 1779625797.8061128,
+  "queue_status": "idle",
+  "waiting_ticket": "-",
   "state": {
-    "previous_signature": "waiting_input:PLF-005",
+    "previous_signature": "idle:-",
     "stagnation_streak": 2,
-    "scan_clean_streak": 0,
-    "scan_last_head": "c75332cf45f7db6c4e2d052ec884392c01179677",
-    "wup_seen_events": 19,
+    "scan_clean_streak": 2,
+    "scan_last_head": "8eec72bcd3d7f05e55fb005c8b24b737ed9a00f7",
+    "wup_seen_events": 30,
     "autopilot_events": [
       {
         "ts": 1779487820.6195204,
@@ -169,9 +169,39 @@
         "chat": "default",
         "text": "[AUTO-DIAG] wup-iter1-api needs attention in cycle 0. queue_status=wup_failure. Check: WUP service=iter1-api stage=quick message=Usage: testql run [OPTIONS] FILES...\nTry 'testql run --help' for help.\n",
         "length": 423
+      },
+      {
+        "ts": 1779625698.20436,
+        "type": "message.sent",
+        "ide": "vscodium",
+        "chat": "default",
+        "text": "[AUTO-DIAG] wup-koru-core needs attention in cycle 0. queue_status=wup_failure. Check: WUP service=koru-core stage=quick message=\ud83d\udcdc OQL: cli-koru_api.testql.toon.yaml\n\ud83d\udcdd SET \"cli_command\" = \"koru-api\"",
+        "length": 823
+      },
+      {
+        "ts": 1779625753.607209,
+        "type": "message.sent",
+        "ide": "antigravity",
+        "chat": "default",
+        "text": "continue with the next ticket",
+        "length": 29
+      },
+      {
+        "ts": 1779625774.2006319,
+        "type": "message.sent",
+        "ide": "antigravity",
+        "chat": "default",
+        "text": "continue with the next ticket",
+        "length": 29
       }
     ],
-    "last_message_sent_ts": 1779491131.5180912,
+    "last_driven_prompt": "continue with the next ticket",
+    "last_llm_reflection_summary": "",
+    "last_llm_reflection_ts": 0.0,
+    "last_operator_needs_input_signature": "",
+    "last_operator_needs_input_ticket_id": "",
+    "last_message_sent_ts": 1779625797.78186,
+    "last_driven_ticket_id": "-",
     "telemetry_autopilot_idle_streak_skips": 0,
     "telemetry_scan_after_idle_runs": 0,
     "telemetry_scan_after_idle_tickets_applied": 0,

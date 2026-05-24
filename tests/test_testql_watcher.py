@@ -1,10 +1,13 @@
 import asyncio
 import json
 import os
+import signal
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import Mock
+
+import pytest
 
 from wup.testql_watcher import TestQLWatcher
 from wup.models.config import (
@@ -519,3 +522,38 @@ def test_quick_pass_actions_prefer_config_endpoints_for_visual_diff():
         )
 
         assert differ.calls == [("backend", ["http://localhost:8101/api/v3/health"])]
+
+
+def test_quick_interrupt_does_not_create_failure_track():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        scenario_dir = root / "testql-scenarios"
+        scenario_dir.mkdir(parents=True, exist_ok=True)
+        (scenario_dir / "connect-config-smoke.testql.toon.yaml").write_text("name: smoke\n", encoding="utf-8")
+
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="connect-config", paths=["connect-config/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(scenario_dir="testql-scenarios"),
+        )
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+
+        watcher._run_testql = lambda args, timeout: CompletedProcess(  # type: ignore[method-assign]
+            args=args,
+            returncode=-signal.SIGINT,
+            stdout="",
+            stderr="",
+        )
+
+        with pytest.raises(KeyboardInterrupt):
+            asyncio.run(watcher.run_quick_test("connect-config", []))
+
+        tracks = list((root / ".wup" / "tracks").glob("*.json"))
+        assert tracks == []

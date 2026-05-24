@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 import re
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -405,6 +406,15 @@ class TestQLWatcher(WupWatcher):
                     stderr=f"Error: TestQL command timed out after {timeout} seconds",
                 )
 
+    @staticmethod
+    def _is_interrupted_result(result: subprocess.CompletedProcess) -> bool:
+        rc = int(result.returncode)
+        if rc in {130, 143}:
+            return True
+        if rc < 0 and (-rc) in {signal.SIGINT, signal.SIGTERM}:
+            return True
+        return False
+
     def _write_track(self, *, service: str, stage: str, scenario: Optional[Path], result: subprocess.CompletedProcess) -> Path:
         ts = int(time.time())
         safe_service = service.replace("/", "_").replace("\\", "_")
@@ -465,6 +475,8 @@ class TestQLWatcher(WupWatcher):
         result = self._run_testql(args, timeout=self._quick_timeout())
         if result.returncode == 0:
             return True
+        if self._is_interrupted_result(result):
+            raise KeyboardInterrupt
 
         reason = result.stderr.strip() or result.stdout.strip() or "Quick TestQL failed"
         track_path = self._write_track(service=service, stage="quick",
