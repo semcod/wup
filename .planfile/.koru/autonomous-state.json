@@ -1,23 +1,15 @@
 {
-  "cycle": 35,
-  "saved_at": 1779638633.5785692,
-  "queue_status": "idle",
-  "waiting_ticket": "-",
+  "cycle": 36,
+  "saved_at": 1779711828.4926991,
+  "queue_status": "waiting_input",
+  "waiting_ticket": "PLF-013",
   "state": {
-    "previous_signature": "idle:-",
-    "stagnation_streak": 16,
-    "scan_clean_streak": 16,
-    "scan_last_head": "7ad6d54b69ead3e8d4d72debd29b3e8e2e3195c8",
-    "wup_seen_events": 165,
+    "previous_signature": "waiting_input:PLF-013",
+    "stagnation_streak": 0,
+    "scan_clean_streak": 0,
+    "scan_last_head": "5a59646215d7d9fffe583a194422d33160fdfbe7",
+    "wup_seen_events": 170,
     "autopilot_events": [
-      {
-        "ts": 1779487822.7172952,
-        "type": "message.sent",
-        "ide": "vscode",
-        "chat": "default",
-        "text": "hi",
-        "length": 2
-      },
       {
         "ts": 1779487823.5145683,
         "type": "session.ended",
@@ -371,6 +363,14 @@
         "chat": "default",
         "text": "continue with the next ticket",
         "length": 29
+      },
+      {
+        "ts": 1779711726.8468447,
+        "type": "message.sent",
+        "ide": "vscodium",
+        "chat": "default",
+        "text": "Ticket STARTER-242 has been stuck in status 'waiting_input' for 5 cycles. Continue the actual implementation work for this ticket now. Run the relevant checks before closing it. Planfile status handof",
+        "length": 2807
       }
     ],
     "last_driven_prompt": "continue with the next ticket",
@@ -378,11 +378,15 @@
     "last_llm_reflection_ts": 0.0,
     "last_operator_needs_input_signature": "",
     "last_operator_needs_input_ticket_id": "",
-    "last_message_sent_ts": 1779638633.5772166,
+    "last_message_sent_ts": 1779711726.8468447,
+    "last_message_sent_ide": "vscodium",
     "last_driven_ticket_id": "-",
+    "last_autopilot_status": "",
     "telemetry_autopilot_idle_streak_skips": 0,
     "telemetry_scan_after_idle_runs": 0,
     "telemetry_scan_after_idle_tickets_applied": 0,
-    "last_scan_after_idle_ts": -1.0
+    "last_scan_after_idle_ts": -1.0,
+    "last_scan_create_failed_fingerprint": "",
+    "last_scan_create_failed_ts": -1.0
   }
 }

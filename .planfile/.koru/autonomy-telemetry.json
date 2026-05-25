@@ -4,17 +4,33 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 35,
+  "cycle": 36,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
     "scan_after_idle_min_interval_seconds": 0.0,
-    "scan_after_idle_queue": false
+    "scan_after_idle_queue": true
   },
   "last_cycle": {
     "autopilot_skipped_idle_streak": false,
+    "autopilot_skipped_plugin_missing": true,
+    "autopilot_skipped_plugin_missing_reason": "daemon status plugin list is empty",
     "scan_after_idle_applied": 0,
     "scan_after_idle_run": false,
     "scan_after_idle_skipped_rate_limit": false
   },
-  "updated_at": "2026-05-24T16:03:53.577749+00:00"
+  "recent_decisions": [
+    {
+      "action": "no_op",
+      "at": "2026-05-25T12:23:48+00:00",
+      "blocked_by": "plugin_missing",
+      "cycle": 36,
+      "decided": "skip:plugin_missing",
+      "evidence": "blocked_by=plugin_missing, diagnostics=skipped, wup=changed, plugin_reason=daemon status plugin list is empty",
+      "next_step": "wait for plugin reconnect (manual reload may be needed)",
+      "observed": "queue=waiting_input ticket=PLF-013",
+      "skip_because": "daemon status plugin list is empty",
+      "skip_code": "plugin_missing"
+    }
+  ],
+  "updated_at": "2026-05-25T12:23:48.482610+00:00"
 }
