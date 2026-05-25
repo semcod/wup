@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.52', 'python').
+project_metadata('wup', '0.2.54', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 63, 'less').

@@ -1,4 +1,4 @@
-# wup | 70f 14265L | python:67,shell:2,less:1 | 2026-05-24
+# wup | 70f 14265L | python:67,shell:2,less:1 | 2026-05-25
 # stats: 231 func | 70 cls | 70 mod | CC̄=3.4 | critical:8 | cycles:0
 # alerts[5]: CC main=14; CC test_service_health_transitions_are_persisted=13; CC sync_testql=13; CC _assign_by_path_prefix=13; CC _map_docker_to_wup_service=11
 # hotspots[5]: status fan=35; sync_testql fan=28; main fan=19; testql_endpoints fan=19; map_deps fan=18

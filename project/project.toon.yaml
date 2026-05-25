@@ -1,4 +1,4 @@
-# wup | 399 func | 42f | 11398L | python | 2026-05-24
+# wup | 399 func | 42f | 11332L | python | 2026-05-25
 # generated in 0.00s
 
 HEALTH:
@@ -12,27 +12,27 @@ ALERTS[20]:
   !!  high_fan_out     watch = 18 (limit:10)
   !!  high_fan_out     init_cli = 18 (limit:10)
   !!  high_fan_out     TestQLWatcher._run_fleet_health_scenario = 18 (limit:10)
-  !!  high_fan_out     demo_snapshot_persistence = 17 (limit:10)
   !!  high_fan_out     VisualDiffer.run_for_service = 17 (limit:10)
-  !!  high_fan_out     show_webhook_demo = 16 (limit:10)
+  !!  high_fan_out     demo_snapshot_persistence = 17 (limit:10)
+  !!  high_fan_out     TestQLWatcher.__init__ = 16 (limit:10)
 
-MODULES[72] (top by size):
+MODULES[80] (top by size):
   M[wup/testql_watcher.py] 958L C:2 F:48 CC↑13 D:0 (python)
   M[wup/cli.py] 799L C:0 F:14 CC↑13 D:0 (python)
   M[wup/assistant.py] 694L C:1 F:24 CC↑14 D:0 (python)
   M[wup/core.py] 675L C:2 F:29 CC↑11 D:0 (python)
   M[wup/visual_diff.py] 581L C:1 F:25 CC↑11 D:1 (python)
   M[wup/config.py] 527L C:0 F:17 CC↑10 D:7 (python)
-  M[wup/testql_monitor.py] 521L C:3 F:36 CC↑13 D:2 (python)
+  M[wup/testql_monitor.py] 521L C:3 F:36 CC↑13 D:1 (python)
   M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
   M[examples/webhook_notifications.py] 375L C:1 F:10 CC↑6 D:0 (python)
   M[wup/monitoring_manifest.py] 340L C:1 F:16 CC↑11 D:2 (python)
   M[examples/ci_cd_integration.py] 339L C:0 F:4 CC↑3 D:0 (python)
   M[testql-deps.json] 311L C:0 F:0 CC↑0 D:0 (json)
-  M[examples/visual_diff_demo.py] 305L C:0 F:9 CC↑6 D:1 (python)
+  M[examples/visual_diff_demo.py] 305L C:0 F:9 CC↑6 D:0 (python)
   M[wup/cli_scanner.py] 302L C:3 F:12 CC↑10 D:0 (python)
   M[examples/testql_integration.py] 286L C:1 F:6 CC↑6 D:0 (python)
-  LANGS: python:49/yaml:11/txt:4/yml:2/json:2/other:2/shell:1/toml:1
+  LANGS: python:52/yaml:11/other:5/txt:5/yml:2/json:2/shell:2/toml:1
 
 HOTSPOTS[10]:
   ★ status fan=47  // Show dependency map status and configuration.
@@ -53,4 +53,4 @@ REFACTOR[11]:
   [5] H/H Split god module wup/core.py (675L, 2 classes)
 
 EVOLUTION:
-  2026-05-24 CC̄=4.1 crit=32 11398L // Automated analysis
+  2026-05-25 CC̄=4.1 crit=32 11332L // Automated analysis

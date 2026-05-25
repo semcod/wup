@@ -1,0 +1,3481 @@
+🔍 Scanning: ../koru
+📁 Extensions: .py
+📏 Min lines: 3
+🎯 Min similarity: 0.85
+
+Duplicate finding completed in 1209.0ms
+📊 Scanned 277 files (56400 lines, 8007ms)
+Found 72 duplicate groups (219 fragments, 1741 lines recoverable)
+
+{
+  "project_path": "../koru",
+  "stats": {
+    "files_scanned": 277,
+    "total_lines": 56400,
+    "total_blocks": 2443,
+    "scan_time_ms": 8007.3
+  },
+  "summary": {
+    "total_groups": 72,
+    "total_fragments": 219,
+    "total_saved_lines": 1741
+  },
+  "groups": [
+    {
+      "id": "d4b363c72beee573",
+      "type": "structural",
+      "normalized_name": "_build_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "d4b363c72beee573",
+      "total_lines": 234,
+      "occurrences": 2,
+      "saved_lines_potential": 234,
+      "impact_score": 234.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_parser.py",
+          "line_start": 0,
+          "line_end": 233,
+          "function_name": "_build_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 37,
+          "function_name": "_build_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "432078eda54c8d6f",
+      "type": "structural",
+      "normalized_name": "_dsl_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "432078eda54c8d6f",
+      "total_lines": 13,
+      "occurrences": 10,
+      "saved_lines_potential": 117,
+      "impact_score": 117.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli.py",
+          "line_start": 0,
+          "line_end": 12,
+          "function_name": "_dsl_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_api_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_local_serve.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_local_serve_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_serve.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_serve_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_serve_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_local_serve_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_mcp_serve_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_init_ide_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_dsl_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_api_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "53b085b35b56e782",
+      "type": "structural",
+      "normalized_name": "_build_task_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "53b085b35b56e782",
+      "total_lines": 61,
+      "occurrences": 2,
+      "saved_lines_potential": 61,
+      "impact_score": 61.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_task.py",
+          "line_start": 0,
+          "line_end": 60,
+          "function_name": "_build_task_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 16,
+          "function_name": "_build_task_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "a56ab84374d4ad35",
+      "type": "structural",
+      "normalized_name": "agent_backends_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "a56ab84374d4ad35",
+      "total_lines": 59,
+      "occurrences": 2,
+      "saved_lines_potential": 59,
+      "impact_score": 59.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_agent_backends.py",
+          "line_start": 0,
+          "line_end": 58,
+          "function_name": "agent_backends_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 35,
+          "function_name": "_agent_backends_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "44ff0ca658a12f18",
+      "type": "structural",
+      "normalized_name": "_bootstrap_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "44ff0ca658a12f18",
+      "total_lines": 55,
+      "occurrences": 2,
+      "saved_lines_potential": 55,
+      "impact_score": 55.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_bootstrap.py",
+          "line_start": 0,
+          "line_end": 54,
+          "function_name": "_bootstrap_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 20,
+          "function_name": "_bootstrap_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "40c924ca801e02ea",
+      "type": "structural",
+      "normalized_name": "_build_agent_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "40c924ca801e02ea",
+      "total_lines": 52,
+      "occurrences": 2,
+      "saved_lines_potential": 52,
+      "impact_score": 52.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_agent.py",
+          "line_start": 0,
+          "line_end": 51,
+          "function_name": "_build_agent_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 14,
+          "function_name": "_build_agent_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "d6d78630464623ca",
+      "type": "structural",
+      "normalized_name": "id",
+      "similarity_score": 1.0,
+      "normalized_hash": "d6d78630464623ca",
+      "total_lines": 4,
+      "occurrences": 14,
+      "saved_lines_potential": 52,
+      "impact_score": 52.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/zed.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "ZedStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/zed.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "ZedStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/jetbrains.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "JetbrainsStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/jetbrains.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "JetbrainsStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscodium.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "VscodiumStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscodium.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "VscodiumStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscode.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "id",
+          "class_name": "VscodeStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscode.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "VscodeStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "id",
+          "class_name": "CursorStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "label",
+          "class_name": "CursorStrategy"
+        }
+      ]
+    },
+    {
+      "id": "f2fed5f9ade45466",
+      "type": "structural",
+      "normalized_name": "_build_serve_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "f2fed5f9ade45466",
+      "total_lines": 51,
+      "occurrences": 2,
+      "saved_lines_potential": 51,
+      "impact_score": 51.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_serve.py",
+          "line_start": 0,
+          "line_end": 50,
+          "function_name": "_build_serve_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 12,
+          "function_name": "_build_serve_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "d673e374c3b7a88f",
+      "type": "structural",
+      "normalized_name": "_cli_version",
+      "similarity_score": 1.0,
+      "normalized_hash": "d673e374c3b7a88f",
+      "total_lines": 8,
+      "occurrences": 6,
+      "saved_lines_potential": 40,
+      "impact_score": 40.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/cli.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_cli_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_startup.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "koru_distribution_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_parser.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_cli_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/korudsl/cli.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_cli_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/agents.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_koru_package_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_cli_version",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "5ba49e29c9f013f2",
+      "type": "structural",
+      "normalized_name": "terminal",
+      "similarity_score": 1.0,
+      "normalized_hash": "5ba49e29c9f013f2",
+      "total_lines": 8,
+      "occurrences": 6,
+      "saved_lines_potential": 40,
+      "impact_score": 40.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "terminal",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "keyboard",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "terminal",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "keyboard",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscodium.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "keyboard",
+          "class_name": "VscodiumStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscode.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "keyboard",
+          "class_name": "VscodeStrategy"
+        }
+      ]
+    },
+    {
+      "id": "cdb083ecadb31a0a",
+      "type": "structural",
+      "normalized_name": "ide_router_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "cdb083ecadb31a0a",
+      "total_lines": 38,
+      "occurrences": 2,
+      "saved_lines_potential": 38,
+      "impact_score": 38.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_ide_router.py",
+          "line_start": 0,
+          "line_end": 37,
+          "function_name": "ide_router_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "ide_router_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "be0b9c0f5a07a577",
+      "type": "structural",
+      "normalized_name": "_run_idle_diagnostics",
+      "similarity_score": 1.0,
+      "normalized_hash": "be0b9c0f5a07a577",
+      "total_lines": 37,
+      "occurrences": 2,
+      "saved_lines_potential": 37,
+      "impact_score": 37.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous.py",
+          "line_start": 0,
+          "line_end": 36,
+          "function_name": "_run_idle_diagnostics",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle.py",
+          "line_start": 0,
+          "line_end": 38,
+          "function_name": "_run_idle_diagnostics",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "d5e6262600a85a7f",
+      "type": "structural",
+      "normalized_name": "_env_reassert_extension_install",
+      "similarity_score": 1.0,
+      "normalized_hash": "d5e6262600a85a7f",
+      "total_lines": 6,
+      "occurrences": 7,
+      "saved_lines_potential": 36,
+      "impact_score": 36.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/plugin_installer.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_env_reassert_extension_install",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/activity_log.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "activity_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_chat_activity.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_llm_needs_input_ticket_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_chat_activity.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_llm_needs_input_heuristic_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_chat_activity.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_chat_intake_ticket_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/ide_adapters/ide_reload.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "auto_reload_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomy/operator_pipeline.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_operator_autostart_server_enabled",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e5a5c55f785f21ff",
+      "type": "structural",
+      "normalized_name": "plugin",
+      "similarity_score": 1.0,
+      "normalized_hash": "e5a5c55f785f21ff",
+      "total_lines": 9,
+      "occurrences": 5,
+      "saved_lines_potential": 36,
+      "impact_score": 36.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "plugin",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "plugin",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscodium.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "plugin",
+          "class_name": "VscodiumStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscode.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "plugin",
+          "class_name": "VscodeStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 13,
+          "function_name": "plugin",
+          "class_name": "CursorStrategy"
+        }
+      ]
+    },
+    {
+      "id": "210a472ff9ead9d2",
+      "type": "structural",
+      "normalized_name": "_env_truthy",
+      "similarity_score": 1.0,
+      "normalized_hash": "210a472ff9ead9d2",
+      "total_lines": 5,
+      "occurrences": 8,
+      "saved_lines_potential": 35,
+      "impact_score": 35.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/dashboard.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_truthy",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_truthy",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/git_attribution.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_disabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/activity_log.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_disabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_runtime.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_disabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "_env_truthy",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/daemon/server.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_truthy",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/daemon/handlers.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_env_truthy",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e919a925d9d5bbeb",
+      "type": "structural",
+      "normalized_name": "_tools_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "e919a925d9d5bbeb",
+      "total_lines": 34,
+      "occurrences": 2,
+      "saved_lines_potential": 34,
+      "impact_score": 34.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_tools.py",
+          "line_start": 0,
+          "line_end": 33,
+          "function_name": "_tools_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 15,
+          "function_name": "_tools_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "62098847ad4d50c2",
+      "type": "exact",
+      "normalized_name": "_stdio_info",
+      "similarity_score": 1.0,
+      "normalized_hash": "62098847ad4d50c2",
+      "total_lines": 8,
+      "occurrences": 5,
+      "saved_lines_potential": 32,
+      "impact_score": 32.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_processes.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_stdio_info",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_stdio_info",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_stdio_info",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_daemon.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_stdio_info",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_checkpoint.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_stdio_info",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "8b13f2270232bdb8",
+      "type": "exact",
+      "normalized_name": "_finalise_ticket",
+      "similarity_score": 1.0,
+      "normalized_hash": "8b13f2270232bdb8",
+      "total_lines": 28,
+      "occurrences": 2,
+      "saved_lines_potential": 28,
+      "impact_score": 28.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/wizard/cli.py",
+          "line_start": 0,
+          "line_end": 27,
+          "function_name": "_finalise_ticket",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/wizard/orchestrator.py",
+          "line_start": 0,
+          "line_end": 27,
+          "function_name": "_finalise_ticket",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "0635806504bece98",
+      "type": "exact",
+      "normalized_name": "__init__",
+      "similarity_score": 1.0,
+      "normalized_hash": "0635806504bece98",
+      "total_lines": 4,
+      "occurrences": 8,
+      "saved_lines_potential": 28,
+      "impact_score": 28.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/bounded_contexts/wup/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "WupCommandService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/tasks/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "TaskCommandService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/tasks/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "TaskQueryService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/autonomous_checkpoint/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "AutonomousCheckpointCommandService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/autonomous_checkpoint/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "AutonomousCheckpointQueryService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/planfile_queue/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "PlanfileQueueCommandService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/planfile_queue/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "PlanfileQueueQueryService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/topology/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "TopologyCommandService"
+        }
+      ]
+    },
+    {
+      "id": "58db3c1abec4137d",
+      "type": "structural",
+      "normalized_name": "config_home",
+      "similarity_score": 1.0,
+      "normalized_hash": "58db3c1abec4137d",
+      "total_lines": 7,
+      "occurrences": 5,
+      "saved_lines_potential": 28,
+      "impact_score": 28.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "config_home",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "config_home",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscodium.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "config_home",
+          "class_name": "VscodiumStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/vscode.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "config_home",
+          "class_name": "VscodeStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "config_home",
+          "class_name": "CursorStrategy"
+        }
+      ]
+    },
+    {
+      "id": "e7d634f2ad0fa42f",
+      "type": "structural",
+      "normalized_name": "_build_tools_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "e7d634f2ad0fa42f",
+      "total_lines": 25,
+      "occurrences": 2,
+      "saved_lines_potential": 25,
+      "impact_score": 25.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_tools.py",
+          "line_start": 0,
+          "line_end": 24,
+          "function_name": "_build_tools_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_build_tools_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "f317d4bd48c6194c",
+      "type": "structural",
+      "normalized_name": "_print_task_result",
+      "similarity_score": 1.0,
+      "normalized_hash": "f317d4bd48c6194c",
+      "total_lines": 25,
+      "occurrences": 2,
+      "saved_lines_potential": 25,
+      "impact_score": 25.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_task.py",
+          "line_start": 0,
+          "line_end": 24,
+          "function_name": "_print_task_result",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "_print_task_result",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "8931e078a255f851",
+      "type": "structural",
+      "normalized_name": "build_local_parser",
+      "similarity_score": 1.0,
+      "normalized_hash": "8931e078a255f851",
+      "total_lines": 12,
+      "occurrences": 3,
+      "saved_lines_potential": 24,
+      "impact_score": 24.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/local.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "build_local_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_local_serve.py",
+          "line_start": 0,
+          "line_end": 31,
+          "function_name": "_build_local_serve_parser",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_build_local_serve_parser",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "64ee116f02131aa1",
+      "type": "structural",
+      "normalized_name": "os_injector_env_disabled",
+      "similarity_score": 1.0,
+      "normalized_hash": "64ee116f02131aa1",
+      "total_lines": 6,
+      "occurrences": 5,
+      "saved_lines_potential": 24,
+      "impact_score": 24.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/os_injector.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "os_injector_env_disabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/os_injector.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "os_injector_env_forced",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/os_injector.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "dry_run_from_env",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_gate.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "allow_keyboard_autopilot_fallback",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_gate.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "scan_while_waiting_input_enabled",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "0cfa53d958e33daa",
+      "type": "structural",
+      "normalized_name": "_is_topology_enabled",
+      "similarity_score": 1.0,
+      "normalized_hash": "0cfa53d958e33daa",
+      "total_lines": 12,
+      "occurrences": 3,
+      "saved_lines_potential": 24,
+      "impact_score": 24.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "_is_topology_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_skip_conditions.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "_is_topology_enabled",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomy/phases/utils.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "is_topology_enabled",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "35a6c06937eb5af1",
+      "type": "structural",
+      "normalized_name": "_current_head",
+      "similarity_score": 1.0,
+      "normalized_hash": "35a6c06937eb5af1",
+      "total_lines": 12,
+      "occurrences": 3,
+      "saved_lines_potential": 24,
+      "impact_score": 24.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_cycle.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "_current_head",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_checkpoint.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "current_head",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomy/phases/utils.py",
+          "line_start": 0,
+          "line_end": 11,
+          "function_name": "current_head",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "d446099de191076f",
+      "type": "structural",
+      "normalized_name": "detection",
+      "similarity_score": 1.0,
+      "normalized_hash": "d446099de191076f",
+      "total_lines": 8,
+      "occurrences": 4,
+      "saved_lines_potential": 24,
+      "impact_score": 24.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/zed.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "detection",
+          "class_name": "ZedStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/windsurf.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "detection",
+          "class_name": "WindsurfStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/antigravity.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "detection",
+          "class_name": "AntigravityStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "detection",
+          "class_name": "CursorStrategy"
+        }
+      ]
+    },
+    {
+      "id": "108faec4df9ba5a2",
+      "type": "structural",
+      "normalized_name": "_planfile_base",
+      "similarity_score": 1.0,
+      "normalized_hash": "108faec4df9ba5a2",
+      "total_lines": 22,
+      "occurrences": 2,
+      "saved_lines_potential": 22,
+      "impact_score": 22.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/gate.py",
+          "line_start": 0,
+          "line_end": 21,
+          "function_name": "_planfile_base",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/queue_clean.py",
+          "line_start": 0,
+          "line_end": 15,
+          "function_name": "_planfile_base",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "f61e88241f43b061",
+      "type": "structural",
+      "normalized_name": "_run_queue_loop",
+      "similarity_score": 1.0,
+      "normalized_hash": "f61e88241f43b061",
+      "total_lines": 21,
+      "occurrences": 2,
+      "saved_lines_potential": 21,
+      "impact_score": 21.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_cycle.py",
+          "line_start": 0,
+          "line_end": 20,
+          "function_name": "_run_queue_loop",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomy/phases/queue_phase.py",
+          "line_start": 0,
+          "line_end": 20,
+          "function_name": "run_queue_loop",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "05c329b76d093c50",
+      "type": "structural",
+      "normalized_name": "_refactor_planfile_handoff_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "05c329b76d093c50",
+      "total_lines": 20,
+      "occurrences": 2,
+      "saved_lines_potential": 20,
+      "impact_score": 20.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_refactor_planfile_handoff.py",
+          "line_start": 0,
+          "line_end": 19,
+          "function_name": "_refactor_planfile_handoff_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 10,
+          "function_name": "_refactor_planfile_handoff_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e814f18c9de43aa9",
+      "type": "structural",
+      "normalized_name": "_peek_project_from_argv",
+      "similarity_score": 1.0,
+      "normalized_hash": "e814f18c9de43aa9",
+      "total_lines": 10,
+      "occurrences": 3,
+      "saved_lines_potential": 20,
+      "impact_score": 20.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_peek_project_from_argv",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_auto.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_peek_project_from_argv",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "_peek_project_from_argv",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "8d8f76a79b850ac4",
+      "type": "structural",
+      "normalized_name": "__init__",
+      "similarity_score": 1.0,
+      "normalized_hash": "8d8f76a79b850ac4",
+      "total_lines": 4,
+      "occurrences": 6,
+      "saved_lines_potential": 20,
+      "impact_score": 20.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/bounded_contexts/wup/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "WupEventLogProjection"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/planfile_queue/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "PlanfileQueueEventLogProjection"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/tasks/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "TaskEventLogProjection"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/local_manager/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "LocalManagerEventLogProjection"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/autonomous_checkpoint/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "AutonomousCheckpointEventLogProjection"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/topology/read_model.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "TopologyEventLogProjection"
+        }
+      ]
+    },
+    {
+      "id": "dc58e452c3ffdf9f",
+      "type": "structural",
+      "normalized_name": "_bundled_vsix_candidates",
+      "similarity_score": 1.0,
+      "normalized_hash": "dc58e452c3ffdf9f",
+      "total_lines": 19,
+      "occurrences": 2,
+      "saved_lines_potential": 19,
+      "impact_score": 19.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/plugin_installer.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "_bundled_vsix_candidates",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/install_plugin_cli.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "bundled_plugin_vsix_candidates",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e5e9d478028c5596",
+      "type": "structural",
+      "normalized_name": "_read_wup_health",
+      "similarity_score": 1.0,
+      "normalized_hash": "e5e9d478028c5596",
+      "total_lines": 19,
+      "occurrences": 2,
+      "saved_lines_potential": 19,
+      "impact_score": 19.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "_read_wup_health",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "_read_wup_health",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "349d13da79bbb72b",
+      "type": "structural",
+      "normalized_name": "init_ci_main",
+      "similarity_score": 1.0,
+      "normalized_hash": "349d13da79bbb72b",
+      "total_lines": 19,
+      "occurrences": 2,
+      "saved_lines_potential": 19,
+      "impact_score": 19.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli_init.py",
+          "line_start": 0,
+          "line_end": 18,
+          "function_name": "init_ci_main",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_init_ci_main",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "2f70022f4d619771",
+      "type": "exact",
+      "normalized_name": "_path_is_relative_to",
+      "similarity_score": 1.0,
+      "normalized_hash": "2f70022f4d619771",
+      "total_lines": 9,
+      "occurrences": 3,
+      "saved_lines_potential": 18,
+      "impact_score": 18.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cli.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "_path_is_relative_to",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_runtime.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "_path_is_relative_to",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cli_cleaned.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_path_is_relative_to",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "35ca7615eb80ab15",
+      "type": "exact",
+      "normalized_name": "list_monitors",
+      "similarity_score": 1.0,
+      "normalized_hash": "35ca7615eb80ab15",
+      "total_lines": 6,
+      "occurrences": 4,
+      "saved_lines_potential": 18,
+      "impact_score": 18.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruvision/providers/cli_tools.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "list_monitors",
+          "class_name": "CliToolsProvider"
+        },
+        {
+          "file": "../koru/src/koruvision/providers/grim.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "list_monitors",
+          "class_name": "GrimProvider"
+        },
+        {
+          "file": "../koru/src/koruvision/providers/portal_screenshot.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "list_monitors",
+          "class_name": "PortalScreenshotProvider"
+        },
+        {
+          "file": "../koru/src/koruvision/providers/portal_screencast.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "list_monitors",
+          "class_name": "PortalScreenCastProvider"
+        }
+      ]
+    },
+    {
+      "id": "a4f603f94c4ab227",
+      "type": "structural",
+      "normalized_name": "keyboard",
+      "similarity_score": 1.0,
+      "normalized_hash": "a4f603f94c4ab227",
+      "total_lines": 9,
+      "occurrences": 3,
+      "saved_lines_potential": 18,
+      "impact_score": 18.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ides/zed.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "keyboard",
+          "class_name": "ZedStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/jetbrains.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "keyboard",
+          "class_name": "JetbrainsStrategy"
+        },
+        {
+          "file": "../koru/src/koruide/ides/cursor.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "keyboard",
+          "class_name": "CursorStrategy"
+        }
+      ]
+    },
+    {
+      "id": "c9fe98aa9145404a",
+      "type": "exact",
+      "normalized_name": "_parse_iso_datetime",
+      "similarity_score": 1.0,
+      "normalized_hash": "c9fe98aa9145404a",
+      "total_lines": 16,
+      "occurrences": 2,
+      "saved_lines_potential": 16,
+      "impact_score": 16.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomy/ide_work.py",
+          "line_start": 0,
+          "line_end": 15,
+          "function_name": "_parse_iso_datetime",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomy/post_run_verify.py",
+          "line_start": 0,
+          "line_end": 15,
+          "function_name": "_parse_iso_datetime",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "75116b10677681b4",
+      "type": "structural",
+      "normalized_name": "resolve_xdg_path",
+      "similarity_score": 1.0,
+      "normalized_hash": "75116b10677681b4",
+      "total_lines": 16,
+      "occurrences": 2,
+      "saved_lines_potential": 16,
+      "impact_score": 16.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/utils.py",
+          "line_start": 0,
+          "line_end": 15,
+          "function_name": "resolve_xdg_path",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/utils/client_helpers.py",
+          "line_start": 0,
+          "line_end": 14,
+          "function_name": "resolve_xdg_path",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e29387361a1c5b5c",
+      "type": "structural",
+      "normalized_name": "_term_program_label",
+      "similarity_score": 1.0,
+      "normalized_hash": "e29387361a1c5b5c",
+      "total_lines": 5,
+      "occurrences": 4,
+      "saved_lines_potential": 15,
+      "impact_score": 15.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_startup.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_term_program_label",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_startup.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_xdg_runtime_dir_label",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruvision/providers/obs_websocket.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "obs_url",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruvision/providers/obs_websocket.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "obs_source_name",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "bec320df81d0f664",
+      "type": "structural",
+      "normalized_name": "read_serve_endpoint",
+      "similarity_score": 1.0,
+      "normalized_hash": "bec320df81d0f664",
+      "total_lines": 13,
+      "occurrences": 2,
+      "saved_lines_potential": 13,
+      "impact_score": 13.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/dashboard_serve_utils.py",
+          "line_start": 0,
+          "line_end": 12,
+          "function_name": "read_serve_endpoint",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/project_pipeline.py",
+          "line_start": 0,
+          "line_end": 12,
+          "function_name": "load_koru_project_pipeline",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "f419916cdf136619",
+      "type": "structural",
+      "normalized_name": "_saved_serve_config",
+      "similarity_score": 1.0,
+      "normalized_hash": "f419916cdf136619",
+      "total_lines": 6,
+      "occurrences": 3,
+      "saved_lines_potential": 12,
+      "impact_score": 12.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/dashboard_config.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_saved_serve_config",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/configurator.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_previous_serve_config",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/tasks.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_source_context",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "eabc3ad4f0de5304",
+      "type": "structural",
+      "normalized_name": "_versioned_vsix_candidates",
+      "similarity_score": 1.0,
+      "normalized_hash": "eabc3ad4f0de5304",
+      "total_lines": 11,
+      "occurrences": 2,
+      "saved_lines_potential": 11,
+      "impact_score": 11.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/plugin_installer.py",
+          "line_start": 0,
+          "line_end": 10,
+          "function_name": "_versioned_vsix_candidates",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/install_plugin_cli.py",
+          "line_start": 0,
+          "line_end": 10,
+          "function_name": "_versioned_plugin_vsix_candidates",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "02b64046a4cbb6f9",
+      "type": "structural",
+      "normalized_name": "_llm_reflection_summary_max_age_seconds",
+      "similarity_score": 1.0,
+      "normalized_hash": "02b64046a4cbb6f9",
+      "total_lines": 11,
+      "occurrences": 2,
+      "saved_lines_potential": 11,
+      "impact_score": 11.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_cycle_chat_activity.py",
+          "line_start": 0,
+          "line_end": 10,
+          "function_name": "_llm_reflection_summary_max_age_seconds",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/daemon/handlers.py",
+          "line_start": 0,
+          "line_end": 10,
+          "function_name": "_plugin_rejection_log_interval_seconds",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "5f21bf4c3e09a1f6",
+      "type": "exact",
+      "normalized_name": "_plugin_package_version",
+      "similarity_score": 1.0,
+      "normalized_hash": "5f21bf4c3e09a1f6",
+      "total_lines": 10,
+      "occurrences": 2,
+      "saved_lines_potential": 10,
+      "impact_score": 10.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/plugin_installer.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_plugin_package_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/install_plugin_cli.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_plugin_package_version",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "34e234b33f5a7220",
+      "type": "structural",
+      "normalized_name": "_read_cmdline",
+      "similarity_score": 1.0,
+      "normalized_hash": "34e234b33f5a7220",
+      "total_lines": 10,
+      "occurrences": 2,
+      "saved_lines_potential": 10,
+      "impact_score": 10.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ide.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_read_cmdline",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/wizard/project.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "_read_proc_cmdline",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "cfd22216ac17aee8",
+      "type": "structural",
+      "normalized_name": "_as_managed",
+      "similarity_score": 1.0,
+      "normalized_hash": "cfd22216ac17aee8",
+      "total_lines": 10,
+      "occurrences": 2,
+      "saved_lines_potential": 10,
+      "impact_score": 10.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_processes.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "_as_managed",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_process_guard.py",
+          "line_start": 0,
+          "line_end": 9,
+          "function_name": "as_managed",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "608ea00f9602df11",
+      "type": "structural",
+      "normalized_name": "_process_cwd",
+      "similarity_score": 1.0,
+      "normalized_hash": "608ea00f9602df11",
+      "total_lines": 9,
+      "occurrences": 2,
+      "saved_lines_potential": 9,
+      "impact_score": 9.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_processes.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "_process_cwd",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_process_guard.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "process_cwd",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e33387610a1ba207",
+      "type": "exact",
+      "normalized_name": "png_dimensions",
+      "similarity_score": 1.0,
+      "normalized_hash": "e33387610a1ba207",
+      "total_lines": 8,
+      "occurrences": 2,
+      "saved_lines_potential": 8,
+      "impact_score": 8.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruvision/capture_mss.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "png_dimensions",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruvision/providers/base.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "png_dimensions",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "f9dd6ff094db2913",
+      "type": "structural",
+      "normalized_name": "_dashboard_urls_for",
+      "similarity_score": 1.0,
+      "normalized_hash": "f9dd6ff094db2913",
+      "total_lines": 8,
+      "occurrences": 2,
+      "saved_lines_potential": 8,
+      "impact_score": 8.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/dashboard_serve_utils.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_dashboard_urls_for",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruapi/dashboard_serve.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "_dashboard_urls",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "8d76d0467156eeda",
+      "type": "structural",
+      "normalized_name": "_env_bit",
+      "similarity_score": 1.0,
+      "normalized_hash": "8d76d0467156eeda",
+      "total_lines": 8,
+      "occurrences": 2,
+      "saved_lines_potential": 8,
+      "impact_score": 8.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/init.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_env_bit",
+          "class_name": "InitReport"
+        },
+        {
+          "file": "../koru/src/koru/ide_adapters/base.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "operator_task_command",
+          "class_name": "BridgeStatus"
+        }
+      ]
+    },
+    {
+      "id": "68f66b5c48e51611",
+      "type": "structural",
+      "normalized_name": "_koru_version",
+      "similarity_score": 1.0,
+      "normalized_hash": "68f66b5c48e51611",
+      "total_lines": 8,
+      "occurrences": 2,
+      "saved_lines_potential": 8,
+      "impact_score": 8.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/local_manager_client.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "_koru_version",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/local_manager_state.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "koru_version",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "e6dc5215033ac1cb",
+      "type": "structural",
+      "normalized_name": "history",
+      "similarity_score": 1.0,
+      "normalized_hash": "e6dc5215033ac1cb",
+      "total_lines": 8,
+      "occurrences": 2,
+      "saved_lines_potential": 8,
+      "impact_score": 8.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/bounded_contexts/tasks/application.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "history",
+          "class_name": "TaskQueryService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/planfile_queue/application.py",
+          "line_start": 0,
+          "line_end": 7,
+          "function_name": "history",
+          "class_name": "PlanfileQueueQueryService"
+        }
+      ]
+    },
+    {
+      "id": "962ce98f78874f51",
+      "type": "exact",
+      "normalized_name": "_cycle_attr",
+      "similarity_score": 1.0,
+      "normalized_hash": "962ce98f78874f51",
+      "total_lines": 7,
+      "occurrences": 2,
+      "saved_lines_potential": 7,
+      "impact_score": 7.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_cycle_drive_retry.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_cycle_attr",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_cycle_chat_activity.py",
+          "line_start": 0,
+          "line_end": 6,
+          "function_name": "_cycle_attr",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "5149646c4793ef0c",
+      "type": "structural",
+      "normalized_name": "default_config_path",
+      "similarity_score": 1.0,
+      "normalized_hash": "5149646c4793ef0c",
+      "total_lines": 6,
+      "occurrences": 2,
+      "saved_lines_potential": 6,
+      "impact_score": 6.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/config.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "default_config_path",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/systemd_cli.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "systemd_user_dir",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "b13873a2367263e4",
+      "type": "structural",
+      "normalized_name": "is_running",
+      "similarity_score": 1.0,
+      "normalized_hash": "b13873a2367263e4",
+      "total_lines": 3,
+      "occurrences": 3,
+      "saved_lines_potential": 6,
+      "impact_score": 6.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ports.py",
+          "line_start": 0,
+          "line_end": 2,
+          "function_name": "is_running",
+          "class_name": "IdeLifecyclePort"
+        },
+        {
+          "file": "../koru/src/koruide/ports.py",
+          "line_start": 0,
+          "line_end": 2,
+          "function_name": "shutdown",
+          "class_name": "IdeLifecyclePort"
+        },
+        {
+          "file": "../koru/src/koru/ide_client.py",
+          "line_start": 0,
+          "line_end": 2,
+          "function_name": "is_running",
+          "class_name": "IDEControlClient"
+        }
+      ]
+    },
+    {
+      "id": "05f9b3c48416287d",
+      "type": "structural",
+      "normalized_name": "discover_ide_candidates",
+      "similarity_score": 1.0,
+      "normalized_hash": "05f9b3c48416287d",
+      "total_lines": 6,
+      "occurrences": 2,
+      "saved_lines_potential": 6,
+      "impact_score": 6.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous_onboarding.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "discover_ide_candidates",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/wizard/cli.py",
+          "line_start": 0,
+          "line_end": 5,
+          "function_name": "discover_installed_ides",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "dfca6af8ed70fe1f",
+      "type": "exact",
+      "normalized_name": "_planfile_env",
+      "similarity_score": 1.0,
+      "normalized_hash": "dfca6af8ed70fe1f",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/gc.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_planfile_env",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/context.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_planfile_env",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "136e25c77025b646",
+      "type": "exact",
+      "normalized_name": "_yellow",
+      "similarity_score": 1.0,
+      "normalized_hash": "136e25c77025b646",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/ide_adapters/shared.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_yellow",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autopilot/install_manager.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_yellow",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "2d8081b5be85eb94",
+      "type": "structural",
+      "normalized_name": "_dotenv_path",
+      "similarity_score": 1.0,
+      "normalized_hash": "2d8081b5be85eb94",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/dashboard_config.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_dotenv_path",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_onboarding.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_koru_project_dir",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "fac1b6a8ab8a15d1",
+      "type": "structural",
+      "normalized_name": "get_integration",
+      "similarity_score": 1.0,
+      "normalized_hash": "fac1b6a8ab8a15d1",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruapi/integrations.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "get_integration",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/ide_adapters/registry.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "get_adapter",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "90ed0bd3311027d3",
+      "type": "structural",
+      "normalized_name": "_which",
+      "similarity_score": 1.0,
+      "normalized_hash": "90ed0bd3311027d3",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/injector.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_which",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/agents.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_which",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "ebf587c0f8378039",
+      "type": "structural",
+      "normalized_name": "_default_semcod_root",
+      "similarity_score": 1.0,
+      "normalized_hash": "ebf587c0f8378039",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/dev_sync.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_default_semcod_root",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruide/os_injector.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "default_config_path",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "417d955e3a8555f3",
+      "type": "structural",
+      "normalized_name": "_status_has_autopilot_plugin",
+      "similarity_score": 1.0,
+      "normalized_hash": "417d955e3a8555f3",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomous.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_status_has_autopilot_plugin",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/autonomous_plugin.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "status_has_autopilot_plugin",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "59ed718a700de696",
+      "type": "structural",
+      "normalized_name": "_config_path",
+      "similarity_score": 1.0,
+      "normalized_hash": "59ed718a700de696",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/configurator.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_config_path",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/project_pipeline.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "project_pipeline_path",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "5b9d8c23219dc956",
+      "type": "structural",
+      "normalized_name": "utc_now",
+      "similarity_score": 1.0,
+      "normalized_hash": "5b9d8c23219dc956",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/local_manager_state.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "utc_now",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koru/cqrs/event_store.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "_utc_now",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "c2438ccb75aca4d6",
+      "type": "structural",
+      "normalized_name": "autonomy_telemetry_path",
+      "similarity_score": 1.0,
+      "normalized_hash": "c2438ccb75aca4d6",
+      "total_lines": 5,
+      "occurrences": 2,
+      "saved_lines_potential": 5,
+      "impact_score": 5.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/autonomy/telemetry_snapshot.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "autonomy_telemetry_path",
+          "class_name": null
+        },
+        {
+          "file": "../koru/src/koruvision/providers/screencast_session.py",
+          "line_start": 0,
+          "line_end": 4,
+          "function_name": "session_file_for_project",
+          "class_name": null
+        }
+      ]
+    },
+    {
+      "id": "79e565e02f9d388c",
+      "type": "structural",
+      "normalized_name": "to_dict",
+      "similarity_score": 1.0,
+      "normalized_hash": "79e565e02f9d388c",
+      "total_lines": 4,
+      "occurrences": 2,
+      "saved_lines_potential": 4,
+      "impact_score": 4.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koruide/ide.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "to_dict",
+          "class_name": "RunningIDE"
+        },
+        {
+          "file": "../koru/src/koruide/injector.py",
+          "line_start": 0,
+          "line_end": 8,
+          "function_name": "to_dict",
+          "class_name": "InjectionResult"
+        }
+      ]
+    },
+    {
+      "id": "92265ab1cfd1dd23",
+      "type": "structural",
+      "normalized_name": "_line",
+      "similarity_score": 1.0,
+      "normalized_hash": "92265ab1cfd1dd23",
+      "total_lines": 4,
+      "occurrences": 2,
+      "saved_lines_potential": 4,
+      "impact_score": 4.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/configurator.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "_line",
+          "class_name": "ShellPrompter"
+        },
+        {
+          "file": "../koru/src/koru/wizard/prompters.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "_print",
+          "class_name": "StdinPrompter"
+        }
+      ]
+    },
+    {
+      "id": "888c1ad3a16401df",
+      "type": "structural",
+      "normalized_name": "reset",
+      "similarity_score": 1.0,
+      "normalized_hash": "888c1ad3a16401df",
+      "total_lines": 4,
+      "occurrences": 2,
+      "saved_lines_potential": 4,
+      "impact_score": 4.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cqrs/event_log_projection.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "reset",
+          "class_name": "EventLogProjection"
+        },
+        {
+          "file": "../koru/src/koruide/daemon/server.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "stop",
+          "class_name": "AutopilotDaemon"
+        }
+      ]
+    },
+    {
+      "id": "57310cea2e70e12d",
+      "type": "structural",
+      "normalized_name": "__init__",
+      "similarity_score": 1.0,
+      "normalized_hash": "57310cea2e70e12d",
+      "total_lines": 4,
+      "occurrences": 2,
+      "saved_lines_potential": 4,
+      "impact_score": 4.0,
+      "fragments": [
+        {
+          "file": "../koru/src/koru/cqrs/event_log_query.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "EventLogQueryService"
+        },
+        {
+          "file": "../koru/src/koru/bounded_contexts/local_manager/application.py",
+          "line_start": 0,
+          "line_end": 3,
+          "function_name": "__init__",
+          "class_name": "LocalManagerQueryService"
+        }
+      ]
+    }
+  ],
+  "refactor_suggestions": [
+    {
+      "group_id": "d4b363c72beee573",
+      "priority": 1,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/_build_parser.py",
+      "function_name": "_build_parser",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_parser.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 234-line block across 2 files — saves 234 lines"
+    },
+    {
+      "group_id": "432078eda54c8d6f",
+      "priority": 2,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_dsl_main.py",
+      "function_name": "_dsl_main",
+      "original_files": [
+        "../koru/src/koru/cli.py",
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_local_serve.py",
+        "../koru/src/koru/cli_serve.py"
+      ],
+      "risk_level": "low",
+      "rationale": "10 occurrences of 13-line block across 4 files — saves 117 lines"
+    },
+    {
+      "group_id": "53b085b35b56e782",
+      "priority": 3,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/_build_task_parser.py",
+      "function_name": "_build_task_parser",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_task.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 61-line block across 2 files — saves 61 lines"
+    },
+    {
+      "group_id": "a56ab84374d4ad35",
+      "priority": 4,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/agent_backends_main.py",
+      "function_name": "agent_backends_main",
+      "original_files": [
+        "../koru/src/koru/cli_agent_backends.py",
+        "../koru/src/koru/cli_cleaned.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 59-line block across 2 files — saves 59 lines"
+    },
+    {
+      "group_id": "44ff0ca658a12f18",
+      "priority": 5,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/_bootstrap_main.py",
+      "function_name": "_bootstrap_main",
+      "original_files": [
+        "../koru/src/koru/cli_bootstrap.py",
+        "../koru/src/koru/cli_cleaned.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 55-line block across 2 files — saves 55 lines"
+    },
+    {
+      "group_id": "40c924ca801e02ea",
+      "priority": 6,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/_build_agent_parser.py",
+      "function_name": "_build_agent_parser",
+      "original_files": [
+        "../koru/src/koru/cli_agent.py",
+        "../koru/src/koru/cli_cleaned.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 52-line block across 2 files — saves 52 lines"
+    },
+    {
+      "group_id": "d6d78630464623ca",
+      "priority": 7,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/id.py",
+      "function_name": "id",
+      "original_files": [
+        "../koru/src/koruide/ides/antigravity.py",
+        "../koru/src/koruide/ides/cursor.py",
+        "../koru/src/koruide/ides/jetbrains.py",
+        "../koru/src/koruide/ides/vscode.py",
+        "../koru/src/koruide/ides/vscodium.py",
+        "../koru/src/koruide/ides/windsurf.py",
+        "../koru/src/koruide/ides/zed.py"
+      ],
+      "risk_level": "low",
+      "rationale": "14 occurrences of 4-line block across 7 files — saves 52 lines"
+    },
+    {
+      "group_id": "f2fed5f9ade45466",
+      "priority": 8,
+      "action": "extract_module",
+      "new_module": "../koru/src/koru/utils/_build_serve_parser.py",
+      "function_name": "_build_serve_parser",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_serve.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 51-line block across 2 files — saves 51 lines"
+    },
+    {
+      "group_id": "d673e374c3b7a88f",
+      "priority": 9,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_cli_version.py",
+      "function_name": "_cli_version",
+      "original_files": [
+        "../koru/src/koru/agents.py",
+        "../koru/src/koru/autonomous_startup.py",
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_parser.py",
+        "../koru/src/koruapi/cli.py",
+        "../koru/src/korudsl/cli.py"
+      ],
+      "risk_level": "low",
+      "rationale": "6 occurrences of 8-line block across 6 files — saves 40 lines"
+    },
+    {
+      "group_id": "5ba49e29c9f013f2",
+      "priority": 10,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/terminal.py",
+      "function_name": "terminal",
+      "original_files": [
+        "../koru/src/koruide/ides/antigravity.py",
+        "../koru/src/koruide/ides/vscode.py",
+        "../koru/src/koruide/ides/vscodium.py",
+        "../koru/src/koruide/ides/windsurf.py"
+      ],
+      "risk_level": "low",
+      "rationale": "6 occurrences of 8-line block across 4 files — saves 40 lines"
+    },
+    {
+      "group_id": "cdb083ecadb31a0a",
+      "priority": 11,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/ide_router_main.py",
+      "function_name": "ide_router_main",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_ide_router.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 38-line block across 2 files — saves 38 lines"
+    },
+    {
+      "group_id": "be0b9c0f5a07a577",
+      "priority": 12,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_run_idle_diagnostics.py",
+      "function_name": "_run_idle_diagnostics",
+      "original_files": [
+        "../koru/src/koru/autonomous.py",
+        "../koru/src/koru/autonomous_cycle.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 37-line block across 2 files — saves 37 lines"
+    },
+    {
+      "group_id": "d5e6262600a85a7f",
+      "priority": 13,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_env_reassert_extension_install.py",
+      "function_name": "_env_reassert_extension_install",
+      "original_files": [
+        "../koru/src/koru/activity_log.py",
+        "../koru/src/koru/autonomous_cycle_chat_activity.py",
+        "../koru/src/koru/autonomy/operator_pipeline.py",
+        "../koru/src/koru/ide_adapters/ide_reload.py",
+        "../koru/src/koruide/plugin_installer.py"
+      ],
+      "risk_level": "low",
+      "rationale": "7 occurrences of 6-line block across 5 files — saves 36 lines"
+    },
+    {
+      "group_id": "e5a5c55f785f21ff",
+      "priority": 14,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/plugin.py",
+      "function_name": "plugin",
+      "original_files": [
+        "../koru/src/koruide/ides/antigravity.py",
+        "../koru/src/koruide/ides/cursor.py",
+        "../koru/src/koruide/ides/vscode.py",
+        "../koru/src/koruide/ides/vscodium.py",
+        "../koru/src/koruide/ides/windsurf.py"
+      ],
+      "risk_level": "low",
+      "rationale": "5 occurrences of 9-line block across 5 files — saves 36 lines"
+    },
+    {
+      "group_id": "210a472ff9ead9d2",
+      "priority": 15,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_env_truthy.py",
+      "function_name": "_env_truthy",
+      "original_files": [
+        "../koru/src/koru/activity_log.py",
+        "../koru/src/koru/autonomous_runtime.py",
+        "../koru/src/koru/cli.py",
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/git_attribution.py",
+        "../koru/src/koruapi/dashboard.py",
+        "../koru/src/koruide/daemon/handlers.py",
+        "../koru/src/koruide/daemon/server.py"
+      ],
+      "risk_level": "low",
+      "rationale": "8 occurrences of 5-line block across 8 files — saves 35 lines"
+    },
+    {
+      "group_id": "e919a925d9d5bbeb",
+      "priority": 16,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_tools_main.py",
+      "function_name": "_tools_main",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_tools.py"
+      ],
+      "risk_level": "medium",
+      "rationale": "2 occurrences of 34-line block across 2 files — saves 34 lines"
+    },
+    {
+      "group_id": "62098847ad4d50c2",
+      "priority": 17,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_stdio_info.py",
+      "function_name": "_stdio_info",
+      "original_files": [
+        "../koru/src/koru/autonomous.py",
+        "../koru/src/koru/autonomous_checkpoint.py",
+        "../koru/src/koru/autonomous_cycle.py",
+        "../koru/src/koru/autonomous_daemon.py",
+        "../koru/src/koru/autonomous_processes.py"
+      ],
+      "risk_level": "low",
+      "rationale": "5 occurrences of 8-line block across 5 files — saves 32 lines"
+    },
+    {
+      "group_id": "8b13f2270232bdb8",
+      "priority": 18,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/wizard/utils/_finalise_ticket.py",
+      "function_name": "_finalise_ticket",
+      "original_files": [
+        "../koru/src/koru/wizard/cli.py",
+        "../koru/src/koru/wizard/orchestrator.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 28-line block across 2 files — saves 28 lines"
+    },
+    {
+      "group_id": "0635806504bece98",
+      "priority": 19,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/bounded_contexts/utils/__init__.py",
+      "function_name": "__init__",
+      "original_files": [
+        "../koru/src/koru/bounded_contexts/autonomous_checkpoint/application.py",
+        "../koru/src/koru/bounded_contexts/planfile_queue/application.py",
+        "../koru/src/koru/bounded_contexts/tasks/application.py",
+        "../koru/src/koru/bounded_contexts/topology/application.py",
+        "../koru/src/koru/bounded_contexts/wup/application.py"
+      ],
+      "risk_level": "low",
+      "rationale": "8 occurrences of 4-line block across 5 files — saves 28 lines"
+    },
+    {
+      "group_id": "58db3c1abec4137d",
+      "priority": 20,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/config_home.py",
+      "function_name": "config_home",
+      "original_files": [
+        "../koru/src/koruide/ides/antigravity.py",
+        "../koru/src/koruide/ides/cursor.py",
+        "../koru/src/koruide/ides/vscode.py",
+        "../koru/src/koruide/ides/vscodium.py",
+        "../koru/src/koruide/ides/windsurf.py"
+      ],
+      "risk_level": "low",
+      "rationale": "5 occurrences of 7-line block across 5 files — saves 28 lines"
+    },
+    {
+      "group_id": "e7d634f2ad0fa42f",
+      "priority": 21,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_build_tools_parser.py",
+      "function_name": "_build_tools_parser",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_tools.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 25-line block across 2 files — saves 25 lines"
+    },
+    {
+      "group_id": "f317d4bd48c6194c",
+      "priority": 22,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_print_task_result.py",
+      "function_name": "_print_task_result",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_task.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 25-line block across 2 files — saves 25 lines"
+    },
+    {
+      "group_id": "8931e078a255f851",
+      "priority": 23,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/build_local_parser.py",
+      "function_name": "build_local_parser",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_local_serve.py",
+        "../koru/src/koruapi/local.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 12-line block across 3 files — saves 24 lines"
+    },
+    {
+      "group_id": "64ee116f02131aa1",
+      "priority": 24,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/os_injector_env_disabled.py",
+      "function_name": "os_injector_env_disabled",
+      "original_files": [
+        "../koru/src/koru/autonomous_cycle_gate.py",
+        "../koru/src/koruide/os_injector.py"
+      ],
+      "risk_level": "low",
+      "rationale": "5 occurrences of 6-line block across 2 files — saves 24 lines"
+    },
+    {
+      "group_id": "0cfa53d958e33daa",
+      "priority": 25,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_is_topology_enabled.py",
+      "function_name": "_is_topology_enabled",
+      "original_files": [
+        "../koru/src/koru/autonomous.py",
+        "../koru/src/koru/autonomous_cycle_skip_conditions.py",
+        "../koru/src/koru/autonomy/phases/utils.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 12-line block across 3 files — saves 24 lines"
+    },
+    {
+      "group_id": "35a6c06937eb5af1",
+      "priority": 26,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_current_head.py",
+      "function_name": "_current_head",
+      "original_files": [
+        "../koru/src/koru/autonomous_checkpoint.py",
+        "../koru/src/koru/autonomous_cycle.py",
+        "../koru/src/koru/autonomy/phases/utils.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 12-line block across 3 files — saves 24 lines"
+    },
+    {
+      "group_id": "d446099de191076f",
+      "priority": 27,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/detection.py",
+      "function_name": "detection",
+      "original_files": [
+        "../koru/src/koruide/ides/antigravity.py",
+        "../koru/src/koruide/ides/cursor.py",
+        "../koru/src/koruide/ides/windsurf.py",
+        "../koru/src/koruide/ides/zed.py"
+      ],
+      "risk_level": "low",
+      "rationale": "4 occurrences of 8-line block across 4 files — saves 24 lines"
+    },
+    {
+      "group_id": "108faec4df9ba5a2",
+      "priority": 28,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_planfile_base.py",
+      "function_name": "_planfile_base",
+      "original_files": [
+        "../koru/src/koru/gate.py",
+        "../koru/src/koru/queue_clean.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 22-line block across 2 files — saves 22 lines"
+    },
+    {
+      "group_id": "f61e88241f43b061",
+      "priority": 29,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_run_queue_loop.py",
+      "function_name": "_run_queue_loop",
+      "original_files": [
+        "../koru/src/koru/autonomous_cycle.py",
+        "../koru/src/koru/autonomy/phases/queue_phase.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 21-line block across 2 files — saves 21 lines"
+    },
+    {
+      "group_id": "05c329b76d093c50",
+      "priority": 30,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_refactor_planfile_handoff_main.py",
+      "function_name": "_refactor_planfile_handoff_main",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_refactor_planfile_handoff.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 20-line block across 2 files — saves 20 lines"
+    },
+    {
+      "group_id": "e814f18c9de43aa9",
+      "priority": 31,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_peek_project_from_argv.py",
+      "function_name": "_peek_project_from_argv",
+      "original_files": [
+        "../koru/src/koru/cli.py",
+        "../koru/src/koru/cli_auto.py",
+        "../koru/src/koru/cli_cleaned.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 10-line block across 3 files — saves 20 lines"
+    },
+    {
+      "group_id": "8d8f76a79b850ac4",
+      "priority": 32,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/bounded_contexts/utils/__init__.py",
+      "function_name": "__init__",
+      "original_files": [
+        "../koru/src/koru/bounded_contexts/autonomous_checkpoint/read_model.py",
+        "../koru/src/koru/bounded_contexts/local_manager/read_model.py",
+        "../koru/src/koru/bounded_contexts/planfile_queue/read_model.py",
+        "../koru/src/koru/bounded_contexts/tasks/read_model.py",
+        "../koru/src/koru/bounded_contexts/topology/read_model.py",
+        "../koru/src/koru/bounded_contexts/wup/read_model.py"
+      ],
+      "risk_level": "low",
+      "rationale": "6 occurrences of 4-line block across 6 files — saves 20 lines"
+    },
+    {
+      "group_id": "dc58e452c3ffdf9f",
+      "priority": 33,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_bundled_vsix_candidates.py",
+      "function_name": "_bundled_vsix_candidates",
+      "original_files": [
+        "../koru/src/koru/autopilot/install_plugin_cli.py",
+        "../koru/src/koruide/plugin_installer.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 19-line block across 2 files — saves 19 lines"
+    },
+    {
+      "group_id": "e5e9d478028c5596",
+      "priority": 34,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_read_wup_health.py",
+      "function_name": "_read_wup_health",
+      "original_files": [
+        "../koru/src/koru/autonomous.py",
+        "../koru/src/koru/autonomous_cycle.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 19-line block across 2 files — saves 19 lines"
+    },
+    {
+      "group_id": "349d13da79bbb72b",
+      "priority": 35,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/init_ci_main.py",
+      "function_name": "init_ci_main",
+      "original_files": [
+        "../koru/src/koru/cli_cleaned.py",
+        "../koru/src/koru/cli_init.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 19-line block across 2 files — saves 19 lines"
+    },
+    {
+      "group_id": "2f70022f4d619771",
+      "priority": 36,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_path_is_relative_to.py",
+      "function_name": "_path_is_relative_to",
+      "original_files": [
+        "../koru/src/koru/autonomous_runtime.py",
+        "../koru/src/koru/cli.py",
+        "../koru/src/koru/cli_cleaned.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 9-line block across 3 files — saves 18 lines"
+    },
+    {
+      "group_id": "35ca7615eb80ab15",
+      "priority": 37,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruvision/providers/utils/list_monitors.py",
+      "function_name": "list_monitors",
+      "original_files": [
+        "../koru/src/koruvision/providers/cli_tools.py",
+        "../koru/src/koruvision/providers/grim.py",
+        "../koru/src/koruvision/providers/portal_screencast.py",
+        "../koru/src/koruvision/providers/portal_screenshot.py"
+      ],
+      "risk_level": "low",
+      "rationale": "4 occurrences of 6-line block across 4 files — saves 18 lines"
+    },
+    {
+      "group_id": "a4f603f94c4ab227",
+      "priority": 38,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/ides/utils/keyboard.py",
+      "function_name": "keyboard",
+      "original_files": [
+        "../koru/src/koruide/ides/cursor.py",
+        "../koru/src/koruide/ides/jetbrains.py",
+        "../koru/src/koruide/ides/zed.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 9-line block across 3 files — saves 18 lines"
+    },
+    {
+      "group_id": "c9fe98aa9145404a",
+      "priority": 39,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/autonomy/utils/_parse_iso_datetime.py",
+      "function_name": "_parse_iso_datetime",
+      "original_files": [
+        "../koru/src/koru/autonomy/ide_work.py",
+        "../koru/src/koru/autonomy/post_run_verify.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 16-line block across 2 files — saves 16 lines"
+    },
+    {
+      "group_id": "75116b10677681b4",
+      "priority": 40,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/resolve_xdg_path.py",
+      "function_name": "resolve_xdg_path",
+      "original_files": [
+        "../koru/src/koru/autopilot/utils/client_helpers.py",
+        "../koru/src/koruide/utils.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 16-line block across 2 files — saves 16 lines"
+    },
+    {
+      "group_id": "e29387361a1c5b5c",
+      "priority": 41,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_term_program_label.py",
+      "function_name": "_term_program_label",
+      "original_files": [
+        "../koru/src/koru/autonomous_startup.py",
+        "../koru/src/koruvision/providers/obs_websocket.py"
+      ],
+      "risk_level": "low",
+      "rationale": "4 occurrences of 5-line block across 2 files — saves 15 lines"
+    },
+    {
+      "group_id": "bec320df81d0f664",
+      "priority": 42,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/read_serve_endpoint.py",
+      "function_name": "read_serve_endpoint",
+      "original_files": [
+        "../koru/src/koru/project_pipeline.py",
+        "../koru/src/koruapi/dashboard_serve_utils.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 13-line block across 2 files — saves 13 lines"
+    },
+    {
+      "group_id": "f419916cdf136619",
+      "priority": 43,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_saved_serve_config.py",
+      "function_name": "_saved_serve_config",
+      "original_files": [
+        "../koru/src/koru/configurator.py",
+        "../koru/src/koru/tasks.py",
+        "../koru/src/koruapi/dashboard_config.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 6-line block across 3 files — saves 12 lines"
+    },
+    {
+      "group_id": "eabc3ad4f0de5304",
+      "priority": 44,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_versioned_vsix_candidates.py",
+      "function_name": "_versioned_vsix_candidates",
+      "original_files": [
+        "../koru/src/koru/autopilot/install_plugin_cli.py",
+        "../koru/src/koruide/plugin_installer.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 11-line block across 2 files — saves 11 lines"
+    },
+    {
+      "group_id": "02b64046a4cbb6f9",
+      "priority": 45,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_llm_reflection_summary_max_age_seconds.py",
+      "function_name": "_llm_reflection_summary_max_age_seconds",
+      "original_files": [
+        "../koru/src/koru/autonomous_cycle_chat_activity.py",
+        "../koru/src/koruide/daemon/handlers.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 11-line block across 2 files — saves 11 lines"
+    },
+    {
+      "group_id": "5f21bf4c3e09a1f6",
+      "priority": 46,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_plugin_package_version.py",
+      "function_name": "_plugin_package_version",
+      "original_files": [
+        "../koru/src/koru/autopilot/install_plugin_cli.py",
+        "../koru/src/koruide/plugin_installer.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 10-line block across 2 files — saves 10 lines"
+    },
+    {
+      "group_id": "34e234b33f5a7220",
+      "priority": 47,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_read_cmdline.py",
+      "function_name": "_read_cmdline",
+      "original_files": [
+        "../koru/src/koru/wizard/project.py",
+        "../koru/src/koruide/ide.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 10-line block across 2 files — saves 10 lines"
+    },
+    {
+      "group_id": "cfd22216ac17aee8",
+      "priority": 48,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_as_managed.py",
+      "function_name": "_as_managed",
+      "original_files": [
+        "../koru/src/koru/autonomous_process_guard.py",
+        "../koru/src/koru/autonomous_processes.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 10-line block across 2 files — saves 10 lines"
+    },
+    {
+      "group_id": "608ea00f9602df11",
+      "priority": 49,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_process_cwd.py",
+      "function_name": "_process_cwd",
+      "original_files": [
+        "../koru/src/koru/autonomous_process_guard.py",
+        "../koru/src/koru/autonomous_processes.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 9-line block across 2 files — saves 9 lines"
+    },
+    {
+      "group_id": "e33387610a1ba207",
+      "priority": 50,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruvision/utils/png_dimensions.py",
+      "function_name": "png_dimensions",
+      "original_files": [
+        "../koru/src/koruvision/capture_mss.py",
+        "../koru/src/koruvision/providers/base.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 8-line block across 2 files — saves 8 lines"
+    },
+    {
+      "group_id": "f9dd6ff094db2913",
+      "priority": 51,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruapi/utils/_dashboard_urls_for.py",
+      "function_name": "_dashboard_urls_for",
+      "original_files": [
+        "../koru/src/koruapi/dashboard_serve.py",
+        "../koru/src/koruapi/dashboard_serve_utils.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 8-line block across 2 files — saves 8 lines"
+    },
+    {
+      "group_id": "8d76d0467156eeda",
+      "priority": 52,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_env_bit.py",
+      "function_name": "_env_bit",
+      "original_files": [
+        "../koru/src/koru/ide_adapters/base.py",
+        "../koru/src/koru/init.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 8-line block across 2 files — saves 8 lines"
+    },
+    {
+      "group_id": "68f66b5c48e51611",
+      "priority": 53,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_koru_version.py",
+      "function_name": "_koru_version",
+      "original_files": [
+        "../koru/src/koru/local_manager_client.py",
+        "../koru/src/koru/local_manager_state.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 8-line block across 2 files — saves 8 lines"
+    },
+    {
+      "group_id": "e6dc5215033ac1cb",
+      "priority": 54,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/bounded_contexts/utils/history.py",
+      "function_name": "history",
+      "original_files": [
+        "../koru/src/koru/bounded_contexts/planfile_queue/application.py",
+        "../koru/src/koru/bounded_contexts/tasks/application.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 8-line block across 2 files — saves 8 lines"
+    },
+    {
+      "group_id": "962ce98f78874f51",
+      "priority": 55,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_cycle_attr.py",
+      "function_name": "_cycle_attr",
+      "original_files": [
+        "../koru/src/koru/autonomous_cycle_chat_activity.py",
+        "../koru/src/koru/autonomous_cycle_drive_retry.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 7-line block across 2 files — saves 7 lines"
+    },
+    {
+      "group_id": "5149646c4793ef0c",
+      "priority": 56,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/default_config_path.py",
+      "function_name": "default_config_path",
+      "original_files": [
+        "../koru/src/koru/autopilot/systemd_cli.py",
+        "../koru/src/koruide/config.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 6-line block across 2 files — saves 6 lines"
+    },
+    {
+      "group_id": "b13873a2367263e4",
+      "priority": 57,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/is_running.py",
+      "function_name": "is_running",
+      "original_files": [
+        "../koru/src/koru/ide_client.py",
+        "../koru/src/koruide/ports.py"
+      ],
+      "risk_level": "low",
+      "rationale": "3 occurrences of 3-line block across 2 files — saves 6 lines"
+    },
+    {
+      "group_id": "05f9b3c48416287d",
+      "priority": 58,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/discover_ide_candidates.py",
+      "function_name": "discover_ide_candidates",
+      "original_files": [
+        "../koru/src/koru/autonomous_onboarding.py",
+        "../koru/src/koru/wizard/cli.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 6-line block across 2 files — saves 6 lines"
+    },
+    {
+      "group_id": "dfca6af8ed70fe1f",
+      "priority": 59,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_planfile_env.py",
+      "function_name": "_planfile_env",
+      "original_files": [
+        "../koru/src/koru/context.py",
+        "../koru/src/koru/gc.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "136e25c77025b646",
+      "priority": 60,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_yellow.py",
+      "function_name": "_yellow",
+      "original_files": [
+        "../koru/src/koru/autopilot/install_manager.py",
+        "../koru/src/koru/ide_adapters/shared.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "2d8081b5be85eb94",
+      "priority": 61,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_dotenv_path.py",
+      "function_name": "_dotenv_path",
+      "original_files": [
+        "../koru/src/koru/autonomous_onboarding.py",
+        "../koru/src/koruapi/dashboard_config.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "fac1b6a8ab8a15d1",
+      "priority": 62,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/get_integration.py",
+      "function_name": "get_integration",
+      "original_files": [
+        "../koru/src/koru/ide_adapters/registry.py",
+        "../koru/src/koruapi/integrations.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "90ed0bd3311027d3",
+      "priority": 63,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_which.py",
+      "function_name": "_which",
+      "original_files": [
+        "../koru/src/koru/agents.py",
+        "../koru/src/koruide/injector.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "ebf587c0f8378039",
+      "priority": 64,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/_default_semcod_root.py",
+      "function_name": "_default_semcod_root",
+      "original_files": [
+        "../koru/src/koru/dev_sync.py",
+        "../koru/src/koruide/os_injector.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "417d955e3a8555f3",
+      "priority": 65,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_status_has_autopilot_plugin.py",
+      "function_name": "_status_has_autopilot_plugin",
+      "original_files": [
+        "../koru/src/koru/autonomous.py",
+        "../koru/src/koru/autonomous_plugin.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "59ed718a700de696",
+      "priority": 66,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_config_path.py",
+      "function_name": "_config_path",
+      "original_files": [
+        "../koru/src/koru/configurator.py",
+        "../koru/src/koru/project_pipeline.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "5b9d8c23219dc956",
+      "priority": 67,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/utc_now.py",
+      "function_name": "utc_now",
+      "original_files": [
+        "../koru/src/koru/cqrs/event_store.py",
+        "../koru/src/koru/local_manager_state.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "c2438ccb75aca4d6",
+      "priority": 68,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/autonomy_telemetry_path.py",
+      "function_name": "autonomy_telemetry_path",
+      "original_files": [
+        "../koru/src/koru/autonomy/telemetry_snapshot.py",
+        "../koru/src/koruvision/providers/screencast_session.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 5-line block across 2 files — saves 5 lines"
+    },
+    {
+      "group_id": "79e565e02f9d388c",
+      "priority": 69,
+      "action": "extract_function",
+      "new_module": "../koru/src/koruide/utils/to_dict.py",
+      "function_name": "to_dict",
+      "original_files": [
+        "../koru/src/koruide/ide.py",
+        "../koru/src/koruide/injector.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 4-line block across 2 files — saves 4 lines"
+    },
+    {
+      "group_id": "92265ab1cfd1dd23",
+      "priority": 70,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/_line.py",
+      "function_name": "_line",
+      "original_files": [
+        "../koru/src/koru/configurator.py",
+        "../koru/src/koru/wizard/prompters.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 4-line block across 2 files — saves 4 lines"
+    },
+    {
+      "group_id": "888c1ad3a16401df",
+      "priority": 71,
+      "action": "extract_function",
+      "new_module": "../koru/src/utils/reset.py",
+      "function_name": "reset",
+      "original_files": [
+        "../koru/src/koru/cqrs/event_log_projection.py",
+        "../koru/src/koruide/daemon/server.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 4-line block across 2 files — saves 4 lines"
+    },
+    {
+      "group_id": "57310cea2e70e12d",
+      "priority": 72,
+      "action": "extract_function",
+      "new_module": "../koru/src/koru/utils/__init__.py",
+      "function_name": "__init__",
+      "original_files": [
+        "../koru/src/koru/bounded_contexts/local_manager/application.py",
+        "../koru/src/koru/cqrs/event_log_query.py"
+      ],
+      "risk_level": "low",
+      "rationale": "2 occurrences of 4-line block across 2 files — saves 4 lines"
+    }
+  ]
+}
