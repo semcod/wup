@@ -362,9 +362,9 @@ def main():
         "--test-teams", action="store_true", help="Send test notification to Teams"
     )
 
-    args = parser.parse_args()
+    parsed_options = parser.parse_args()
 
-    if args.test_slack or args.test_teams:
+    if parsed_options.test_slack or parsed_options.test_teams:
         print("⚠️  Real webhook testing requires configured webhook URLs")
         print("   Set SLACK_WEBHOOK_URL or TEAMS_WEBHOOK_URL environment variable")
     else:

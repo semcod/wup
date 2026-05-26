@@ -38,9 +38,9 @@ def find_config_file(project_root: Path) -> Optional[Path]:
     config_names = ["wup.yaml", ".wup.yaml"]
     
     for name in config_names:
-        config_path = project_root / name
-        if config_path.exists():
-            return config_path
+        found_path = project_root / name
+        if found_path.exists():
+            return found_path
     
     return None
 
@@ -82,18 +82,19 @@ def load_config(project_root: Path, config_path: Optional[Path] = None) -> WupCo
     """
     _load_dotenv(project_root)
 
-    if config_path is None:
-        config_path = find_config_file(project_root)
+    resolved_path = config_path
+    if resolved_path is None:
+        resolved_path = find_config_file(project_root)
     
-    if config_path is None or not config_path.exists():
+    if resolved_path is None or not resolved_path.exists():
         # Return default config if no config file found
         return get_default_config(project_root)
     
-    with open(config_path, 'r') as f:
+    with open(resolved_path, 'r') as f:
         raw_config = yaml.safe_load(f)
     
     if not raw_config:
-        raise ValueError(f"Config file {config_path} is empty")
+        raise ValueError(f"Config file {resolved_path} is empty")
     
     return validate_config(raw_config)
 

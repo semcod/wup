@@ -41,12 +41,12 @@ def _parse_port_mapping(raw: Any) -> List[str]:
 def _load_compose_yaml(compose_path: Path) -> Optional[Dict[str, Any]]:
     """Load and validate a docker-compose YAML file."""
     try:
-        data = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
+        compose_data = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError):
         return None
-    if not isinstance(data, dict):
+    if not isinstance(compose_data, dict):
         return None
-    services = data.get("services") or {}
+    services = compose_data.get("services") or {}
     if not isinstance(services, dict):
         return None
     return services
@@ -57,10 +57,10 @@ def _extract_healthcheck_test(spec: Dict[str, Any]) -> str:
     hc = spec.get("healthcheck") or {}
     if not isinstance(hc, dict) or not hc.get("test"):
         return ""
-    parts = hc["test"]
-    if isinstance(parts, list):
-        return " ".join(str(p) for p in parts)
-    return str(parts)
+    test_parts = hc["test"]
+    if isinstance(test_parts, list):
+        return " ".join(str(p) for p in test_parts)
+    return str(test_parts)
 
 
 def _extract_service_from_spec(
@@ -87,7 +87,7 @@ def discover_docker_compose_services(project_root: Path) -> List[DockerComposeSe
     """Parse docker-compose*.yml service definitions under project root."""
     patterns = ["docker-compose.yml", "docker-compose.*.yml", "docker-compose.*.yaml"]
     seen: set[str] = set()
-    results: List[DockerComposeService] = []
+    discovered_services: List[DockerComposeService] = []
 
     for pattern in patterns:
         for compose_path in sorted(project_root.glob(pattern)):
@@ -95,14 +95,14 @@ def discover_docker_compose_services(project_root: Path) -> List[DockerComposeSe
             if key in seen:
                 continue
             seen.add(key)
-            services = _load_compose_yaml(compose_path)
-            if services is None:
+            compose_services = _load_compose_yaml(compose_path)
+            if compose_services is None:
                 continue
-            for name, spec in services.items():
-                svc = _extract_service_from_spec(name, spec, compose_path.name)
-                if svc is not None:
-                    results.append(svc)
-    return results
+            for name, spec in compose_services.items():
+                discovered_svc = _extract_service_from_spec(name, spec, compose_path.name)
+                if discovered_svc is not None:
+                    discovered_services.append(discovered_svc)
+    return discovered_services
 
 
 def _host_port_from_mapping(mapping: str) -> Optional[int]:
@@ -307,12 +307,12 @@ def load_monitoring_manifest_from_yaml(config_path: Path) -> Optional[Dict[str, 
             pass
 
     try:
-        data = yaml.safe_load(text)
+        yaml_data = yaml.safe_load(text)
     except (OSError, yaml.YAMLError):
         return None
-    if not isinstance(data, dict):
+    if not isinstance(yaml_data, dict):
         return None
-    monitoring = data.get("monitoring")
+    monitoring = yaml_data.get("monitoring")
     return monitoring if isinstance(monitoring, dict) else None
 
 

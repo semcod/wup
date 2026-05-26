@@ -161,14 +161,14 @@ def _detect_content_issues(snapshot: Dict, cfg: VisualDiffConfig) -> List[str]:
 # ---------------------------------------------------------------------------
 
 def _page_slug(url: str) -> str:
-    path = urlparse(url).path.strip("/").replace("/", "_") or "root"
-    return path[:80]
+    url_path = urlparse(url).path.strip("/").replace("/", "_") or "root"
+    return url_path[:80]
 
 
 def _short_url(url: str) -> str:
-    parsed = urlparse(url)
-    path = parsed.path or "/"
-    return f"{path}?{parsed.query}" if parsed.query else path
+    parsed_url = urlparse(url)
+    url_path = parsed_url.path or "/"
+    return f"{url_path}?{parsed_url.query}" if parsed_url.query else url_path
 
 
 def _compact_error_message(message: str, max_len: int = 180) -> str:
@@ -189,14 +189,14 @@ def _sample_list(items: List[str], limit: int = 3) -> str:
 
 
 def _looks_like_visual_page(url: str) -> bool:
-    parsed = urlparse(url)
-    path = (parsed.path or "").lower()
-    if not path or path in {"/", "/index.html"}:
+    parsed_url = urlparse(url)
+    url_path = (parsed_url.path or "").lower()
+    if not url_path or url_path in {"/", "/index.html"}:
         return True
-    if path.startswith("/api/"):
+    if url_path.startswith("/api/"):
         return False
     if any(
-        token in path
+        token in url_path
         for token in (
             "/health",
             "/healthz",
@@ -218,18 +218,18 @@ def _snapshot_path(snapshot_dir: Path, service: str, url: str) -> Path:
     return snapshot_dir / svc_safe / f"{slug}.json"
 
 
-def _load_snapshot(path: Path) -> Optional[Dict]:
-    if path.exists():
+def _load_snapshot(file_path: Path) -> Optional[Dict]:
+    if file_path.exists():
         try:
-            return json.loads(path.read_text(encoding="utf-8"))
+            return json.loads(file_path.read_text(encoding="utf-8"))
         except Exception:
             return None
     return None
 
 
-def _save_snapshot(path: Path, snapshot: Dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(snapshot, ensure_ascii=False), encoding="utf-8")
+def _save_snapshot(file_path: Path, snapshot: Dict) -> None:
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(json.dumps(snapshot, ensure_ascii=False), encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------

@@ -1195,9 +1195,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:god_function:wup/cli.py:598:God Function:
         sync_testql'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:37:29.400719Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/cli.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:37:29.417550+00:00'
       id: PLF-016
       labels:
       - llm-ready
@@ -1205,15 +1222,18 @@ sprint:
       - code-smell
       - god-function
       name: 'Address code smell: God Function: sync_testql'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:31.542104Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:31.545707Z'
+      updated_at: '2026-05-26T11:37:29.417514+00:00'
     PLF-017:
       acceptance_criteria: []
       blocked_by: []
@@ -1231,9 +1251,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:examples/webhook_notifications.py:354:Shotgun
         Surgery: args'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:37:53.890852Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - examples/webhook_notifications.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:37:53.906347+00:00'
       id: PLF-017
       labels:
       - llm-ready
@@ -1241,15 +1278,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: args'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:32.039030Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:32.043672Z'
+      updated_at: '2026-05-26T11:37:53.906317+00:00'
     PLF-018:
       acceptance_criteria: []
       blocked_by: []
@@ -1267,9 +1307,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:examples/visual_diff_demo.py:233:Shotgun
         Surgery: cfg'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:38:14.744391Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - examples/visual_diff_demo.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:38:14.771593+00:00'
       id: PLF-018
       labels:
       - llm-ready
@@ -1277,15 +1334,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: cfg'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:32.536685Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:32.541669Z'
+      updated_at: '2026-05-26T11:38:14.771547+00:00'
     PLF-019:
       acceptance_criteria: []
       blocked_by: []
@@ -1303,9 +1363,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/config.py:68:Shotgun Surgery:
         config_path'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:38:40.879056Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/config.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:38:40.894226+00:00'
       id: PLF-019
       labels:
       - llm-ready
@@ -1313,15 +1390,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: config_path'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:33.027106Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:33.031687Z'
+      updated_at: '2026-05-26T11:38:40.894191+00:00'
     PLF-020:
       acceptance_criteria: []
       blocked_by: []
@@ -1339,9 +1419,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/monitoring_manifest.py:41:Shotgun
         Surgery: data'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:38:57.834315Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/monitoring_manifest.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:38:57.851815+00:00'
       id: PLF-020
       labels:
       - llm-ready
@@ -1349,15 +1446,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: data'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:33.532848Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:33.537816Z'
+      updated_at: '2026-05-26T11:38:57.851786+00:00'
     PLF-021:
       acceptance_criteria: []
       blocked_by: []
@@ -1375,9 +1475,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/visual_diff.py:191:Shotgun
         Surgery: parsed'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:39:15.198279Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/visual_diff.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:39:15.229255+00:00'
       id: PLF-021
       labels:
       - llm-ready
@@ -1385,15 +1502,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: parsed'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:34.033845Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:34.037754Z'
+      updated_at: '2026-05-26T11:39:15.229204+00:00'
     PLF-022:
       acceptance_criteria: []
       blocked_by: []
@@ -1411,9 +1531,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/monitoring_manifest.py:55:Shotgun
         Surgery: parts'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:39:32.321304Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/monitoring_manifest.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:39:32.337557+00:00'
       id: PLF-022
       labels:
       - llm-ready
@@ -1421,15 +1558,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: parts'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:34.543750Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:34.548912Z'
+      updated_at: '2026-05-26T11:39:32.337525+00:00'
     PLF-023:
       acceptance_criteria: []
       blocked_by: []
@@ -1447,9 +1587,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/visual_diff.py:191:Shotgun
         Surgery: path'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:39:52.897585Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/visual_diff.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:39:52.915566+00:00'
       id: PLF-023
       labels:
       - llm-ready
@@ -1457,15 +1614,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: path'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:35.047077Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:35.051848Z'
+      updated_at: '2026-05-26T11:39:52.915533+00:00'
     PLF-024:
       acceptance_criteria: []
       blocked_by: []
@@ -1483,9 +1643,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/cli.py:563:Shotgun Surgery:
         project_path'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:40:12.650036Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/cli.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:40:12.667438+00:00'
       id: PLF-024
       labels:
       - llm-ready
@@ -1493,15 +1670,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: project_path'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:35.579432Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:35.582936Z'
+      updated_at: '2026-05-26T11:40:12.667405+00:00'
     PLF-025:
       acceptance_criteria: []
       blocked_by: []
@@ -1519,9 +1699,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/monitoring_manifest.py:86:Shotgun
         Surgery: results'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:40:31.610614Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/monitoring_manifest.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:40:31.627436+00:00'
       id: PLF-025
       labels:
       - llm-ready
@@ -1529,15 +1726,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: results'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:36.085820Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:36.090967Z'
+      updated_at: '2026-05-26T11:40:31.627401+00:00'
     PLF-026:
       acceptance_criteria: []
       blocked_by: []
@@ -1555,9 +1755,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:examples/visual_diff_demo.py:125:Shotgun
         Surgery: service'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:40:54.284537Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - examples/visual_diff_demo.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:40:54.301949+00:00'
       id: PLF-026
       labels:
       - llm-ready
@@ -1565,15 +1782,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: service'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:36.579025Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:36.583916Z'
+      updated_at: '2026-05-26T11:40:54.301918+00:00'
     PLF-027:
       acceptance_criteria: []
       blocked_by: []
@@ -1591,9 +1811,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/monitoring_manifest.py:86:Shotgun
         Surgery: services'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:41:10.667537Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/monitoring_manifest.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:41:10.687736+00:00'
       id: PLF-027
       labels:
       - llm-ready
@@ -1601,15 +1838,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: services'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:37.083045Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:37.087927Z'
+      updated_at: '2026-05-26T11:41:10.687701+00:00'
     PLF-028:
       acceptance_criteria: []
       blocked_by: []
@@ -1627,9 +1867,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/monitoring_manifest.py:86:Shotgun
         Surgery: svc'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:41:27.954106Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/monitoring_manifest.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:41:27.971742+00:00'
       id: PLF-028
       labels:
       - llm-ready
@@ -1637,15 +1894,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: svc'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:37.581277Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:37.585934Z'
+      updated_at: '2026-05-26T11:41:27.971706+00:00'
     PLF-029:
       acceptance_criteria: []
       blocked_by: []
@@ -1663,9 +1923,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/cli.py:78:Shotgun Surgery:
         watcher'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:41:46.273820Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/cli.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:41:46.294432+00:00'
       id: PLF-029
       labels:
       - llm-ready
@@ -1673,15 +1950,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: watcher'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:38.087782Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:38.093056Z'
+      updated_at: '2026-05-26T11:41:46.294399+00:00'
     PLF-030:
       acceptance_criteria: []
       blocked_by: []
@@ -1699,9 +1979,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:shotgun_surgery:wup/cli.py:26:Shotgun Surgery:
         wup_config'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:42:05.785477Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/cli.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:42:05.803370+00:00'
       id: PLF-030
       labels:
       - llm-ready
@@ -1709,15 +2006,18 @@ sprint:
       - code-smell
       - shotgun-surgery
       name: 'Address code smell: Shotgun Surgery: wup_config'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:38.623476Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:38.627089Z'
+      updated_at: '2026-05-26T11:42:05.803329+00:00'
     PLF-031:
       acceptance_criteria: []
       blocked_by: []
@@ -3580,9 +3880,10 @@ sprint:
         Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
       execution:
         attempt: 0
+        finished_at: '2026-05-26T11:42:11.849868Z'
         max_attempts: 1
         queue: operator
-        state: ready
+        state: done
       executor:
         kind: human
         mode: interactive
@@ -3604,6 +3905,16 @@ sprint:
           Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
         source: koru task
         timestamp: '2026-05-26T10:37:53.895546+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:42:11.868145+00:00'
       id: PLF-081
       inputs:
         api_headers: {}
@@ -3660,9 +3971,9 @@ sprint:
         timestamp: '2026-05-26T10:37:53.895546+00:00'
         tool: koru-operator-pipeline
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-26T10:37:53.895546+00:00'
+      updated_at: '2026-05-26T11:42:11.868099+00:00'
     PLF-082:
       blocked_by: []
       blocks: []
@@ -3677,9 +3988,10 @@ sprint:
         repair --yes`'
       execution:
         attempt: 0
+        finished_at: '2026-05-26T11:42:22.996978Z'
         max_attempts: 1
         queue: operator
-        state: ready
+        state: done
       executor:
         kind: shell
         mode: noninteractive
@@ -3696,6 +4008,16 @@ sprint:
           repair --yes`'
         source: koru task
         timestamp: '2026-05-26T10:37:54.498382+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:42:23.016737+00:00'
       id: PLF-082
       inputs:
         api_headers: {}
@@ -3746,6 +4068,6 @@ sprint:
         timestamp: '2026-05-26T10:37:54.498382+00:00'
         tool: koru-operator-pipeline
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-26T10:37:54.498382+00:00'
+      updated_at: '2026-05-26T11:42:23.016699+00:00'

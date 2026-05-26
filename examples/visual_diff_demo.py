@@ -79,7 +79,7 @@ def demo_diff_algorithm():
     bigger = _make_dom(10)
     smaller = _make_dom(0)
 
-    for label, old, new, cfg in [
+    for label, old, new, thresholds in [
         ("No previous snapshot (baseline)", None, baseline, (1, 1, 1)),
         ("Identical DOM", same, same, (1, 1, 1)),
         ("7 divs added (threshold=3 → changed)", baseline, bigger, (3, 3, 5)),
@@ -89,9 +89,9 @@ def demo_diff_algorithm():
             old,
             new,
             max_depth=10,
-            threshold_added=cfg[0],
-            threshold_removed=cfg[1],
-            threshold_changed=cfg[2],
+            threshold_added=thresholds[0],
+            threshold_removed=thresholds[1],
+            threshold_changed=thresholds[2],
         )
         status = result["status"]
         emoji = {"new": "📷", "ok": "✅", "changed": "🔴", "error": "❌"}.get(
@@ -128,7 +128,7 @@ def demo_snapshot_persistence():
     print("=" * 60)
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
-        cfg = VisualDiffConfig(
+        vd_config = VisualDiffConfig(
             enabled=True,
             base_url="http://localhost:8100",
             pages=["/health", "/dashboard"],
@@ -137,33 +137,33 @@ def demo_snapshot_persistence():
             threshold_removed=3,
             threshold_changed=5,
         )
-        differ = VisualDiffer(str(root), cfg)
+        differ = VisualDiffer(str(root), vd_config)
 
-        service = "my-service"
+        demo_service = "my-service"
         endpoints = ["/api/v1/users"]
 
         # Pages resolved
-        pages = differ._pages_for_service(service, endpoints)
-        print(f"  Pages for '{service}' with endpoints {endpoints}:")
+        pages = differ._pages_for_service(demo_service, endpoints)
+        print(f"  Pages for '{demo_service}' with endpoints {endpoints}:")
         for p in pages:
             print(f"    {p}")
         print()
 
         # Simulate snapshot write for /health
-        snap_path = differ.snapshot_dir / service / "health.json"
+        snap_path = differ.snapshot_dir / demo_service / "health.json"
         _save_snapshot(snap_path, _make_dom(3))
         print(f"  Saved baseline snapshot: {snap_path.relative_to(root)}")
 
         # Simulate a diff event
         import time
 
-        diff_file = differ.diff_dir / service / "health.jsonl"
+        diff_file = differ.diff_dir / demo_service / "health.jsonl"
         diff_file.parent.mkdir(parents=True, exist_ok=True)
         diff_file.write_text(
             json.dumps(
                 {
                     "timestamp": int(time.time()),
-                    "service": service,
+                    "service": demo_service,
                     "url": "http://localhost:8100/health",
                     "diff": {
                         "status": "changed",
@@ -199,7 +199,7 @@ def demo_config_yaml_round_trip():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
-        cfg = WupConfig(
+        wup_config = WupConfig(
             project=ProjectConfig(name="demo-app"),
             testql=TestQLConfig(scenario_dir="testql-scenarios"),
             visual_diff=VisualDiffConfig(
@@ -212,7 +212,7 @@ def demo_config_yaml_round_trip():
             ),
         )
         config_path = root / "wup.yaml"
-        save_config(cfg, config_path)
+        save_config(wup_config, config_path)
         print(f"  Saved wup.yaml ({config_path.stat().st_size} bytes)")
 
         reloaded = load_config(root)
@@ -235,8 +235,8 @@ def demo_disabled_is_noop():
     print("  5. Disabled differ is a no-op")
     print("=" * 60)
     with tempfile.TemporaryDirectory() as tmpdir:
-        cfg = VisualDiffConfig(enabled=False)
-        differ = VisualDiffer(tmpdir, cfg)
+        disabled_config = VisualDiffConfig(enabled=False)
+        differ = VisualDiffer(tmpdir, disabled_config)
         results = asyncio.run(differ.run_for_service("svc", ["/api/x"]))
         print(f"  run_for_service() returned: {results!r}")
         assert results == [], "Expected empty list when disabled"
@@ -255,14 +255,14 @@ async def demo_live_page(url: str):
         return
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        cfg = VisualDiffConfig(
+        live_config = VisualDiffConfig(
             enabled=True,
             base_url="",
             pages=[url],
             pages_from_endpoints=False,
             delay_seconds=0,
         )
-        differ = VisualDiffer(tmpdir, cfg)
+        differ = VisualDiffer(tmpdir, live_config)
         results = await differ.run_for_service("live", [])
         for r in results:
             status = r["diff"]["status"]

@@ -30,12 +30,12 @@ def _load_watch_config(
     mode: str,
 ) -> WupConfig:
     """Load wup.yaml config and apply CLI probe_interval override."""
-    wup_config = load_config(project_path, config_path)
+    loaded_wup_config = load_config(project_path, config_path)
     if probe_interval is not None:
-        wup_config.testql.probe_interval_s = int(probe_interval)
-    elif mode.lower() == "testql" and not wup_config.testql.probe_interval_s:
-        wup_config.testql.probe_interval_s = 60
-    return wup_config
+        loaded_wup_config.testql.probe_interval_s = int(probe_interval)
+    elif mode.lower() == "testql" and not loaded_wup_config.testql.probe_interval_s:
+        loaded_wup_config.testql.probe_interval_s = 60
+    return loaded_wup_config
 
 
 def _print_watch_header(
@@ -91,7 +91,7 @@ def _create_watcher(
 ) -> WupWatcher:
     """Instantiate the correct watcher class for the chosen mode."""
     if mode.lower() == "testql":
-        watcher = TestQLWatcher(
+        tq_watcher = TestQLWatcher(
             project_root=str(project_path),
             deps_file=deps_file,
             cpu_throttle=cpu_throttle,
@@ -105,7 +105,7 @@ def _create_watcher(
             config=config,
         )
         console.print("[green]TestQL mode enabled[/green]")
-        return watcher
+        return tq_watcher
 
     return WupWatcher(
         project_root=str(project_path),
@@ -548,9 +548,9 @@ def init(
     """
     from .config import save_config, get_default_config
     
-    project_path = Path(project).resolve()
+    init_project_path = Path(project).resolve()
     
-    if not project_path.exists():
+    if not init_project_path.exists():
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
     
@@ -559,7 +559,7 @@ def init(
         console.print(f"[red]Error: Config file '{output}' already exists[/red]")
         raise typer.Exit(1)
     
-    config = get_default_config(project_path)
+    config = get_default_config(init_project_path)
     save_config(config, output_path)
     
     console.print(f"[green]✓ Created wup.yaml configuration at {output_path}[/green]")
@@ -664,6 +664,33 @@ def map_deps(
     console.print(f"[dim]Files: {len(deps.get('files', {}))}[/dim]")
 
 
+def _merge_and_save_endpoints(config_path: Path, wup_config: WupConfig, suggested: dict, project_path: Path) -> dict:
+    """Merge suggested endpoints into config's endpoints_by_service and save to config_path."""
+    import yaml as pyyaml
+    from .monitoring_manifest import build_monitoring_manifest
+
+    merged = dict(wup_config.testql.endpoints_by_service or {})
+    for service, paths in suggested.items():
+        existing = set(merged.get(service, []))
+        existing.update(paths)
+        merged[service] = sorted(existing)
+        
+    raw = pyyaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    raw.setdefault("testql", {})["endpoints_by_service"] = merged
+    wup_config.testql.endpoints_by_service = merged
+    
+    # Rebuild manifest and save config without "monitoring" key
+    manifest = build_monitoring_manifest(project_path, wup_config)
+    body = pyyaml.safe_dump(
+        {k: v for k, v in raw.items() if k != "monitoring"},
+        sort_keys=False,
+        allow_unicode=True,
+        default_flow_style=False,
+    )
+    config_path.write_text(body.rstrip() + "\n\n", encoding="utf-8")
+    return manifest
+
+
 @app.command("sync-testql")
 def sync_testql(
     project: str = typer.Argument(".", help="Path to the project root directory"),
@@ -724,24 +751,7 @@ def sync_testql(
         raise typer.Exit(1)
 
     if merge_endpoints and suggested:
-        import yaml as pyyaml
-
-        merged = dict(wup_config.testql.endpoints_by_service or {})
-        for service, paths in suggested.items():
-            existing = set(merged.get(service, []))
-            existing.update(paths)
-            merged[service] = sorted(existing)
-        raw = pyyaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-        raw.setdefault("testql", {})["endpoints_by_service"] = merged
-        wup_config.testql.endpoints_by_service = merged
-        manifest = build_monitoring_manifest(project_path, wup_config)
-        body = pyyaml.safe_dump(
-            {k: v for k, v in raw.items() if k != "monitoring"},
-            sort_keys=False,
-            allow_unicode=True,
-            default_flow_style=False,
-        )
-        config_path.write_text(body.rstrip() + "\n\n", encoding="utf-8")
+        manifest = _merge_and_save_endpoints(config_path, wup_config, suggested, project_path)
         console.print("[yellow]Merged endpoints_by_service (review git diff for comment loss)[/yellow]")
 
     patch_wup_yaml_monitoring(config_path, manifest)

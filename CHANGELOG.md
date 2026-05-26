@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.60] - 2026-05-26
+
+### Docs
+- Update README.md
+
+### Other
+- Update .planfile/sprints/current.yaml
+- Update examples/visual_diff_demo.py
+- Update examples/webhook_notifications.py
+- Update wup/cli.py
+- Update wup/config.py
+- Update wup/monitoring_manifest.py
+- Update wup/visual_diff.py
+
 ## [0.2.59] - 2026-05-26
 
 ### Docs
