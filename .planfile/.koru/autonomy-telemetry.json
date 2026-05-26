@@ -4,16 +4,57 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 36,
+  "cycle": 38,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
-    "scan_after_idle_min_interval_seconds": 0.0,
+    "scan_after_idle_min_interval_seconds": 60.0,
     "scan_after_idle_queue": true
   },
   "last_cycle": {
     "autopilot_skipped_idle_streak": false,
+    "autopilot_skipped_plugin_blocker": "plugin_missing",
     "autopilot_skipped_plugin_missing": true,
-    "autopilot_skipped_plugin_missing_reason": "daemon status plugin list is empty",
+    "autopilot_skipped_plugin_missing_reason": "ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
+    "environment_profile": {
+      "control": {
+        "can_confirm_submit": true,
+        "family": "ide_control",
+        "interface_id": "antigravity_native_send",
+        "operator_recovery": [
+          "reload_window",
+          "reconnect_plugin"
+        ],
+        "transport": "ide_command_registry",
+        "verification_mode": "plugin_ack",
+        "write_mode": "native_send_command"
+      },
+      "decision_key": "os=wayland|ide=antigravity|llm=ide_chat|control=antigravity_native_send|verify=plugin_ack",
+      "ide": {
+        "config_path": "/home/tom/.config/Antigravity/User/settings.json",
+        "extensions_metadata_path": "/home/tom/.antigravity/extensions/extensions.json",
+        "id": "antigravity",
+        "keyboard_fallback_default": false,
+        "label": "Antigravity",
+        "plugin_supported": true,
+        "strict_plugin_ack_required": false,
+        "submit_key": "Return",
+        "trusted_publisher_required": false
+      },
+      "llm": {
+        "model": null,
+        "provider": "ide_chat",
+        "source": "default"
+      },
+      "os": {
+        "display_server": "wayland",
+        "platform": "linux",
+        "preferred_keyboard_interface": "os_injector_wtype",
+        "session": "wayland",
+        "system": "Linux"
+      },
+      "project": "/home/tom/github/semcod/wup",
+      "schema": "koru.environment-profile/v1"
+    },
     "scan_after_idle_applied": 0,
     "scan_after_idle_run": false,
     "scan_after_idle_skipped_rate_limit": false
@@ -21,16 +62,16 @@
   "recent_decisions": [
     {
       "action": "no_op",
-      "at": "2026-05-25T12:23:48+00:00",
+      "at": "2026-05-26T10:38:14+00:00",
       "blocked_by": "plugin_missing",
-      "cycle": 36,
+      "cycle": 38,
       "decided": "skip:plugin_missing",
-      "evidence": "blocked_by=plugin_missing, diagnostics=skipped, wup=changed, plugin_reason=daemon status plugin list is empty",
+      "evidence": "blocked_by=plugin_missing, diagnostics=skipped, wup=ok, plugin_reason=ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
       "next_step": "wait for plugin reconnect (manual reload may be needed)",
-      "observed": "queue=waiting_input ticket=PLF-013",
-      "skip_because": "daemon status plugin list is empty",
+      "observed": "queue=waiting_input ticket=PLF-013 streak=2",
+      "skip_because": "ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
       "skip_code": "plugin_missing"
     }
   ],
-  "updated_at": "2026-05-25T12:23:48.482610+00:00"
+  "updated_at": "2026-05-26T10:38:14.549607+00:00"
 }

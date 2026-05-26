@@ -691,17 +691,17 @@ sprint:
       blocked_by: []
       blocks: []
       created_at: '2026-05-22T22:09:46.085184+00:00'
-      description: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
-        \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
-        \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" =\
-        \ \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
-        \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
-        \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
-        \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
-        \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
-        \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
-        \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
-        \ gate."
+      description: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
+        SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
+        SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
+        \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
+        0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌ Handler
+        error for ASSERT_EXIT_CODE: invalid literal for int() with base 10: '!= 0'\n❌
+        L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
+        5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate."
       execution:
         attempt: 0
         finished_at: '2026-05-22T23:17:53.855275Z'
@@ -714,17 +714,17 @@ sprint:
       files: []
       history:
       - action: created
-        message: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
-          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
-          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
-          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
-          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
-          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
-          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
-          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
-          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
-          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
-          \ gate."
+        message: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
+          SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
+          SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
+          \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
+          0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌
+          Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base
+          10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
+          5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate."
         source: koru task
         timestamp: '2026-05-22T22:09:46.085184+00:00'
       - action: update
@@ -743,17 +743,17 @@ sprint:
         api_method: GET
         api_timeout_seconds: 30.0
         env_keys: []
-        prompt: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
-          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
-          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
-          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
-          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
-          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
-          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
-          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
-          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
-          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
-          \ gate."
+        prompt: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
+          SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
+          SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
+          \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
+          0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌
+          Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base
+          10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
+          5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate."
       labels:
       - koru
       - nl-task
@@ -766,18 +766,17 @@ sprint:
       priority: high
       source:
         context:
-          input: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
-            \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
-            \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
-            \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅\
-            \ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB\
-            \ SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\
-            \U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌ Handler\
-            \ error for ASSERT_EXIT_CODE: invalid literal for int() with base 10:\
-            \ '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:\
-            \ 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
-            \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
-            \ gate."
+          input: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
+            SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
+            SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
+            \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅
+            ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms]
+            (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal for int()
+            with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌
+            cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate."
         timestamp: '2026-05-22T22:09:46.085184+00:00'
         tool: koru-cli-nl
       sprint: current
@@ -1005,9 +1004,10 @@ sprint:
         before broad edits.'
       execution:
         attempt: 0
+        finished_at: '2026-05-26T11:33:29.227228Z'
         max_attempts: 1
         queue: default
-        state: ready
+        state: done
       executor:
         kind: human
         mode: interactive
@@ -1021,6 +1021,16 @@ sprint:
           edits.'
         source: koru task
         timestamp: '2026-05-25T11:02:59.092366+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:33:29.242244+00:00'
       id: PLF-013
       inputs:
         api_headers: {}
@@ -1056,9 +1066,9 @@ sprint:
         timestamp: '2026-05-25T11:02:59.092366+00:00'
         tool: koru-scan
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:02:59.092366+00:00'
+      updated_at: '2026-05-26T11:33:29.242205+00:00'
     PLF-014:
       acceptance_criteria: []
       blocked_by: []
@@ -1075,9 +1085,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:god_function:scripts/run_probe_smoke.py:15:God
         Function: main'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:36:32.753863Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - scripts/run_probe_smoke.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:36:32.768472+00:00'
       id: PLF-014
       labels:
       - llm-ready
@@ -1085,15 +1112,18 @@ sprint:
       - code-smell
       - god-function
       name: 'Address code smell: God Function: main'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:30.536905Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:30.542728Z'
+      updated_at: '2026-05-26T11:36:32.768441+00:00'
     PLF-015:
       acceptance_criteria: []
       blocked_by: []
@@ -1110,9 +1140,26 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:god_function:wup/cli.py:299:God Function:
         status'
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T11:37:04.060175Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/cli.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - execution
+        - outputs
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T11:37:04.092927+00:00'
       id: PLF-015
       labels:
       - llm-ready
@@ -1120,15 +1167,18 @@ sprint:
       - code-smell
       - god-function
       name: 'Address code smell: God Function: status'
+      outputs:
+        artifacts: []
+        notes: []
       priority: high
       source:
         context: {}
         timestamp: '2026-05-25T11:03:31.026569Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:31.030680Z'
+      updated_at: '2026-05-26T11:37:04.092894+00:00'
     PLF-016:
       acceptance_criteria: []
       blocked_by: []
@@ -3404,33 +3454,9 @@ sprint:
       sync: {}
       updated_at: '2026-05-25T11:04:06.134331Z'
     PLF-080:
-      id: PLF-080
-      name: '[OPERATOR] Autopilot: Connect + plugin w czacie Plugin nie połączony
-        z daemonem na /run/user/1000/koru-autopilot-anti...'
-      status: open
-      priority: high
-      sprint: current
-      source:
-        tool: koru-operator-pipeline
-        timestamp: '2026-05-25T12:23:45.549389+00:00'
-        context:
-          input: '[OPERATOR] Autopilot: Connect + plugin w czacie
-
-
-            Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
-            → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
-
-
-            Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
-            ticket done.
-
-
-            Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
-          detail: 'Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
-            → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)'
-          step_id: autopilot_plugin
-          task_command: koru ide doctor --ide antigravity --fix --gc-sockets
-          dedupe_key: koru-operator-pipeline:operator-autopilot-connect-plugin-w-czacie-plugin-nie-po-czony-z-daemonem-na-/run/user/1000/koru-autopilot-anti...
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-25T12:23:45.549389+00:00'
       description: '[OPERATOR] Autopilot: Connect + plugin w czacie
 
 
@@ -3443,49 +3469,18 @@ sprint:
 
 
         Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
-      labels:
-      - koru
-      - nl-task
-      - llm-ready
-      - operator
-      - auto-pipeline
-      - step:autopilot_plugin
-      blocked_by: []
-      blocks: []
-      files: []
+      execution:
+        attempt: 0
+        finished_at: '2026-05-26T10:37:53.329967Z'
+        max_attempts: 1
+        queue: operator
+        state: done
       executor:
         kind: human
         mode: interactive
-      execution:
-        queue: operator
-        state: ready
-        attempt: 0
-        max_attempts: 1
-      inputs:
-        prompt: '[OPERATOR] Autopilot: Connect + plugin w czacie
-
-
-          Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
-          → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
-
-
-          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
-          ticket done.
-
-
-          Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
-        env_keys: []
-        api_method: GET
-        api_headers: {}
-        api_timeout_seconds: 30.0
-      outputs:
-        artifacts: []
-        notes: []
-      sync: {}
+      files: []
       history:
-      - timestamp: '2026-05-25T12:23:45.549389+00:00'
-        action: created
-        source: koru task
+      - action: created
         message: '[OPERATOR] Autopilot: Connect + plugin w czacie
 
 
@@ -3498,5 +3493,259 @@ sprint:
 
 
           Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
-      created_at: '2026-05-25T12:23:45.549389+00:00'
-      updated_at: '2026-05-25T12:23:45.549389+00:00'
+        source: koru task
+        timestamp: '2026-05-25T12:23:45.549389+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-05-26T10:37:53.343767+00:00'
+      id: PLF-080
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+          Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+          → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+          ticket done.
+
+
+          Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - operator
+      - auto-pipeline
+      - step:autopilot_plugin
+      name: '[OPERATOR] Autopilot: Connect + plugin w czacie Plugin nie połączony
+        z daemonem na /run/user/1000/koru-autopilot-anti...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          dedupe_key: koru-operator-pipeline:operator-autopilot-connect-plugin-w-czacie-plugin-nie-po-czony-z-daemonem-na-/run/user/1000/koru-autopilot-anti...
+          detail: 'Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+            → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)'
+          input: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+            Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+            → Command Palette → koru: Connect autopilot daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+            Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+            ticket done.
+
+
+            Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+          step_id: autopilot_plugin
+          task_command: koru ide doctor --ide antigravity --fix --gc-sockets
+        timestamp: '2026-05-25T12:23:45.549389+00:00'
+        tool: koru-operator-pipeline
+      sprint: current
+      status: done
+      sync: {}
+      updated_at: '2026-05-26T10:37:53.343728+00:00'
+    PLF-081:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-26T10:37:53.895546+00:00'
+      description: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+        Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+        → Command Palette → Developer: Reload Window, potem koru: Connect autopilot
+        daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+        Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+        ticket done.
+
+
+        Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: operator
+        state: ready
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+          Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+          → Command Palette → Developer: Reload Window, potem koru: Connect autopilot
+          daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+          ticket done.
+
+
+          Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+        source: koru task
+        timestamp: '2026-05-26T10:37:53.895546+00:00'
+      id: PLF-081
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+          Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+          → Command Palette → Developer: Reload Window, potem koru: Connect autopilot
+          daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+          ticket done.
+
+
+          Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - operator
+      - auto-pipeline
+      - step:autopilot_plugin
+      name: '[OPERATOR] Autopilot: Connect + plugin w czacie Plugin nie połączony
+        z daemonem na /run/user/1000/koru-autopilot-anti...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          dedupe_key: koru:operator-pipeline:autopilot-plugin:antigravity
+          detail: 'Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+            → Command Palette → Developer: Reload Window, potem koru: Connect autopilot
+            daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)'
+          input: '[OPERATOR] Autopilot: Connect + plugin w czacie
+
+
+            Plugin nie połączony z daemonem na /run/user/1000/koru-autopilot-antigravity.sock
+            → Command Palette → Developer: Reload Window, potem koru: Connect autopilot
+            daemon (socket /run/user/1000/koru-autopilot-antigravity.sock)
+
+
+            Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+            ticket done.
+
+
+            Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
+          step_id: autopilot_plugin
+          task_command: koru ide doctor --ide antigravity --fix --gc-sockets
+        timestamp: '2026-05-26T10:37:53.895546+00:00'
+        tool: koru-operator-pipeline
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-26T10:37:53.895546+00:00'
+    PLF-082:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-05-26T10:37:54.498382+00:00'
+      description: '[OPERATOR] Koru self-control (paczka / VSIX / runtime): self-control
+        auto-repair ran (pip_install_editable, install_plugin, shutdown_daemon_for_reload,
+        reload_ide_and_reconnect); package_identity: source=0.2.58; installed=0.1.288;
+        python=/home/tom/.pyenv/versions/3.12.0/bin/python3.12; version_mismatch=true
+
+
+        Shell: `koru self --project /home/tom/github/semcod/wup --ide antigravity
+        repair --yes`'
+      execution:
+        attempt: 0
+        max_attempts: 1
+        queue: operator
+        state: ready
+      executor:
+        kind: shell
+        mode: noninteractive
+      files: []
+      history:
+      - action: created
+        message: '[OPERATOR] Koru self-control (paczka / VSIX / runtime): self-control
+          auto-repair ran (pip_install_editable, install_plugin, shutdown_daemon_for_reload,
+          reload_ide_and_reconnect); package_identity: source=0.2.58; installed=0.1.288;
+          python=/home/tom/.pyenv/versions/3.12.0/bin/python3.12; version_mismatch=true
+
+
+          Shell: `koru self --project /home/tom/github/semcod/wup --ide antigravity
+          repair --yes`'
+        source: koru task
+        timestamp: '2026-05-26T10:37:54.498382+00:00'
+      id: PLF-082
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[OPERATOR] Koru self-control (paczka / VSIX / runtime): self-control
+          auto-repair ran (pip_install_editable, install_plugin, shutdown_daemon_for_reload,
+          reload_ide_and_reconnect); package_identity: source=0.2.58; installed=0.1.288;
+          python=/home/tom/.pyenv/versions/3.12.0/bin/python3.12; version_mismatch=true
+
+
+          Shell: `koru self --project /home/tom/github/semcod/wup --ide antigravity
+          repair --yes`'
+        script: koru self --project /home/tom/github/semcod/wup --ide antigravity
+          repair --yes
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - operator
+      - auto-pipeline
+      - step:self_control
+      name: '[OPERATOR] Koru self-control (paczka / VSIX / runtime): self-control
+        auto-repair ran (pip_install_editable, install_p...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          dedupe_key: koru-operator-pipeline:operator-koru-self-control-paczka-/-vsix-/-runtime-self-control-auto-repair-ran-pip_install_editable-install_p...
+          detail: 'self-control auto-repair ran (pip_install_editable, install_plugin,
+            shutdown_daemon_for_reload, reload_ide_and_reconnect); package_identity:
+            source=0.2.58; installed=0.1.288; python=/home/tom/.pyenv/versions/3.12.0/bin/python3.12;
+            version_mismatch=true'
+          input: '[OPERATOR] Koru self-control (paczka / VSIX / runtime): self-control
+            auto-repair ran (pip_install_editable, install_plugin, shutdown_daemon_for_reload,
+            reload_ide_and_reconnect); package_identity: source=0.2.58; installed=0.1.288;
+            python=/home/tom/.pyenv/versions/3.12.0/bin/python3.12; version_mismatch=true
+
+
+            Shell: `koru self --project /home/tom/github/semcod/wup --ide antigravity
+            repair --yes`'
+          step_id: self_control
+          task_command: koru self --project /home/tom/github/semcod/wup --ide antigravity
+            repair --yes
+        timestamp: '2026-05-26T10:37:54.498382+00:00'
+        tool: koru-operator-pipeline
+      sprint: current
+      status: open
+      sync: {}
+      updated_at: '2026-05-26T10:37:54.498382+00:00'

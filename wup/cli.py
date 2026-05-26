@@ -295,6 +295,178 @@ def map_deps(
             console.print(f"  [cyan]{service}[/cyan]: {len(info.get('endpoints', []))} endpoints, {len(info.get('files', []))} files")
 
 
+def _add_failing_services_lines(lines: list, health_state_path: Path, failed_only: bool, watch: bool) -> None:
+    """Read failing services from health state and add display lines."""
+    import json
+    from rich.text import Text
+    
+    health_state: dict = {}
+    if health_state_path.exists():
+        try:
+            payload = json.loads(health_state_path.read_text(encoding="utf-8"))
+            if isinstance(payload, dict):
+                health_state = payload
+        except json.JSONDecodeError:
+            pass
+
+    if failed_only or watch:
+        failing = [
+            (svc, data)
+            for svc, data in sorted(health_state.items())
+            if isinstance(data, dict) and data.get("status") == "down"
+        ]
+        lines.append(Text(""))
+        lines.append(Text.from_markup("[bold]Currently failing services:[/bold]"))
+        if not failing:
+            lines.append(Text.from_markup("  [green]✓ None[/green]"))
+        else:
+            for svc, data in failing:
+                stage = data.get("stage", "")
+                message = data.get("message", "")
+                track_file = data.get("track_file", "")
+                lines.append(Text.from_markup(f"  [red]✗ {svc}[/red]  [dim]{stage}[/dim]"))
+                if message:
+                    lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
+                if track_file:
+                    lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
+
+
+def _add_delta_events_lines(lines: list, health_events_path: Path, delta_seconds: int, watch: bool, ts: float) -> None:
+    """Read recent health transition events and add display lines."""
+    import json
+    from rich.text import Text
+
+    effective_delta = delta_seconds if delta_seconds > 0 else (30 if watch else 0)
+    if effective_delta > 0:
+        cutoff = int(ts) - effective_delta
+        recent_events: list = []
+        if health_events_path.exists():
+            with health_events_path.open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        event = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if int(event.get("timestamp", 0)) >= cutoff:
+                        recent_events.append(event)
+
+        lines.append(Text(""))
+        lines.append(Text.from_markup(f"[bold]Service health delta (last {effective_delta}s):[/bold]"))
+        if not recent_events:
+            lines.append(Text.from_markup("  [yellow]No health transitions in selected window[/yellow]"))
+        else:
+            recent_events.sort(key=lambda e: int(e.get("timestamp", 0)), reverse=True)
+            for event in recent_events:
+                svc = event.get("service", "unknown")
+                prev = event.get("previous_status", "unknown")
+                curr = event.get("status", "unknown")
+                stage = event.get("stage", "")
+                message = event.get("message", "")
+                track_file = event.get("track_file", "")
+                arrow_color = "green" if curr == "up" else "red"
+                lines.append(Text.from_markup(
+                    f"  [cyan]{svc}[/cyan]: {prev} [bold {arrow_color}]→ {curr}[/bold {arrow_color}] [dim]({stage})[/dim]"
+                ))
+                if message:
+                    lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
+                if track_file:
+                    lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
+
+
+def _add_monitoring_manifest_lines(lines: list, config_path: Optional[Path], project_path: Path) -> None:
+    """Load monitoring manifest and add display lines."""
+    from rich.text import Text
+    
+    manifest_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
+    if manifest_path:
+        from .monitoring_manifest import load_monitoring_manifest_from_yaml
+
+        manifest = load_monitoring_manifest_from_yaml(manifest_path)
+        if manifest:
+            lines.append(Text(""))
+            lines.append(Text.from_markup("[bold]Configured monitoring (wup.yaml):[/bold]"))
+            lines.append(Text.from_markup(
+                f"  [dim]manifest {manifest.get('generated_at', '?')} · "
+                f"probe {manifest.get('probe_interval_s', 0)}s[/dim]"
+            ))
+            for svc, info in sorted((manifest.get("wup_services") or {}).items()):
+                probes = info.get("live_probes") or []
+                dockers = info.get("docker") or []
+                lines.append(Text.from_markup(
+                    f"  [cyan]{svc}[/cyan]: {len(probes)} probe(s), docker: "
+                    + ", ".join(
+                        d.get("compose_service", "?") for d in dockers[:4]
+                    )
+                    + ("…" if len(dockers) > 4 else "")
+                ))
+            lines.append(Text.from_markup(
+                "  [dim]Pełna lista: sekcja monitoring: w wup.yaml (BEGIN WUP MONITORING MANIFEST)[/dim]"
+            ))
+
+
+def _add_visual_diff_lines(lines: list, wup_config: WupConfig, project_path: Path, delta_seconds: int, watch: bool) -> None:
+    """Read recent visual diff records and add display lines."""
+    from rich.text import Text
+
+    if wup_config.visual_diff and wup_config.visual_diff.enabled:
+        from .visual_diff import VisualDiffer
+        differ = VisualDiffer(str(project_path), wup_config.visual_diff)
+        effective_delta = delta_seconds if delta_seconds > 0 else (30 if watch else 0)
+        vd_seconds = effective_delta if effective_delta > 0 else 300
+        recent_vd = differ.get_recent_diffs(vd_seconds)
+        lines.append(Text(""))
+        lines.append(Text.from_markup(f"[bold]Visual DOM diffs (last {vd_seconds}s):[/bold]"))
+        if not recent_vd:
+            lines.append(Text.from_markup("  [dim]No DOM changes detected[/dim]"))
+        else:
+            for entry in recent_vd[:10]:
+                url = entry.get("url", "?")
+                diff = entry.get("diff", {})
+                counts = diff.get("counts", {})
+                status = diff.get("status", "?")
+                color = "yellow" if status == "changed" else "dim green"
+                lines.append(Text.from_markup(
+                    f"  [{color}]{url}[/{color}]  "
+                    f"+{counts.get('added', 0)} -{counts.get('removed', 0)} ~{counts.get('changed_attrs', 0)}"
+                ))
+
+
+def _build_status_panel(
+    ts: float,
+    project_path: Path,
+    wup_config: WupConfig,
+    config_path: Optional[Path],
+    health_state_path: Path,
+    health_events_path: Path,
+    delta_seconds: int,
+    failed_only: bool,
+    watch: bool,
+) -> "Group":
+    """Construct status Rich Panel content by delegating to specialized helper functions."""
+    import time
+    from rich.console import Group
+    from rich.text import Text
+    
+    lines: list = []
+
+    # header
+    lines.append(Text.from_markup(
+        f"[bold cyan]📊 WUP Status[/bold cyan]  "
+        f"[dim]{wup_config.project.name}[/dim]  "
+        f"[dim]updated {time.strftime('%H:%M:%S', time.localtime(ts))}[/dim]"
+    ))
+
+    _add_failing_services_lines(lines, health_state_path, failed_only, watch)
+    _add_delta_events_lines(lines, health_events_path, delta_seconds, watch, ts)
+    _add_monitoring_manifest_lines(lines, config_path, project_path)
+    _add_visual_diff_lines(lines, wup_config, project_path, delta_seconds, watch)
+
+    return Group(*lines)
+
+
 @app.command()
 def status(
     deps_file: str = typer.Option("deps.json", "--deps", "-d", help="Path to dependency map file"),
@@ -307,7 +479,6 @@ def status(
     """
     Show dependency map status and configuration.
     """
-    import json
     import time
 
     project_path = Path(".").resolve()
@@ -316,154 +487,53 @@ def status(
     health_state_path = project_path / ".wup" / "service-health.json"
     health_events_path = project_path / ".wup" / "service-health-events.jsonl"
 
-    deps_path = Path(deps_file)
-
-    def _build_panel(ts: float) -> "Group":
-        from rich.console import Group
-        from rich.text import Text
-        from rich.padding import Padding
-        lines: list = []
-
-        # header
-        lines.append(Text.from_markup(
-            f"[bold cyan]📊 WUP Status[/bold cyan]  "
-            f"[dim]{wup_config.project.name}[/dim]  "
-            f"[dim]updated {time.strftime('%H:%M:%S', time.localtime(ts))}[/dim]"
-        ))
-
-        # --- failing services ---
-        health_state: dict = {}
-        if health_state_path.exists():
-            try:
-                payload = json.loads(health_state_path.read_text(encoding="utf-8"))
-                if isinstance(payload, dict):
-                    health_state = payload
-            except json.JSONDecodeError:
-                pass
-
-        if failed_only or watch:
-            failing = [
-                (svc, data)
-                for svc, data in sorted(health_state.items())
-                if isinstance(data, dict) and data.get("status") == "down"
-            ]
-            lines.append(Text(""))
-            lines.append(Text.from_markup("[bold]Currently failing services:[/bold]"))
-            if not failing:
-                lines.append(Text.from_markup("  [green]✓ None[/green]"))
-            else:
-                for svc, data in failing:
-                    stage = data.get("stage", "")
-                    message = data.get("message", "")
-                    track_file = data.get("track_file", "")
-                    lines.append(Text.from_markup(f"  [red]✗ {svc}[/red]  [dim]{stage}[/dim]"))
-                    if message:
-                        lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
-                    if track_file:
-                        lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
-
-        # --- delta ---
-        effective_delta = delta_seconds if delta_seconds > 0 else (30 if watch else 0)
-        if effective_delta > 0:
-            cutoff = int(ts) - effective_delta
-            recent_events: list = []
-            if health_events_path.exists():
-                with health_events_path.open("r", encoding="utf-8") as handle:
-                    for line in handle:
-                        line = line.strip()
-                        if not line:
-                            continue
-                        try:
-                            event = json.loads(line)
-                        except json.JSONDecodeError:
-                            continue
-                        if int(event.get("timestamp", 0)) >= cutoff:
-                            recent_events.append(event)
-
-            lines.append(Text(""))
-            lines.append(Text.from_markup(f"[bold]Service health delta (last {effective_delta}s):[/bold]"))
-            if not recent_events:
-                lines.append(Text.from_markup("  [yellow]No health transitions in selected window[/yellow]"))
-            else:
-                recent_events.sort(key=lambda e: int(e.get("timestamp", 0)), reverse=True)
-                for event in recent_events:
-                    svc = event.get("service", "unknown")
-                    prev = event.get("previous_status", "unknown")
-                    curr = event.get("status", "unknown")
-                    stage = event.get("stage", "")
-                    message = event.get("message", "")
-                    track_file = event.get("track_file", "")
-                    arrow_color = "green" if curr == "up" else "red"
-                    lines.append(Text.from_markup(
-                        f"  [cyan]{svc}[/cyan]: {prev} [bold {arrow_color}]→ {curr}[/bold {arrow_color}] [dim]({stage})[/dim]"
-                    ))
-                    if message:
-                        lines.append(Text.from_markup(f"    [dim]{message}[/dim]"))
-                    if track_file:
-                        lines.append(Text.from_markup(f"    [dim]track: {track_file}[/dim]"))
-
-        # --- monitoring manifest (from wup.yaml) ---
-        manifest_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
-        if manifest_path:
-            from .monitoring_manifest import load_monitoring_manifest_from_yaml
-
-            manifest = load_monitoring_manifest_from_yaml(manifest_path)
-            if manifest:
-                lines.append(Text(""))
-                lines.append(Text.from_markup("[bold]Configured monitoring (wup.yaml):[/bold]"))
-                lines.append(Text.from_markup(
-                    f"  [dim]manifest {manifest.get('generated_at', '?')} · "
-                    f"probe {manifest.get('probe_interval_s', 0)}s[/dim]"
-                ))
-                for svc, info in sorted((manifest.get("wup_services") or {}).items()):
-                    probes = info.get("live_probes") or []
-                    dockers = info.get("docker") or []
-                    lines.append(Text.from_markup(
-                        f"  [cyan]{svc}[/cyan]: {len(probes)} probe(s), docker: "
-                        + ", ".join(
-                            d.get("compose_service", "?") for d in dockers[:4]
-                        )
-                        + ("…" if len(dockers) > 4 else "")
-                    ))
-                lines.append(Text.from_markup(
-                    "  [dim]Pełna lista: sekcja monitoring: w wup.yaml (BEGIN WUP MONITORING MANIFEST)[/dim]"
-                ))
-
-        # --- visual diff section ---
-        if wup_config.visual_diff and wup_config.visual_diff.enabled:
-            from .visual_diff import VisualDiffer
-            differ = VisualDiffer(str(project_path), wup_config.visual_diff)
-            vd_seconds = effective_delta if effective_delta > 0 else 300
-            recent_vd = differ.get_recent_diffs(vd_seconds)
-            lines.append(Text(""))
-            lines.append(Text.from_markup(f"[bold]Visual DOM diffs (last {vd_seconds}s):[/bold]"))
-            if not recent_vd:
-                lines.append(Text.from_markup("  [dim]No DOM changes detected[/dim]"))
-            else:
-                for entry in recent_vd[:10]:
-                    url = entry.get("url", "?")
-                    diff = entry.get("diff", {})
-                    counts = diff.get("counts", {})
-                    status = diff.get("status", "?")
-                    color = "yellow" if status == "changed" else "dim green"
-                    lines.append(Text.from_markup(
-                        f"  [{color}]{url}[/{color}]  "
-                        f"+{counts.get('added', 0)} -{counts.get('removed', 0)} ~{counts.get('changed_attrs', 0)}"
-                    ))
-
-        return Group(*lines)
-
     if not watch:
-        console.print(_build_panel(time.time()))
+        console.print(_build_status_panel(
+            time.time(),
+            project_path,
+            wup_config,
+            config_path,
+            health_state_path,
+            health_events_path,
+            delta_seconds,
+            failed_only,
+            watch,
+        ))
         return
 
     # --- live / watch mode ---
     from rich.live import Live
     try:
-        with Live(_build_panel(time.time()), refresh_per_second=1, console=console) as live:
+        with Live(
+            _build_status_panel(
+                time.time(),
+                project_path,
+                wup_config,
+                config_path,
+                health_state_path,
+                health_events_path,
+                delta_seconds,
+                failed_only,
+                watch,
+            ),
+            refresh_per_second=1,
+            console=console,
+        ) as live:
             while True:
                 time.sleep(interval)
-                live.update(_build_panel(time.time()))
+                live.update(
+                    _build_status_panel(
+                        time.time(),
+                        project_path,
+                        wup_config,
+                        config_path,
+                        health_state_path,
+                        health_events_path,
+                        delta_seconds,
+                        failed_only,
+                        watch,
+                    )
+                )
     except KeyboardInterrupt:
         pass
 

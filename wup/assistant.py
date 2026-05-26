@@ -39,6 +39,16 @@ from .models.config import (
     WebConfig,
     WupConfig,
 )
+from .assistant_discovery import (
+    FRAMEWORK_PATTERNS,
+    detect_framework,
+    auto_detect_services,
+    detect_service_type,
+)
+from .assistant_validator import (
+    validate_config,
+    generate_suggestions,
+)
 
 # Import ServiceType for type checking
 if False:  # TYPE_CHECKING
@@ -50,33 +60,7 @@ console = Console()
 class WupAssistant:
     """Interactive configuration assistant."""
     
-    # Framework detection patterns
-    FRAMEWORK_PATTERNS = {
-        'fastapi': {
-            'files': ['main.py', 'app/main.py'],
-            'content': ['FastAPI', 'from fastapi', 'app = FastAPI'],
-            'services': ['app/routers/*', 'app/routes/*', 'routes/*'],
-            'default_services': ['web', 'api'],
-        },
-        'flask': {
-            'files': ['app.py', 'wsgi.py', 'application.py'],
-            'content': ['Flask', 'from flask', 'app = Flask'],
-            'services': ['app/*/__init__.py', 'blueprints/*'],
-            'default_services': ['web', 'admin'],
-        },
-        'django': {
-            'files': ['manage.py', 'settings.py'],
-            'content': ['Django', 'from django', 'INSTALLED_APPS'],
-            'services': ['*/apps.py', '*/models.py'],
-            'default_services': ['models', 'views', 'tasks'],
-        },
-        'express': {
-            'files': ['server.js', 'app.js'],
-            'content': ['express', 'require("express")', "require('express')"],
-            'services': ['routes/*', 'controllers/*'],
-            'default_services': ['api', 'web'],
-        },
-    }
+    FRAMEWORK_PATTERNS = FRAMEWORK_PATTERNS
     
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
@@ -192,59 +176,15 @@ class WupAssistant:
     
     def _detect_framework(self) -> Optional[str]:
         """Auto-detect project framework."""
-        for framework, patterns in self.FRAMEWORK_PATTERNS.items():
-            # Check for characteristic files
-            for file in patterns['files']:
-                if (self.project_root / file).exists():
-                    # Verify content
-                    content = (self.project_root / file).read_text()
-                    if any(marker in content for marker in patterns['content']):
-                        return framework
-        return None
+        return detect_framework(self.project_root)
     
     def _auto_detect_services(self, framework: str) -> List[ServiceConfig]:
         """Auto-detect services based on framework patterns."""
-        services = []
-        patterns = self.FRAMEWORK_PATTERNS.get(framework, {})
-        
-        for pattern in patterns.get('services', []):
-            for path in self.project_root.rglob(pattern):
-                if path.is_dir() or path.is_file():
-                    service_name = path.parent.name if path.name == '__init__.py' else path.stem
-                    
-                    # Detect service type
-                    svc_type = self._detect_service_type(service_name, path)
-                    
-                    services.append(ServiceConfig(
-                        name=service_name,
-                        type=svc_type,
-                        paths=[str(path.parent if path.name == '__init__.py' else path)],
-                    ))
-        
-        return services
+        return auto_detect_services(self.project_root, framework)
     
     def _detect_service_type(self, name: str, path: Path) -> ServiceType:
         """Detect service type from name and path."""
-        name_lower = name.lower()
-        
-        # Web indicators
-        if any(x in name_lower for x in ['web', 'api', 'http', 'rest', 'router', 'route']):
-            return 'web'
-        
-        # Shell indicators
-        if any(x in name_lower for x in ['shell', 'cli', 'cmd', 'command']):
-            return 'shell'
-        
-        # Check directory contents
-        if path.is_dir():
-            files = list(path.iterdir())
-            has_html = any(f.suffix in ['.html', '.htm'] for f in files)
-            has_routes = any('route' in f.name.lower() for f in files)
-            
-            if has_html or has_routes:
-                return 'web'
-        
-        return 'auto'
+        return detect_service_type(name, path)
     
     def _configure_services(self):
         """Interactive service configuration."""
@@ -549,51 +489,11 @@ class WupAssistant:
     
     def _validate_config(self) -> List[str]:
         """Validate current configuration."""
-        issues = []
-        
-        # Check project name
-        if not self.config.project.name:
-            issues.append("Project name is required")
-        
-        # Check services
-        if not self.config.services:
-            issues.append("No services configured")
-        
-        for svc in self.config.services:
-            if not svc.name:
-                issues.append("Service with empty name found")
-        
-        # Check watch paths exist
-        for path in self.config.watch.paths:
-            resolved = self.project_root / path.replace('/**', '').replace('/*', '')
-            if not resolved.exists():
-                issues.append(f"Watch path does not exist: {path}")
-        
-        # Check TestQL
-        if self.config.testql.scenario_dir:
-            scenario_path = self.project_root / self.config.testql.scenario_dir
-            if not scenario_path.exists():
-                issues.append(f"TestQL scenario directory not found: {self.config.testql.scenario_dir}")
-        
-        return issues
+        return validate_config(self.config, self.project_root)
     
     def _generate_suggestions(self) -> List[str]:
         """Generate helpful suggestions."""
-        suggestions = []
-        
-        if len(self.config.services) == 1:
-            suggestions.append("Consider splitting into multiple services for better granularity")
-        
-        if not self.config.watch.file_types:
-            suggestions.append("Specify file types to avoid watching unnecessary files")
-        
-        if not self.config.web.enabled:
-            suggestions.append("Enable web dashboard for real-time monitoring and notifications")
-        
-        if self.config.testql.scenario_dir and not self.config.testql.smoke_scenario:
-            suggestions.append("Set a smoke test scenario for quick health checks")
-        
-        return suggestions
+        return generate_suggestions(self.config)
     
     def _save_configuration(self):
         """Save configuration to wup.yaml."""
