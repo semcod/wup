@@ -223,7 +223,7 @@ git:
 strategies:
   python:
     test: bash -lc './.venv/bin/python -m pytest tests/ -v'
-    build: ./.venv/bin/python -m build
+    build: python -m build
     publish: twine upload dist/wup-{version}*
     publish_enabled: true
     dependencies:

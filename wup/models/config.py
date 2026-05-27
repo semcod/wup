@@ -149,6 +149,23 @@ class AnomalyDetectionConfig:
 
 
 @dataclass
+class SemcodToolConfig:
+    """Optional Semcod ecosystem tool attached to WUP monitoring audit."""
+    enabled: bool = True
+    repo_path: str = ""
+    purpose: str = ""
+    commands: List[str] = field(default_factory=list)
+    artifacts: List[str] = field(default_factory=list)
+
+
+@dataclass
+class SemcodToolsConfig:
+    """Optional Semcod ecosystem integrations (deta/regres/regix)."""
+    enabled: bool = False
+    tools: Dict[str, SemcodToolConfig] = field(default_factory=dict)
+
+
+@dataclass
 class ProjectConfig:
     """Project metadata."""
     name: str
@@ -167,3 +184,4 @@ class WupConfig:
     web: WebConfig = field(default_factory=WebConfig)
     planfile: PlanfileConfig = field(default_factory=PlanfileConfig)
     anomaly_detection: AnomalyDetectionConfig = field(default_factory=AnomalyDetectionConfig)
+    semcod_tools: SemcodToolsConfig = field(default_factory=SemcodToolsConfig)

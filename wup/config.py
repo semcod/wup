@@ -19,6 +19,8 @@ from .models.config import (
     ProjectConfig,
     NotifyConfig,
     PlanfileConfig,
+    SemcodToolConfig,
+    SemcodToolsConfig,
     ServiceTestConfig,
     VisualDiffConfig,
     WebConfig,
@@ -330,6 +332,31 @@ def _parse_planfile_config(raw: dict) -> PlanfileConfig:
     )
 
 
+def _parse_semcod_tools_config(raw: dict) -> SemcodToolsConfig:
+    semcod_raw = raw.get("semcod_tools", {})
+    if not isinstance(semcod_raw, dict):
+        return SemcodToolsConfig()
+
+    tools: dict[str, SemcodToolConfig] = {}
+    for name, tool_raw in (semcod_raw.get("tools") or {}).items():
+        if not isinstance(tool_raw, dict):
+            continue
+        commands_raw = tool_raw.get("commands", [])
+        artifacts_raw = tool_raw.get("artifacts", [])
+        tools[str(name)] = SemcodToolConfig(
+            enabled=bool(tool_raw.get("enabled", True)),
+            repo_path=str(tool_raw.get("repo_path", "")),
+            purpose=str(tool_raw.get("purpose", "")),
+            commands=[str(cmd) for cmd in commands_raw] if isinstance(commands_raw, list) else [],
+            artifacts=[str(path) for path in artifacts_raw] if isinstance(artifacts_raw, list) else [],
+        )
+
+    return SemcodToolsConfig(
+        enabled=bool(semcod_raw.get("enabled", False)),
+        tools=tools,
+    )
+
+
 def validate_config(raw: dict) -> WupConfig:
     """
     Validate raw config dict and convert to WupConfig object.
@@ -352,6 +379,7 @@ def validate_config(raw: dict) -> WupConfig:
         visual_diff=_parse_visual_diff_config(raw),
         web=_parse_web_config(raw),
         planfile=_parse_planfile_config(raw),
+        semcod_tools=_parse_semcod_tools_config(raw),
     )
 
 
@@ -480,6 +508,19 @@ def save_config(config: WupConfig, output_path: Path):
             "source": config.planfile.source,
             "dedupe_file": config.planfile.dedupe_file,
             "labels": config.planfile.labels,
+        },
+        "semcod_tools": {
+            "enabled": config.semcod_tools.enabled,
+            "tools": {
+                name: {
+                    "enabled": tool.enabled,
+                    "repo_path": tool.repo_path,
+                    "purpose": tool.purpose,
+                    "commands": tool.commands,
+                    "artifacts": tool.artifacts,
+                }
+                for name, tool in sorted(config.semcod_tools.tools.items())
+            },
         }
     }
     

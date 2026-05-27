@@ -207,6 +207,59 @@ def _build_scenario_rows(
                 by_wup[svc_name]["testql_dry_run_scenarios"].append(rel)
 
 
+def _artifact_row(repo_path: Path, artifact: str) -> Dict[str, Any]:
+    artifact_path = Path(artifact)
+    if not artifact_path.is_absolute():
+        artifact_path = repo_path / artifact_path
+    exists = artifact_path.exists()
+    row: Dict[str, Any] = {
+        "path": str(artifact_path),
+        "exists": exists,
+    }
+    if exists:
+        try:
+            row["size_bytes"] = artifact_path.stat().st_size
+        except OSError:
+            pass
+    return row
+
+
+def _semcod_tool_row(name: str, tool: Any) -> Dict[str, Any]:
+    repo_path = Path(tool.repo_path).expanduser() if tool.repo_path else Path()
+    repo_exists = bool(tool.repo_path) and repo_path.exists()
+    return {
+        "enabled": bool(tool.enabled),
+        "purpose": tool.purpose,
+        "repo_path": str(repo_path) if tool.repo_path else "",
+        "repo_exists": repo_exists,
+        "commands": list(tool.commands),
+        "artifacts": [_artifact_row(repo_path, artifact) for artifact in tool.artifacts],
+        "status": "ready" if bool(tool.enabled) and repo_exists else "missing_or_disabled",
+    }
+
+
+def discover_semcod_tools(config: WupConfig) -> Dict[str, Any]:
+    """Summarize optional deta/regres/regix integrations for monitoring audit."""
+    semcod = getattr(config, "semcod_tools", None)
+    if not semcod or not getattr(semcod, "enabled", False):
+        return {"enabled": False, "tools": {}}
+
+    tools = {
+        name: _semcod_tool_row(name, tool)
+        for name, tool in sorted((semcod.tools or {}).items())
+    }
+    ready = [name for name, info in tools.items() if info.get("status") == "ready"]
+    return {
+        "enabled": True,
+        "ready_count": len(ready),
+        "tools": tools,
+        "notes": (
+            "WUP records these Semcod tools in the monitoring manifest for infra audit. "
+            "Commands are not auto-run during file-change probes."
+        ),
+    }
+
+
 def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str, Any]:
     """Assemble full monitoring manifest for wup.yaml (documentation + audit)."""
     monitor = TestQLMonitor(project_root, config)
@@ -235,6 +288,7 @@ def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str
         "scenario_dir": str(tq.scenario_dir),
         "service_map_globs": list(tq.service_map_globs or []),
         "docker_compose_files": sorted({d.source_file for d in docker_all}),
+        "semcod_tools": discover_semcod_tools(config),
         "wup_services": by_wup,
         "docker_not_mapped_to_wup": unmapped_docker,
         "troubleshooting": {
@@ -337,4 +391,13 @@ def format_manifest_summary(manifest: Dict[str, Any]) -> str:
     unmapped = manifest.get("docker_not_mapped_to_wup") or []
     if unmapped:
         lines.append(f"  [yellow]docker not mapped to wup:[/yellow] {len(unmapped)} service(s)")
+
+    semcod = manifest.get("semcod_tools") or {}
+    if semcod.get("enabled"):
+        tools = semcod.get("tools") or {}
+        ready = semcod.get("ready_count", 0)
+        lines.append(f"  [cyan]semcod tools[/cyan]: {ready}/{len(tools)} ready")
+        for name, info in sorted(tools.items()):
+            marker = "ready" if info.get("status") == "ready" else "missing/disabled"
+            lines.append(f"    {name}: {marker} ({info.get('repo_path', '')})")
     return "\n".join(lines)
