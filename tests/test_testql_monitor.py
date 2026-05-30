@@ -108,8 +108,18 @@ def test_monitor_merges_config_and_service_map():
         probes = monitor.probes_for_service("firmware")
         urls = {p.url for p in probes}
         assert "http://localhost:8100/firmware/api/v1/health" in urls
-        assert "http://localhost:8100/firmware/api/v1/execution/status" in urls
-        assert "http://localhost:8100/firmware/api/v1/execution/logs" in urls
+        # Execution telemetry is for fleet TestQL, not WUP live liveness probes.
+        assert "http://localhost:8100/firmware/api/v1/execution/status" not in urls
+        assert "http://localhost:8100/firmware/api/v1/execution/logs" not in urls
+
+
+def test_firmware_live_probe_prefers_oqlos_8202():
+    probes = [
+        ProbeTarget(url="http://localhost:8100/firmware/api/v1/health"),
+        ProbeTarget(url="http://localhost:8202/health"),
+    ]
+    ordered = TestQLMonitor._sort_probes_for_live(probes, service="firmware")
+    assert ordered[0].url == "http://localhost:8202/health"
 
 
 def test_probes_for_service_ignores_non_health_extra_paths():

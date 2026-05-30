@@ -18,8 +18,12 @@ _API_LINE = re.compile(
     r"^\s*(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s*,\s*([^\s,]+)(?:\s*,\s*(\d+))?",
     re.MULTILINE,
 )
+_SHELL_CURL_URL = re.compile(
+    r"""^\s*SHELL\s+["']curl\b[^"']*\s(https?://[^\s"']+)""",
+    re.MULTILINE,
+)
 _HEALTH_HINT = re.compile(
-    r"(/health|/healthz|/ready|/live|/status|/openapi\.json|/execution/status|/execution/logs)",
+    r"(/health|/healthz|/ready|/live|/status|/openapi\.json)",
     re.IGNORECASE,
 )
 # Connect module APIs live on :8103+ — not valid health probes on frontend proxy :8100
@@ -76,13 +80,21 @@ def _parse_api_lines(content: str, source: str) -> List[ProbeTarget]:
     return probes
 
 
+def _parse_shell_curl_lines(content: str, source: str) -> List[ProbeTarget]:
+    probes: List[ProbeTarget] = []
+    for url in _SHELL_CURL_URL.findall(content):
+        url = url.strip().rstrip('"\'')
+        probes.append(ProbeTarget(url=url, method="GET", expected_status=200, source=source))
+    return probes
+
+
 def parse_scenario_probes(scenario_path: Path) -> List[ProbeTarget]:
     """Extract API probe rows from a TestQL TOON scenario file."""
     try:
         content = scenario_path.read_text(encoding="utf-8")
     except OSError:
         return []
-    return _parse_api_lines(content, source=str(scenario_path))
+    return _parse_api_lines(content, source=str(scenario_path)) + _parse_shell_curl_lines(content, source=str(scenario_path))
 
 
 def _extract_base_url(data: Dict[str, Any]) -> str:
@@ -161,6 +173,8 @@ def is_monitoring_probe(probe: ProbeTarget) -> bool:
     path_lower = path.lower()
     if any(path_lower.startswith(prefix) for prefix in _CONNECT_API_PREFIXES):
         return False
+    if "/execution/" in path_lower:
+        return False
     if _HEALTH_HINT.search(path):
         return True
     # Short GET smoke paths (/, /health) without heavy write APIs
@@ -228,7 +242,10 @@ def _assign_by_connect_backend(
 
 
 def _assign_http_probe(
-    probe: ProbeTarget, services: Sequence[ServiceConfig], path_lower: str
+    probe: ProbeTarget,
+    services: Sequence[ServiceConfig],
+    path_lower: str,
+    port_map: Optional[Dict[int, str]] = None,
 ) -> Optional[str]:
     """Map an HTTP probe to a service based on port and path."""
     parsed = urlparse(probe.url)
@@ -240,7 +257,16 @@ def _assign_http_probe(
         return _assign_by_port_8202(services)
     if port == 8100:
         return _assign_by_port_8100(services, path_lower)
-    
+
+    if port_map and port in port_map:
+        preferred = port_map[port]
+        result = _find_service_by_name(services, preferred)
+        if result:
+            return result
+        if preferred == "backend":
+            return _find_service_by_name(services, "backend")
+        return None
+
     return _assign_by_connect_backend(services, path_lower)
 
 
@@ -283,13 +309,17 @@ def _assign_by_path_prefix(
     return None
 
 
-def assign_probe_to_service(probe: ProbeTarget, services: Sequence[ServiceConfig]) -> Optional[str]:
+def assign_probe_to_service(
+    probe: ProbeTarget,
+    services: Sequence[ServiceConfig],
+    port_map: Optional[Dict[int, str]] = None,
+) -> Optional[str]:
     """Map a probe URL/path to a configured WUP service name."""
     path = urlparse(probe.url).path if probe.url.startswith("http") else probe.url
     path_lower = path.lower()
 
     if probe.url.startswith("http"):
-        result = _assign_http_probe(probe, services, path_lower)
+        result = _assign_http_probe(probe, services, path_lower, port_map=port_map)
         if result:
             return result
         return None
@@ -333,6 +363,67 @@ class TestQLMonitor:
         self.scenarios_dir = project_root / (tq.scenario_dir or "testql-scenarios")
         self.discovery = TestQLEndpointDiscovery(str(self.scenarios_dir))
 
+    def _load_dot_env(self) -> Dict[str, str]:
+        """Read key=value pairs from .env in project root (best-effort)."""
+        env: Dict[str, str] = {}
+        dot_env = self.project_root / ".env"
+        if not dot_env.exists():
+            return env
+        try:
+            for line in dot_env.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                env[key.strip()] = value.strip().strip("'\"")
+        except OSError:
+            pass
+        return env
+
+    def _build_port_map(self) -> Dict[int, str]:
+        """Build host-port → wup service name map from docker-compose files + .env."""
+        from .monitoring_manifest import (
+            _map_docker_to_wup_service,
+            discover_docker_compose_services,
+        )
+
+        dot_env = self._load_dot_env()
+
+        def resolve_port(raw: str) -> Optional[int]:
+            """Resolve host port from mapping, substituting .env vars before defaults."""
+            text = raw.strip().strip("'\"")
+            if ":" not in text:
+                return None
+            # Split on the LAST colon to correctly separate host:container
+            # (${VAR:-default} syntax contains colons internally)
+            host_part = text.rsplit(":", 1)[0]
+            try:
+                return int(host_part)
+            except ValueError:
+                pass
+            # Replace ${VAR:-default} using .env then fall back to default
+            def _replace(m: "re.Match[str]") -> str:
+                inner = m.group(0)[2:-1]  # strip ${ and }
+                var, _, default = inner.partition(":-")
+                return dot_env.get(var, default)
+            resolved = re.sub(r"\$\{[^}]+\}", _replace, host_part)
+            try:
+                return int(resolved)
+            except ValueError:
+                return None
+
+        wup_names = [s.name for s in self.config.services]
+        port_map: Dict[int, str] = {}
+        for docker_svc in discover_docker_compose_services(self.project_root):
+            mapped = _map_docker_to_wup_service(docker_svc, wup_names)
+            if not mapped:
+                continue
+            for raw_port in docker_svc.host_ports:
+                host_port = resolve_port(raw_port)
+                if host_port:
+                    port_map[host_port] = mapped
+        return port_map
+
     def _service_map_paths(self) -> List[Path]:
         globs = self.config.testql.service_map_globs or []
         paths: List[Path] = []
@@ -371,26 +462,28 @@ class TestQLMonitor:
     def _add_scenario_probes(
         self,
         accumulator: "_ProbeAccumulator",
+        port_map: Optional[Dict[int, str]] = None,
     ) -> None:
         """Add TestQL scenario probes mapped to services."""
         for scenario in self.discovery.discover_scenarios():
             for probe in parse_scenario_probes(scenario):
                 if not is_monitoring_probe(probe):
                     continue
-                assigned = assign_probe_to_service(probe, self.config.services)
+                assigned = assign_probe_to_service(probe, self.config.services, port_map=port_map)
                 if assigned:
                     accumulator.add(assigned, probe)
 
     def _add_service_map_probes(
         self,
         accumulator: "_ProbeAccumulator",
+        port_map: Optional[Dict[int, str]] = None,
     ) -> None:
         """Add service-map TOON/YAML probes mapped to services."""
         for map_path in self._service_map_paths():
             for probe in parse_service_map_probes(map_path):
                 if not is_monitoring_probe(probe):
                     continue
-                assigned = assign_probe_to_service(probe, self.config.services)
+                assigned = assign_probe_to_service(probe, self.config.services, port_map=port_map)
                 if assigned:
                     accumulator.add(assigned, probe)
 
@@ -401,8 +494,9 @@ class TestQLMonitor:
         self._add_config_endpoints(accumulator)
 
         if self.config.testql.endpoint_discovery:
-            self._add_scenario_probes(accumulator)
-            self._add_service_map_probes(accumulator)
+            port_map = self._build_port_map()
+            self._add_scenario_probes(accumulator, port_map=port_map)
+            self._add_service_map_probes(accumulator, port_map=port_map)
 
         return accumulator.by_service
 
@@ -449,16 +543,33 @@ class TestQLMonitor:
         return [p for p in merged if p.url.startswith("http://") or p.url.startswith("https://")]
 
     @staticmethod
-    def _sort_probes_for_live(probes: Sequence[ProbeTarget]) -> List[ProbeTarget]:
-        """Prefer wup.yaml endpoints before scenario discovery for pass/fail."""
+    def _sort_probes_for_live(
+        probes: Sequence[ProbeTarget],
+        service: str = "",
+    ) -> List[ProbeTarget]:
+        """Prefer wup.yaml endpoints, then /health URLs, before other scenario probes."""
 
-        def rank(probe: ProbeTarget) -> Tuple[int, str]:
+        def rank(probe: ProbeTarget) -> Tuple[int, int, int, str]:
             source = probe.source or ""
+            path = (urlparse(probe.url).path or probe.url).lower()
+            healthish = "/health" in path and "/execution/" not in path
             if source.startswith("wup.yaml:endpoints_by_service"):
-                return (0, probe.url)
-            if source.startswith("wup.yaml:explicit_endpoints"):
-                return (1, probe.url)
-            return (2, probe.url)
+                tier = 0
+            elif source.startswith("wup.yaml:explicit_endpoints"):
+                tier = 1
+            else:
+                tier = 2
+            port = urlparse(probe.url).port if probe.url.startswith("http") else None
+            # Bench uses host OqlOS on :8202; :8100/firmware proxy often 503 without full make dev.
+            port_rank = 0
+            if service == "firmware" and port is not None:
+                if port == 8202:
+                    port_rank = 0
+                elif port == 8100:
+                    port_rank = 1
+                else:
+                    port_rank = 2
+            return (tier, port_rank, 0 if healthish else 1, probe.url)
 
         return sorted(probes, key=rank)
 
@@ -475,7 +586,7 @@ class TestQLMonitor:
             return True, ""
 
         failed: List[str] = []
-        ordered = self._sort_probes_for_live(probes)
+        ordered = self._sort_probes_for_live(probes, service=service)
         for probe in ordered[:max_count]:
             ok, detail = probe.probe(timeout_s=timeout_s)
             if ok:
