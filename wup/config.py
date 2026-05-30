@@ -139,11 +139,13 @@ def _parse_services_config(raw: dict) -> List[ServiceConfig]:
             type=svc_raw.get("type", "auto"),
             quick_tests=ServiceTestConfig(
                 scope=quick_tests_raw.get("scope", "all"),
-                max_endpoints=quick_tests_raw.get("max_endpoints", 10)
+                max_endpoints=quick_tests_raw.get("max_endpoints", 10),
+                scenario=quick_tests_raw.get("scenario", ""),
             ),
             detail_tests=ServiceTestConfig(
                 scope=detail_tests_raw.get("scope", "all"),
-                max_endpoints=detail_tests_raw.get("max_endpoints", 10)
+                max_endpoints=detail_tests_raw.get("max_endpoints", 10),
+                scenario=detail_tests_raw.get("scenario", ""),
             ),
             cpu_throttle=svc_raw.get("cpu_throttle", 0.8),
             notify=NotifyConfig(
@@ -531,11 +533,13 @@ def save_config(config: WupConfig, output_path: Path):
             "paths": svc.paths,
             "quick_tests": {
                 "scope": svc.quick_tests.scope,
-                "max_endpoints": svc.quick_tests.max_endpoints
+                "max_endpoints": svc.quick_tests.max_endpoints,
+                **({"scenario": svc.quick_tests.scenario} if svc.quick_tests.scenario else {}),
             },
             "detail_tests": {
                 "scope": svc.detail_tests.scope,
-                "max_endpoints": svc.detail_tests.max_endpoints
+                "max_endpoints": svc.detail_tests.max_endpoints,
+                **({"scenario": svc.detail_tests.scenario} if svc.detail_tests.scenario else {}),
             },
             "cpu_throttle": svc.cpu_throttle,
             "notify": {

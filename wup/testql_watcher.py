@@ -323,6 +323,35 @@ class TestQLWatcher(WupWatcher):
                 return [candidate]
         return []
 
+    def _resolve_scenario_path(self, scenario: str) -> Optional[Path]:
+        """Resolve a pinned scenario path relative to scenarios_dir or project root."""
+        name = (scenario or "").strip()
+        if not name:
+            return None
+        path = Path(name)
+        if path.is_absolute() and path.exists():
+            return path
+        for base in (self.scenarios_dir, self.project_root):
+            candidate = base / name
+            if candidate.exists():
+                return candidate
+        return None
+
+    @staticmethod
+    def _testql_trailing_json_ok(result: subprocess.CompletedProcess) -> bool:
+        """True when TestQL --output json ends with ok:true and zero failed steps."""
+        blob = (result.stdout or "").strip()
+        start = blob.rfind("{")
+        if start < 0:
+            return False
+        try:
+            data = json.loads(blob[start:])
+        except json.JSONDecodeError:
+            return False
+        if not isinstance(data, dict):
+            return False
+        return data.get("ok") is True and int(data.get("failed", 1)) == 0
+
     @staticmethod
     def _health_summary_all_passed(summary: str) -> bool:
         """True when summary looks like N/N passed with zero failures."""
@@ -341,6 +370,12 @@ class TestQLWatcher(WupWatcher):
         limit = (svc_config.quick_tests.max_endpoints
                  if svc_config and svc_config.quick_tests else self.quick_limit)
 
+        pinned = svc_config.quick_tests.scenario if svc_config and svc_config.quick_tests else ""
+        if pinned:
+            resolved = self._resolve_scenario_path(pinned)
+            if resolved:
+                return [resolved][:limit]
+
         # Filter scenarios by service type
         svc_type = svc_config.type if svc_config else "auto"
         if getattr(self.config.testql, "quick_smoke_only", False):
@@ -349,6 +384,15 @@ class TestQLWatcher(WupWatcher):
                 return smoke[:limit]
 
         filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
+
+        # connect-workshop / auto-api-connect-scenario-* also match token "connect".
+        if service == "connect-scenario":
+            filtered_scenarios = [
+                s
+                for s in filtered_scenarios
+                if s.name.lower().startswith("connect-scenario-wup-")
+                or s.name.lower().startswith("connect-scenario-modbus-")
+            ]
 
         selected = self._get_scored_scenarios(filtered_scenarios, self._tokenize_service(service), limit)
         if selected:
@@ -623,7 +667,8 @@ class TestQLWatcher(WupWatcher):
         failed = data.get("failed")
         if not isinstance(passed, int) or not isinstance(failed, int):
             return None
-        total = passed + failed
+        steps = data.get("steps")
+        total = steps if isinstance(steps, int) and steps > 0 else passed + failed
         errors = data.get("errors") or []
         hint = f" — {errors[0]}" if errors else ""
         return f"{passed}/{total} passed, {failed} failed{hint}"
@@ -688,7 +733,11 @@ class TestQLWatcher(WupWatcher):
         args = ["run", str(scenario_path), "--output", "json", *self.testql_extra_args]
         result = self._run_testql(args, timeout=max(int(self._quick_probe_timeout()), 120))
         summary = self._summarize_health_scenario_failure(result)
-        if result.returncode == 0 or self._health_summary_all_passed(summary):
+        if (
+            result.returncode == 0
+            or self._testql_trailing_json_ok(result)
+            or self._health_summary_all_passed(summary)
+        ):
             self._record_health_transition(
                 service=fleet,
                 status="up",

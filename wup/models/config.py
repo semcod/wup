@@ -23,6 +23,7 @@ class ServiceTestConfig:
     """Test configuration for a service (quick or detail)."""
     scope: str = "all"  # "read", "write", "auth", "all", or comma-separated
     max_endpoints: int = 10
+    scenario: str = ""  # Optional pinned scenario path (relative to project root or scenarios_dir)
 
 
 @dataclass

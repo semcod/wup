@@ -1790,6 +1790,37 @@ class TestTestQLWatcherConfig:
             scenarios = watcher._select_scenarios_for_service("users")
             # Should be limited by config when no matching scenarios found
             assert len(scenarios) <= 2
+
+    def test_testql_watcher_select_scenarios_uses_pinned_scenario(self):
+        """Pinned quick_tests.scenario wins over auto-api scoring."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            scenarios_dir = Path(tmpdir) / "testql-scenarios"
+            scenarios_dir.mkdir()
+            (scenarios_dir / "auto-api-connect-workshop.testql.toon.yaml").write_text("# workshop")
+            pinned = scenarios_dir / "connect-scenario-wup-quick-fast.testql.toon.yaml"
+            pinned.write_text("# sentinel")
+
+            service = ServiceConfig(
+                name="connect-scenario",
+                type="web",
+                paths=["connect-scenario/**"],
+                quick_tests=ServiceTestConfig(
+                    scope="all",
+                    max_endpoints=1,
+                    scenario="connect-scenario-wup-quick-fast.testql.toon.yaml",
+                ),
+            )
+            config = WupConfig(
+                project=ProjectConfig(name="test"),
+                watch=WatchConfig(),
+                services=[service],
+                test_strategy=TestStrategyConfig(),
+                testql=TestQLConfig(),
+            )
+
+            watcher = TestQLWatcher(tmpdir, scenarios_dir="testql-scenarios", config=config)
+            selected = watcher._select_scenarios_for_service("connect-scenario")
+            assert selected == [pinned]
     
     def test_testql_watcher_uses_config_timeout(self):
         """Test that TestQLWatcher uses config timeout settings."""
