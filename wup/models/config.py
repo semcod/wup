@@ -75,6 +75,8 @@ class TestQLConfig:
     service_base_urls: Dict[str, str] = field(default_factory=dict)  # optional per-service override
     explicit_endpoints: List[str] = field(default_factory=list)
     endpoints_by_service: Dict[str, List[str]] = field(default_factory=dict)
+    # USB kit modules: expand HTTP API probes from module_ids (no /dev/* paths).
+    hardware_usb_modules: Dict[str, object] = field(default_factory=dict)
 
 
 @dataclass

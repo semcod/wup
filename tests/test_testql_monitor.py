@@ -34,11 +34,48 @@ API[1]{method, endpoint, expected_status}:
     assert is_monitoring_probe(probes[0])
 
 
-def test_firmware_plugin_health_on_8202_not_live_probe():
+def test_hardware_identify_and_peripheral_status_are_live_probes():
+    assert is_monitoring_probe(
+        ProbeTarget(url="http://localhost:8202/api/v1/hardware/identify")
+    )
+    assert is_monitoring_probe(
+        ProbeTarget(url="http://localhost:8096/api/v3/hardware/peripheral-status/modbus-io")
+    )
+
+
+def test_firmware_plugin_health_catalog_not_periodic_live_probe():
+    """Plugin health is listed for detail TestQL; live watch uses identify + peripheral-status."""
     probe = ProbeTarget(url="http://localhost:8202/api/v1/plugins/modbus-io/health")
-    assert not is_monitoring_probe(probe)
-    direct = ProbeTarget(url="http://localhost:8202/health")
-    assert is_monitoring_probe(direct)
+    assert is_monitoring_probe(probe)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[
+                ServiceConfig(name="firmware", paths=["backend/firmware/**"]),
+                ServiceConfig(name="connect-scenario", paths=["connect-scenario/**"]),
+            ],
+            watch=WatchConfig(),
+            testql=TestQLConfig(
+                hardware_usb_modules={
+                    "oqlos_url": "http://localhost:8202",
+                    "proxy_url": "http://localhost:8096",
+                    "module_ids": ["modbus-io", "modbus-adc"],
+                },
+            ),
+        )
+        monitor = TestQLMonitor(root, cfg)
+        firmware = {p.url for p in monitor.probes_for_service("firmware")}
+        scenario = {p.url for p in monitor.probes_for_service("connect-scenario")}
+    assert "http://localhost:8202/api/v1/hardware/identify" in firmware
+    assert "http://localhost:8202/api/v1/plugins/modbus-io/health" not in firmware
+    assert "http://localhost:8096/api/v3/hardware/identify" in scenario
+    assert (
+        "http://localhost:8096/api/v3/hardware/peripheral-status/modbus-io" in scenario
+    )
+    assert (
+        "http://localhost:8096/api/v3/hardware/peripheral-status/modbus-adc" in scenario
+    )
 
 
 def test_connect_api_paths_on_8100_are_not_monitoring_probes():

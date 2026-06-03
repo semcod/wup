@@ -235,7 +235,8 @@ def _parse_testql_config(raw: dict) -> TestQLConfig:
         base_url_env=testql_raw.get("base_url_env", "WUP_BASE_URL"),
         service_base_urls=testql_raw.get("service_base_urls", {}),
         explicit_endpoints=testql_raw.get("explicit_endpoints", []),
-        endpoints_by_service=testql_raw.get("endpoints_by_service", {})
+        endpoints_by_service=testql_raw.get("endpoints_by_service", {}),
+        hardware_usb_modules=testql_raw.get("hardware_usb_modules", {}),
     )
 
 
@@ -475,6 +476,7 @@ def save_config(config: WupConfig, output_path: Path):
             "service_base_urls": config.testql.service_base_urls,
             "explicit_endpoints": config.testql.explicit_endpoints,
             "endpoints_by_service": config.testql.endpoints_by_service,
+            "hardware_usb_modules": config.testql.hardware_usb_modules,
         },
         "visual_diff": {
             "enabled": config.visual_diff.enabled,

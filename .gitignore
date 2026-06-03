@@ -1,4 +1,5 @@
 # Byte-compiled / optimized / DLL files
+.idea/pyLspTools.xml
 .code2llm_cache/Taskfile_1779635779396134993_705.pkl
 .code2llm_cache/__init___1779638198782020523_1238.pkl
 .code2llm_cache/config_1779637229299258868_6752.pkl

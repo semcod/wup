@@ -149,22 +149,9 @@ def _connect_module_api_on_frontend_proxy(probe: ProbeTarget) -> bool:
     return any(path.startswith(prefix) for prefix in _CONNECT_API_PREFIXES)
 
 
-def _firmware_plugin_probe_without_runtime(probe: ProbeTarget) -> bool:
-    """Plugin health on :8202 requires loaded plugins — skip for bare simulator live probes."""
-    if not probe.url.startswith("http"):
-        return False
-    parsed = urlparse(probe.url)
-    if parsed.port != 8202:
-        return False
-    path = (parsed.path or "").lower()
-    return "/api/v1/plugins/" in path and path.endswith("/health")
-
-
 def is_monitoring_probe(probe: ProbeTarget) -> bool:
     """True when this endpoint should be used for live service health checks."""
     if _connect_module_api_on_frontend_proxy(probe):
-        return False
-    if _firmware_plugin_probe_without_runtime(probe):
         return False
     if probe.url.startswith("http"):
         path = urlparse(probe.url).path or probe.url
@@ -175,6 +162,11 @@ def is_monitoring_probe(probe: ProbeTarget) -> bool:
         return False
     if "/execution/" in path_lower:
         return False
+    # Hardware USB kit: enumerate adapters via OqlOS/proxy HTTP (not serial port paths).
+    if "/hardware/identify" in path_lower:
+        return True
+    if "/peripheral-status/" in path_lower:
+        return True
     if _HEALTH_HINT.search(path):
         return True
     # Short GET smoke paths (/, /health) without heavy write APIs
@@ -431,11 +423,69 @@ class TestQLMonitor:
             paths.extend(sorted(self.project_root.glob(pattern)))
         return paths
 
+    def _add_hardware_usb_module_endpoints(self, accumulator: "_ProbeAccumulator") -> None:
+        """Expand hardware_usb_modules from wup.yaml into OqlOS + proxy API probes."""
+        raw = getattr(self.config.testql, "hardware_usb_modules", None) or {}
+        if not isinstance(raw, dict) or not raw:
+            return
+        oqlos = str(raw.get("oqlos_url") or "http://localhost:8202").rstrip("/")
+        proxy = str(raw.get("proxy_url") or "http://localhost:8096").rstrip("/")
+        module_ids = raw.get("module_ids") or []
+        if not isinstance(module_ids, list):
+            return
+
+        catalog: List[Tuple[str, ProbeTarget]] = [
+            (
+                "firmware",
+                ProbeTarget(
+                    url=f"{oqlos}/api/v1/hardware/identify",
+                    source="wup.yaml:hardware_usb_modules",
+                ),
+            ),
+            (
+                "connect-scenario",
+                ProbeTarget(
+                    url=f"{proxy}/api/v3/hardware/identify",
+                    source="wup.yaml:hardware_usb_modules",
+                ),
+            ),
+        ]
+        for module_id in module_ids:
+            mid = str(module_id).strip()
+            if not mid:
+                continue
+            catalog.append(
+                (
+                    "firmware",
+                    ProbeTarget(
+                        url=f"{oqlos}/api/v1/plugins/{mid}/health",
+                        source="wup.yaml:hardware_usb_modules:plugin_health",
+                    ),
+                )
+            )
+            catalog.append(
+                (
+                    "connect-scenario",
+                    ProbeTarget(
+                        url=f"{proxy}/api/v3/hardware/peripheral-status/{mid}",
+                        source="wup.yaml:hardware_usb_modules",
+                    ),
+                )
+            )
+
+        for service, probe in catalog:
+            if not is_monitoring_probe(probe):
+                continue
+            if probe.source.endswith(":plugin_health"):
+                continue
+            accumulator.add(service, probe)
+
     def _add_config_endpoints(
         self,
         accumulator: "_ProbeAccumulator",
     ) -> None:
         """Add config-declared endpoints (paths or full URLs) per-service base URL."""
+        self._add_hardware_usb_module_endpoints(accumulator)
         for svc_name, paths in (self.config.testql.endpoints_by_service or {}).items():
             base = self._resolve_base_url_for_service(svc_name)
             for path in paths:
@@ -553,12 +603,14 @@ class TestQLMonitor:
             source = probe.source or ""
             path = (urlparse(probe.url).path or probe.url).lower()
             healthish = "/health" in path and "/execution/" not in path
-            if source.startswith("wup.yaml:endpoints_by_service"):
+            if source.startswith("wup.yaml:hardware_usb_modules"):
                 tier = 0
-            elif source.startswith("wup.yaml:explicit_endpoints"):
+            elif source.startswith("wup.yaml:endpoints_by_service"):
                 tier = 1
-            else:
+            elif source.startswith("wup.yaml:explicit_endpoints"):
                 tier = 2
+            else:
+                tier = 3
             port = urlparse(probe.url).port if probe.url.startswith("http") else None
             # Bench uses host OqlOS on :8202; :8100/firmware proxy often 503 without full make dev.
             port_rank = 0
@@ -569,7 +621,9 @@ class TestQLMonitor:
                     port_rank = 1
                 else:
                     port_rank = 2
-            return (tier, port_rank, 0 if healthish else 1, probe.url)
+            health_rank = 0 if healthish else 1
+            # Prefer /health liveness before heavier USB identify (tier-0 config).
+            return (health_rank, tier, port_rank, probe.url)
 
         return sorted(probes, key=rank)
 

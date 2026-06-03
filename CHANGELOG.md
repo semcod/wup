@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.65] - 2026-06-03
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_testql_monitor.py
+
+### Other
+- Update .idea/pyLspTools.xml
+- Update Makefile
+- Update wup/config.py
+- Update wup/models/config.py
+- Update wup/monitoring_manifest.py
+- Update wup/testing/handlers/health_handlers.py
+- Update wup/testql_monitor.py
+
 ## [0.2.64] - 2026-05-27
 
 ### Docs

@@ -105,15 +105,22 @@ def discover_docker_compose_services(project_root: Path) -> List[DockerComposeSe
     return discovered_services
 
 
+_BASH_DEFAULT_RE = re.compile(r"\$\{[^}]*:-(\d+)\}")
+
+
 def _host_port_from_mapping(mapping: str) -> Optional[int]:
-    """Extract host port from '8100:8100' or '8100:80'."""
+    """Extract host port from '8100:8100', '8100:80', or '${VAR:-8100}:8100'."""
     text = mapping.strip().strip("'\"")
     if ":" not in text:
         return None
-    host = text.split(":")[0]
+    # Split on last colon: ${VAR:-default}:container contains internal colons
+    host = text.rsplit(":", 1)[0]
     try:
         return int(host)
     except ValueError:
+        m = _BASH_DEFAULT_RE.search(host)
+        if m:
+            return int(m.group(1))
         return None
 
 
@@ -124,15 +131,33 @@ def _map_docker_to_wup_service(
     name = docker.compose_service.lower()
     container = docker.container_name.lower()
 
-    rules = [
+    def _connect_backend_target() -> Optional[str]:
+        if not (name.endswith("-backend") and "connect" in name):
+            return None
+        specific = name.replace("-backend", "")
+        if specific in wup_services:
+            return specific
+        if "backend" in wup_services:
+            return "backend"
+        return None
+
+    rules: list[tuple[Any, Any]] = [
         (lambda: "firmware" in name or "firmware" in container, "firmware"),
         (lambda: name == "frontend" or "frontend" in container, "frontend"),
         (lambda: name == "backend" or container == "identification-backend", "backend"),
-        (lambda: name.endswith("-backend") and "connect" in name, name.replace("-backend", "")),
+        (lambda: "connect-scenario" in name and "backend" not in name and "backend" in wup_services, "backend"),
     ]
     for predicate, target in rules:
-        if predicate() and target in wup_services:
+        if callable(target):
+            resolved = target()
+            if predicate() and resolved and resolved in wup_services:
+                return resolved
+        elif predicate() and target in wup_services:
             return target
+
+    connect_target = _connect_backend_target()
+    if connect_target:
+        return connect_target
 
     for svc in wup_services:
         token = svc.lower().replace("_", "-")

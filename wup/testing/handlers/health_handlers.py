@@ -57,13 +57,17 @@ class ServiceHealthProjection:
 
         # Notify external systems
         if event.status in {"down", "degraded"}:
-            self.planfile_reporter.report_failure(
-                service=event.service,
-                status=event.status,
-                stage=event.stage,
-                message=event.message,
-                track_file=event.track_file,
-            )
+            # Non-strict fleet health uses status=degraded for optional probe gaps; do not spam planfile.
+            if event.stage == "health_scenario" and event.status == "degraded":
+                pass
+            else:
+                self.planfile_reporter.report_failure(
+                    service=event.service,
+                    status=event.status,
+                    stage=event.stage,
+                    message=event.message,
+                    track_file=event.track_file,
+                )
         elif event.status == "up":
             self.planfile_reporter.clear_service_stage(
                 service=event.service, stage=event.stage
