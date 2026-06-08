@@ -2,11 +2,18 @@
 
 app {
   name: wup;
-  version: 0.2.54;
+  version: 0.2.65;
+  description: "WUP (What's Up) - Intelligent file watcher for regression testing in large projects";
+  license: Apache-2.0;
+  authors: "Tom Sapletta <tom@sapletta.com>";
+  keywords: "wup, watcher, testing, regression, file-monitoring";
+  homepage: https://github.com/semcod/wup;
+  repository: https://github.com/semcod/wup;
 }
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
+  visual: "playwright>=1.40,<2";
 }
 
 interface[type="api"] {
@@ -18,7 +25,97 @@ interface[type="cli"] {
   framework: argparse;
 }
 interface[type="cli"] page[name="wup"] {
+  entry: wup.cli:app;
+}
 
+workflow[name="install"] {
+  trigger: manual;
+  step-1: run cmd=echo "📦 Installing sumd...";
+  step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
+  step-3: run cmd=uv pip install -e .; \;
+  step-4: run cmd=else \;
+  step-5: run cmd=pip install -e .; \;
+  step-6: run cmd=fi;
+  step-7: run cmd=echo "✅ Installation completed!";
+}
+
+workflow[name="install-dev"] {
+  trigger: manual;
+  step-1: run cmd=echo "📦 Installing sumd with dev dependencies...";
+  step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
+  step-3: run cmd=uv pip install -e ".[dev]"; \;
+  step-4: run cmd=else \;
+  step-5: run cmd=pip install -e ".[dev]"; \;
+  step-6: run cmd=fi;
+  step-7: run cmd=echo "✅ Dev installation completed!";
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=echo "🧪 Running tests...";
+  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --tb=short;
+}
+
+workflow[name="test-cov"] {
+  trigger: manual;
+  step-1: run cmd=echo "🧪 Running tests with coverage...";
+  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json;
+}
+
+workflow[name="lint"] {
+  trigger: manual;
+  step-1: run cmd=echo "🔍 Running linting with ruff...";
+  step-2: run cmd=.venv/bin/python -m ruff check sumd/;
+  step-3: run cmd=.venv/bin/python -m ruff check tests/;
+}
+
+workflow[name="format"] {
+  trigger: manual;
+  step-1: run cmd=echo "📝 Formatting code with ruff...";
+  step-2: run cmd=.venv/bin/python -m ruff format sumd/;
+  step-3: run cmd=.venv/bin/python -m ruff format tests/;
+}
+
+workflow[name="clean"] {
+  trigger: manual;
+  step-1: run cmd=echo "🧹 Cleaning temporary files...";
+  step-2: run cmd=find . -type f -name "*.pyc" -delete;
+  step-3: run cmd=find . -type d -name "__pycache__" -delete;
+  step-4: run cmd=find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true;
+  step-5: run cmd=rm -rf build/ dist/ .coverage htmlcov/ coverage.json;
+  step-6: run cmd=echo "✅ Clean completed!";
+}
+
+workflow[name="publish"] {
+  trigger: manual;
+  step-1: run cmd=echo "📦 Publishing to PyPI...";
+  step-2: run cmd=command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build);
+  step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
+  step-4: run cmd=.venv/bin/python -m build;
+  step-5: run cmd=.venv/bin/twine check dist/*;
+  step-6: run cmd=echo "⚡ Ready to upload. Run: make publish-confirm to upload to PyPI";
+}
+
+workflow[name="publish-confirm"] {
+  trigger: manual;
+  step-1: run cmd=echo "🚀 Uploading to PyPI...";
+  step-2: run cmd=.venv/bin/twine upload dist/*;
+}
+
+workflow[name="publish-test"] {
+  trigger: manual;
+  step-1: run cmd=echo "📦 Publishing to TestPyPI...";
+  step-2: run cmd=command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build);
+  step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
+  step-4: run cmd=.venv/bin/python -m build;
+  step-5: run cmd=.venv/bin/twine upload --repository testpypi dist/*;
+}
+
+workflow[name="version"] {
+  trigger: manual;
+  step-1: run cmd=echo "📦 Version information...";
+  step-2: run cmd=cat VERSION;
+  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"sumd\")}')";
 }
 
 workflow[name="wup:watch"] {
@@ -46,9 +143,12 @@ workflow[name="wup:map"] {
   step-1: run cmd=poetry run wup map-deps;
 }
 
-workflow[name="test"] {
-  trigger: manual;
-  step-1: run cmd=poetry run pytest;
+tests {
+  import: testql-scenarios/**/*.testql.toon.yaml;
+}
+
+env_vars {
+  keys: OPENROUTER_API_KEY, LLM_MODEL, PFIX_AUTO_APPLY, PFIX_AUTO_INSTALL_DEPS, PFIX_AUTO_RESTART, PFIX_MAX_RETRIES, PFIX_DRY_RUN, PFIX_ENABLED, PFIX_GIT_COMMIT, PFIX_GIT_PREFIX, PFIX_CREATE_BACKUPS;
 }
 
 deploy {
@@ -58,5 +158,9 @@ deploy {
 environment[name="local"] {
   runtime: docker-compose;
   env_file: .env;
+  template_file: .env.example;
   python_version: >=3.9;
+  vars: LLM_MODEL, OPENROUTER_API_KEY, PFIX_AUTO_APPLY, PFIX_AUTO_INSTALL_DEPS, PFIX_AUTO_RESTART, PFIX_CREATE_BACKUPS, PFIX_DRY_RUN, PFIX_ENABLED, PFIX_GIT_COMMIT, PFIX_GIT_PREFIX, PFIX_MAX_RETRIES;
+  runtime_llm: OPENROUTER_API_KEY;
+  runtime_pfix: PFIX_AUTO_APPLY, PFIX_AUTO_INSTALL_DEPS, PFIX_AUTO_RESTART, PFIX_CREATE_BACKUPS, PFIX_DRY_RUN, PFIX_ENABLED, PFIX_GIT_COMMIT, PFIX_GIT_PREFIX, PFIX_MAX_RETRIES;
 }
