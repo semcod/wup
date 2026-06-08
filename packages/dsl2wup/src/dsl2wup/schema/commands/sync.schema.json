@@ -1,0 +1,12 @@
+{
+  "$id": "dsl2wup/commands/sync",
+  "type": "object",
+  "required": ["verb"],
+  "properties": {
+    "verb": { "const": "SYNC" },
+    "project": { "type": "string", "default": "." },
+    "file": { "type": "string" },
+    "merge_endpoints": { "type": "boolean", "default": false }
+  },
+  "additionalProperties": false
+}

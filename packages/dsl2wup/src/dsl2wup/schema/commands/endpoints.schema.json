@@ -1,0 +1,12 @@
+{
+  "$id": "dsl2wup/commands/endpoints",
+  "type": "object",
+  "required": ["verb", "scenarios_dir"],
+  "properties": {
+    "verb": { "const": "ENDPOINTS" },
+    "scenarios_dir": { "type": "string" },
+    "out": { "type": "string", "default": "testql-deps.json" },
+    "testql_bin": { "type": "string", "default": "testql" }
+  },
+  "additionalProperties": false
+}

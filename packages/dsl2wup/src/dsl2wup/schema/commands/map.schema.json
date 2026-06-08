@@ -1,0 +1,12 @@
+{
+  "$id": "dsl2wup/commands/map",
+  "type": "object",
+  "required": ["verb"],
+  "properties": {
+    "verb": { "const": "MAP" },
+    "project": { "type": "string", "default": "." },
+    "out": { "type": "string", "default": "deps.json" },
+    "framework": { "type": "string", "default": "auto" }
+  },
+  "additionalProperties": false
+}

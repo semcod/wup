@@ -1,0 +1,104 @@
+syntax = "proto3";
+package dsl2wup.v1;
+
+message QueryCommand {
+  string target = 1;
+  string file = 2;
+  string format = 3;
+  string project = 4;
+}
+
+message ValidateCommand {
+  string path = 1;
+  string project = 2;
+}
+
+message ResolveCommand {
+  string text = 1;
+  string file = 2;
+  string project = 3;
+}
+
+message HealthCommand {
+  string service = 1;
+  string project = 2;
+}
+
+message PatchCommand {
+  string target = 1;
+  string with_path = 2;
+  string file = 3;
+  string project = 4;
+}
+
+message MapCommand {
+  string project = 1;
+  string out = 2;
+  string framework = 3;
+}
+
+message InitCommand {
+  string project = 1;
+  string out = 2;
+}
+
+message GenerateCommand {
+  string text = 1;
+  string out = 2;
+  string project = 3;
+  string template = 4;
+}
+
+message SyncCommand {
+  string project = 1;
+  string file = 2;
+  bool merge_endpoints = 3;
+}
+
+message AdoptCommand {
+  string root = 1;
+  string out = 2;
+}
+
+message EndpointsCommand {
+  string scenarios_dir = 1;
+  string out = 2;
+  string testql_bin = 3;
+}
+
+message InitCliCommand {
+  string project = 1;
+  string out = 2;
+  string scenarios = 3;
+  bool merge = 4;
+  bool infer_args = 5;
+}
+
+message StatusCommand {
+  string project = 1;
+  string deps_file = 2;
+  string file = 3;
+  int32 delta_seconds = 4;
+  bool failed_only = 5;
+}
+
+message DslEnvelope {
+  string verb = 1;
+  oneof body {
+    QueryCommand query = 10;
+    ValidateCommand validate = 11;
+    ResolveCommand resolve = 12;
+    HealthCommand health = 13;
+    PatchCommand patch = 14;
+    MapCommand map = 15;
+    InitCommand init = 16;
+    GenerateCommand generate = 17;
+    SyncCommand sync = 18;
+    AdoptCommand adopt = 19;
+    EndpointsCommand endpoints = 22;
+    InitCliCommand init_cli = 23;
+    StatusCommand status = 24;
+  }
+  string default_file = 20;
+  string correlation_id = 21;
+}

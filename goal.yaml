@@ -222,7 +222,7 @@ git:
     format: '{prefix}{version}'
 strategies:
   python:
-    test: bash -lc './.venv/bin/python -m pytest tests/ -v'
+    test: uv run --group dev pytest tests/ packages/ -v
     build: python -m build
     publish: twine upload dist/wup-{version}*
     publish_enabled: true

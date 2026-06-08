@@ -256,37 +256,30 @@ def map_deps(
         console.print(f"[dim]Services from config: {len(wup_config.services)}[/dim]")
     console.print()
     
-    mapper = DependencyMapper(str(project_path))
-    deps = mapper.build_from_codebase(framework)
-    
-    # Enhance deps with service information from config
-    if wup_config.services:
-        for svc in wup_config.services:
-            if svc.name not in deps.get("services", {}):
-                deps.setdefault("services", {})[svc.name] = {
-                    "endpoints": [],
-                    "files": svc.paths,
-                    "config": {
-                        "quick_tests": {
-                            "scope": svc.quick_tests.scope,
-                            "max_endpoints": svc.quick_tests.max_endpoints
-                        },
-                        "detail_tests": {
-                            "scope": svc.detail_tests.scope,
-                            "max_endpoints": svc.detail_tests.max_endpoints
-                        }
-                    }
-                }
-    
-    mapper.save(output)
-    
-    # Print summary
-    services = deps.get("services", {})
-    files = deps.get("files", {})
+    from .cli_bridge import run_map_deps
+
+    result = run_map_deps(project=str(project_path), out=output, framework=framework)
+    if not result.get("ok"):
+        console.print(f"[red]Error: {result.get('error', 'map-deps failed')}[/red]")
+        raise typer.Exit(1)
+
+    data = result.get("data") or {}
+    services_count = data.get("services", 0)
+    files_count = data.get("files", 0)
+    services = {}
+    files = {}
+    try:
+        import json
+        deps_payload = json.loads(result.get("output") or "{}")
+        services = deps_payload.get("services", {})
+        files = deps_payload.get("files", {})
+    except json.JSONDecodeError:
+        services = {}
+        files = {}
     
     console.print(f"[green]✓ Dependency map saved to {output}[/green]")
-    console.print(f"[dim]Services found: {len(services)}[/dim]")
-    console.print(f"[dim]Files mapped: {len(files)}[/dim]")
+    console.print(f"[dim]Services found: {services_count or len(services)}[/dim]")
+    console.print(f"[dim]Files mapped: {files_count or len(files)}[/dim]")
     console.print()
     
     if services:
@@ -475,6 +468,7 @@ def status(
     failed_only: bool = typer.Option(False, "--failed-only", help="Show only currently failing services"),
     watch: bool = typer.Option(False, "--watch", "-w", help="Live mode: refresh display in real time"),
     interval: int = typer.Option(5, "--interval", "-i", help="Refresh interval in seconds for --watch mode"),
+    json_out: bool = typer.Option(False, "--json", help="Emit STATUS snapshot as JSON via dsl2wup bus"),
 ):
     """
     Show dependency map status and configuration.
@@ -483,9 +477,27 @@ def status(
 
     project_path = Path(".").resolve()
     config_path = Path(config) if config else None
+
+    if json_out:
+        import json as json_mod
+        from .cli_bridge import run_status
+
+        result = run_status(
+            project=str(project_path),
+            deps_file=deps_file,
+            config_file=str(config_path) if config_path else "",
+            delta_seconds=delta_seconds,
+            failed_only=failed_only,
+        )
+        print(json_mod.dumps(result, ensure_ascii=False, indent=2))
+        raise typer.Exit(0 if result.get("ok") else 1)
+
     wup_config = load_config(project_path, config_path)
-    health_state_path = project_path / ".wup" / "service-health.json"
-    health_events_path = project_path / ".wup" / "service-health-events.jsonl"
+    from .paths import health_events_path as _health_events_path
+    from .paths import health_state_path as _health_state_path
+
+    state_path = _health_state_path(project_path)
+    events_path = _health_events_path(project_path)
 
     if not watch:
         console.print(_build_status_panel(
@@ -493,8 +505,8 @@ def status(
             project_path,
             wup_config,
             config_path,
-            health_state_path,
-            health_events_path,
+            state_path,
+            events_path,
             delta_seconds,
             failed_only,
             watch,
@@ -510,8 +522,8 @@ def status(
                 project_path,
                 wup_config,
                 config_path,
-                health_state_path,
-                health_events_path,
+                state_path,
+                events_path,
                 delta_seconds,
                 failed_only,
                 watch,
@@ -527,8 +539,8 @@ def status(
                         project_path,
                         wup_config,
                         config_path,
-                        health_state_path,
-                        health_events_path,
+                        state_path,
+                        events_path,
                         delta_seconds,
                         failed_only,
                         watch,
@@ -546,22 +558,20 @@ def init(
     """
     Initialize a new wup.yaml configuration file.
     """
-    from .config import save_config, get_default_config
-    
+    from .cli_bridge import run_init
+
     init_project_path = Path(project).resolve()
-    
+
     if not init_project_path.exists():
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
-    
-    output_path = Path(output)
-    if output_path.exists():
-        console.print(f"[red]Error: Config file '{output}' already exists[/red]")
+
+    result = run_init(project=str(init_project_path), out=output)
+    if not result.get("ok"):
+        console.print(f"[red]Error: {result.get('error', 'init failed')}[/red]")
         raise typer.Exit(1)
-    
-    config = get_default_config(init_project_path)
-    save_config(config, output_path)
-    
+
+    output_path = Path((result.get("data") or {}).get("output") or output)
     console.print(f"[green]✓ Created wup.yaml configuration at {output_path}[/green]")
     console.print(f"[dim]Edit this file to customize your WUP setup[/dim]")
 
@@ -575,7 +585,6 @@ def testql_endpoints(
     """
     Discover endpoints from TestQL scenario files and build dependency map.
     """
-    from .testql_discovery import TestQLEndpointDiscovery
     from rich.table import Table
     
     scenarios_path = Path(scenarios_dir)
@@ -588,9 +597,16 @@ def testql_endpoints(
     console.print(f"[dim]Scenarios directory: {scenarios_dir}[/dim]")
     console.print()
     
-    discovery = TestQLEndpointDiscovery(scenarios_dir, testql_bin)
-    dependency_map = discovery.to_dependency_map()
-    
+    from .cli_bridge import run_endpoints
+
+    result = run_endpoints(scenarios_dir=scenarios_dir, out=output, testql_bin=testql_bin)
+    if not result.get("ok"):
+        console.print(f"[red]Error: {result.get('error', 'endpoints discovery failed')}[/red]")
+        raise typer.Exit(1)
+
+    data = result.get("data") or {}
+    dependency_map = data.get("map") or {}
+
     # Display results
     table = Table(title="Discovered Endpoints")
     table.add_column("Service", style="cyan")
@@ -620,75 +636,7 @@ def testql_endpoints(
     console.print(f"  Total scenarios: {total_scenarios}")
     console.print()
     
-    # Save to file
-    import json
-    output_path = Path(output)
-    with open(output_path, 'w') as f:
-        json.dump(dependency_map, f, indent=2)
-    
-    console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
-
-
-@app.command()
-def map_deps(
-    project: str = typer.Argument(".", help="Path to the project root directory"),
-    output: str = typer.Option("deps.json", "--output", "-o", help="Output dependency map file path"),
-    framework: str = typer.Option("auto", "--framework", "-f", help="Framework to detect (auto, fastapi, flask, django, express)"),
-):
-    """
-    Build dependency map from codebase.
-    """
-    import json
-    from .dependency_mapper import DependencyMapper
-    
-    project_path = Path(project).resolve()
-    
-    if not project_path.exists():
-        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
-        raise typer.Exit(1)
-    
-    console.print(f"[cyan]🔍 Building dependency map from codebase...[/cyan]")
-    console.print(f"[dim]Project: {project_path}[/dim]")
-    console.print()
-    
-    mapper = DependencyMapper(str(project_path))
-    deps = mapper.build_from_codebase(framework=framework)
-    
-    # Save to file
-    output_path = Path(output)
-    with open(output_path, 'w') as f:
-        json.dump(deps, f, indent=2)
-    
-    console.print(f"[green]✓ Dependency map saved to {output_path}[/green]")
-    console.print(f"[dim]Services: {len(deps.get('services', {}))}[/dim]")
-    console.print(f"[dim]Files: {len(deps.get('files', {}))}[/dim]")
-
-
-def _merge_and_save_endpoints(config_path: Path, wup_config: WupConfig, suggested: dict, project_path: Path) -> dict:
-    """Merge suggested endpoints into config's endpoints_by_service and save to config_path."""
-    import yaml as pyyaml
-    from .monitoring_manifest import build_monitoring_manifest
-
-    merged = dict(wup_config.testql.endpoints_by_service or {})
-    for service, paths in suggested.items():
-        existing = set(merged.get(service, []))
-        existing.update(paths)
-        merged[service] = sorted(existing)
-        
-    raw = pyyaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-    raw.setdefault("testql", {})["endpoints_by_service"] = merged
-    wup_config.testql.endpoints_by_service = merged
-    
-    # Rebuild manifest and save config without "monitoring" key
-    manifest = build_monitoring_manifest(project_path, wup_config)
-    body = pyyaml.safe_dump(
-        {k: v for k, v in raw.items() if k != "monitoring"},
-        sort_keys=False,
-        allow_unicode=True,
-        default_flow_style=False,
-    )
-    config_path.write_text(body.rstrip() + "\n\n", encoding="utf-8")
-    return manifest
+    console.print(f"[green]✓ Dependency map saved to {data.get('output', output)}[/green]")
 
 
 @app.command("sync-testql")
@@ -750,11 +698,19 @@ def sync_testql(
         console.print("[red]No wup.yaml found — run `wup init` first[/red]")
         raise typer.Exit(1)
 
-    if merge_endpoints and suggested:
-        manifest = _merge_and_save_endpoints(config_path, wup_config, suggested, project_path)
-        console.print("[yellow]Merged endpoints_by_service (review git diff for comment loss)[/yellow]")
+    from .cli_bridge import run_sync
 
-    patch_wup_yaml_monitoring(config_path, manifest)
+    if merge_endpoints and suggested:
+        console.print("[yellow]Merging endpoints_by_service (review git diff for comment loss)[/yellow]")
+
+    result = run_sync(
+        project=str(project_path),
+        file=str(config_path),
+        merge_endpoints=merge_endpoints and bool(suggested),
+    )
+    if not result.get("ok"):
+        console.print(f"[red]Error: {result.get('error', 'sync failed')}[/red]")
+        raise typer.Exit(1)
     console.print(f"[green]✓ monitoring manifest written to {config_path}[/green]")
     console.print(f"[dim]Szukaj w pliku: {MANIFEST_BEGIN}[/dim]")
 
@@ -776,15 +732,35 @@ def assistant(
         wup assistant --quick            # Auto-detect and save
         wup assistant --template fastapi # Use FastAPI defaults
     """
-    from .assistant import WupAssistant
-    
     project_path = Path(project).resolve()
     if not project_path.exists():
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
-    
+
+    if quick or template:
+        from .cli_bridge import run_generate
+
+        hint = template or "quick setup"
+        result = run_generate(
+            project=str(project_path),
+            hint=hint,
+            out="wup.yaml",
+            template=template or "",
+        )
+        if not result.get("ok"):
+            console.print(f"[red]Error: {result.get('error', 'generate failed')}[/red]")
+            raise typer.Exit(1)
+        data = result.get("data") or {}
+        console.print(
+            f"[green]✓ Quick setup complete — {data.get('services', '?')} service(s), "
+            f"framework {data.get('framework', '?')}[/green]"
+        )
+        return
+
+    from .assistant import WupAssistant
+
     assistant = WupAssistant(str(project_path))
-    assistant.run(quick=quick, template=template)
+    assistant.run(quick=False, template=template)
 
 
 @app.command()
@@ -813,11 +789,6 @@ def init_cli(
         wup init-cli ./my-project
         wup init-cli ./my-project --merge
     """
-    from pathlib import Path
-    from .cli_scanner import CLIScanner
-    from .cli_config_generator import CLIConfigGenerator
-    from .testql_cli_generator import TestQLCLIGenerator
-
     project_path = Path(project).resolve()
 
     if not project_path.exists():
@@ -827,40 +798,29 @@ def init_cli(
     console.print(f"[cyan]🔍 Scanning project for CLI commands...[/cyan]")
     console.print(f"[dim]Project: {project_path}[/dim]\n")
 
+    from .cli_bridge import run_init_cli
+
     try:
-        # Scan for CLI commands
-        scanner = CLIScanner(str(project_path))
-        packages = scanner.scan()
-
-        if not packages:
-            console.print("[yellow]⚠ No CLI packages found in project[/yellow]")
-            console.print("[dim]Looking for: setup.py, pyproject.toml, or packages with __main__.py[/dim]")
-            raise typer.Exit(1)
-
-        console.print(f"[green]✓ Found {len(packages)} package(s)[/green]")
-        for pkg in packages:
-            console.print(f"  [cyan]{pkg.name}[/cyan]: {len(pkg.commands)} command(s)")
-            for cmd in pkg.commands:
-                console.print(f"    - {cmd.name} -> {cmd.entry_point}")
-        console.print()
-
-        # Generate wup.yaml
-        config_generator = CLIConfigGenerator(str(project_path))
-        config_output = Path(output_config) if output_config else None
-        config = config_generator.generate(output_path=config_output, merge_existing=merge)
-        config_generator.print_summary(config)
-
-        # Generate TestQL scenarios
-        console.print()
-        console.print(f"[cyan]🧪 Generating TestQL scenarios...[/cyan]")
-        scenarios_output = Path(output_scenarios) if output_scenarios else None
-        testql_generator = TestQLCLIGenerator(str(project_path))
-        generated_files = testql_generator.generate(
-            output_dir=scenarios_output,
+        result = run_init_cli(
+            project=str(project_path),
+            out=output_config or "wup.yaml",
+            scenarios=output_scenarios or "testql-scenarios",
+            merge=merge,
             infer_args=infer_args,
         )
-        testql_generator.print_summary(generated_files)
+        if not result.get("ok"):
+            err = result.get("error", "init-cli failed")
+            if "no CLI packages" in str(err).lower():
+                console.print("[yellow]⚠ No CLI packages found in project[/yellow]")
+                console.print("[dim]Looking for: setup.py, pyproject.toml, or packages with __main__.py[/dim]")
+            else:
+                console.print(f"[red]Error: {err}[/red]")
+            raise typer.Exit(1)
 
+        data = result.get("data") or {}
+        console.print(f"[green]✓ Found {data.get('packages', 0)} package(s), {data.get('commands', 0)} command(s)[/green]")
+        console.print(f"[green]✓ Config: {data.get('config_output')}[/green]")
+        console.print(f"[green]✓ Scenarios: {len(data.get('scenario_files', []))} file(s) in {data.get('scenarios_dir')}[/green]")
         console.print()
         console.print("[bold green]✅ CLI testing setup complete![/bold green]")
         console.print()
@@ -868,8 +828,9 @@ def init_cli(
         console.print("  1. Review generated wup.yaml")
         console.print("  2. Review testql-scenarios/*.testql.toon.yaml")
         console.print("  3. Run: wup watch . --mode testql")
-        console.print("  4. Or run individual scenario: testql run testql-scenarios/cli-smoke.testql.toon.yaml")
 
+    except typer.Exit:
+        raise
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         raise typer.Exit(1)

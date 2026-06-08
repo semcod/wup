@@ -1,0 +1,14 @@
+{
+  "$id": "dsl2wup/commands/status",
+  "type": "object",
+  "required": ["verb"],
+  "properties": {
+    "verb": { "const": "STATUS" },
+    "project": { "type": "string", "default": "." },
+    "deps_file": { "type": "string", "default": "deps.json" },
+    "file": { "type": "string" },
+    "delta_seconds": { "type": "integer", "minimum": 0, "default": 0 },
+    "failed_only": { "type": "boolean", "default": false }
+  },
+  "additionalProperties": false
+}

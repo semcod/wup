@@ -1,0 +1,12 @@
+{
+  "$id": "dsl2wup/commands/resolve",
+  "type": "object",
+  "required": ["verb", "text"],
+  "properties": {
+    "verb": { "const": "RESOLVE" },
+    "text": { "type": "string" },
+    "file": { "type": "string" },
+    "project": { "type": "string" }
+  },
+  "additionalProperties": false
+}

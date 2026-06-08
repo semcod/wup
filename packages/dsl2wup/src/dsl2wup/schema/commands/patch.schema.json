@@ -1,0 +1,13 @@
+{
+  "$id": "dsl2wup/commands/patch",
+  "type": "object",
+  "required": ["verb", "target", "with_path"],
+  "properties": {
+    "verb": { "enum": ["PATCH", "UPDATE", "REPLACE"] },
+    "target": { "type": "string", "pattern": "^wup://" },
+    "with_path": { "type": "string" },
+    "file": { "type": "string" },
+    "project": { "type": "string" }
+  },
+  "additionalProperties": false
+}

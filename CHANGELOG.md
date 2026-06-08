@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.66] - 2026-06-08
+
+### Docs
+- Update README.md
+- Update packages/README.md
+- Update packages/cli2wup/README.md
+- Update packages/dsl2wup/README.md
+- Update packages/mcp2wup/README.md
+- Update packages/nlp2wup/README.md
+- Update packages/rest2wup/README.md
+- Update packages/uri2wup/README.md
+
+### Test
+- Update tests/test_cli_bridge.py
+- Update tests/test_control.py
+- Update tests/test_endpoints_init_cli.py
+- Update tests/test_status_data.py
+- Update tests/test_sync.py
+- Update tests/test_wup_generate.py
+
+### Other
+- Update .gillm/events/app.gillm.events.pb
+- Update .gitignore
+- Update app.doql.events.pb
+- Update app.doql.less
+- Update packages/cli2wup/pyproject.toml
+- Update packages/cli2wup/src/cli2wup/__init__.py
+- Update packages/cli2wup/src/cli2wup/cli.py
+- Update packages/cli2wup/tests/test_cli2wup.py
+- Update packages/dsl2wup/proto/dsl2wup/v1/command.proto
+- Update packages/dsl2wup/proto/dsl2wup/v1/result.proto
+- ... and 81 more files
+
 ## [0.2.65] - 2026-06-03
 
 ### Docs

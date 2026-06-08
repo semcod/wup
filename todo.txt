@@ -1,0 +1,12 @@
+
+zrefaktoryzuj kolejno wedle scehmatu z /home/tom/github/oqlos/doql/packages/CONTROL_LAYER_PROMPT.template.md
+ wszystkie paczki z /home/tom/github/semcod/*/packages/
+ktore używają LLM
+
+
+
+
+
+
+zrefaktoryzuj kolejno wedle schematu z /home/tom/github/oqlos/doql/packages/CONTROL_LAYER_PROMPT.template.md
+ to co powinno być przeniesione i zaimplementowane z/home/tom/github/semcod/wup/src do /home/tom/github/semcod/wup/packages/ 

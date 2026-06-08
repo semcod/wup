@@ -1,0 +1,11 @@
+{
+  "$id": "dsl2wup/commands/init",
+  "type": "object",
+  "required": ["verb"],
+  "properties": {
+    "verb": { "const": "INIT" },
+    "project": { "type": "string", "default": "." },
+    "out": { "type": "string", "default": "wup.yaml" }
+  },
+  "additionalProperties": false
+}

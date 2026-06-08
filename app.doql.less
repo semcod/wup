@@ -27,6 +27,25 @@ interface[type="cli"] {
 interface[type="cli"] page[name="wup"] {
   entry: wup.cli:app;
 }
+interface[type="cli"] page[name="dsl2wup"] {
+  entry: dsl2wup.cli:main;
+}
+interface[type="cli"] page[name="cli2wup"] {
+  entry: cli2wup.cli:main;
+}
+interface[type="cli"] page[name="nlp2wup"] {
+  entry: nlp2wup.cli:main;
+}
+interface[type="cli"] page[name="uri2wup"] {
+  entry: uri2wup.cli:main;
+}
+interface[type="mcp"] page[name="mcp2wup"] {
+  entry: mcp2wup.cli:main;
+}
+interface[type="api"] page[name="rest2wup"] {
+  entry: rest2wup.cli:main;
+  port: 8216;
+}
 
 workflow[name="install"] {
   trigger: manual;

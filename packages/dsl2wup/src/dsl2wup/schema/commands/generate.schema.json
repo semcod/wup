@@ -1,0 +1,13 @@
+{
+  "$id": "dsl2wup/commands/generate",
+  "type": "object",
+  "required": ["verb"],
+  "properties": {
+    "verb": { "const": "GENERATE" },
+    "text": { "type": "string" },
+    "out": { "type": "string" },
+    "project": { "type": "string" },
+    "template": { "enum": ["fastapi", "flask", "django", "express"] }
+  },
+  "additionalProperties": false
+}

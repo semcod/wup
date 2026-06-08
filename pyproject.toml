@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wup"
-version = "0.2.65"
+version = "0.2.66"
 description = "WUP (What's Up) - Intelligent file watcher for regression testing in large projects"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     {name = "Tom Sapletta", email = "tom@sapletta.com"},
 ]
@@ -23,7 +23,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -31,9 +30,62 @@ classifiers = [
 license = "Apache-2.0"
 
 [project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "goal>=2.1.0",
+    "costs>=0.1.20",
+    "pfix>=0.1.60",
+    "uri2wup",
+    "dsl2wup",
+    "nlp2wup",
+    "cli2wup",
+    "mcp2wup",
+    "rest2wup",
+    "httpx>=0.27",
+]
 visual = [
     "playwright>=1.40,<2",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+    "goal>=2.1.0",
+    "costs>=0.1.20",
+    "pfix>=0.1.60",
+    "uri2wup",
+    "dsl2wup",
+    "nlp2wup",
+    "cli2wup",
+    "mcp2wup",
+    "rest2wup",
+    "httpx>=0.27",
+]
+
+[tool.uv.workspace]
+members = [
+    ".",
+    "packages/uri2wup",
+    "packages/dsl2wup",
+    "packages/nlp2wup",
+    "packages/cli2wup",
+    "packages/mcp2wup",
+    "packages/rest2wup",
+]
+
+[tool.uv.sources]
+wup = { workspace = true }
+uri2wup = { workspace = true }
+dsl2wup = { workspace = true }
+nlp2wup = { workspace = true }
+cli2wup = { workspace = true }
+mcp2wup = { workspace = true }
+rest2wup = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "packages"]
+python_files = ["test_*.py"]
+addopts = "-ra --tb=short"
 
 [tool.setuptools.packages.find]
 include = ["wup*"]
