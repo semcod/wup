@@ -80,10 +80,7 @@ publish:
 	rm -rf dist/ build/ *.egg-info/
 	.venv/bin/python -m build
 	.venv/bin/twine check dist/*
-	@echo "⚡ Ready to upload. Run: make publish-confirm to upload to PyPI"
-
-publish-confirm:
-	@echo "🚀 Uploading to PyPI..."
+	@echo "⚡ Ready to upload."
 	.venv/bin/twine upload dist/*
 
 publish-test:
