@@ -123,6 +123,21 @@ class PlanfileReporter:
 
         stdout = (result.stdout or "").strip()
         stderr = (result.stderr or "").strip()
+        if result.returncode != 0 and track_file and self._files_option_unsupported(stderr or stdout):
+            cmd = [part for index, part in enumerate(cmd) if not (part == "--files" or (index > 0 and cmd[index - 1] == "--files"))]
+            try:
+                result = subprocess.run(
+                    cmd,
+                    cwd=str(self.project_root),
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                self.console.print(f"[yellow]planfile ticket creation skipped: {exc}[/yellow]")
+                return None
+            stdout = (result.stdout or "").strip()
+            stderr = (result.stderr or "").strip()
         if result.returncode != 0:
             detail = stderr or stdout or f"rc={result.returncode}"
             self.console.print(f"[yellow]planfile ticket creation failed: {detail}[/yellow]")
@@ -186,6 +201,11 @@ class PlanfileReporter:
     def _parse_ticket_id(text: str) -> Optional[str]:
         match = re.search(r"\bPLF-\d+\b", text)
         return match.group(0) if match else None
+
+    @staticmethod
+    def _files_option_unsupported(text: str) -> bool:
+        lowered = text.lower()
+        return "--files" in lowered and ("no such option" in lowered or "unknown option" in lowered)
 
     @staticmethod
     def _ticket_name(*, service: str, stage: str, status: str) -> str:

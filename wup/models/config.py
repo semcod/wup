@@ -97,6 +97,9 @@ class VisualDiffConfig:
     threshold_changed: int = 5       # min changed attrs to report
     min_text_length: int = 200       # anomaly if rendered text is too short
     min_dom_nodes: int = 20          # anomaly if DOM is suspiciously tiny
+    page_settle_ms: int = 750        # wait after networkidle before snapshotting SPA DOM
+    issue_retry_count: int = 0       # retry transient Vite/HMR/page-shell issues
+    issue_retry_delay_seconds: float = 2.0
     error_selectors: List[str] = field(default_factory=lambda: [
         "#error-container",
         ".error-container",

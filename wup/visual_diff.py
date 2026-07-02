@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import shutil
 import time
 from collections import Counter
 from pathlib import Path
@@ -97,11 +98,30 @@ _DOM_SNAPSHOT_JS = """
 """
 
 
+def _chromium_launch_options(headless: bool) -> Dict[str, Any]:
+    options: Dict[str, Any] = {"headless": headless}
+    executable = os.environ.get("WUP_CHROMIUM_EXECUTABLE_PATH") or os.environ.get("CHROME_BIN")
+    if not executable:
+        for candidate in (
+            "google-chrome-stable",
+            "google-chrome",
+            "chromium",
+            "chromium-browser",
+        ):
+            executable = shutil.which(candidate)
+            if executable:
+                break
+    if executable and Path(executable).exists():
+        options["executable_path"] = executable
+    return options
+
+
 async def _fetch_dom_snapshot(
     url: str,
     max_depth: int,
     headless: bool,
     error_selectors: List[str],
+    page_settle_ms: int = 750,
 ) -> Tuple[Optional[Dict], Optional[str]]:
     """Return a DOM structure dict for *url* using Playwright."""
     if not _playwright_available():
@@ -110,10 +130,12 @@ async def _fetch_dom_snapshot(
     try:
         from playwright.async_api import async_playwright
         async with async_playwright() as pw:
-            browser = await pw.chromium.launch(headless=headless)
+            browser = await pw.chromium.launch(**_chromium_launch_options(headless))
             page = await browser.new_page()
             try:
                 await page.goto(url, wait_until="networkidle", timeout=15_000)
+                if page_settle_ms > 0:
+                    await page.wait_for_timeout(page_settle_ms)
                 snapshot = await page.evaluate(_DOM_SNAPSHOT_JS, max_depth)
                 text_length = await page.evaluate("() => (document.body?.innerText || '').trim().length")
                 dom_nodes = await page.evaluate("() => document.querySelectorAll('*').length")
@@ -522,6 +544,7 @@ class VisualDiffer:
             self.cfg.max_depth,
             self.cfg.headless,
             self.cfg.error_selectors,
+            self.cfg.page_settle_ms,
         )
 
         if new_snapshot is None:
@@ -543,6 +566,36 @@ class VisualDiffer:
         )
 
         issues = _detect_content_issues(new_snapshot, self.cfg)
+        retries_left = max(0, int(getattr(self.cfg, "issue_retry_count", 0) or 0))
+        while issues and retries_left > 0:
+            await asyncio.sleep(max(0.0, float(getattr(self.cfg, "issue_retry_delay_seconds", 2.0) or 0.0)))
+            retry_snapshot, retry_error = await _fetch_dom_snapshot(
+                url,
+                self.cfg.max_depth,
+                self.cfg.headless,
+                self.cfg.error_selectors,
+                self.cfg.page_settle_ms,
+            )
+            if retry_snapshot is None:
+                fetch_error = retry_error
+                retries_left -= 1
+                continue
+            retry_issues = _detect_content_issues(retry_snapshot, self.cfg)
+            if not retry_issues:
+                new_snapshot = retry_snapshot
+                issues = []
+                diff = _diff_snapshots(
+                    old_snapshot,
+                    new_snapshot,
+                    self.cfg.max_depth,
+                    self.cfg.threshold_added,
+                    self.cfg.threshold_removed,
+                    self.cfg.threshold_changed,
+                )
+                break
+            new_snapshot = retry_snapshot
+            issues = retry_issues
+            retries_left -= 1
         if issues:
             diff["status"] = "issue"
             diff["issues"] = issues

@@ -26,6 +26,7 @@ from wup.models.config import (
 from wup.testql_watcher import TestQLWatcher
 from wup.visual_diff import (
     VisualDiffer,
+    _chromium_launch_options,
     _diff_snapshots,
     _looks_like_visual_page,
     _page_slug,
@@ -994,6 +995,9 @@ class TestConfigModels:
         assert cfg.pages == []
         assert cfg.pages_from_endpoints is True
         assert cfg.headless is True
+        assert cfg.page_settle_ms == 750
+        assert cfg.issue_retry_count == 0
+        assert cfg.issue_retry_delay_seconds == 2.0
 
     def test_visual_diff_config_custom(self):
         """Test VisualDiffConfig with custom values."""
@@ -1002,11 +1006,17 @@ class TestConfigModels:
             base_url="http://localhost:9000",
             pages=["/dashboard", "/users"],
             threshold_added=10,
+            page_settle_ms=1500,
+            issue_retry_count=2,
+            issue_retry_delay_seconds=3.0,
         )
         assert cfg.enabled is True
         assert cfg.base_url == "http://localhost:9000"
         assert cfg.pages == ["/dashboard", "/users"]
         assert cfg.threshold_added == 10
+        assert cfg.page_settle_ms == 1500
+        assert cfg.issue_retry_count == 2
+        assert cfg.issue_retry_delay_seconds == 3.0
 
 
 class TestVisualDiffer:
@@ -1025,6 +1035,14 @@ class TestVisualDiffer:
         cfg = VisualDiffConfig(base_url="", base_url_env="WUP_VD_NONE")
         monkeypatch.delenv("WUP_VD_NONE", raising=False)
         assert _resolve_base_url(cfg) == ""
+
+    def test_chromium_launch_options_uses_env_executable(self, tmp_path, monkeypatch):
+        chrome = tmp_path / "chrome"
+        chrome.write_text("#!/bin/sh\n", encoding="utf-8")
+        monkeypatch.setenv("WUP_CHROMIUM_EXECUTABLE_PATH", str(chrome))
+        options = _chromium_launch_options(True)
+        assert options["headless"] is True
+        assert options["executable_path"] == str(chrome)
 
     def test_page_slug(self):
         assert _page_slug("http://x/api/v1/users") == "api_v1_users"
@@ -1167,6 +1185,57 @@ class TestVisualDiffer:
             assert "Visual diff skipped for frontend: 4 page(s) failed to fetch" in printed[0]
             assert "/a, /b, /c (+1 more)" in printed[0]
             assert "4x BrowserType.launch: Executable doesn't exist at /tmp/chrome" in printed[0]
+
+    def test_check_page_retries_transient_visual_issue(self, monkeypatch):
+        """A transient Vite overlay/tiny shell should be retried before reporting an issue."""
+        import asyncio
+        from wup import visual_diff as visual_diff_module
+
+        bad_snapshot = {
+            "tag": "HTML",
+            "meta": {
+                "text_length": 33,
+                "dom_nodes": 8,
+                "matched_error_selectors": ["vite-error-overlay"],
+            },
+        }
+        good_snapshot = {
+            "tag": "HTML",
+            "children": [{"tag": "BODY", "children": [{"tag": "MAIN"}]}],
+            "meta": {
+                "text_length": 500,
+                "dom_nodes": 50,
+                "matched_error_selectors": [],
+            },
+        }
+        snapshots = [bad_snapshot, good_snapshot]
+        calls = []
+
+        async def fake_fetch(*args):
+            calls.append(args)
+            return snapshots.pop(0), None
+
+        async def fake_sleep(_seconds):
+            return None
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            cfg = VisualDiffConfig(
+                enabled=True,
+                issue_retry_count=1,
+                issue_retry_delay_seconds=0,
+                page_settle_ms=1234,
+            )
+            differ = VisualDiffer(tmpdir, cfg)
+
+            monkeypatch.setattr(visual_diff_module, "_fetch_dom_snapshot", fake_fetch)
+            monkeypatch.setattr(visual_diff_module.asyncio, "sleep", fake_sleep)
+
+            result = asyncio.run(differ._check_page("frontend", "http://localhost/page"))
+
+        assert len(calls) == 2
+        assert calls[0][-1] == 1234
+        assert result["diff"]["status"] in {"new", "ok", "changed"}
+        assert "issues" not in result["diff"]
 
     def test_get_recent_diffs_empty(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1376,6 +1445,9 @@ testql:
                     threshold_added=7,
                     threshold_removed=4,
                     threshold_changed=8,
+                    page_settle_ms=1600,
+                    issue_retry_count=3,
+                    issue_retry_delay_seconds=4.5,
                     headless=False,
                 ),
             )
@@ -1392,6 +1464,9 @@ testql:
             assert vd.threshold_added == 7
             assert vd.threshold_removed == 4
             assert vd.threshold_changed == 8
+            assert vd.page_settle_ms == 1600
+            assert vd.issue_retry_count == 3
+            assert vd.issue_retry_delay_seconds == 4.5
             assert vd.headless is False
 
     def test_load_config_visual_diff_from_yaml(self):
@@ -1415,6 +1490,9 @@ visual_diff:
   threshold_added: 5
   threshold_removed: 2
   threshold_changed: 9
+  page_settle_ms: 1500
+  issue_retry_count: 2
+  issue_retry_delay_seconds: 3
   headless: false
 """
             config_path = Path(tmpdir) / "wup.yaml"
@@ -1433,6 +1511,9 @@ visual_diff:
             assert vd.threshold_added == 5
             assert vd.threshold_removed == 2
             assert vd.threshold_changed == 9
+            assert vd.page_settle_ms == 1500
+            assert vd.issue_retry_count == 2
+            assert vd.issue_retry_delay_seconds == 3.0
             assert vd.headless is False
 
     def test_load_config_visual_diff_defaults_when_section_absent(self):

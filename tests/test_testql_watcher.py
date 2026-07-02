@@ -283,6 +283,34 @@ def test_planfile_reporter_clears_dedupe_after_recovery(monkeypatch):
 
         assert first == "PLF-1000"
         assert second == "PLF-1001"
+
+
+def test_planfile_reporter_retries_without_files_for_old_planfile_cli(monkeypatch):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        calls = []
+
+        def fake_run(cmd, **kwargs):
+            calls.append(cmd)
+            if "--files" in cmd:
+                return CompletedProcess(cmd, returncode=2, stdout="", stderr="Error: No such option: --files")
+            return CompletedProcess(cmd, returncode=0, stdout="Created PLF-998\n", stderr="")
+
+        monkeypatch.setattr("wup.planfile_reporter.subprocess.run", fake_run)
+        reporter = PlanfileReporter(root, PlanfileConfig(enabled=True))
+
+        ticket_id = reporter.report_failure(
+            service="firmware",
+            status="failed",
+            stage="detail",
+            message="detail failed",
+            track_file=".wup/tracks/firmware_detail.json",
+        )
+
+        assert ticket_id == "PLF-998"
+        assert len(calls) == 2
+        assert "--files" in calls[0]
+        assert "--files" not in calls[1]
         assert len(calls) == 2
 
 

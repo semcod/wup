@@ -361,16 +361,22 @@ class TestQLWatcher(WupWatcher):
         passed, total, failed = (int(match.group(i)) for i in range(1, 4))
         return failed == 0 and passed >= total and total > 0
 
-    def _select_scenarios_for_service(self, service: str) -> List[Path]:
+    def _select_scenarios_for_service(self, service: str, *, stage: str = "quick") -> List[Path]:
         all_scenarios = self._discover_scenarios()
         if not all_scenarios:
             return []
 
         svc_config = self.get_service_config(service)
-        limit = (svc_config.quick_tests.max_endpoints
-                 if svc_config and svc_config.quick_tests else self.quick_limit)
+        if stage == "detail":
+            test_cfg = svc_config.detail_tests if svc_config else None
+            default_limit = 10
+        else:
+            test_cfg = svc_config.quick_tests if svc_config else None
+            default_limit = self.quick_limit
 
-        pinned = svc_config.quick_tests.scenario if svc_config and svc_config.quick_tests else ""
+        limit = test_cfg.max_endpoints if test_cfg else default_limit
+
+        pinned = test_cfg.scenario if test_cfg else ""
         if pinned:
             resolved = self._resolve_scenario_path(pinned)
             if resolved:
@@ -870,7 +876,7 @@ class TestQLWatcher(WupWatcher):
             if configured_endpoint not in merged_endpoints:
                 merged_endpoints.append(configured_endpoint)
 
-        scenarios = self._select_scenarios_for_service(service)
+        scenarios = self._select_scenarios_for_service(service, stage="detail")
         results = {
             "service": service,
             "total_scenarios": len(scenarios),
