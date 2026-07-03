@@ -3307,7 +3307,7 @@ wheels = [
 
 [[package]]
 name = "wup"
-version = "0.2.66"
+version = "0.2.68"
 source = { editable = "." }
 dependencies = [
     { name = "psutil" },
