@@ -2110,9 +2110,30 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:data_clump:wup/anomaly_detector.py:42:Data
         Clump: project_root, self, config'
+      execution:
+        attempt: 0
+        finished_at: '2026-07-05T23:21:47.504947Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/anomaly_detector.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - outputs
+        source: planfile.store
+        timestamp: '2026-07-05T23:21:46.751527+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-07-05T23:21:47.524939+00:00'
       id: PLF-033
       labels:
       - llm-ready
@@ -2120,15 +2141,24 @@ sprint:
       - code-smell
       - data-clump
       name: 'Address code smell: Data Clump: project_root, self, config'
+      outputs:
+        artifacts: []
+        notes:
+        - 'False positive: code2llm''s Data Clump detector grouped functions by argument-name-set
+          alone (ignoring file), so this common constructor shape reused independently
+          by unrelated classes in unrelated files was miscounted as a clump. Fixed
+          in code2llm 0.5.173 (grouping now scoped to (file, argument-set)). Re-scanning
+          wup with the fixed detector: this ticket''s argument-set+file combination
+          is not among the 16 genuine remaining findings. Closing as stale/false-positive.'
       priority: normal
       source:
         context: {}
         timestamp: '2026-05-25T11:03:40.212167Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:40.216096Z'
+      updated_at: '2026-07-05T23:21:47.524900+00:00'
     PLF-034:
       acceptance_criteria: []
       blocked_by: []
@@ -2186,9 +2216,30 @@ sprint:
 
         code2llm-dedupe: code2llm:smell:data_clump:wup/dependency_mapper.py:262:Data
         Clump: testql_bin, self, scenarios_dir'
+      execution:
+        attempt: 0
+        finished_at: '2026-07-05T23:21:49.002969Z'
+        max_attempts: 1
+        queue: default
+        state: done
       files:
       - wup/dependency_mapper.py
-      history: []
+      history:
+      - action: update
+        changes:
+        - outputs
+        source: planfile.store
+        timestamp: '2026-07-05T23:21:48.256678+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: null
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-07-05T23:21:49.023773+00:00'
       id: PLF-035
       labels:
       - llm-ready
@@ -2196,15 +2247,24 @@ sprint:
       - code-smell
       - data-clump
       name: 'Address code smell: Data Clump: testql_bin, self, scenarios_dir'
+      outputs:
+        artifacts: []
+        notes:
+        - 'False positive: code2llm''s Data Clump detector grouped functions by argument-name-set
+          alone (ignoring file), so this common constructor shape reused independently
+          by unrelated classes in unrelated files was miscounted as a clump. Fixed
+          in code2llm 0.5.173 (grouping now scoped to (file, argument-set)). Re-scanning
+          wup with the fixed detector: this ticket''s argument-set+file combination
+          is not among the 16 genuine remaining findings. Closing as stale/false-positive.'
       priority: normal
       source:
         context: {}
         timestamp: '2026-05-25T11:03:41.261258Z'
         tool: code2llm
       sprint: current
-      status: open
+      status: done
       sync: {}
-      updated_at: '2026-05-25T11:03:41.266169Z'
+      updated_at: '2026-07-05T23:21:49.023730+00:00'
     PLF-036:
       acceptance_criteria: []
       blocked_by: []
@@ -3880,7 +3940,7 @@ sprint:
         Weryfikacja (opcjonalnie): `koru ide doctor --ide antigravity --fix --gc-sockets`'
       execution:
         attempt: 0
-        finished_at: '2026-05-26T11:42:11.849868Z'
+        finished_at: '2026-07-05T23:22:51.632609Z'
         max_attempts: 1
         queue: operator
         state: done
@@ -3915,6 +3975,11 @@ sprint:
         source: planfile.store
         status: done
         timestamp: '2026-05-26T11:42:11.868145+00:00'
+      - action: update
+        changes:
+        - execution
+        source: planfile.store
+        timestamp: '2026-07-05T23:22:51.634103+00:00'
       id: PLF-081
       inputs:
         api_headers: {}
@@ -3973,7 +4038,7 @@ sprint:
       sprint: current
       status: done
       sync: {}
-      updated_at: '2026-05-26T11:42:11.868099+00:00'
+      updated_at: '2026-07-05T23:22:51.634062+00:00'
     PLF-082:
       blocked_by: []
       blocks: []
@@ -3988,7 +4053,7 @@ sprint:
         repair --yes`'
       execution:
         attempt: 0
-        finished_at: '2026-05-26T11:42:22.996978Z'
+        finished_at: '2026-07-05T23:22:52.355521Z'
         max_attempts: 1
         queue: operator
         state: done
@@ -4018,6 +4083,11 @@ sprint:
         source: planfile.store
         status: done
         timestamp: '2026-05-26T11:42:23.016737+00:00'
+      - action: update
+        changes:
+        - execution
+        source: planfile.store
+        timestamp: '2026-07-05T23:22:52.357008+00:00'
       id: PLF-082
       inputs:
         api_headers: {}
@@ -4070,4 +4140,107 @@ sprint:
       sprint: current
       status: done
       sync: {}
-      updated_at: '2026-05-26T11:42:23.016699+00:00'
+      updated_at: '2026-07-05T23:22:52.356982+00:00'
+    PLF-083:
+      blocked_by: []
+      blocks: []
+      created_at: '2026-07-05T23:22:52.890987+00:00'
+      description: '[OPERATOR] Kalibracja czatu OS injectora (auto)
+
+
+        brak kalibracji chatu dla auto — task koru:ide-os:calibrate IDE=auto
+
+
+        Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+        ticket done.
+
+
+        Weryfikacja (opcjonalnie): `task koru:ide-os:calibrate IDE=auto`'
+      execution:
+        attempt: 0
+        finished_at: '2026-07-06T08:05:16.640173Z'
+        max_attempts: 1
+        queue: operator
+        state: done
+      executor:
+        kind: human
+        mode: interactive
+      files: []
+      history:
+      - action: created
+        message: '[OPERATOR] Kalibracja czatu OS injectora (auto)
+
+
+          brak kalibracji chatu dla auto — task koru:ide-os:calibrate IDE=auto
+
+
+          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+          ticket done.
+
+
+          Weryfikacja (opcjonalnie): `task koru:ide-os:calibrate IDE=auto`'
+        source: koru task
+        timestamp: '2026-07-05T23:22:52.890987+00:00'
+      - action: update
+        changes:
+        - execution
+        - status
+        execution_state: done
+        previous_execution_state: ready
+        previous_status: open
+        source: planfile.store
+        status: done
+        timestamp: '2026-07-06T08:05:16.641440+00:00'
+      id: PLF-083
+      inputs:
+        api_headers: {}
+        api_method: GET
+        api_timeout_seconds: 30.0
+        env_keys: []
+        prompt: '[OPERATOR] Kalibracja czatu OS injectora (auto)
+
+
+          brak kalibracji chatu dla auto — task koru:ide-os:calibrate IDE=auto
+
+
+          Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+          ticket done.
+
+
+          Weryfikacja (opcjonalnie): `task koru:ide-os:calibrate IDE=auto`'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      - operator
+      - auto-pipeline
+      - step:os_calibrate
+      name: '[OPERATOR] Kalibracja czatu OS injectora (auto) brak kalibracji chatu
+        dla auto — task koru:ide-os:calibrate IDE=auto ...'
+      outputs:
+        artifacts: []
+        notes: []
+      priority: high
+      source:
+        context:
+          dedupe_key: koru-operator-pipeline:operator-kalibracja-czatu-os-injectora-auto-brak-kalibracji-chatu-dla-auto-task-koru-ide-os-calibrate-ide-auto-...
+          detail: brak kalibracji chatu dla auto — task koru:ide-os:calibrate IDE=auto
+          input: '[OPERATOR] Kalibracja czatu OS injectora (auto)
+
+
+            brak kalibracji chatu dla auto — task koru:ide-os:calibrate IDE=auto
+
+
+            Wykonaj w IDE, potem zamknij ticket: `task tickets:done -- <id>` lub planfile
+            ticket done.
+
+
+            Weryfikacja (opcjonalnie): `task koru:ide-os:calibrate IDE=auto`'
+          step_id: os_calibrate
+          task_command: task koru:ide-os:calibrate IDE=auto
+        timestamp: '2026-07-05T23:22:52.890987+00:00'
+        tool: koru-operator-pipeline
+      sprint: current
+      status: done
+      sync: {}
+      updated_at: '2026-07-06T08:05:16.641417+00:00'

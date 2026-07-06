@@ -1,0 +1,10 @@
+# local.dev.txt — locally developed dependencies of this project (generated 2026-07-04)
+# by ~/github/local.dev.sh — DO NOT EDIT; see ~/github/local.dev.md
+# project: dsl2wup 0.1.0 (python) at /home/tom/github/semcod/wup/packages/dsl2wup
+# deps declared: 8 | with local source: 2
+
+## LOCAL DEPS  (dep | required | local source (version) | installed | status)
+uri2wup | >=0.1.0 | /home/tom/github/semcod/wup/packages/uri2wup (0.1.0) | 0.1.0 editable | OK-EDITABLE  [pyproject.toml]
+wup | >=0.2.0 | /home/tom/github/semcod/wup (0.2.68) | 0.2.67 editable | OK-EDITABLE  [pyproject.toml]
+
+## EXTERNAL DEPS (no local source, 6): grpcio-tools, jsonschema, protobuf, pydantic, pytest, pyyaml

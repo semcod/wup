@@ -4,38 +4,39 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 38,
+  "cycle": 100,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
-    "scan_after_idle_min_interval_seconds": 60.0,
-    "scan_after_idle_queue": true
+    "scan_after_idle_min_interval_seconds": 0.0,
+    "scan_after_idle_queue": false
   },
   "last_cycle": {
     "autopilot_skipped_idle_streak": false,
-    "autopilot_skipped_plugin_blocker": "plugin_missing",
-    "autopilot_skipped_plugin_missing": true,
-    "autopilot_skipped_plugin_missing_reason": "ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
+    "control_route": {
+      "client": "claude-code",
+      "selected": "tillm_shell"
+    },
     "environment_profile": {
       "control": {
-        "can_confirm_submit": true,
-        "family": "ide_control",
-        "interface_id": "antigravity_native_send",
+        "can_confirm_submit": false,
+        "family": "desktop_control",
+        "interface_id": "os_injector_xdotool",
         "operator_recovery": [
-          "reload_window",
-          "reconnect_plugin"
+          "focus_window",
+          "install_xdotool"
         ],
-        "transport": "ide_command_registry",
-        "verification_mode": "plugin_ack",
-        "write_mode": "native_send_command"
+        "transport": "x11_keyboard_injection",
+        "verification_mode": "host_probe",
+        "write_mode": "synthetic_keys"
       },
-      "decision_key": "os=wayland|ide=antigravity|llm=ide_chat|control=antigravity_native_send|verify=plugin_ack",
+      "decision_key": "os=x11|ide=claude-code|llm=ide_chat|control=os_injector_xdotool|verify=host_probe",
       "ide": {
-        "config_path": "/home/tom/.config/Antigravity/User/settings.json",
-        "extensions_metadata_path": "/home/tom/.antigravity/extensions/extensions.json",
-        "id": "antigravity",
-        "keyboard_fallback_default": false,
-        "label": "Antigravity",
-        "plugin_supported": true,
+        "config_path": null,
+        "extensions_metadata_path": null,
+        "id": "claude-code",
+        "keyboard_fallback_default": true,
+        "label": "claude-code",
+        "plugin_supported": false,
         "strict_plugin_ack_required": false,
         "submit_key": "Return",
         "trusted_publisher_required": false
@@ -46,10 +47,10 @@
         "source": "default"
       },
       "os": {
-        "display_server": "wayland",
+        "display_server": "x11",
         "platform": "linux",
-        "preferred_keyboard_interface": "os_injector_wtype",
-        "session": "wayland",
+        "preferred_keyboard_interface": "os_injector_xdotool",
+        "session": "x11",
         "system": "Linux"
       },
       "project": "/home/tom/github/semcod/wup",
@@ -61,17 +62,17 @@
   },
   "recent_decisions": [
     {
-      "action": "no_op",
-      "at": "2026-05-26T10:38:14+00:00",
-      "blocked_by": "plugin_missing",
-      "cycle": 38,
-      "decided": "skip:plugin_missing",
-      "evidence": "blocked_by=plugin_missing, diagnostics=skipped, wup=ok, plugin_reason=ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
-      "next_step": "wait for plugin reconnect (manual reload may be needed)",
-      "observed": "queue=waiting_input ticket=PLF-013 streak=2",
-      "skip_because": "ide=antigravity version=0.2.0 rejected: connected autopilot plugin build mismatch: connected=ff1d92410a76486e expected=24b679b7645d5254 version=0.2.0; reload the IDE window after installing the current VSIX, then run `koru: Connect autopilot daemon`.",
-      "skip_code": "plugin_missing"
+      "action": "submit_unverified",
+      "at": "2026-07-06T19:05:51+00:00",
+      "blocked_by": "failed",
+      "cycle": 100,
+      "decided": "drive_failed",
+      "evidence": "blocked_by=failed, backend=tillm_shell, diagnostics=skipped, wup=changed",
+      "next_step": "retry next cycle (cached winner discarded)",
+      "observed": "queue=waiting_input ticket=PLF-031 streak=38",
+      "skip_because": "",
+      "skip_code": "failed"
     }
   ],
-  "updated_at": "2026-05-26T10:38:14.549607+00:00"
+  "updated_at": "2026-07-06T19:05:51.037611+00:00"
 }

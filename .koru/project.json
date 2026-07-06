@@ -3,6 +3,6 @@
   "project": "/home/tom/github/semcod/wup",
   "runtime_dir": ".planfile/.koru",
   "schema": "koru.project/v1",
-  "source": "auto",
-  "updated_at": "2026-05-26T10:37:25.485829+00:00"
+  "source": "init",
+  "updated_at": "2026-07-05T23:19:48.378287+00:00"
 }

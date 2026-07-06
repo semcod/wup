@@ -369,3 +369,6 @@ __marimo__/
 
 # Planfile Koru runtime logs
 .planfile/.koru/
+
+# koru runtime artefacts (generated)
+.koru/
