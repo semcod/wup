@@ -4,7 +4,7 @@
     "scan_after_idle_runs": 0,
     "scan_after_idle_tickets_applied": 0
   },
-  "cycle": 166,
+  "cycle": 167,
   "knobs": {
     "autopilot_skip_drive_idle_streak": 0,
     "scan_after_idle_min_interval_seconds": 0.0,
@@ -63,16 +63,16 @@
   "recent_decisions": [
     {
       "action": "submit_unverified",
-      "at": "2026-07-07T15:29:55+00:00",
+      "at": "2026-07-07T15:48:32+00:00",
       "blocked_by": "failed",
-      "cycle": 166,
+      "cycle": 167,
       "decided": "drive_failed",
       "evidence": "blocked_by=failed, backend=tillm_shell, diagnostics=skipped, wup=changed",
       "next_step": "retry next cycle (cached winner discarded)",
-      "observed": "queue=waiting_input ticket=PLF-031 streak=104",
+      "observed": "queue=waiting_input ticket=PLF-031 streak=105",
       "skip_because": "",
       "skip_code": "failed"
     }
   ],
-  "updated_at": "2026-07-07T15:29:55.366730+00:00"
+  "updated_at": "2026-07-07T15:48:32.972899+00:00"
 }
