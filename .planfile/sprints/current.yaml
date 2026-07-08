@@ -691,17 +691,17 @@ sprint:
       blocked_by: []
       blocks: []
       created_at: '2026-05-22T22:09:46.085184+00:00'
-      description: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
-        Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
-        SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
-        SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
-        \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
-        0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌ Handler
-        error for ASSERT_EXIT_CODE: invalid literal for int() with base 10: '!= 0'\n❌
-        L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
-        5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
-        Investigate and fix regression, stale quality artifact, or broken diagnostic
-        gate."
+      description: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+        \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+        \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" =\
+        \ \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+        \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+        \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+        \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+        \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+        \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+        \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+        \ gate."
       execution:
         attempt: 0
         finished_at: '2026-05-22T23:17:53.855275Z'
@@ -714,17 +714,17 @@ sprint:
       files: []
       history:
       - action: created
-        message: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
-          Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
-          SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
-          SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
-          \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
-          0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌
-          Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base
-          10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
-          5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
-          Investigate and fix regression, stale quality artifact, or broken diagnostic
-          gate."
+        message: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+          \ gate."
         source: koru task
         timestamp: '2026-05-22T22:09:46.085184+00:00'
       - action: update
@@ -743,17 +743,17 @@ sprint:
         api_method: GET
         api_timeout_seconds: 30.0
         env_keys: []
-        prompt: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
-          Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
-          SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
-          SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
-          \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE
-          0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌
-          Handler error for ASSERT_EXIT_CODE: invalid literal for int() with base
-          10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:
-          5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
-          Investigate and fix regression, stale quality artifact, or broken diagnostic
-          gate."
+        prompt: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+          \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+          \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+          \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE\
+          \ 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB SHELL \"wup --version\"\
+          \ [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\"\
+          \ [5000ms] (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal\
+          \ for int() with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\
+          \n❌ cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+          \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+          \ gate."
       labels:
       - koru
       - nl-task
@@ -766,17 +766,18 @@ sprint:
       priority: high
       source:
         context:
-          input: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
-            Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\U0001F4DD
-            SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\" = \"30000\"\n\U0001F4BB
-            SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS
-            \"usage\"\n\U0001F4BB SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅
-            ASSERT_EXIT_CODE 0\n\U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms]
-            (dry-run)\n❌ Handler error for ASSERT_EXIT_CODE: invalid literal for int()
-            with base 10: '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌
-            cli-wup.testql.toon.yaml: 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.
-            Investigate and fix regression, stale quality artifact, or broken diagnostic
-            gate."
+          input: "[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.\
+            \ Check: WUP service=wup-shell stage=quick message=\U0001F4DC OQL: cli-wup.testql.toon.yaml\n\
+            \U0001F4DD SET \"cli_command\" = \"wup\"\n\U0001F4DD SET \"timeout_ms\"\
+            \ = \"30000\"\n\U0001F4BB SHELL \"wup --help\" [5000ms] (dry-run)\n  ✅\
+            \ ASSERT_EXIT_CODE 0\n  ❌ ASSERT_STDOUT_CONTAINS \"usage\"\n\U0001F4BB\
+            \ SHELL \"wup --version\" [5000ms] (dry-run)\n  ✅ ASSERT_EXIT_CODE 0\n\
+            \U0001F4BB SHELL \"wup --invalid-flag-xyz123\" [5000ms] (dry-run)\n❌ Handler\
+            \ error for ASSERT_EXIT_CODE: invalid literal for int() with base 10:\
+            \ '!= 0'\n❌ L9: list.append() takes no keyword arguments\n\n❌ cli-wup.testql.toon.yaml:\
+            \ 5/7 passed, 2 failed (8ms) track=/home/tom/github/semcod/wup/.wup/tracks/1779487780_wup-shell_quick.json.\
+            \ Investigate and fix regression, stale quality artifact, or broken diagnostic\
+            \ gate."
         timestamp: '2026-05-22T22:09:46.085184+00:00'
         tool: koru-cli-nl
       sprint: current
@@ -4244,3 +4245,72 @@ sprint:
       status: done
       sync: {}
       updated_at: '2026-07-06T08:05:16.641417+00:00'
+    PLF-084:
+      id: PLF-084
+      name: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=wup-shell stage=qu...'
+      status: done
+      priority: high
+      sprint: current
+      source:
+        tool: koru-cli-nl
+        timestamp: '2026-07-08T00:23:55.863463+00:00'
+        context:
+          input: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+            Check: WUP service=wup-shell stage=quick message=TestQL subprocess timed
+            out track=/home/tom/github/semcod/wup/.wup/tracks/1783470182_wup-shell_quick.json.
+            Investigate and fix regression, stale quality artifact, or broken diagnostic
+            gate.'
+      description: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+        Check: WUP service=wup-shell stage=quick message=TestQL subprocess timed out
+        track=/home/tom/github/semcod/wup/.wup/tracks/1783470182_wup-shell_quick.json.
+        Investigate and fix regression, stale quality artifact, or broken diagnostic
+        gate.'
+      labels:
+      - koru
+      - nl-task
+      - llm-ready
+      blocked_by: []
+      blocks: []
+      files: []
+      executor:
+        kind: human
+        mode: interactive
+      execution:
+        queue: default
+        state: done
+        attempt: 0
+        max_attempts: 1
+        finished_at: '2026-07-08T01:05:00.515329+00:00'
+        last_error: null
+        lease_expires_at: null
+      inputs:
+        prompt: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=wup-shell stage=quick message=TestQL subprocess timed
+          out track=/home/tom/github/semcod/wup/.wup/tracks/1783470182_wup-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+        env_keys: []
+        api_method: GET
+        api_headers: {}
+        api_timeout_seconds: 30.0
+      outputs:
+        artifacts: []
+        notes:
+        - 'Auto-resolved by Koru: WUP no longer reports wup-wup-shell as failing.'
+      sync: {}
+      history:
+      - timestamp: '2026-07-08T00:23:55.863463+00:00'
+        action: created
+        source: koru task
+        message: '[AUTO-DIAG] wup-wup-shell needs attention in cycle 0. queue_status=wup_failure.
+          Check: WUP service=wup-shell stage=quick message=TestQL subprocess timed
+          out track=/home/tom/github/semcod/wup/.wup/tracks/1783470182_wup-shell_quick.json.
+          Investigate and fix regression, stale quality artifact, or broken diagnostic
+          gate.'
+      - timestamp: '2026-07-08T01:05:00.515329+00:00'
+        action: auto_resolved
+        source: koru wup
+        message: 'Auto-resolved by Koru: WUP no longer reports wup-wup-shell as failing.'
+      created_at: '2026-07-08T00:23:55.863463+00:00'
+      updated_at: '2026-07-08T01:05:00.515329+00:00'

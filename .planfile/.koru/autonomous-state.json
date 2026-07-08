@@ -1,14 +1,14 @@
 {
-  "cycle": 179,
-  "saved_at": 1783452660.1882887,
+  "cycle": 222,
+  "saved_at": 1783496906.2506552,
   "queue_status": "waiting_input",
   "waiting_ticket": "PLF-031",
   "state": {
     "previous_signature": "waiting_input:PLF-031",
-    "stagnation_streak": 117,
+    "stagnation_streak": 25,
     "scan_clean_streak": 0,
-    "scan_last_head": "8e487eb4cd7f591a711b6f7f8055c12a940051f6",
-    "wup_seen_events": 12270,
+    "scan_last_head": "c2228bf05995f68bd1ddd61142824d284d0a1427",
+    "wup_seen_events": 15750,
     "autopilot_events": [
       {
         "ts": 1779488175.1360273,
@@ -378,7 +378,7 @@
         "text": "x"
       }
     ],
-    "last_driven_prompt": "Ticket PLF-031 has been stuck in status 'waiting_input' for 117 cycles. Continue the actual implementation work for this ticket now. Run the relevant checks before closing it. Planfile status handoff:\n- When checks pass and the work is complete, run: `planfile ticket done PLF-031`\n- If blocked or missing input, run: `planfile ticket input PLF-031 --prompt \"<exact input needed>\" --note \"<what you verified>\"`\n- If implementation fails after a real attempt, run: `planfile ticket fail PLF-031 --error \"<short failure reason>\"`\n- Do not leave completed IDE work in waiting_input.  Original ticket prompt: code2llm reports `Data Clump: endpoints, self, service` in `wup/core.py:305`.\n\nArguments (endpoints, self, service) are used together in multiple functions: wup.core.WupWatcher.run_quick_test, wup.core.WupWatcher.run_detail_test, wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test, wup.testql_watcher.TestQLWatcher.run_detail_test, wup.visual_diff.VisualDiffer._pages_for_service, wup.visual_diff.VisualDiffer.run_for_service, examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.\n\nMake the smallest refactor that removes the smell and run local tests.\n\ncode2llm-dedupe: code2llm:smell:data_clump:wup/core.py:305:Data Clump: endpoints, self, service",
+    "last_driven_prompt": "Ticket PLF-031 has been stuck in status 'waiting_input' for 25 cycles. Continue the actual implementation work for this ticket now. Run the relevant checks before closing it. Planfile status handoff:\n- When checks pass and the work is complete, run: `planfile ticket done PLF-031`\n- If blocked or missing input, run: `planfile ticket input PLF-031 --prompt \"<exact input needed>\" --note \"<what you verified>\"`\n- If implementation fails after a real attempt, run: `planfile ticket fail PLF-031 --error \"<short failure reason>\"`\n- Do not leave completed IDE work in waiting_input.  Original ticket prompt: code2llm reports `Data Clump: endpoints, self, service` in `wup/core.py:305`.\n\nArguments (endpoints, self, service) are used together in multiple functions: wup.core.WupWatcher.run_quick_test, wup.core.WupWatcher.run_detail_test, wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test, wup.testql_watcher.TestQLWatcher.run_detail_test, wup.visual_diff.VisualDiffer._pages_for_service, wup.visual_diff.VisualDiffer.run_for_service, examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.\n\nMake the smallest refactor that removes the smell and run local tests.\n\ncode2llm-dedupe: code2llm:smell:data_clump:wup/core.py:305:Data Clump: endpoints, self, service",
     "last_llm_reflection_summary": "",
     "last_llm_reflection_ts": 0.0,
     "last_operator_needs_input_signature": "",
@@ -400,6 +400,6 @@
     "last_scan_create_failed_fingerprint": "",
     "last_scan_create_failed_ts": -1.0,
     "last_scan_duplicate_fingerprint": "5:eca89521273f9d9e6c10fce37871c2b2a27d05ed",
-    "last_scan_duplicate_ts": 1783452444.9750106
+    "last_scan_duplicate_ts": 1783496701.8601937
   }
 }
