@@ -372,3 +372,15 @@ __marimo__/
 
 # koru runtime artefacts (generated)
 .koru/
+.claude/
+.code2llm_cache/
+.cursor/
+.gillm/
+.github/
+.idea/
+.nlp2dsl/
+.planfile/
+.vscode/
+.wup/
+.wupbro/
+.zed/
