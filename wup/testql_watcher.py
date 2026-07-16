@@ -15,6 +15,7 @@ from urllib import error, request
 
 from .config import load_config
 from .core import WupWatcher
+from .models.target import ServiceTestTarget
 from wup.bus import bus
 from wup.testing.events.test_results import ScenarioFailed, ScenarioPassed
 from .models.config import WupConfig, ServiceConfig
@@ -590,7 +591,9 @@ class TestQLWatcher(WupWatcher):
         self.console.print(f"[green]✓ Quick TestQL passed for {service}[/green]")
         if self._should_run_visual_diff():
             visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
-            visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
+            visual_results = await self.visual_differ.run_for_service(
+                ServiceTestTarget(service=service, endpoints=visual_endpoints)
+            )
             visual_issues = [
                 item for item in visual_results
                 if item.get("diff", {}).get("status") == "issue"
@@ -781,7 +784,9 @@ class TestQLWatcher(WupWatcher):
             await self.web_client.send_pass(service=service, stage="quick")
         if self.visual_differ and self.visual_differ.cfg.enabled:
             visual_endpoints = self._get_config_endpoints_for_service(service) or merged_endpoints
-            visual_results = await self.visual_differ.run_for_service(service, visual_endpoints)
+            visual_results = await self.visual_differ.run_for_service(
+                ServiceTestTarget(service=service, endpoints=visual_endpoints)
+            )
             visual_issues = [
                 item for item in visual_results
                 if item.get("diff", {}).get("status") == "issue"
@@ -1007,7 +1012,7 @@ class TestQLWatcher(WupWatcher):
         self._probe_thread.start()
         self.console.print(f"[green]Live probes enabled (every {interval}s)[/green]")
 
-    def start_watching(self, watch_paths: Optional[List[str]] = None):
+    def start_watching(self, watch_paths: Optional[List[str]] = None) -> bool:
         """Start file watcher and optional periodic TestQL/HTTP probes."""
         self._start_periodic_probe_thread()
-        super().start_watching(watch_paths)
+        return super().start_watching(watch_paths)

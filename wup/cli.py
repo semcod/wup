@@ -198,7 +198,8 @@ def watch(
         asyncio.run(watcher.run_with_dashboard())
     else:
         console.print("[green]Starting watcher...[/green]")
-        watcher.start_watching()
+        if watcher.start_watching() is False:
+            raise typer.Exit(1)
 
 
 def _auto_generate_config(project_path: Path, mode: str):

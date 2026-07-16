@@ -442,7 +442,13 @@ def test_visual_differ_disabled_by_default():
         # Differ is created but flagged disabled — run_for_service() must be a no-op
         assert watcher.visual_differ is not None
         assert watcher.visual_differ.cfg.enabled is False
-        results = asyncio.run(watcher.visual_differ.run_for_service("svc", ["/x"]))
+        from wup.models.target import ServiceTestTarget
+
+        results = asyncio.run(
+            watcher.visual_differ.run_for_service(
+                ServiceTestTarget(service="svc", endpoints=["/x"])
+            )
+        )
         assert results == []
 
 
@@ -532,8 +538,8 @@ def test_quick_pass_actions_prefer_config_endpoints_for_visual_diff():
                 self.cfg = VisualDiffConfig(enabled=True)
                 self.calls = []
 
-            async def run_for_service(self, service, endpoints):
-                self.calls.append((service, list(endpoints)))
+            async def run_for_service(self, target):
+                self.calls.append((target.service, list(target.endpoints)))
                 return []
 
         differ = RecordingDiffer()

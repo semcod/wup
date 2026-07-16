@@ -25,6 +25,7 @@ from watchdog.observers.polling import PollingObserver
 from .config import load_config
 from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig, ServiceConfig
+from .models.target import ServiceTestTarget
 from .planfile_reporter import PlanfileReporter
 
 
@@ -278,14 +279,15 @@ class WupWatcher:
             return
 
         test_type, service, endpoints = self.test_queue.popleft()
+        target = ServiceTestTarget(service, endpoints)
 
         try:
             if test_type == "quick":
-                passed = await self.run_quick_test(service, endpoints)
+                passed = await self.run_quick_test(target)
                 if not passed:
                     self.schedule_detail_test(service)
             elif test_type == "detail":
-                await self.run_detail_test(service, endpoints)
+                await self.run_detail_test(target)
         except Exception as e:
             self.console.print(f"[red]Error testing {service}: {e}[/red]")
     
@@ -302,17 +304,17 @@ class WupWatcher:
         except Exception:
             return True
     
-    async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
+    async def run_quick_test(self, target: ServiceTestTarget) -> bool:
         """
         Run a quick test for a service (smoke test).
 
         Args:
-            service: Service name
-            endpoints: List of endpoints to test
+            target: Service and endpoints to test
 
         Returns:
             True if all tests passed, False otherwise
         """
+        service, endpoints = target.service, target.endpoints
         self.console.print(f"[cyan]🧪 Quick testing {service} ({len(endpoints)} endpoints)[/cyan]")
 
         if not endpoints:
@@ -346,17 +348,17 @@ class WupWatcher:
 
         return passed
     
-    async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
+    async def run_detail_test(self, target: ServiceTestTarget) -> Dict:
         """
         Run a detailed test for a service with blame report.
 
         Args:
-            service: Service name
-            endpoints: List of endpoints to test
+            target: Service and endpoints to test
 
         Returns:
             Dictionary with test results and blame information
         """
+        service, endpoints = target.service, target.endpoints
         self.console.print(f"[cyan]🔍 Detail testing {service} ({len(endpoints)} endpoints)[/cyan]")
 
         results = {
@@ -564,35 +566,42 @@ class WupWatcher:
                 return observer
             raise
 
-    def start_watching(self, watch_paths: Optional[List[str]] = None):
+    def start_watching(self, watch_paths: Optional[List[str]] = None) -> bool:
         """
         Start watching for file changes.
-        
+
         Args:
             watch_paths: List of paths to watch (default: from config or common source directories)
+
+        Returns:
+            False when no valid paths could be watched (configuration error —
+            CLI turns this into a non-zero exit so supervisors notice instead
+            of treating a watcher that never watched as a clean run),
+            True after a graceful interrupt.
         """
         if watch_paths is None:
             watch_paths = self.build_watched_paths()
-        
+
         # Filter to existing paths
         watch_paths = [p for p in watch_paths if Path(p).exists()]
-        
+
         if not watch_paths:
             self.console.print("[red]No valid paths to watch[/red]")
-            return
-        
+            return False
+
         event_handler = WupEventHandler(self)
         observer = self._create_and_start_observer(event_handler, watch_paths)
         self.console.print(f"[green]🕵️  Watching: {', '.join(watch_paths)}[/green]")
-        
+
         try:
             while True:
                 asyncio.run(self.process_test_queue_once())
                 time.sleep(1)
         except KeyboardInterrupt:
             observer.stop()
-        
+
         observer.join()
+        return True
     
     def create_status_table(self) -> Table:
         """

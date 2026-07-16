@@ -11,6 +11,7 @@ import pytest
 from wup.config import load_config, save_config, get_default_config
 from wup.core import WupWatcher
 from wup.dependency_mapper import DependencyMapper
+from wup.models.target import ServiceTestTarget
 from wup.models.config import (
     WupConfig,
     WatchConfig,
@@ -1056,7 +1057,7 @@ class TestVisualDiffer:
                 pages_from_endpoints=False,
             )
             differ = VisualDiffer(tmpdir, cfg)
-            pages = differ._pages_for_service("users", ["/api/users"])
+            pages = differ._pages_for_service(ServiceTestTarget(service="users", endpoints=["/api/users"]))
             assert pages == ["http://localhost:8080/dashboard"]
 
     def test_pages_for_service_from_endpoints(self):
@@ -1066,7 +1067,9 @@ class TestVisualDiffer:
                 pages_from_endpoints=True,
             )
             differ = VisualDiffer(tmpdir, cfg)
-            pages = differ._pages_for_service("users", ["/connect-users", "/connect-users/1"])
+            pages = differ._pages_for_service(
+                ServiceTestTarget(service="users", endpoints=["/connect-users", "/connect-users/1"])
+            )
             assert "http://localhost:8080/connect-users" in pages
             assert "http://localhost:8080/connect-users/1" in pages
 
@@ -1083,8 +1086,10 @@ class TestVisualDiffer:
             )
             differ = VisualDiffer(tmpdir, cfg)
             pages = differ._pages_for_service(
-                "backend",
-                ["/api/v3/health", "/connect-config", "http://localhost:8080/connect-data"],
+                ServiceTestTarget(
+                    service="backend",
+                    endpoints=["/api/v3/health", "/connect-config", "http://localhost:8080/connect-data"],
+                )
             )
             assert "http://localhost:8080/api/v3/health" not in pages
             assert "http://localhost:8080/connect-config" in pages
@@ -1097,7 +1102,7 @@ class TestVisualDiffer:
                 pages_from_endpoints=False,
             )
             differ = VisualDiffer(tmpdir, cfg)
-            pages = differ._pages_for_service("users", [])
+            pages = differ._pages_for_service(ServiceTestTarget(service="users"))
             assert pages == ["http://localhost:8080/users"]
 
     def test_pages_for_service_absolute_url_passthrough(self):
@@ -1108,7 +1113,7 @@ class TestVisualDiffer:
                 pages_from_endpoints=False,
             )
             differ = VisualDiffer(tmpdir, cfg)
-            pages = differ._pages_for_service("svc", [])
+            pages = differ._pages_for_service(ServiceTestTarget(service="svc"))
             assert pages == ["https://example.com/connect-dashboard"]
 
     def test_diff_snapshots_baseline(self):
@@ -1144,7 +1149,9 @@ class TestVisualDiffer:
         with tempfile.TemporaryDirectory() as tmpdir:
             cfg = VisualDiffConfig(enabled=False)
             differ = VisualDiffer(tmpdir, cfg)
-            results = asyncio.run(differ.run_for_service("svc", ["/x"]))
+            results = asyncio.run(
+                differ.run_for_service(ServiceTestTarget(service="svc", endpoints=["/x"]))
+            )
             assert results == []
 
     def test_run_for_service_summarizes_fetch_errors(self, monkeypatch):
@@ -1177,7 +1184,9 @@ class TestVisualDiffer:
             monkeypatch.setattr(visual_diff_module.console, "print", lambda message: printed.append(str(message)))
 
             results = asyncio.run(
-                differ.run_for_service("frontend", ["/a", "/b", "/c", "/d"])
+                differ.run_for_service(
+                    ServiceTestTarget(service="frontend", endpoints=["/a", "/b", "/c", "/d"])
+                )
             )
 
             assert len(results) == 4
