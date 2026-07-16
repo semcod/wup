@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.69] - 2026-07-16
+
+### Docs
+- Update README.md
+
+### Other
+- Update .koru/event-store.jsonl
+- Update .koru/events/observability.jsonl
+- Update .nlp2dsl/environment.doql.less
+- Update .nlp2dsl/registry/environment.doql.less
+- Update .planfile/.koru/autonomous-state.json
+- Update .planfile/.koru/autonomy-telemetry.json
+- Update .wup/browser-events/latest.json
+- Update .wup/service-health-events.jsonl
+- Update .wup/service-health.json
+- Update app.doql.events.pb
+- ... and 4 more files
+
 ## [0.2.68] - 2026-07-03
 
 ### Docs

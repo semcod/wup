@@ -35,6 +35,7 @@ from rich.progress import (
 )
 
 from .models.config import VisualDiffConfig
+from .models.target import ServiceTestTarget
 
 
 console = Console()
@@ -346,7 +347,8 @@ class VisualDiffer:
     Usage::
 
         differ = VisualDiffer(project_root, config.visual_diff)
-        results = await differ.run_for_service(service, changed_endpoints)
+        target = ServiceTestTarget(service, changed_endpoints)
+        results = await differ.run_for_service(target)
     """
 
     def __init__(
@@ -363,8 +365,9 @@ class VisualDiffer:
         self.base_url = _resolve_base_url(cfg)
         self._console = console or globals()["console"]
 
-    def _pages_for_service(self, service: str, endpoints: List[str]) -> List[str]:
+    def _pages_for_service(self, target: ServiceTestTarget) -> List[str]:
         """Build list of full URLs to scan for this service."""
+        service, endpoints = target.service, target.endpoints
         pages: List[str] = list(self.cfg.pages)
 
         if self.cfg.pages_from_endpoints and endpoints:
@@ -458,12 +461,13 @@ class VisualDiffer:
             )
 
     async def run_for_service(
-        self, service: str, endpoints: List[str]
+        self, target: ServiceTestTarget
     ) -> List[Dict[str, Any]]:
         """
         Scan pages for *service*, diff against stored snapshots.
         Returns list of diff results (one per page).
         """
+        service = target.service
         if not self.cfg.enabled:
             return []
 
@@ -474,7 +478,7 @@ class VisualDiffer:
         if self.cfg.delay_seconds > 0:
             await asyncio.sleep(self.cfg.delay_seconds)
 
-        pages = self._pages_for_service(service, endpoints)
+        pages = self._pages_for_service(target)
         max_pages = max(1, int(self.cfg.max_pages or 5))
         if len(pages) > max_pages:
             pages = pages[:max_pages]

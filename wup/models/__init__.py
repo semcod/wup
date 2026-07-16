@@ -15,6 +15,7 @@ from .config import (
     WebConfig,
     WupConfig,
 )
+from .target import ServiceTestTarget
 
 ServiceType = str  # Type alias: 'web', 'shell', 'auto'
 
@@ -25,6 +26,7 @@ __all__ = [
     "ServiceConfig",
     "ServiceTestConfig",
     "ServiceType",
+    "ServiceTestTarget",
     "TestQLConfig",
     "TestStrategyConfig",
     "VisualDiffConfig",
