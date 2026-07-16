@@ -46,7 +46,14 @@ class PlanfileReporter:
         dedupe = self._load_dedupe()
         existing = dedupe.get(fingerprint)
         if existing:
-            return existing.get("ticket_id")
+            # A registry entry only mutes the recurrence while its ticket is
+            # still open — a regression after the ticket was closed (done or
+            # canceled) must file a fresh ticket, otherwise the failure is
+            # silently invisible forever (stale entries survive watcher
+            # restarts, so clear_service_stage alone does not cover this).
+            existing_id = existing.get("ticket_id")
+            if existing_id and not self._ticket_is_closed(existing_id):
+                return existing_id
 
         name = self._ticket_name(service=service, stage=stage, status=status)
         description = self._ticket_description(
@@ -72,6 +79,32 @@ class PlanfileReporter:
         self._save_dedupe(dedupe)
         self.console.print(f"[yellow]🧾 WUP created planfile ticket {ticket_id}: {name}[/yellow]")
         return ticket_id
+
+    def _ticket_is_closed(self, ticket_id: str) -> bool:
+        """True when the deduped ticket is done/canceled (regression may re-file).
+
+        Conservative on any error (planfile missing, ticket gone, bad JSON):
+        treat the ticket as still open so dedupe keeps muting — a wrong True
+        would spam duplicate tickets, a wrong False only delays a re-file.
+        """
+        try:
+            result = subprocess.run(
+                [self.config.command, "ticket", "show", ticket_id, "--format", "json"],
+                cwd=str(self.project_root),
+                capture_output=True,
+                text=True,
+                timeout=15,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        if result.returncode != 0:
+            return False
+        try:
+            payload = json.loads(result.stdout or "{}")
+        except ValueError:
+            return False
+        ticket = payload.get("ticket", payload) if isinstance(payload, dict) else {}
+        return str(ticket.get("status", "")).strip().lower() in {"done", "canceled", "cancelled"}
 
     def clear_service_stage(self, *, service: str, stage: str) -> None:
         """Allow a future recurrence to create a fresh ticket after recovery."""

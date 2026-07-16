@@ -246,7 +246,10 @@ def test_planfile_reporter_creates_deduped_ticket(monkeypatch):
 
         assert first == "PLF-999"
         assert second == "PLF-999"
-        assert len(calls) == 1
+        # Recurrence check may `ticket show` the deduped id, but only ONE
+        # ticket may ever be created for the same open fingerprint.
+        create_calls = [c for c in calls if c[:3] == ["planfile", "ticket", "create"]]
+        assert len(create_calls) == 1
         assert calls[0][:3] == ["planfile", "ticket", "create"]
         assert "--label" in calls[0]
         assert "llm-ready" in calls[0]
