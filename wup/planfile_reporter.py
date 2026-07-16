@@ -118,7 +118,7 @@ class PlanfileReporter:
                 timeout=30,
             )
         except (OSError, subprocess.TimeoutExpired) as exc:
-            self.console.print(f"[yellow]planfile ticket creation skipped: {exc}[/yellow]")
+            self.console.print(f"[yellow]planfile ticket creation skipped: {exc} (cmd: {cmd[0]})[/yellow]")
             return None
 
         stdout = (result.stdout or "").strip()
@@ -134,7 +134,7 @@ class PlanfileReporter:
                     timeout=30,
                 )
             except (OSError, subprocess.TimeoutExpired) as exc:
-                self.console.print(f"[yellow]planfile ticket creation skipped: {exc}[/yellow]")
+                self.console.print(f"[yellow]planfile ticket creation skipped: {exc} (cmd: {cmd[0]})[/yellow]")
                 return None
             stdout = (result.stdout or "").strip()
             stderr = (result.stderr or "").strip()
