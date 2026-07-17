@@ -69,6 +69,12 @@ class TestQLConfig:
     health_scenario_strict: bool = False  # If false, fleet scenario failure is logged but does not block per-service probes
     quick_smoke_only: bool = False  # Quick TestQL uses smoke_scenario only (skip auto-api scoring)
     service_map_globs: List[str] = field(default_factory=list)  # e.g. testql-testing/service-map/*.yaml
+    # docker-compose service/container substring → WUP service name. Lets a project
+    # map its containers to services without hardcoding names in WUP itself.
+    docker_service_map: Dict[str, str] = field(default_factory=dict)
+    # Optional built-in mapping profile (e.g. "connect") applied after
+    # docker_service_map and before generic token matching. Empty = generic only.
+    service_map_profile: str = ""
     base_url: str = ""
     api_base_url: str = ""  # Core API (c2004: http://localhost:8101) — used for backend probes
     base_url_env: str = "WUP_BASE_URL"

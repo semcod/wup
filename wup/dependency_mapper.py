@@ -11,10 +11,23 @@ This enables intelligent testing by only testing related services when files cha
 
 import json
 from pathlib import Path
-from typing import Dict, List, Set, Optional
+from typing import Dict, Iterable, Iterator, List, Set, Optional
 from collections import defaultdict
 import re
 from .testql_discovery import TestQLEndpointDiscovery
+
+# Source file extensions scanned when discovering endpoints / detecting the
+# framework. Kept broad so JS/TS projects are covered, not just Python.
+PY_EXTENSIONS = (".py",)
+JS_EXTENSIONS = (".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs")
+SOURCE_EXTENSIONS = PY_EXTENSIONS + JS_EXTENSIONS
+
+# Directory names that commonly sit directly above a service/module. Used by
+# _infer_service to derive a service name from a file path in a language-agnostic
+# way (Python `app/`, Node `services/`, monorepo `packages/`, …).
+SERVICE_ROOT_DIRS = (
+    "app", "src", "services", "packages", "lib", "modules", "apps", "cmd", "internal", "pkg",
+)
 
 
 class DependencyMapper:
@@ -66,27 +79,35 @@ class DependencyMapper:
     
     def _detect_framework(self) -> str:
         """Detect the web framework used in the project."""
-        # Check for common framework indicators
+        # Indicators are language-scoped so Python patterns are only matched in
+        # Python files and JS patterns only in JS/TS files — otherwise a frontend
+        # file that merely mentions e.g. "Blueprint" would false-positive as Flask.
         indicators = {
-            "fastapi": ["FastAPI", "APIRouter", "from fastapi"],
-            "flask": ["Flask", "Blueprint", "from flask"],
-            "django": ["urlpatterns", "path(", "from django.urls"],
-            "express": ["express()", "app.get(", "router."],
+            "fastapi": (["FastAPI", "APIRouter", "from fastapi"], PY_EXTENSIONS),
+            "flask": (["Flask", "Blueprint", "from flask"], PY_EXTENSIONS),
+            "django": (["urlpatterns", "from django.urls"], PY_EXTENSIONS),
+            "express": (["express()", "app.get(", "router.get(", "router.post("], JS_EXTENSIONS),
         }
-        
-        for framework, patterns in indicators.items():
+
+        for framework, (patterns, extensions) in indicators.items():
             for pattern in patterns:
-                if self._search_codebase(pattern):
+                if self._search_codebase(pattern, extensions):
                     return framework
-        
+
         return "generic"
     
-    def _search_codebase(self, pattern: str) -> bool:
-        """Search for a pattern in the codebase."""
-        for py_file in self.project_root.rglob("*.py"):
+    def _iter_source_files(self, extensions: Iterable[str]) -> Iterator[Path]:
+        """Yield source files with any of the given extensions (recursively)."""
+        wanted = tuple(extensions)
+        for path in self.project_root.rglob("*"):
+            if path.is_file() and path.suffix in wanted:
+                yield path
+
+    def _search_codebase(self, pattern: str, extensions: Iterable[str] = SOURCE_EXTENSIONS) -> bool:
+        """Search for a pattern across source files of the given extensions."""
+        for source_file in self._iter_source_files(extensions):
             try:
-                content = py_file.read_text()
-                if pattern in content:
+                if pattern in source_file.read_text():
                     return True
             except (UnicodeDecodeError, PermissionError):
                 continue
@@ -106,8 +127,8 @@ class DependencyMapper:
     def _scan_python_endpoints(self, framework: str) -> List[Dict]:
         """Scan Python files for endpoint definitions."""
         endpoints = []
-        
-        for py_file in self.project_root.rglob("*.py"):
+
+        for py_file in self._iter_source_files(PY_EXTENSIONS):
             try:
                 content = py_file.read_text()
                 rel_path = str(py_file.relative_to(self.project_root))
@@ -154,8 +175,9 @@ class DependencyMapper:
     def _scan_js_endpoints(self) -> List[Dict]:
         """Scan JavaScript/TypeScript files for endpoint definitions."""
         endpoints = []
-        
-        for js_file in self.project_root.rglob("*.{js,ts,jsx,tsx}"):
+
+        # NOTE: pathlib.rglob does not brace-expand, so we iterate real extensions.
+        for js_file in self._iter_source_files(JS_EXTENSIONS):
             try:
                 content = js_file.read_text()
                 rel_path = str(js_file.relative_to(self.project_root))
@@ -185,22 +207,19 @@ class DependencyMapper:
             src/components/auth.ts → "components/auth"
         """
         parts = Path(file_path).parts
-        
-        # Common patterns
-        if "app" in parts:
-            idx = parts.index("app")
-            if idx + 1 < len(parts):
-                return "/".join(parts[idx:idx+2])
-        
-        if "src" in parts:
-            idx = parts.index("src")
-            if idx + 1 < len(parts):
-                return "/".join(parts[idx:idx+2])
-        
+
+        # Derive the service from the segment following a known service-root dir
+        # (app/, src/, services/, packages/, …) — language-agnostic.
+        for root in SERVICE_ROOT_DIRS:
+            if root in parts:
+                idx = parts.index(root)
+                if idx + 1 < len(parts):
+                    return "/".join(parts[idx:idx + 2])
+
         # Fallback: use first two meaningful parts
         if len(parts) >= 2:
             return "/".join(parts[:2])
-        
+
         return None
     
     def get_endpoints_for_file(self, file_path: str) -> List[str]:
@@ -228,18 +247,16 @@ class DependencyMapper:
     
     def to_dict(self) -> Dict:
         """Convert the dependency map to a dictionary."""
+        services = sorted(set(self.service_to_endpoints) | set(self.service_to_files))
         return {
             "services": {
                 service: {
-                    "endpoints": endpoints,
-                    "files": list(files)
+                    "endpoints": self.service_to_endpoints.get(service, []),
+                    "files": sorted(self.service_to_files.get(service, set())),
                 }
-                for service, (endpoints, files) in zip(
-                    self.service_to_endpoints.keys(),
-                    zip(self.service_to_endpoints.values(), self.service_to_files.values())
-                )
+                for service in services
             },
-            "files": dict(self.file_to_endpoints)
+            "files": dict(self.file_to_endpoints),
         }
     
     def save(self, output_path: str = "deps.json"):

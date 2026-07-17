@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Config-driven docker→service mapping.** `testql.docker_service_map`
+  (`{substring: service}`) and `testql.service_map_profile` let a project map its
+  compose services to WUP services without any names hardcoded in WUP. The old
+  maskservice/c2004 "connect" fleet rules are now an opt-in built-in profile
+  (`service_map_profile: connect`) instead of always-on logic.
+- `docs/GENERICITY_AUDIT.md` — inventory of how `wup.yaml`/`deps.json` are
+  generated, where the tool is hardwired to one project, and a TestQL+OQL+AQL
+  roadmap toward a language-agnostic, AI-open design.
+
+### Fixed
+- **`deps.json` now works for JS/TS projects.** `_scan_js_endpoints` used
+  `rglob("*.{js,ts,jsx,tsx}")`, which pathlib never brace-expands, so it matched
+  zero files; it now iterates real extensions. Framework detection is
+  language-scoped (Python indicators only in `.py`, Express only in JS/TS) to stop
+  frontend files false-positiving as Flask, and `_infer_service` recognises
+  `services/`, `packages/`, `lib/`, … not just `app/`/`src/`.
+- `DependencyMapper.to_dict()` no longer positionally-zips three dicts (which
+  corrupted the map when a service had files but no endpoints); it iterates the
+  union of service keys.
+- Auto-generated `wup.yaml` now watches source directories that actually exist
+  (probing `app`, `src`, `routes`, `services`, `lib`, `packages`, …) instead of
+  always writing `app/src/routes`. This fixes `No valid paths to watch` on
+  projects whose code lives under a different top-level folder (e.g. a monorepo
+  module using `services/`).
+
 - **Simultaneous multi-project watching.** `wup watch` now accepts several
   project directories and watches them at once in a single process
   (`wup watch proj-a proj-b proj-c`). Each project keeps its own wup.yaml,
@@ -31,12 +56,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
 
-### Fixed
-- Auto-generated `wup.yaml` now watches source directories that actually exist
-  (probing `app`, `src`, `routes`, `services`, `lib`, `packages`, …) instead of
-  always writing `app/src/routes`. This fixes `No valid paths to watch` on
-  projects whose code lives under a different top-level folder (e.g. a monorepo
-  module using `services/`).
+## [0.2.71] - 2026-07-17
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/GENERICITY_AUDIT.md
+
+### Test
+- Update tests/test_genericity.py
+
+### Other
+- Update app.doql.events.pb
+- Update wup/config.py
+- Update wup/dependency_mapper.py
+- Update wup/models/config.py
+- Update wup/monitoring_manifest.py
 
 ## [0.2.70] - 2026-07-17
 

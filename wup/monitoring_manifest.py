@@ -124,13 +124,13 @@ def _host_port_from_mapping(mapping: str) -> Optional[int]:
         return None
 
 
-def _map_docker_to_wup_service(
-    docker: DockerComposeService,
-    wup_services: Sequence[str],
-) -> Optional[str]:
-    name = docker.compose_service.lower()
-    container = docker.container_name.lower()
+def _connect_profile_rules(name: str, container: str, wup_services: Sequence[str]) -> List[Any]:
+    """
+    Built-in "connect" mapping profile (maskservice / c2004 fleet).
 
+    Opt-in via ``testql.service_map_profile: connect``. Kept out of the default
+    path so WUP carries no project-specific service names unless asked.
+    """
     def _connect_backend_target() -> Optional[str]:
         if not (name.endswith("-backend") and "connect" in name):
             return None
@@ -141,20 +141,53 @@ def _map_docker_to_wup_service(
             return "backend"
         return None
 
-    # Each rule returns a candidate WUP service name (or None); the first
-    # candidate that names a configured service wins.
-    rules = [
+    return [
         lambda: "firmware" if ("firmware" in name or "firmware" in container) else None,
         lambda: "frontend" if (name == "frontend" or "frontend" in container) else None,
         lambda: "backend" if (name == "backend" or container == "identification-backend") else None,
         lambda: "backend" if ("connect-scenario" in name and "backend" not in name) else None,
         _connect_backend_target,
     ]
-    for rule in rules:
-        candidate = rule()
-        if candidate and candidate in wup_services:
-            return candidate
 
+
+_BUILTIN_SERVICE_MAP_PROFILES = {
+    "connect": _connect_profile_rules,
+}
+
+
+def _map_docker_to_wup_service(
+    docker: DockerComposeService,
+    wup_services: Sequence[str],
+    *,
+    user_map: Optional[Dict[str, str]] = None,
+    profile: str = "",
+) -> Optional[str]:
+    """
+    Map a docker-compose service to a configured WUP service.
+
+    Resolution order (first configured match wins):
+      1. user rules from ``testql.docker_service_map`` (substring → service),
+      2. an opt-in built-in ``profile`` (e.g. "connect"),
+      3. generic token matching (service name appears in compose/container name).
+    """
+    name = docker.compose_service.lower()
+    container = docker.container_name.lower()
+
+    # 1. User-defined substring rules (fully project-agnostic).
+    for needle, target in (user_map or {}).items():
+        if needle.lower() in name or needle.lower() in container:
+            if target in wup_services:
+                return target
+
+    # 2. Opt-in built-in profile rules.
+    profile_factory = _BUILTIN_SERVICE_MAP_PROFILES.get(profile.lower()) if profile else None
+    if profile_factory:
+        for rule in profile_factory(name, container, wup_services):
+            candidate = rule()
+            if candidate and candidate in wup_services:
+                return candidate
+
+    # 3. Generic token matching.
     for svc in wup_services:
         token = svc.lower().replace("_", "-")
         if token in name or token in container:
@@ -188,6 +221,9 @@ def _build_docker_rows(
     docker_all: List[DockerComposeService],
     wup_names: List[str],
     by_wup: Dict[str, Dict[str, Any]],
+    *,
+    user_map: Optional[Dict[str, str]] = None,
+    profile: str = "",
 ) -> List[Dict[str, Any]]:
     """Group docker-compose rows under WUP services; return unmapped leftovers."""
     unmapped: List[Dict[str, Any]] = []
@@ -202,7 +238,7 @@ def _build_docker_rows(
         if d.healthcheck_test:
             row["compose_healthcheck"] = d.healthcheck_test
 
-        mapped = _map_docker_to_wup_service(d, wup_names)
+        mapped = _map_docker_to_wup_service(d, wup_names, user_map=user_map, profile=profile)
         if mapped:
             by_wup[mapped]["docker"].append(row)
         else:
@@ -288,7 +324,13 @@ def build_monitoring_manifest(project_root: Path, config: WupConfig) -> Dict[str
     docker_all = discover_docker_compose_services(project_root)
 
     by_wup = _build_wup_service_dicts(config)
-    unmapped_docker = _build_docker_rows(docker_all, wup_names, by_wup)
+    unmapped_docker = _build_docker_rows(
+        docker_all,
+        wup_names,
+        by_wup,
+        user_map=config.testql.docker_service_map,
+        profile=config.testql.service_map_profile,
+    )
 
     # Live HTTP probes (exactly what WUP will call)
     for svc_name in wup_names:
