@@ -96,6 +96,32 @@ def test_reject_prefixes_explicit_override() -> None:
     assert reject_prefixes_for_config(cfg) == ("/internal",)
 
 
+def _prefix_matches(cfg, top: str) -> bool:
+    import re
+    from wup.core import WupWatcher
+
+    watcher = WupWatcher(project_root=".", config=cfg)
+    pat = "|".join(re.escape(p) for p in watcher._service_name_prefixes())
+    return bool(re.match(rf"^({pat})[-_]", top))
+
+
+def test_service_prefix_generic_default() -> None:
+    cfg = validate_config({"project": {"name": "p"}})
+    assert _prefix_matches(cfg, "api-gateway")       # generic prefix
+    assert not _prefix_matches(cfg, "connect-foo")   # fleet prefix is opt-in
+
+
+def test_service_prefix_connect_profile() -> None:
+    cfg = validate_config({"project": {"name": "p"}, "testql": {"service_map_profile": "connect"}})
+    assert _prefix_matches(cfg, "connect-foo")
+
+
+def test_service_prefix_custom() -> None:
+    cfg = validate_config({"project": {"name": "p"}, "testql": {"service_name_prefixes": ["svc"]}})
+    assert _prefix_matches(cfg, "svc-auth")
+    assert not _prefix_matches(cfg, "connect-foo")
+
+
 def test_config_roundtrips_docker_service_map() -> None:
     raw = {
         "project": {"name": "p"},

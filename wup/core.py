@@ -115,10 +115,22 @@ class WupWatcher:
         except ValueError:
             return file_path_obj
     
+    # Generic top-level directory prefixes that name a service on their own.
+    _GENERIC_SERVICE_PREFIXES = ("backend", "frontend", "api", "app", "worker", "service")
+
+    def _service_name_prefixes(self) -> List[str]:
+        """Effective service-name prefixes: generic set + config + profile."""
+        prefixes = list(self._GENERIC_SERVICE_PREFIXES)
+        testql = getattr(self.config, "testql", None)
+        prefixes.extend(getattr(testql, "service_name_prefixes", None) or [])
+        if (getattr(testql, "service_map_profile", "") or "").lower() == "connect":
+            prefixes.append("connect")
+        return prefixes
+
     def infer_service(self, file_path: str) -> Optional[str]:
         """
         Infer service name from file path.
-        
+
         Uses config services first, then dependency mapper, then heuristics.
         """
         rel_path = self._to_relative_path(file_path)
@@ -144,12 +156,15 @@ class WupWatcher:
                     if re.search(pattern, path_lower):
                         return svc.name
         
-        # Heuristic: if top-level directory matches known prefix patterns (e.g. connect-*)
-        # use it directly as the service name — takes priority over stale deps.json
+        # Heuristic: if the top-level directory starts with a known service prefix
+        # (e.g. api-*, worker-*), use it directly — takes priority over stale
+        # deps.json. Prefixes are generic by default; projects add their own via
+        # testql.service_name_prefixes, and the "connect" profile adds connect-*.
         if parts:
             top = parts[0]
             import re as _re
-            if _re.match(r'^(connect|backend|frontend|api|app|worker|service)[-_]', top):
+            prefixes = "|".join(_re.escape(p) for p in self._service_name_prefixes())
+            if prefixes and _re.match(rf'^({prefixes})[-_]', top):
                 return top
 
         # Use dependency mapper if available

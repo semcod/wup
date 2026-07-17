@@ -36,6 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `connect` profile) control which URL path prefixes are excluded from health
   probes. The default rejects nothing, so a generic project's `/api/*` health
   endpoints are no longer wrongly filtered out by hardcoded "connect" fleet paths.
+- **Config-driven service-name prefixes.** `core.py`'s directory→service heuristic
+  is now generic (`backend/frontend/api/app/worker/service`); the fleet-specific
+  `connect-*` prefix is opt-in via `service_map_profile: connect`, and projects add
+  their own via `testql.service_name_prefixes`.
 - `docs/GENERICITY_AUDIT.md` — inventory of how `wup.yaml`/`deps.json` are
   generated, where the tool is hardwired to one project, and a TestQL+OQL+AQL
   roadmap toward a language-agnostic, AI-open design.
@@ -78,6 +82,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `collect_status_snapshot` (status_data), `_create_ticket` (planfile_reporter),
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
+
+## [0.2.76] - 2026-07-17
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/GENERICITY_AUDIT.md
+
+### Test
+- Update tests/test_genericity.py
+
+### Other
+- Update app.doql.events.pb
+- Update wup/config.py
+- Update wup/core.py
+- Update wup/models/config.py
 
 ## [0.2.75] - 2026-07-17
 

@@ -127,10 +127,12 @@ and `wup.testing.queries.GetServiceHealth` — a ready foundation for OQL.
   built-in profile (`service_map_profile: connect`) or set explicitly via
   `testql.monitoring_reject_prefixes`. This was the one that actively *broke*
   other projects (rejecting their valid `/api/*` health probes).
-- ⏳ Lower-harm remainders (only trigger on specific ports/paths, else fall through
-  to generic matching): the port `8202`/`8100`→`firmware` assignment and
-  hardware-USB service names in `testql_monitor.py`, and `core.py:152`'s
-  `^(connect|backend|…)[-_]` service regex. Same treatment (profile/config) applies.
+- ✅ `core.py` service-name prefix regex is now generic by default
+  (`backend/frontend/api/app/worker/service`); `connect-*` is opt-in via the
+  `connect` profile, and projects add their own via `testql.service_name_prefixes`.
+- ⏳ Lower-harm remainder (only triggers on ports `8202`/`8100`, else falls through
+  to generic token matching): the port→`firmware` assignment and hardware-USB
+  service names in `testql_monitor.py`. Same treatment (profile/config) applies.
 
 "AI-open" = all three layers declarative (YAML/query) under one schema, so an agent
 can read state (OQL), write scenarios (TestQL) and define assertions (AQL) without

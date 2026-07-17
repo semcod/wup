@@ -79,6 +79,9 @@ class TestQLConfig:
     # URL path prefixes that are NOT valid health probes (rejected in probe
     # discovery). Empty = accept everything (generic). Overrides the profile.
     monitoring_reject_prefixes: List[str] = field(default_factory=list)
+    # Extra top-level directory prefixes treated as a service name (added to the
+    # generic backend/frontend/api/app/worker/service set). Empty = generic only.
+    service_name_prefixes: List[str] = field(default_factory=list)
     base_url: str = ""
     api_base_url: str = ""  # Core API (c2004: http://localhost:8101) — used for backend probes
     base_url_env: str = "WUP_BASE_URL"
