@@ -48,6 +48,15 @@ def test_detect_watch_paths_falls_back_when_nothing_matches(tmp_path: Path) -> N
     assert detect_watch_paths(tmp_path) == ["app/**", "src/**", "routes/**"]
 
 
+def test_detect_watch_paths_backend_frontend(tmp_path: Path) -> None:
+    # c2004-style module layout (backend/ + frontend/, no app/src).
+    (tmp_path / "backend").mkdir()
+    (tmp_path / "frontend").mkdir()
+    paths = detect_watch_paths(tmp_path)
+    assert "backend/**" in paths and "frontend/**" in paths
+    assert "app/**" not in paths
+
+
 def test_default_config_watches_only_real_dirs(tmp_path: Path) -> None:
     (tmp_path / "services").mkdir()
     cfg = get_default_config(tmp_path)

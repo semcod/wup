@@ -397,7 +397,8 @@ def validate_config(raw: dict) -> WupConfig:
 # for an auto-generated config. Only directories that actually exist are kept,
 # so the generated wup.yaml doesn't point at paths that were never there.
 _DEFAULT_SOURCE_DIRS = [
-    "app", "src", "routes", "services", "lib", "packages", "pkg", "internal", "cmd",
+    "app", "src", "routes", "services", "backend", "frontend",
+    "lib", "packages", "pkg", "internal", "cmd",
 ]
 
 
