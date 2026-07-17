@@ -119,10 +119,8 @@ class PlanfileReporter:
             return
         self._save_dedupe(remaining)
 
-    def _create_ticket(self, *, name: str, description: str, track_file: str = "") -> Optional[tuple[str, str]]:
-        if not self._wait_for_planfile_store_ready():
-            return None
-
+    def _build_ticket_cmd(self, name: str, description: str, track_file: str) -> list[str]:
+        """Assemble the `planfile ticket create` argv."""
         cmd = [
             self.config.command,
             "ticket",
@@ -141,7 +139,10 @@ class PlanfileReporter:
             cmd.extend(["--label", label])
         if track_file:
             cmd.extend(["--files", track_file])
+        return cmd
 
+    def _run_planfile(self, cmd: list[str]) -> Optional[tuple[int, str, str]]:
+        """Run a planfile command; return (returncode, stdout, stderr) or None on OS/timeout error."""
         try:
             result = subprocess.run(
                 cmd,
@@ -153,26 +154,36 @@ class PlanfileReporter:
         except (OSError, subprocess.TimeoutExpired) as exc:
             self.console.print(f"[yellow]planfile ticket creation skipped: {exc} (cmd: {cmd[0]})[/yellow]")
             return None
+        return result.returncode, (result.stdout or "").strip(), (result.stderr or "").strip()
 
-        stdout = (result.stdout or "").strip()
-        stderr = (result.stderr or "").strip()
-        if result.returncode != 0 and track_file and self._files_option_unsupported(stderr or stdout):
-            cmd = [part for index, part in enumerate(cmd) if not (part == "--files" or (index > 0 and cmd[index - 1] == "--files"))]
-            try:
-                result = subprocess.run(
-                    cmd,
-                    cwd=str(self.project_root),
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                )
-            except (OSError, subprocess.TimeoutExpired) as exc:
-                self.console.print(f"[yellow]planfile ticket creation skipped: {exc} (cmd: {cmd[0]})[/yellow]")
+    def _retry_without_files(self, cmd: list[str]) -> Optional[tuple[int, str, str]]:
+        """Re-run a ticket command with the `--files <val>` option stripped."""
+        stripped = [
+            part
+            for index, part in enumerate(cmd)
+            if not (part == "--files" or (index > 0 and cmd[index - 1] == "--files"))
+        ]
+        return self._run_planfile(stripped)
+
+    def _create_ticket(self, *, name: str, description: str, track_file: str = "") -> Optional[tuple[str, str]]:
+        if not self._wait_for_planfile_store_ready():
+            return None
+
+        cmd = self._build_ticket_cmd(name, description, track_file)
+        outcome = self._run_planfile(cmd)
+        if outcome is None:
+            return None
+        returncode, stdout, stderr = outcome
+
+        # Older planfile builds reject --files; retry once without it.
+        if returncode != 0 and track_file and self._files_option_unsupported(stderr or stdout):
+            outcome = self._retry_without_files(cmd)
+            if outcome is None:
                 return None
-            stdout = (result.stdout or "").strip()
-            stderr = (result.stderr or "").strip()
-        if result.returncode != 0:
-            detail = stderr or stdout or f"rc={result.returncode}"
+            returncode, stdout, stderr = outcome
+
+        if returncode != 0:
+            detail = stderr or stdout or f"rc={returncode}"
             self.console.print(f"[yellow]planfile ticket creation failed: {detail}[/yellow]")
             return None
 

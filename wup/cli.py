@@ -4,7 +4,7 @@ CLI interface for WUP (What's Up) - Intelligent file watcher for regression test
 
 import asyncio
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import typer
 from rich.console import Console
@@ -13,6 +13,7 @@ from .config import find_config_file, load_config
 from .core import WupWatcher
 from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig
+from .multi import MultiProjectWatcher
 from .testql_watcher import TestQLWatcher
 
 app = typer.Typer(
@@ -117,9 +118,119 @@ def _create_watcher(
     )
 
 
+def _is_project_dir(path: Path) -> bool:
+    """A directory is a WUP project if it already carries a wup.yaml/.wup.yaml."""
+    return path.is_dir() and find_config_file(path) is not None
+
+
+def _discover_projects(root: Path) -> List[Path]:
+    """
+    Expand a monorepo root into its immediate sub-projects.
+
+    Returns child directories that already have a wup.yaml, sorted by name. The
+    root itself is included when it, too, has a config. Hidden directories and
+    common vendor/build folders are skipped.
+    """
+    skip = {"node_modules", "__pycache__", ".git", ".venv", "venv", "dist", "build"}
+    found: List[Path] = []
+    if _is_project_dir(root):
+        found.append(root)
+    for child in sorted(root.iterdir(), key=lambda p: p.name):
+        if child.name in skip or child.name.startswith("."):
+            continue
+        if _is_project_dir(child):
+            found.append(child)
+    return found
+
+
+def _resolve_project_paths(projects: List[str], discover: bool) -> List[Path]:
+    """
+    Turn raw CLI project arguments into a de-duplicated list of project roots.
+
+    With ``discover`` each argument is expanded into its sub-projects (see
+    :func:`_discover_projects`); without it each argument is taken as-is.
+    """
+    resolved: List[Path] = []
+    seen = set()
+    for raw in projects:
+        base = Path(raw).resolve()
+        if not base.exists():
+            console.print(f"[red]Error: Project path '{raw}' does not exist[/red]")
+            raise typer.Exit(1)
+        candidates = _discover_projects(base) if discover else [base]
+        if discover and not candidates:
+            console.print(
+                f"[yellow]No wup.yaml projects discovered under '{raw}'[/yellow]"
+            )
+        for path in candidates:
+            if path not in seen:
+                seen.add(path)
+                resolved.append(path)
+    return resolved
+
+
+def _build_project_watcher(
+    project_path: Path,
+    config_path: Optional[Path],
+    *,
+    mode: str,
+    deps_file: str,
+    cpu_throttle: float,
+    debounce: int,
+    cooldown: int,
+    scenarios_dir: Optional[str],
+    testql_bin: str,
+    browser_service_url: Optional[str],
+    track_dir: str,
+    quick_limit: int,
+    probe_interval: Optional[int],
+    print_header: bool = True,
+) -> WupWatcher:
+    """Prepare a single project: auto-config, load, refresh manifest, build watcher."""
+    # Auto-generate config if it doesn't exist
+    if not find_config_file(project_path) and not (config_path and config_path.exists()):
+        console.print(
+            f"[cyan]🔍 No wup.yaml in {project_path.name} - auto-detecting project type...[/cyan]"
+        )
+        _auto_generate_config(project_path, mode)
+        console.print(f"[green]✓ Auto-generated wup.yaml for {project_path.name}[/green]")
+        console.print()
+
+    wup_config = _load_watch_config(project_path, config_path, probe_interval, mode)
+    effective_scenarios_dir = scenarios_dir or wup_config.testql.scenario_dir
+
+    if print_header:
+        _print_watch_header(wup_config, cpu_throttle, debounce, cooldown, config_path)
+
+    cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
+    _refresh_monitoring_manifest(project_path, wup_config, cfg_path)
+
+    # Resolve a relative deps file against the project root so each project keeps
+    # its own dependency map (for `wup watch .` this equals the CWD, unchanged).
+    deps_path = deps_file if Path(deps_file).is_absolute() else str(project_path / deps_file)
+
+    return _create_watcher(
+        mode=mode,
+        project_path=project_path,
+        deps_file=deps_path,
+        cpu_throttle=cpu_throttle,
+        debounce=debounce,
+        cooldown=cooldown,
+        scenarios_dir=effective_scenarios_dir,
+        testql_bin=testql_bin,
+        browser_service_url=browser_service_url,
+        track_dir=track_dir,
+        quick_limit=quick_limit,
+        config=wup_config,
+    )
+
+
 @app.command()
 def watch(
-    project: str = typer.Argument(".", help="Path to the project root directory"),
+    projects: Optional[List[str]] = typer.Argument(
+        None,
+        help="One or more project root directories (default: current directory)",
+    ),
     deps_file: str = typer.Option("deps.json", "--deps", "-d", help="Path to dependency map file"),
     cpu_throttle: float = typer.Option(0.8, "--cpu-throttle", "-c", help="CPU usage threshold (0.0-1.0)"),
     debounce: int = typer.Option(2, "--debounce", "-b", help="Debounce time in seconds"),
@@ -144,10 +255,21 @@ def watch(
         "--probe-interval",
         help="Periodic live HTTP probes in seconds (default: 60 in testql mode, or testql.probe_interval_s from wup.yaml; use 0 to disable)",
     ),
+    discover: bool = typer.Option(
+        False,
+        "--discover",
+        "-D",
+        help="Treat each given path as a monorepo root and watch every sub-directory that has a wup.yaml",
+    ),
     config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
 ):
     """
-    Watch project for file changes and run regression tests.
+    Watch one or more projects for file changes and run regression tests.
+
+    Pass several project directories to test them **simultaneously**
+    (``wup watch proj-a proj-b``), or use ``--discover`` to expand a monorepo
+    root into every sub-directory that already has a wup.yaml. With no argument
+    the current directory is watched.
 
     Defaults (no extra flags): ``--mode testql`` and live probes every **60s**
     (unless ``testql.probe_interval_s`` is set in wup.yaml). Use
@@ -155,51 +277,62 @@ def watch(
 
     If wup.yaml doesn't exist, it will be auto-generated based on project detection.
     """
-    project_path = Path(project).resolve()
+    raw_projects = list(projects) if projects else ["."]
+    project_paths = _resolve_project_paths(raw_projects, discover)
 
-    if not project_path.exists():
-        console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
+    if not project_paths:
+        console.print("[red]No projects to watch[/red]")
         raise typer.Exit(1)
 
-    config_path = Path(config) if config else None
+    # --config only applies to a single explicit project.
+    single = len(project_paths) == 1
+    config_path = Path(config) if (config and single) else None
+    if config and not single:
+        console.print(
+            "[yellow]--config is ignored when watching multiple projects; "
+            "each project uses its own wup.yaml[/yellow]"
+        )
 
-    # Auto-generate config if it doesn't exist
-    if not find_config_file(project_path):
-        console.print("[cyan]🔍 No wup.yaml found - auto-detecting project type...[/cyan]")
-        _auto_generate_config(project_path, mode)
-        console.print("[green]✓ Auto-generated wup.yaml configuration[/green]")
-        console.print()
+    watchers = [
+        _build_project_watcher(
+            project_path,
+            config_path,
+            mode=mode,
+            deps_file=deps_file,
+            cpu_throttle=cpu_throttle,
+            debounce=debounce,
+            cooldown=cooldown,
+            scenarios_dir=scenarios_dir,
+            testql_bin=testql_bin,
+            browser_service_url=browser_service_url,
+            track_dir=track_dir,
+            quick_limit=quick_limit,
+            probe_interval=probe_interval,
+        )
+        for project_path in project_paths
+    ]
 
-    wup_config = _load_watch_config(project_path, config_path, probe_interval, mode)
-    effective_scenarios_dir = scenarios_dir or wup_config.testql.scenario_dir
-
-    _print_watch_header(wup_config, cpu_throttle, debounce, cooldown, config_path)
-
-    cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
-    _refresh_monitoring_manifest(project_path, wup_config, cfg_path)
-
-    watcher = _create_watcher(
-        mode=mode,
-        project_path=project_path,
-        deps_file=deps_file,
-        cpu_throttle=cpu_throttle,
-        debounce=debounce,
-        cooldown=cooldown,
-        scenarios_dir=effective_scenarios_dir,
-        testql_bin=testql_bin,
-        browser_service_url=browser_service_url,
-        track_dir=track_dir,
-        quick_limit=quick_limit,
-        config=wup_config,
-    )
+    if single:
+        watcher = watchers[0]
+        if dashboard:
+            console.print("[green]Starting watcher with live dashboard...[/green]")
+            asyncio.run(watcher.run_with_dashboard())
+        else:
+            console.print("[green]Starting watcher...[/green]")
+            if watcher.start_watching() is False:
+                raise typer.Exit(1)
+        return
 
     if dashboard:
-        console.print("[green]Starting watcher with live dashboard...[/green]")
-        asyncio.run(watcher.run_with_dashboard())
-    else:
-        console.print("[green]Starting watcher...[/green]")
-        if watcher.start_watching() is False:
-            raise typer.Exit(1)
+        console.print(
+            "[yellow]--dashboard is not supported with multiple projects; "
+            "running without dashboard[/yellow]"
+        )
+    console.print(
+        f"[green]Starting {len(watchers)} watchers simultaneously...[/green]"
+    )
+    if MultiProjectWatcher(watchers, console=console).start_watching() is False:
+        raise typer.Exit(1)
 
 
 def _auto_generate_config(project_path: Path, mode: str):

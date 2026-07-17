@@ -18,7 +18,7 @@ from .core import WupWatcher
 from .models.target import ServiceTestTarget
 from wup.bus import bus
 from wup.testing.events.test_results import ScenarioFailed, ScenarioPassed
-from .models.config import WupConfig, ServiceConfig
+from .models.config import WupConfig, ServiceConfig, ServiceTestConfig
 from .visual_diff import VisualDiffer
 from .web_client import WebClient
 
@@ -362,11 +362,8 @@ class TestQLWatcher(WupWatcher):
         passed, total, failed = (int(match.group(i)) for i in range(1, 4))
         return failed == 0 and passed >= total and total > 0
 
-    def _select_scenarios_for_service(self, service: str, *, stage: str = "quick") -> List[Path]:
-        all_scenarios = self._discover_scenarios()
-        if not all_scenarios:
-            return []
-
+    def _resolve_stage_config(self, service: str, stage: str) -> tuple[Optional[ServiceTestConfig], int, str]:
+        """Resolve (test_cfg, endpoint limit, service type) for a service + stage."""
         svc_config = self.get_service_config(service)
         if stage == "detail":
             test_cfg = svc_config.detail_tests if svc_config else None
@@ -374,8 +371,26 @@ class TestQLWatcher(WupWatcher):
         else:
             test_cfg = svc_config.quick_tests if svc_config else None
             default_limit = self.quick_limit
-
         limit = test_cfg.max_endpoints if test_cfg else default_limit
+        svc_type = svc_config.type if svc_config else "auto"
+        return test_cfg, limit, svc_type
+
+    @staticmethod
+    def _filter_connect_scenario(scenarios: List[Path]) -> List[Path]:
+        """Narrow connect-scenario matches (connect-workshop/auto-api also match "connect")."""
+        return [
+            s
+            for s in scenarios
+            if s.name.lower().startswith("connect-scenario-wup-")
+            or s.name.lower().startswith("connect-scenario-modbus-")
+        ]
+
+    def _select_scenarios_for_service(self, service: str, *, stage: str = "quick") -> List[Path]:
+        all_scenarios = self._discover_scenarios()
+        if not all_scenarios:
+            return []
+
+        test_cfg, limit, svc_type = self._resolve_stage_config(service, stage)
 
         pinned = test_cfg.scenario if test_cfg else ""
         if pinned:
@@ -383,38 +398,19 @@ class TestQLWatcher(WupWatcher):
             if resolved:
                 return [resolved][:limit]
 
-        # Filter scenarios by service type
-        svc_type = svc_config.type if svc_config else "auto"
         if getattr(self.config.testql, "quick_smoke_only", False):
             smoke = self._get_smoke_fallback(svc_type)
             if smoke:
                 return smoke[:limit]
 
         filtered_scenarios = self._filter_scenarios_by_type(all_scenarios, svc_type)
-
-        # connect-workshop / auto-api-connect-scenario-* also match token "connect".
         if service == "connect-scenario":
-            filtered_scenarios = [
-                s
-                for s in filtered_scenarios
-                if s.name.lower().startswith("connect-scenario-wup-")
-                or s.name.lower().startswith("connect-scenario-modbus-")
-            ]
+            filtered_scenarios = self._filter_connect_scenario(filtered_scenarios)
 
         selected = self._get_scored_scenarios(filtered_scenarios, self._tokenize_service(service), limit)
-        if selected:
-            return selected
-
-        smoke = self._get_smoke_fallback(svc_type)
-        if smoke:
-            return smoke
-
-        # Fallback: don't return any scenarios for web services if no match found
-        # This prevents CLI scenarios from being assigned to web services
-        if svc_type == "web":
-            return []
-
-        return []
+        # Fall back to smoke scenarios; an empty list here (incl. web services with
+        # no match) means "no scenarios", preventing CLI scenarios leaking to web.
+        return selected or self._get_smoke_fallback(svc_type)
 
     def _filter_scenarios_by_type(self, scenarios: List[Path], svc_type: str) -> List[Path]:
         """Filter scenarios by service type (web vs shell)."""
@@ -1012,7 +1008,6 @@ class TestQLWatcher(WupWatcher):
         self._probe_thread.start()
         self.console.print(f"[green]Live probes enabled (every {interval}s)[/green]")
 
-    def start_watching(self, watch_paths: Optional[List[str]] = None) -> bool:
-        """Start file watcher and optional periodic TestQL/HTTP probes."""
+    def start_background_tasks(self) -> None:
+        """Start the periodic TestQL/HTTP live-probe thread before watching."""
         self._start_periodic_probe_thread()
-        return super().start_watching(watch_paths)

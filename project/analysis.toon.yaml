@@ -1,59 +1,247 @@
-# code2llm | 80f 11332L | python:52,yaml:11,txt:5,json:2,shell:2,yml:2,toml:1 | 2026-05-25
-# generated in 0.02s
-# CC̄=4.1 | critical:0/399 | dups:0 | cycles:0
+# code2llm | 155f 20100L | python:98,json:16,yaml:12,txt:12,toml:7,shell:3,yml:2,proto:2 | 2026-07-17
+# generated in 0.04s
+# CC̅=4.7 | critical:17/561 | dups:0 | cycles:0
 
-HEALTH[0]: ok
+HEALTH[17]:
+  🟡 CC    main CC=15 (limit:15)
+  🟡 CC    main CC=15 (limit:15)
+  🟡 CC    query_uri CC=23 (limit:15)
+  🟡 CC    decode_uri CC=20 (limit:15)
+  🟡 CC    patch_uri CC=17 (limit:15)
+  🟡 CC    _intent CC=21 (limit:15)
+  🟡 CC    to_dsl CC=24 (limit:15)
+  🟡 CC    _set_body CC=16 (limit:15)
+  🟡 CC    envelope_to_dict CC=58 (limit:15)
+  🟡 CC    generate_models CC=15 (limit:15)
+  🟡 CC    parse_line CC=59 (limit:15)
+  🟡 CC    handle_from_tokens CC=16 (limit:15)
+  🟡 CC    _map_docker_to_wup_service CC=17 (limit:15)
+  🟡 CC    format_manifest_summary CC=15 (limit:15)
+  🟡 CC    collect_status_snapshot CC=18 (limit:15)
+  🟡 CC    _create_ticket CC=24 (limit:15)
+  🟡 CC    _select_scenarios_for_service CC=19 (limit:15)
 
-REFACTOR[0]: none needed
+REFACTOR[1]:
+  1. split 17 high-CC methods  (CC>15)
 
-PIPELINES[279]:
-  [1] Src [__getattr__]: __getattr__
+PIPELINES[314]:
+  [1] Src [main]: main → run_shell → execute_dsl_line → dispatch → ...(1 more)
       PURITY: 100% pure
-  [2] Src [__init__]: __init__
+  [2] Src [main]: main → create_app → schema_for_verb → _load_schemas
       PURITY: 100% pure
-  [3] Src [report_failure]: report_failure
+  [3] Src [main]: main → nlp2uri → uri_for_block → _encode
       PURITY: 100% pure
-  [4] Src [clear_service_stage]: clear_service_stage
+  [4] Src [uri_for_cmd]: uri_for_cmd → _encode
       PURITY: 100% pure
-  [5] Src [_create_ticket]: _create_ticket
+  [5] Src [main]: main → apply_nl → to_dsl → _intent
+      PURITY: 100% pure
+  [6] Src [validate_wup_config]: validate_wup_config → validate_wup_file → find_config_file
+      PURITY: 100% pure
+  [7] Src [generate_from_nl]: generate_from_nl → generate_wup_config → save_config
+      PURITY: 100% pure
+  [8] Src [main]: main → _main_legacy → execute_dsl_line → dispatch → ...(1 more)
+      PURITY: 100% pure
+  [9] Src [to_dict]: to_dict
+      PURITY: 100% pure
+  [10] Src [__init__]: __init__
+      PURITY: 100% pure
+  [11] Src [append]: append → encode_protobuf → _set_body
+      PURITY: 100% pure
+  [12] Src [replay]: replay → envelope_to_dict
+      PURITY: 100% pure
+  [13] Src [main]: main → generate_models
+      PURITY: 100% pure
+  [14] Src [encode_text]: encode_text → parse_line → split_command
+      PURITY: 100% pure
+  [15] Src [encode_protobuf]: encode_protobuf → encode_text_to_protobuf → parse_line → split_command
+      PURITY: 100% pure
+  [16] Src [decode_protobuf]: decode_protobuf → decode_protobuf_to_text → to_text
+      PURITY: 100% pure
+  [17] Src [main]: main → run_server → create_server
+      PURITY: 100% pure
+  [18] Src [__post_init__]: __post_init__ → _require_fastmcp
+      PURITY: 100% pure
+  [19] Src [_register_tools]: _register_tools → query_uri → parse_wup_uri → _decode
+      PURITY: 100% pure
+  [20] Src [run]: run
+      PURITY: 100% pure
+  [21] Src [__init__]: __init__
+      PURITY: 100% pure
+  [22] Src [generate]: generate
+      PURITY: 100% pure
+  [23] Src [_generate_smoke_scenario]: _generate_smoke_scenario
+      PURITY: 100% pure
+  [24] Src [_generate_command_scenario]: _generate_command_scenario
+      PURITY: 100% pure
+  [25] Src [generate_custom_scenario]: generate_custom_scenario
+      PURITY: 100% pure
+  [26] Src [print_summary]: print_summary
+      PURITY: 100% pure
+  [27] Src [_host_port_from_mapping]: _host_port_from_mapping
+      PURITY: 100% pure
+  [28] Src [__init__]: __init__
+      PURITY: 100% pure
+  [29] Src [subscribe]: subscribe
+      PURITY: 100% pure
+  [30] Src [publish]: publish
+      PURITY: 100% pure
+  [31] Src [execute]: execute
+      PURITY: 100% pure
+  [32] Src [query]: query
+      PURITY: 100% pure
+  [33] Src [__init__]: __init__
+      PURITY: 100% pure
+  [34] Src [_should_scan]: _should_scan
+      PURITY: 100% pure
+  [35] Src [scan_file]: scan_file
+      PURITY: 100% pure
+  [36] Src [scan_directory]: scan_directory
+      PURITY: 100% pure
+  [37] Src [get_summary]: get_summary
+      PURITY: 100% pure
+  [38] Src [print_report]: print_report
+      PURITY: 100% pure
+  [39] Src [quick_scan]: quick_scan
+      PURITY: 100% pure
+  [40] Src [scan_yaml_changes]: scan_yaml_changes
+      PURITY: 100% pure
+  [41] Src [_fail]: _fail
+      PURITY: 100% pure
+  [42] Src [run_validate]: run_validate → dispatch_validate → _result_dict → dispatch → ...(1 more)
+      PURITY: 100% pure
+  [43] Src [watch]: watch → _resolve_project_paths → _discover_projects → _is_project_dir → ...(1 more)
+      PURITY: 100% pure
+  [44] Src [map_deps]: map_deps → load_config → _load_dotenv
+      PURITY: 100% pure
+  [45] Src [status]: status → load_config → _load_dotenv
+      PURITY: 100% pure
+  [46] Src [init]: init → run_init → dispatch_init → _result_dict → ...(2 more)
+      PURITY: 100% pure
+  [47] Src [testql_endpoints]: testql_endpoints → run_endpoints → dispatch_endpoints → _result_dict → ...(2 more)
+      PURITY: 100% pure
+  [48] Src [sync_testql]: sync_testql → load_config → _load_dotenv
+      PURITY: 100% pure
+  [49] Src [assistant]: assistant → run_generate → dispatch_generate → _result_dict → ...(2 more)
+      PURITY: 100% pure
+  [50] Src [version]: version
       PURITY: 100% pure
 
 LAYERS:
-  scripts/                        CC̄=14.0   ←in:0  →out:3
-  │ run_probe_smoke             64L  0C    1m  CC=14     ←0
+  packages/                       CC̄=6.3    ←in:0  →out:0
+  │ !! pb_codec                   235L  0C    8m  CC=58     ←6
+  │ !! command                    232L  0C   10m  CC=16     ←1
+  │ !! query                      164L  1C    4m  CC=23     ←3
+  │ !! grammar                    156L  0C    4m  CC=59     ←5
+  │ server                     149L  1C    6m  CC=2      ←1
+  │ query                      137L  0C    7m  CC=5      ←1
+  │ models                     129L  13C    0m  CC=0.0    ←0
+  │ !! apply                      126L  1C    4m  CC=24     ←2
+  │ events                     116L  2C    5m  CC=7      ←3
+  │ cli                        108L  0C    3m  CC=9      ←0
+  │ command.proto              104L  0C    0m  CC=0.0    ←0
+  │ !! cli                        100L  0C    2m  CC=15     ←0
+  │ !! codegen                     98L  0C    2m  CC=15     ←0
+  │ uri                         92L  0C    6m  CC=7      ←4
+  │ schema_registry             84L  0C    6m  CC=13     ←4
+  │ bus                         79L  0C    5m  CC=6      ←7
+  │ !! decode                      72L  0C    2m  CC=20     ←1
+  │ app                         68L  0C    1m  CC=1      ←1
+  │ !! patch                       68L  1C    3m  CC=17     ←2
+  │ !! cli                         62L  0C    1m  CC=15     ←0
+  │ command_pb2                 62L  0C    0m  CC=0.0    ←0
+  │ nlp2uri                     48L  1C    3m  CC=4      ←4
+  │ cli                         43L  0C    1m  CC=9      ←0
+  │ result_pb2                  39L  0C    0m  CC=0.0    ←0
+  │ codec                       35L  0C    4m  CC=3      ←1
+  │ pyproject.toml              34L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              29L  0C    0m  CC=0.0    ←0
+  │ cli                         28L  0C    1m  CC=4      ←0
+  │ result                      28L  1C    1m  CC=1      ←0
+  │ pyproject.toml              28L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              27L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              27L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml              26L  0C    0m  CC=0.0    ←0
+  │ generate                    25L  0C    2m  CC=3      ←1
+  │ cli                         24L  0C    1m  CC=4      ←0
+  │ install-dev.sh              24L  0C    0m  CC=0.0    ←0
+  │ result.proto                23L  0C    0m  CC=0.0    ←0
+  │ init_cli.schema.json        14L  0C    0m  CC=0.0    ←0
+  │ status.schema.json          14L  0C    0m  CC=0.0    ←0
+  │ patch.schema.json           13L  0C    0m  CC=0.0    ←0
+  │ generate.schema.json        13L  0C    0m  CC=0.0    ←0
+  │ query.schema.json           13L  0C    0m  CC=0.0    ←0
+  │ map.schema.json             12L  0C    0m  CC=0.0    ←0
+  │ endpoints.schema.json       12L  0C    0m  CC=0.0    ←0
+  │ resolve.schema.json         12L  0C    0m  CC=0.0    ←0
+  │ sync.schema.json            12L  0C    0m  CC=0.0    ←0
+  │ validate                    11L  0C    1m  CC=1      ←0
+  │ health.schema.json          11L  0C    0m  CC=0.0    ←0
+  │ adopt.schema.json           11L  0C    0m  CC=0.0    ←0
+  │ init.schema.json            11L  0C    0m  CC=0.0    ←0
+  │ validate.schema.json        11L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt               11L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt               10L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt               10L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt                9L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt                9L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt                9L  0C    0m  CC=0.0    ←0
+  │ engine                       8L  0C    0m  CC=0.0    ←0
+  │ __init__                     7L  0C    0m  CC=0.0    ←0
+  │ __init__                     7L  0C    0m  CC=0.0    ←0
+  │ generate-proto.sh            7L  0C    0m  CC=0.0    ←0
+  │ __init__                     6L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     5L  0C    0m  CC=0.0    ←0
+  │ __init__                     1L  0C    0m  CC=0.0    ←0
   │
-  wup/                            CC̄=4.5    ←in:9  →out:2
-  │ !! testql_watcher             958L  2C   48m  CC=13     ←0
-  │ !! cli                        799L  0C   14m  CC=13     ←0
-  │ !! assistant                  694L  1C   24m  CC=14     ←0
-  │ !! core                       675L  2C   29m  CC=11     ←0
-  │ !! visual_diff                581L  1C   25m  CC=11     ←1
-  │ !! config                     527L  0C   17m  CC=10     ←7
-  │ !! testql_monitor             521L  3C   36m  CC=13     ←1
-  │ monitoring_manifest        340L  1C   16m  CC=11     ←2
+  wup/                            CC̄=4.7    ←in:27  →out:3
+  │ !! testql_watcher            1017L  2C   50m  CC=19     ←0
+  │ !! cli                        974L  0C   23m  CC=14     ←0
+  │ !! core                       725L  2C   31m  CC=11     ←0
+  │ !! testql_monitor             686L  3C   39m  CC=13     ←2
+  │ !! visual_diff                638L  1C   26m  CC=11     ←1
+  │ !! config                     601L  0C   19m  CC=10     ←14
+  │ !! assistant                  594L  1C   24m  CC=14     ←0
+  │ !! monitoring_manifest        428L  1C   19m  CC=17     ←5
   │ cli_scanner                302L  3C   12m  CC=10     ←0
   │ dependency_mapper          284L  1C   16m  CC=10     ←0
+  │ !! planfile_reporter          256L  1C   13m  CC=24     ←0
   │ testql_discovery           229L  1C    7m  CC=11     ←0
   │ cli_config_generator       223L  1C    6m  CC=6      ←0
   │ testql_cli_generator       215L  1C    6m  CC=6      ←0
-  │ planfile_reporter          203L  1C   11m  CC=13     ←0
+  │ config                     193L  14C    0m  CC=0.0    ←0
   │ web_client                 185L  1C   10m  CC=6      ←0
   │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ config                     169L  12C    0m  CC=0.0    ←0
   │ _yaml_detector             128L  1C    8m  CC=8      ←0
-  │ _ast_detector              124L  1C    9m  CC=11     ←0
-  │ health_handlers            119L  1C    6m  CC=6      ←1
-  │ _hash_detector              72L  1C    4m  CC=5      ←1
+  │ _ast_detector              124L  1C    9m  CC=11     ←1
+  │ health_handlers            123L  1C    6m  CC=8      ←1
+  │ control                    106L  0C   12m  CC=4      ←1
+  │ !! status_data                103L  0C    3m  CC=18     ←1
+  │ assistant_discovery         99L  0C    3m  CC=11     ←1
+  │ multi                       81L  1C    2m  CC=11     ←0
+  │ cli_bridge                  80L  0C    9m  CC=3      ←1
+  │ _hash_detector              72L  1C    4m  CC=5      ←0
+  │ sync                        70L  0C    2m  CC=9      ←1
   │ bus                         65L  5C    5m  CC=4      ←0
+  │ generate                    62L  0C    2m  CC=8      ←2
+  │ init_cli                    60L  0C    1m  CC=9      ←1
+  │ assistant_validator         57L  0C    2m  CC=9      ←2
   │ event_handlers              55L  1C    4m  CC=5      ←1
   │ __init__                    46L  0C    1m  CC=2      ←0
+  │ endpoints                   44L  0C    1m  CC=5      ←1
   │ event_store                 41L  1C    3m  CC=4      ←0
+  │ __init__                    36L  0C    0m  CC=0.0    ←0
   │ anomaly_models              35L  2C    0m  CC=0.0    ←0
-  │ __init__                    34L  0C    0m  CC=0.0    ←0
+  │ validate                    34L  0C    1m  CC=8      ←2
+  │ target                      23L  1C    0m  CC=0.0    ←0
   │ _base_detector              18L  1C    2m  CC=1      ←0
+  │ paths                       16L  0C    2m  CC=1      ←3
   │ health_events               11L  1C    0m  CC=0.0    ←0
   │ file_events                 10L  1C    0m  CC=0.0    ←0
   │ health_queries               7L  1C    0m  CC=0.0    ←0
+  │
+  scripts/                        CC̄=3.3    ←in:0  →out:3
+  │ run_probe_smoke             88L  0C    6m  CC=6      ←0
   │
   examples/                       CC̄=2.4    ←in:0  →out:6
   │ webhook_notifications      375L  1C   10m  CC=6      ←0
@@ -69,9 +257,6 @@ LAYERS:
   │ wup.yaml                    28L  0C    0m  CC=0.0    ←0
   │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
-  │ Dockerfile                  26L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
   │ wup.yaml                    21L  0C    0m  CC=0.0    ←0
@@ -85,23 +270,23 @@ LAYERS:
   │ routes                      13L  0C    2m  CC=1      ←0
   │ requirements.txt             3L  0C    0m  CC=0.0    ←0
   │ requirements.txt             2L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             2L  0C    0m  CC=0.0    ←0
   │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ requirements.txt             1L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
-  │ __init__                     0L  0C    0m  CC=0.0    ←0
   │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
+  │ !! duplication.json          3481L  0C    0m  CC=0.0    ←0
+  │ !! goal.yaml                  528L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   330L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml              75L  0C    0m  CC=0.0    ←0
+  │ koru.yaml                  133L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml             127L  0C    0m  CC=0.0    ←0
+  │ Makefile                    96L  0C    0m  CC=0.0    ←0
   │ regix.yaml                  51L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ Taskfile.yml                32L  0C    0m  CC=0.0    ←0
+  │ local.dev.txt               17L  0C    0m  CC=0.0    ←0
+  │ todo.txt                    12L  0C    0m  CC=0.0    ←0
   │ deps.json                    4L  0C    0m  CC=0.0    ←0
-  │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   testql-scenarios/               CC̄=0.0    ←in:0  →out:0
   │ generated-from-pytests.testql.toon.yaml    82L  0C    0m  CC=0.0    ←0
@@ -110,19 +295,27 @@ LAYERS:
   │ cli-wup.testql.toon.yaml    16L  0C    0m  CC=0.0    ←0
   │
   ── zero ──
-     examples/fastapi-app/app/__init__.py      0L
-     examples/fastapi-app/app/users/__init__.py  0L
      examples/flask-app/app/__init__.py        0L
-     examples/flask-app/app/auth/__init__.py   0L
 
 COUPLING:
-                       wup     examples      scripts  wup.testing
-          wup           ──           ←6           ←3            2  hub
-     examples            6           ──                          
-      scripts            3                        ──             
-  wup.testing           ←2                                     ──
+                      packages.dsl2wup                wup   packages.mcp2wup   packages.nlp2wup   packages.uri2wup  packages.rest2wup           examples   packages.cli2wup            scripts        wup.testing
+   packages.dsl2wup                 ──                 10                ←12                ←11                  3                 ←7                                    ←3                                        hub
+                wup                  1                 ──                                    ←2                 ←6                                    ←6                                    ←3                  2  hub
+   packages.mcp2wup                 12                                    ──                  2                  3                                                                                                 !! fan-out
+   packages.nlp2wup                 11                  2                 ←2                 ──                  2                                                                                                 !! fan-out
+   packages.uri2wup                  1                  6                 ←3                 ←2                 ──                                                                                                 hub
+  packages.rest2wup                  7                                                                                             ──                                                                            
+           examples                                     6                                                                                             ──                                                         
+   packages.cli2wup                  3                                                                                                                                   ──                                      
+            scripts                                     3                                                                                                                                   ──                   
+        wup.testing                                    ←2                                                                                                                                                      ──
   CYCLES: none
-  HUB: wup/ (fan-in=9)
+  HUB: packages.uri2wup/ (fan-in=8)
+  HUB: wup/ (fan-in=27)
+  HUB: packages.dsl2wup/ (fan-in=35)
+  SMELL: packages.mcp2wup/ fan-out=17 → split needed
+  SMELL: packages.nlp2wup/ fan-out=15 → split needed
+  SMELL: packages.dsl2wup/ fan-out=13 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

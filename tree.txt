@@ -1,7 +1,9 @@
 .
+├── app.doql.events.pb
 ├── app.doql.less
 ├── CHANGELOG.md
 ├── deps.json
+├── duplication.json
 ├── examples
 │   ├── c2004_monorepo_demo.py
 │   ├── ci_cd_integration.py
@@ -58,8 +60,160 @@
 │   ├── visual_diff_demo.py
 │   └── webhook_notifications.py
 ├── goal.yaml
+├── index.html
+├── koru.yaml
 ├── LICENSE
-├── poetry.lock
+├── local.dev.txt
+├── Makefile
+├── packages
+│   ├── cli2wup
+│   │   ├── local.dev.txt
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── cli2wup
+│   │   │   │   ├── cli.py
+│   │   │   │   └── __init__.py
+│   │   │   └── cli2wup.egg-info
+│   │   │       ├── dependency_links.txt
+│   │   │       ├── entry_points.txt
+│   │   │       ├── PKG-INFO
+│   │   │       ├── requires.txt
+│   │   │       ├── SOURCES.txt
+│   │   │       └── top_level.txt
+│   │   └── tests
+│   │       └── test_cli2wup.py
+│   ├── dsl2wup
+│   │   ├── local.dev.txt
+│   │   ├── proto
+│   │   │   └── dsl2wup
+│   │   │       └── v1
+│   │   │           ├── command.proto
+│   │   │           └── result.proto
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── scripts
+│   │   │   └── generate-proto.sh
+│   │   ├── src
+│   │   │   ├── dsl2wup
+│   │   │   │   ├── bus.py
+│   │   │   │   ├── cli.py
+│   │   │   │   ├── codec.py
+│   │   │   │   ├── codegen.py
+│   │   │   │   ├── engine.py
+│   │   │   │   ├── events.py
+│   │   │   │   ├── grammar.py
+│   │   │   │   ├── handlers
+│   │   │   │   │   ├── command.py
+│   │   │   │   │   └── query.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── models.py
+│   │   │   │   ├── pb_codec.py
+│   │   │   │   ├── result.py
+│   │   │   │   ├── schema
+│   │   │   │   │   └── commands
+│   │   │   │   ├── schema_registry.py
+│   │   │   │   └── v1
+│   │   │   │       ├── command_pb2.py
+│   │   │   │       ├── __init__.py
+│   │   │   │       └── result_pb2.py
+│   │   │   └── dsl2wup.egg-info
+│   │   │       ├── dependency_links.txt
+│   │   │       ├── entry_points.txt
+│   │   │       ├── PKG-INFO
+│   │   │       ├── requires.txt
+│   │   │       ├── SOURCES.txt
+│   │   │       └── top_level.txt
+│   │   └── tests
+│   │       ├── test_dsl2wup.py
+│   │       ├── test_generate.py
+│   │       ├── test_health_paths.py
+│   │       ├── test_parity_across_adapters.py
+│   │       ├── test_parity.py
+│   │       ├── test_protobuf_extended.py
+│   │       ├── test_protobuf.py
+│   │       └── test_validate_schema.py
+│   ├── install-dev.sh
+│   ├── mcp2wup
+│   │   ├── local.dev.txt
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── mcp2wup
+│   │   │   │   ├── cli.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── server.py
+│   │   │   └── mcp2wup.egg-info
+│   │   │       ├── dependency_links.txt
+│   │   │       ├── entry_points.txt
+│   │   │       ├── PKG-INFO
+│   │   │       ├── requires.txt
+│   │   │       ├── SOURCES.txt
+│   │   │       └── top_level.txt
+│   │   └── tests
+│   │       └── test_mcp2wup.py
+│   ├── nlp2wup
+│   │   ├── local.dev.txt
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── nlp2wup
+│   │   │   │   ├── apply.py
+│   │   │   │   ├── cli.py
+│   │   │   │   ├── generate.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── validate.py
+│   │   │   └── nlp2wup.egg-info
+│   │   │       ├── dependency_links.txt
+│   │   │       ├── entry_points.txt
+│   │   │       ├── PKG-INFO
+│   │   │       ├── requires.txt
+│   │   │       ├── SOURCES.txt
+│   │   │       └── top_level.txt
+│   │   └── tests
+│   │       └── test_apply.py
+│   ├── README.md
+│   ├── rest2wup
+│   │   ├── local.dev.txt
+│   │   ├── pyproject.toml
+│   │   ├── README.md
+│   │   ├── src
+│   │   │   ├── rest2wup
+│   │   │   │   ├── app.py
+│   │   │   │   ├── cli.py
+│   │   │   │   └── __init__.py
+│   │   │   └── rest2wup.egg-info
+│   │   │       ├── dependency_links.txt
+│   │   │       ├── entry_points.txt
+│   │   │       ├── PKG-INFO
+│   │   │       ├── requires.txt
+│   │   │       ├── SOURCES.txt
+│   │   │       └── top_level.txt
+│   │   └── tests
+│   │       └── test_rest2wup.py
+│   └── uri2wup
+│       ├── local.dev.txt
+│       ├── pyproject.toml
+│       ├── README.md
+│       ├── src
+│       │   ├── uri2wup
+│       │   │   ├── cli.py
+│       │   │   ├── decode.py
+│       │   │   ├── __init__.py
+│       │   │   ├── nlp2uri.py
+│       │   │   ├── patch.py
+│       │   │   ├── query.py
+│       │   │   └── uri.py
+│       │   └── uri2wup.egg-info
+│       │       ├── dependency_links.txt
+│       │       ├── entry_points.txt
+│       │       ├── PKG-INFO
+│       │       ├── requires.txt
+│       │       ├── SOURCES.txt
+│       │       └── top_level.txt
+│       └── tests
+│           ├── test_decode.py
+│           └── test_query.py
 ├── project.sh
 ├── pyproject.toml
 ├── README.md
@@ -77,23 +231,34 @@
 │   ├── generated-cli-tests.testql.toon.yaml
 │   └── generated-from-pytests.testql.toon.yaml
 ├── tests
+│   ├── test_assistant.py
 │   ├── test_auto_detection.py
+│   ├── test_cli_bridge.py
 │   ├── test_cli_filtering.py
+│   ├── test_control.py
 │   ├── test_e2e.py
+│   ├── test_endpoints_init_cli.py
 │   ├── test_health_summary_passed.py
 │   ├── test_monitoring_manifest.py
+│   ├── test_multi_project.py
+│   ├── test_planfile_reporter_dedupe.py
 │   ├── TEST_PLAN.md
 │   ├── test_probe_mutex.py
 │   ├── test_service_inference.py
+│   ├── test_status_data.py
 │   ├── TEST_SUMMARY.md
+│   ├── test_sync.py
 │   ├── test_testql_monitor.py
 │   ├── test_testql_watcher.py
 │   ├── test_visual_diff_periodic_skip.py
 │   ├── test_visual_diff_progress.py
 │   ├── test_watch_exclude.py
+│   ├── test_watch_no_paths_exit.py
 │   ├── test_web_client.py
+│   ├── test_wup_generate.py
 │   └── test_wup.py
 ├── TODO.md
+├── todo.txt
 ├── tree.sh
 ├── tree.txt
 ├── uv.lock
@@ -101,27 +266,39 @@
 ├── wup
 │   ├── anomaly_detector.py
 │   ├── anomaly_models.py
+│   ├── assistant_discovery.py
 │   ├── assistant.py
+│   ├── assistant_validator.py
 │   ├── _ast_detector.py
 │   ├── _base_detector.py
 │   ├── bus.py
+│   ├── cli_bridge.py
 │   ├── cli_config_generator.py
 │   ├── cli.py
 │   ├── cli_scanner.py
 │   ├── config.py
+│   ├── control.py
 │   ├── core.py
 │   ├── dependency_mapper.py
+│   ├── endpoints.py
 │   ├── event_store.py
 │   ├── file_watcher
 │   │   └── events
 │   │       └── file_events.py
+│   ├── generate.py
 │   ├── _hash_detector.py
+│   ├── init_cli.py
 │   ├── __init__.py
 │   ├── models
 │   │   ├── config.py
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   └── target.py
 │   ├── monitoring_manifest.py
+│   ├── multi.py
+│   ├── paths.py
 │   ├── planfile_reporter.py
+│   ├── status_data.py
+│   ├── sync.py
 │   ├── testing
 │   │   ├── commands
 │   │   ├── events
@@ -136,6 +313,7 @@
 │   ├── testql_discovery.py
 │   ├── testql_monitor.py
 │   ├── testql_watcher.py
+│   ├── validate.py
 │   ├── visual_diff.py
 │   ├── web_client.py
 │   └── _yaml_detector.py
@@ -149,4 +327,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-31 directories, 119 files
+70 directories, 258 files

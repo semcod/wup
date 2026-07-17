@@ -389,25 +389,45 @@ def validate_config(raw: dict) -> WupConfig:
     )
 
 
+# Common source-directory names, in priority order, used to seed watch paths
+# for an auto-generated config. Only directories that actually exist are kept,
+# so the generated wup.yaml doesn't point at paths that were never there.
+_DEFAULT_SOURCE_DIRS = [
+    "app", "src", "routes", "services", "lib", "packages", "pkg", "internal", "cmd",
+]
+
+
+def detect_watch_paths(project_root: Path) -> list:
+    """
+    Pick watch-path globs for a project by probing for common source directories.
+
+    Returns ``["<dir>/**", ...]`` for every well-known source directory that
+    exists under ``project_root``. Falls back to the classic app/src/routes
+    guess only when none are found, so a brand-new project still gets a config.
+    """
+    found = [f"{name}/**" for name in _DEFAULT_SOURCE_DIRS if (project_root / name).is_dir()]
+    return found or ["app/**", "src/**", "routes/**"]
+
+
 def get_default_config(project_root: Path) -> WupConfig:
     """
     Get default configuration when no config file exists.
-    
+
     Args:
         project_root: Path to project root directory
-        
+
     Returns:
         Default WupConfig object
     """
     project_name = project_root.name
-    
+
     return WupConfig(
         project=ProjectConfig(
             name=project_name,
             description=f"Auto-generated config for {project_name}"
         ),
         watch=WatchConfig(
-            paths=["app/**", "src/**", "routes/**"],
+            paths=detect_watch_paths(project_root),
             exclude_patterns=["*.md", "*.txt", "tests/**", "node_modules/**"]
         ),
         services=[],

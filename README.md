@@ -3,17 +3,17 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.69-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$5.86-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-51.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.70-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$6.52-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-51.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $5.8610 (97 commits)
+- 🤖 **LLM usage:** $6.5152 (98 commits)
 - 👤 **Human dev:** ~$5115 (51.1h @ $100/h, 30min dedup)
 
-Generated on 2026-07-16 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+Generated on 2026-07-17 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.69-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-wup-blue) ![Version](https://img.shields.io/badge/version-0.2.70-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 **WUP (What's Up)** - Intelligent file watcher for regression testing in large projects.
 
@@ -107,6 +107,30 @@ wup watch ./my-project --config custom-config.yaml
 # Discover endpoints from TestQL scenarios
 wup testql-endpoints /path/to/scenarios --output testql-deps.json
 ```
+
+### Watch Multiple Projects Simultaneously
+
+Pass several project roots to watch them all at once in a single process. Each
+project keeps its own `wup.yaml`, dependency map, file observer and test queue.
+
+```bash
+# Watch several projects at the same time
+wup watch ./service-a ./service-b ./service-c
+
+# Discover: expand a monorepo root into every sub-project that has a wup.yaml
+wup watch --discover ./my-monorepo
+
+# Discover from the current directory
+wup watch -D .
+```
+
+`--discover` walks the immediate sub-directories of each given path and watches
+those that already contain a `wup.yaml` (hidden and vendor folders such as
+`node_modules`, `.venv`, `dist` and `build` are skipped). A relative `--deps`
+path is resolved per project, so each project uses its own `deps.json`.
+
+> The live `--dashboard` and single `--config` options apply to single-project
+> runs only; when watching multiple projects each uses its own `wup.yaml`.
 
 ### Initialize Configuration
 

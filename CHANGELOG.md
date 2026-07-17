@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Simultaneous multi-project watching.** `wup watch` now accepts several
+  project directories and watches them at once in a single process
+  (`wup watch proj-a proj-b proj-c`). Each project keeps its own wup.yaml,
+  dependency map, file observer and test queue.
+- **`--discover` / `-D` flag.** Expands a monorepo root into every immediate
+  sub-directory that already has a wup.yaml and watches each one
+  (`wup watch --discover .`). Hidden and vendor folders (node_modules, .venv,
+  dist, build, …) are skipped.
+
+### Changed
+- A relative `--deps` path is now resolved against each project's own root, so
+  multiple watched projects no longer share one deps.json. For `wup watch .`
+  this is the current directory as before.
+- TestQL periodic live probes now also run in `--dashboard` mode.
+
+### Refactored
+- Split the high-cyclomatic-complexity methods flagged by `project/analysis.toon.yaml`
+  into focused helpers (behaviour unchanged, all tests green):
+  `_map_docker_to_wup_service` and `format_manifest_summary` (monitoring_manifest),
+  `collect_status_snapshot` (status_data), `_create_ticket` (planfile_reporter),
+  and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
+  web-service branch in scenario selection.
+
+### Fixed
+- Auto-generated `wup.yaml` now watches source directories that actually exist
+  (probing `app`, `src`, `routes`, `services`, `lib`, `packages`, …) instead of
+  always writing `app/src/routes`. This fixes `No valid paths to watch` on
+  projects whose code lives under a different top-level folder (e.g. a monorepo
+  module using `services/`).
+
+## [0.2.70] - 2026-07-17
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_multi_project.py
+
+### Other
+- Update app.doql.events.pb
+- Update app.doql.less
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.toon.yaml
+- Update project/calls.yaml
+- Update project/compact_flow.mmd
+- Update project/duplication.toon.yaml
+- Update project/evolution.toon.yaml
+- Update project/flow.mmd
+- ... and 16 more files
+
 ## [0.2.69] - 2026-07-16
 
 ### Docs

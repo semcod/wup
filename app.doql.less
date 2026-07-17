@@ -2,18 +2,107 @@
 
 app {
   name: wup;
-  version: 0.2.65;
-  description: "WUP (What's Up) - Intelligent file watcher for regression testing in large projects";
-  license: Apache-2.0;
-  authors: "Tom Sapletta <tom@sapletta.com>";
-  keywords: "wup, watcher, testing, regression, file-monitoring";
-  homepage: https://github.com/semcod/wup;
-  repository: https://github.com/semcod/wup;
+  version: 0.2.69;
 }
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
+  dev: "pytest>=7.0.0, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
   visual: "playwright>=1.40,<2";
+}
+
+entity[name="AdoptCommand"] {
+  verb: Literal[!;
+  root: string!;
+  out: string;
+}
+
+entity[name="EndpointsCommand"] {
+  verb: Literal[!;
+  scenarios_dir: string!;
+  out: string!;
+  testql_bin: string!;
+}
+
+entity[name="GenerateCommand"] {
+  verb: Literal[!;
+  text: string;
+  out: string;
+  project: string;
+  template: Optional[Literal[;
+}
+
+entity[name="HealthCommand"] {
+  verb: Literal[!;
+  service: string;
+  project: string;
+}
+
+entity[name="InitCommand"] {
+  verb: Literal[!;
+  project: string!;
+  out: string!;
+}
+
+entity[name="InitCliCommand"] {
+  verb: Literal[!;
+  project: string!;
+  out: string!;
+  scenarios: string!;
+  merge: bool!;
+  infer_args: bool!;
+}
+
+entity[name="MapCommand"] {
+  verb: Literal[!;
+  project: string!;
+  out: string!;
+  framework: string!;
+}
+
+entity[name="PatchCommand"] {
+  verb: Literal[!;
+  target: string!;
+  with_path: string!;
+  file: string;
+  project: string;
+}
+
+entity[name="QueryCommand"] {
+  verb: Literal[!;
+  target: string!;
+  file: string;
+  format: Literal[!;
+  project: string;
+}
+
+entity[name="ResolveCommand"] {
+  verb: Literal[!;
+  text: string!;
+  file: string;
+  project: string;
+}
+
+entity[name="StatusCommand"] {
+  verb: Literal[!;
+  project: string!;
+  deps_file: string!;
+  file: string;
+  delta_seconds: int!;
+  failed_only: bool!;
+}
+
+entity[name="SyncCommand"] {
+  verb: Literal[!;
+  project: string!;
+  file: string;
+  merge_endpoints: bool!;
+}
+
+entity[name="ValidateCommand"] {
+  verb: Literal[!;
+  path: string;
+  project: string;
 }
 
 interface[type="api"] {
@@ -27,24 +116,10 @@ interface[type="cli"] {
 interface[type="cli"] page[name="wup"] {
   entry: wup.cli:app;
 }
-interface[type="cli"] page[name="dsl2wup"] {
-  entry: dsl2wup.cli:main;
-}
-interface[type="cli"] page[name="cli2wup"] {
-  entry: cli2wup.cli:main;
-}
-interface[type="cli"] page[name="nlp2wup"] {
-  entry: nlp2wup.cli:main;
-}
-interface[type="cli"] page[name="uri2wup"] {
-  entry: uri2wup.cli:main;
-}
-interface[type="mcp"] page[name="mcp2wup"] {
-  entry: mcp2wup.cli:main;
-}
-interface[type="api"] page[name="rest2wup"] {
-  entry: rest2wup.cli:main;
-  port: 8216;
+
+interface[type="web"] {
+  type: spa;
+  framework: static;
 }
 
 workflow[name="install"] {
@@ -112,13 +187,8 @@ workflow[name="publish"] {
   step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
   step-4: run cmd=.venv/bin/python -m build;
   step-5: run cmd=.venv/bin/twine check dist/*;
-  step-6: run cmd=echo "⚡ Ready to upload. Run: make publish-confirm to upload to PyPI";
-}
-
-workflow[name="publish-confirm"] {
-  trigger: manual;
-  step-1: run cmd=echo "🚀 Uploading to PyPI...";
-  step-2: run cmd=.venv/bin/twine upload dist/*;
+  step-6: run cmd=echo "⚡ Ready to upload.";
+  step-7: run cmd=.venv/bin/twine upload dist/*;
 }
 
 workflow[name="publish-test"] {
@@ -178,7 +248,7 @@ environment[name="local"] {
   runtime: docker-compose;
   env_file: .env;
   template_file: .env.example;
-  python_version: >=3.9;
+  python_version: >=3.10;
   vars: LLM_MODEL, OPENROUTER_API_KEY, PFIX_AUTO_APPLY, PFIX_AUTO_INSTALL_DEPS, PFIX_AUTO_RESTART, PFIX_CREATE_BACKUPS, PFIX_DRY_RUN, PFIX_ENABLED, PFIX_GIT_COMMIT, PFIX_GIT_PREFIX, PFIX_MAX_RETRIES;
   runtime_llm: OPENROUTER_API_KEY;
   runtime_pfix: PFIX_AUTO_APPLY, PFIX_AUTO_INSTALL_DEPS, PFIX_AUTO_RESTART, PFIX_CREATE_BACKUPS, PFIX_DRY_RUN, PFIX_ENABLED, PFIX_GIT_COMMIT, PFIX_GIT_PREFIX, PFIX_MAX_RETRIES;

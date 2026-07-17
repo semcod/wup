@@ -141,23 +141,19 @@ def _map_docker_to_wup_service(
             return "backend"
         return None
 
-    rules: list[tuple[Any, Any]] = [
-        (lambda: "firmware" in name or "firmware" in container, "firmware"),
-        (lambda: name == "frontend" or "frontend" in container, "frontend"),
-        (lambda: name == "backend" or container == "identification-backend", "backend"),
-        (lambda: "connect-scenario" in name and "backend" not in name and "backend" in wup_services, "backend"),
+    # Each rule returns a candidate WUP service name (or None); the first
+    # candidate that names a configured service wins.
+    rules = [
+        lambda: "firmware" if ("firmware" in name or "firmware" in container) else None,
+        lambda: "frontend" if (name == "frontend" or "frontend" in container) else None,
+        lambda: "backend" if (name == "backend" or container == "identification-backend") else None,
+        lambda: "backend" if ("connect-scenario" in name and "backend" not in name) else None,
+        _connect_backend_target,
     ]
-    for predicate, target in rules:
-        if callable(target):
-            resolved = target()
-            if predicate() and resolved and resolved in wup_services:
-                return resolved
-        elif predicate() and target in wup_services:
-            return target
-
-    connect_target = _connect_backend_target()
-    if connect_target:
-        return connect_target
+    for rule in rules:
+        candidate = rule()
+        if candidate and candidate in wup_services:
+            return candidate
 
     for svc in wup_services:
         token = svc.lower().replace("_", "-")
@@ -395,34 +391,46 @@ def load_monitoring_manifest_from_yaml(config_path: Path) -> Optional[Dict[str, 
     return monitoring if isinstance(monitoring, dict) else None
 
 
+def _service_summary_lines(svc: str, info: Dict[str, Any]) -> List[str]:
+    """Summary lines for one WUP service (probe counts + first few probes)."""
+    probes = info.get("live_probes") or []
+    dockers = info.get("docker") or []
+    lines = [f"  [cyan]{svc}[/cyan]: {len(probes)} HTTP probe(s), {len(dockers)} docker(s)"]
+    for probe in probes[:6]:
+        lines.append(f"    • {probe.get('method', 'GET')} {probe.get('url')}  ({probe.get('source', '?')})")
+    if len(probes) > 6:
+        lines.append(f"    … +{len(probes) - 6} more")
+    return lines
+
+
+def _semcod_summary_lines(semcod: Dict[str, Any]) -> List[str]:
+    """Summary lines for the optional semcod-tools section (empty when disabled)."""
+    if not semcod.get("enabled"):
+        return []
+    tools = semcod.get("tools") or {}
+    ready = semcod.get("ready_count", 0)
+    lines = [f"  [cyan]semcod tools[/cyan]: {ready}/{len(tools)} ready"]
+    for name, info in sorted(tools.items()):
+        marker = "ready" if info.get("status") == "ready" else "missing/disabled"
+        lines.append(f"    {name}: {marker} ({info.get('repo_path', '')})")
+    return lines
+
+
 def format_manifest_summary(manifest: Dict[str, Any]) -> str:
     """Short human-readable summary for CLI."""
-    lines: List[str] = []
-    lines.append(f"generated: {manifest.get('generated_at', '?')}")
-    lines.append(f"probe every: {manifest.get('probe_interval_s', 0)}s")
+    lines: List[str] = [
+        f"generated: {manifest.get('generated_at', '?')}",
+        f"probe every: {manifest.get('probe_interval_s', 0)}s",
+    ]
     if manifest.get("health_scenario"):
         lines.append(f"fleet scenario: {manifest['health_scenario']}")
 
-    wup_services = manifest.get("wup_services") or {}
-    for svc, info in sorted(wup_services.items()):
-        probes = info.get("live_probes") or []
-        dockers = info.get("docker") or []
-        lines.append(f"  [cyan]{svc}[/cyan]: {len(probes)} HTTP probe(s), {len(dockers)} docker(s)")
-        for probe in probes[:6]:
-            lines.append(f"    • {probe.get('method', 'GET')} {probe.get('url')}  ({probe.get('source', '?')})")
-        if len(probes) > 6:
-            lines.append(f"    … +{len(probes) - 6} more")
+    for svc, info in sorted((manifest.get("wup_services") or {}).items()):
+        lines.extend(_service_summary_lines(svc, info))
 
     unmapped = manifest.get("docker_not_mapped_to_wup") or []
     if unmapped:
         lines.append(f"  [yellow]docker not mapped to wup:[/yellow] {len(unmapped)} service(s)")
 
-    semcod = manifest.get("semcod_tools") or {}
-    if semcod.get("enabled"):
-        tools = semcod.get("tools") or {}
-        ready = semcod.get("ready_count", 0)
-        lines.append(f"  [cyan]semcod tools[/cyan]: {ready}/{len(tools)} ready")
-        for name, info in sorted(tools.items()):
-            marker = "ready" if info.get("status") == "ready" else "missing/disabled"
-            lines.append(f"    {name}: {marker} ({info.get('repo_path', '')})")
+    lines.extend(_semcod_summary_lines(manifest.get("semcod_tools") or {}))
     return "\n".join(lines)

@@ -566,6 +566,53 @@ class WupWatcher:
                 return observer
             raise
 
+    def start_background_tasks(self) -> None:
+        """
+        Hook for subclasses to start background threads before watching begins.
+
+        The base watcher has nothing to start; TestQLWatcher overrides this to
+        launch its periodic live-probe thread. Coordinators that run several
+        watchers at once (see :class:`~wup.multi.MultiProjectWatcher`) call this
+        on each watcher so background probes fire regardless of who owns the
+        main loop.
+        """
+
+    def prepare_observer(self, watch_paths: Optional[List[str]] = None):
+        """
+        Set up and start the filesystem observer without entering a blocking loop.
+
+        Splitting this out of :meth:`start_watching` lets a coordinator drive
+        several watchers from a single loop (multi-project mode).
+
+        Args:
+            watch_paths: List of paths to watch (default: from config or common
+                source directories)
+
+        Returns:
+            The started observer, or ``None`` when no valid paths could be
+            watched (configuration error).
+        """
+        if watch_paths is None:
+            watch_paths = self.build_watched_paths()
+
+        # Filter to existing paths
+        watch_paths = [p for p in watch_paths if Path(p).exists()]
+
+        if not watch_paths:
+            self.console.print(
+                f"[red]No valid paths to watch[/red] "
+                f"[dim](project: {self.config.project.name})[/dim]"
+            )
+            return None
+
+        event_handler = WupEventHandler(self)
+        observer = self._create_and_start_observer(event_handler, watch_paths)
+        self.console.print(
+            f"[green]🕵️  Watching ({self.config.project.name}): "
+            f"{', '.join(watch_paths)}[/green]"
+        )
+        return observer
+
     def start_watching(self, watch_paths: Optional[List[str]] = None) -> bool:
         """
         Start watching for file changes.
@@ -579,19 +626,11 @@ class WupWatcher:
             of treating a watcher that never watched as a clean run),
             True after a graceful interrupt.
         """
-        if watch_paths is None:
-            watch_paths = self.build_watched_paths()
+        self.start_background_tasks()
 
-        # Filter to existing paths
-        watch_paths = [p for p in watch_paths if Path(p).exists()]
-
-        if not watch_paths:
-            self.console.print("[red]No valid paths to watch[/red]")
+        observer = self.prepare_observer(watch_paths)
+        if observer is None:
             return False
-
-        event_handler = WupEventHandler(self)
-        observer = self._create_and_start_observer(event_handler, watch_paths)
-        self.console.print(f"[green]🕵️  Watching: {', '.join(watch_paths)}[/green]")
 
         try:
             while True:
@@ -636,9 +675,11 @@ class WupWatcher:
     
     async def run_with_dashboard(self):
         """Run watcher with live dashboard."""
+        self.start_background_tasks()
+
         watch_paths = self.build_watched_paths()
         watch_paths = [p for p in watch_paths if Path(p).exists()]
-        
+
         event_handler = WupEventHandler(self)
         observer = self._create_and_start_observer(event_handler, watch_paths)
         

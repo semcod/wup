@@ -41,6 +41,31 @@ def _recent_health_events(events_path: Path, delta_seconds: int) -> list[dict[st
     return recent
 
 
+def _summarize_deps(deps_path: Path) -> dict[str, Any]:
+    """Return a small {services, files} summary for the deps file (or an error)."""
+    if not deps_path.exists():
+        return {}
+    try:
+        raw = json.loads(deps_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {"error": "invalid deps json"}
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        "services": len(raw.get("services", {})),
+        "files": len(raw.get("files", {})),
+    }
+
+
+def _load_manifest(cfg_path: Path | None) -> dict[str, Any]:
+    """Load the monitoring manifest embedded in wup.yaml, if any."""
+    if not (cfg_path and cfg_path.exists()):
+        return {}
+    from wup.monitoring_manifest import load_monitoring_manifest_from_yaml
+
+    return load_monitoring_manifest_from_yaml(cfg_path) or {}
+
+
 def collect_status_snapshot(
     project_root: str | Path = ".",
     *,
@@ -62,17 +87,7 @@ def collect_status_snapshot(
         deps_path = project / deps_path
 
     deps_exists = deps_path.exists()
-    deps_summary: dict[str, Any] = {}
-    if deps_exists:
-        try:
-            raw = json.loads(deps_path.read_text(encoding="utf-8"))
-            if isinstance(raw, dict):
-                deps_summary = {
-                    "services": len(raw.get("services", {})),
-                    "files": len(raw.get("files", {})),
-                }
-        except json.JSONDecodeError:
-            deps_summary = {"error": "invalid deps json"}
+    deps_summary = _summarize_deps(deps_path)
 
     failing = [
         svc
@@ -82,11 +97,7 @@ def collect_status_snapshot(
     if failed_only:
         health = {k: v for k, v in health.items() if k in failing}
 
-    manifest: dict[str, Any] = {}
-    if cfg_path and cfg_path.exists():
-        from wup.monitoring_manifest import load_monitoring_manifest_from_yaml
-
-        manifest = load_monitoring_manifest_from_yaml(cfg_path) or {}
+    manifest = _load_manifest(cfg_path)
 
     return {
         "ok": True,
