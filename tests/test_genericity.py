@@ -71,6 +71,31 @@ def test_docker_map_generic_token_match() -> None:
     assert _map_docker_to_wup_service(_dc("payments-api"), services) == "payments"
 
 
+def test_reject_prefixes_generic_by_default() -> None:
+    from wup.testql_monitor import ProbeTarget, is_monitoring_probe, reject_prefixes_for_config
+
+    cfg = validate_config({"project": {"name": "p"}})
+    assert reject_prefixes_for_config(cfg) == ()
+    # A generic /api/... health path is a valid probe (not fleet-rejected).
+    assert is_monitoring_probe(ProbeTarget(url="http://x:8100/api/id/health"), reject_prefixes_for_config(cfg))
+
+
+def test_reject_prefixes_connect_profile_opt_in() -> None:
+    from wup.testql_monitor import ProbeTarget, is_monitoring_probe, reject_prefixes_for_config
+
+    cfg = validate_config({"project": {"name": "p"}, "testql": {"service_map_profile": "connect"}})
+    prefixes = reject_prefixes_for_config(cfg)
+    assert "/api/id" in prefixes
+    assert not is_monitoring_probe(ProbeTarget(url="http://x:8100/api/id/health"), prefixes)
+
+
+def test_reject_prefixes_explicit_override() -> None:
+    from wup.testql_monitor import reject_prefixes_for_config
+
+    cfg = validate_config({"project": {"name": "p"}, "testql": {"monitoring_reject_prefixes": ["/internal"]}})
+    assert reject_prefixes_for_config(cfg) == ("/internal",)
+
+
 def test_config_roundtrips_docker_service_map() -> None:
     raw = {
         "project": {"name": "p"},

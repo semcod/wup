@@ -16,7 +16,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 # Source extensions grouped by ecosystem.
 PY_EXTENSIONS = (".py",)
@@ -155,9 +155,11 @@ class FastifyAdapter(DiscoveryAdapter):
     extensions = JS_EXTENSIONS
     detect_markers = ("require('fastify')", 'require("fastify")', "from 'fastify'", 'from "fastify"')
     route_patterns = (
-        (re.compile(r'fastify\.(get|post|put|delete|patch)\s*\(\s*["\'`]([^"\'`]+)["\'`]'), 1, 2),
+        # Fastify instances take arbitrary names (fastify/app/server/f): match any
+        # identifier. Safe because this adapter only scans files that import fastify.
+        (re.compile(r'\b\w+\.(get|post|put|delete|patch)\s*\(\s*["\'`](/[^"\'`]*)["\'`]'), 1, 2),
         # fastify.route({ method: 'GET', url: '/x' })
-        (re.compile(r'url\s*:\s*["\'`]([^"\'`]+)["\'`]'), None, 1),
+        (re.compile(r'url\s*:\s*["\'`](/[^"\'`]*)["\'`]'), None, 1),
     )
 
 
@@ -231,15 +233,17 @@ class OpenAPIAdapter(DiscoveryAdapter):
         return endpoints
 
 
-# Order matters only for auto-detection reporting; scanning runs all matches.
+# Order determines which framework wins attribution in auto mode (scanning still
+# runs every matching adapter). Marker-specific JS frameworks come before Express,
+# whose generic app.get/router.get syntax the others mimic.
 ADAPTERS: Tuple[DiscoveryAdapter, ...] = (
     FastAPIAdapter(),
     FlaskAdapter(),
     DjangoAdapter(),
-    NestJSAdapter(),   # before Express: @Controller is more specific
-    ExpressAdapter(),
-    FastifyAdapter(),
+    NestJSAdapter(),
     HonoAdapter(),
+    FastifyAdapter(),
+    ExpressAdapter(),
     GoAdapter(),
     OpenAPIAdapter(),
 )

@@ -106,17 +106,31 @@ and `wup.testing.queries.GetServiceHealth` — a ready foundation for OQL.
 
 **Roadmap (cheapest first):**
 
-1. **Move the "connect" fleet out of code into config.** A `service_mapping:` /
-   `probe_topology:` section in `wup.yaml`; default empty ⇒ zero knowledge of any
-   other project. Unblocks every non-fleet project without touching code.
-2. **Discovery as pluggable adapters** instead of four built-in frameworks:
-   `python-ast`, `node-package-json`, `openapi`, `testql-scenarios` (exists).
-   Selected by repo markers, not by guessing. Fixes the empty `deps.json`.
-3. **Formalize OQL over `wup.bus`** — declarative queries
-   (`services where health=down`, `events since 5m`) as `Query` classes.
-4. **AQL = declarative assertions** — expose the `anomaly_detector` methods
-   (`hash`/`structure`/`keys`/`ast`/`text`) as config rules so an AI can *generate*
-   assertions instead of reading Python.
+1. ✅ **Move the "connect" fleet out of code into config.** Done:
+   `testql.docker_service_map` + opt-in `testql.service_map_profile: connect`.
+   Default carries no project-specific service names.
+2. ✅ **Discovery as pluggable adapters** — done in `wup/discovery.py`: FastAPI,
+   Flask, Django, NestJS, Express, Fastify, Hono, Go and OpenAPI adapters selected
+   by repo markers. Fixes the empty/Python-only `deps.json`.
+3. ✅ **Formalize OQL over `wup.bus`** — done in `wup/oql.py` + `wup oql`:
+   declarative queries (`services where status = down`, `events since 5m`) with a
+   `RunOQL` bus query.
+4. ✅ **AQL = declarative assertions** — done in `wup/aql.py` + `wup aql`:
+   assertions about a file's data (`json .services length > 0`,
+   `yaml .project.name exists`) that emit `AnomalyResult` violations, with a
+   `CheckAQL` bus query. AI can now generate checks instead of reading Python.
+
+### Still hardcoded (follow-up)
+
+- ✅ `testql_monitor.py` probe rejection (`_CONNECT_API_PREFIXES`) is now
+  config-driven: generic default rejects nothing; the connect prefixes are a
+  built-in profile (`service_map_profile: connect`) or set explicitly via
+  `testql.monitoring_reject_prefixes`. This was the one that actively *broke*
+  other projects (rejecting their valid `/api/*` health probes).
+- ⏳ Lower-harm remainders (only trigger on specific ports/paths, else fall through
+  to generic matching): the port `8202`/`8100`→`firmware` assignment and
+  hardware-USB service names in `testql_monitor.py`, and `core.py:152`'s
+  `^(connect|backend|…)[-_]` service regex. Same treatment (profile/config) applies.
 
 "AI-open" = all three layers declarative (YAML/query) under one schema, so an agent
 can read state (OQL), write scenarios (TestQL) and define assertions (AQL) without

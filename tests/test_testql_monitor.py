@@ -78,9 +78,14 @@ def test_firmware_plugin_health_catalog_not_periodic_live_probe():
     )
 
 
-def test_connect_api_paths_on_8100_are_not_monitoring_probes():
+def test_connect_api_paths_rejection_is_opt_in():
+    from wup.testql_monitor import _BUILTIN_REJECT_PREFIXES
+
     probe = ProbeTarget(url="http://localhost:8100/api/id/health")
-    assert not is_monitoring_probe(probe)
+    # Generic default: nothing is rejected — /api/id/health is a valid probe.
+    assert is_monitoring_probe(probe)
+    # With the connect profile's reject-prefixes, it is excluded.
+    assert not is_monitoring_probe(probe, _BUILTIN_REJECT_PREFIXES["connect"])
     assert assign_probe_to_service(
         probe,
         [ServiceConfig(name="backend", paths=["backend/**", "api/**"])],

@@ -685,6 +685,111 @@ def status(
 
 
 @app.command()
+def oql(
+    query: str = typer.Argument(..., help='OQL query, e.g. "services where status = down"'),
+    project: str = typer.Option(".", "--project", "-p", help="Path to the project root directory"),
+    json_out: bool = typer.Option(False, "--json", help="Emit results as JSON (for tools / AI agents)"),
+):
+    """
+    Query observed state with OQL (Observability Query Language).
+
+    Examples:
+      wup oql "services"
+      wup oql "services where status = down"
+      wup oql "events since 10m limit 5"
+      wup oql "events where service = api since 1h" --json
+    """
+    import json as json_mod
+
+    from .oql import OQLEngine, OQLError, parse
+
+    project_path = Path(project).resolve()
+    try:
+        parsed = parse(query)
+        rows = OQLEngine(project_path).execute(parsed)
+    except OQLError as exc:
+        console.print(f"[red]OQL error: {exc}[/red]")
+        raise typer.Exit(1)
+
+    if json_out:
+        console.print_json(json_mod.dumps({"ok": True, "source": parsed.source, "count": len(rows), "rows": rows}))
+        return
+
+    if not rows:
+        console.print(f"[dim]No {parsed.source} matched.[/dim]")
+        return
+
+    from rich.table import Table
+
+    columns = list({key for row in rows for key in row})
+    # Stable, readable column order: identity/status first.
+    preferred = ["name", "service", "status", "stage", "message", "updated_at", "timestamp"]
+    columns.sort(key=lambda c: (preferred.index(c) if c in preferred else len(preferred), c))
+
+    table = Table(title=f"OQL: {parsed.source} ({len(rows)})")
+    for col in columns:
+        table.add_column(col, style="cyan" if col in ("name", "service") else None)
+    for row in rows:
+        table.add_row(*[str(row.get(col, "")) for col in columns])
+    console.print(table)
+
+
+@app.command()
+def aql(
+    file: str = typer.Argument(..., help="File to assert against (JSON/YAML/text)"),
+    rule: List[str] = typer.Argument(None, help='AQL rule(s), e.g. "json .version exists"'),
+    json_out: bool = typer.Option(False, "--json", help="Emit results as JSON (for tools / AI agents)"),
+):
+    """
+    Assert facts about a file with AQL (Assertion Query Language).
+
+    Each rule that fails is reported as a violation; exit code is non-zero if any
+    rule fails, so AQL works in CI and pre-commit checks.
+
+    Examples:
+      wup aql wup.yaml "yaml .project.name exists"
+      wup aql package.json "json .version matches ^\\d+" "json .scripts.build exists"
+      wup aql deps.json "json .services length > 0" --json
+    """
+    import json as json_mod
+
+    from .aql import AQLEngine, AQLError
+
+    rules = rule or []
+    if not rules:
+        console.print("[yellow]No rules given. Provide at least one AQL rule.[/yellow]")
+        raise typer.Exit(2)
+
+    try:
+        violations = AQLEngine(".").check_file(file, rules)
+    except AQLError as exc:
+        console.print(f"[red]AQL error: {exc}[/red]")
+        raise typer.Exit(2)
+
+    passed = len(rules) - len(violations)
+    if json_out:
+        console.print_json(json_mod.dumps({
+            "ok": not violations,
+            "file": file,
+            "checked": len(rules),
+            "passed": passed,
+            "violations": [
+                {"rule": v.details.get("rule", v.message), "severity": v.severity, "message": v.message}
+                for v in violations
+            ],
+        }))
+    elif not violations:
+        console.print(f"[green]✓ All {len(rules)} assertion(s) passed for {file}[/green]")
+    else:
+        for v in violations:
+            console.print(f"[red]✗ [{v.severity}] {v.message}[/red]")
+        console.print(f"[dim]{passed}/{len(rules)} passed[/dim]")
+
+    if violations:
+        raise typer.Exit(1)
+
+
+@app.command()
 def init(
     project: str = typer.Argument(".", help="Path to the project root directory"),
     output: str = typer.Option("wup.yaml", "--output", "-o", help="Output config file path"),

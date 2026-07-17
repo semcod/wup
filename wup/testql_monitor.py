@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from urllib import error, request
 from urllib.parse import urlparse
 
@@ -26,17 +26,27 @@ _HEALTH_HINT = re.compile(
     r"(/health|/healthz|/ready|/live|/status|/openapi\.json)",
     re.IGNORECASE,
 )
-# Connect module APIs live on :8103+ — not valid health probes on frontend proxy :8100
-_CONNECT_API_PREFIXES = (
-    "/api/id",
-    "/api/manager",
-    "/api/scenario",
-    "/api/test",
-    "/api/template",
-    "/api/cql",
-    "/api/v1/data",
-    "/api/v2/menu",
-)
+# Built-in probe-topology profiles. These carry project-specific knowledge and
+# are opt-in via testql.service_map_profile — the generic default rejects nothing.
+# "connect": module APIs live on :8103+, so they are not valid health probes when
+# reached through the frontend proxy on :8100.
+_BUILTIN_REJECT_PREFIXES = {
+    "connect": (
+        "/api/id", "/api/manager", "/api/scenario", "/api/test",
+        "/api/template", "/api/cql", "/api/v1/data", "/api/v2/menu",
+    ),
+}
+
+
+def reject_prefixes_for_config(config: WupConfig) -> Tuple[str, ...]:
+    """Effective monitoring reject-prefixes: explicit config wins, else profile."""
+    explicit = getattr(config.testql, "monitoring_reject_prefixes", None)
+    if explicit:
+        return tuple(explicit)
+    profile = getattr(config.testql, "service_map_profile", "") or ""
+    return _BUILTIN_REJECT_PREFIXES.get(profile.lower(), ())
+
+
 _PATH_TOKEN_BLOCKLIST = frozenset({"api", "app", "src", "lib", "bin", "dist", "out"})
 
 
@@ -138,27 +148,19 @@ def parse_service_map_probes(map_path: Path) -> List[ProbeTarget]:
     return probes
 
 
-def _connect_module_api_on_frontend_proxy(probe: ProbeTarget) -> bool:
-    """True when a connect-* API path would be wrongly probed via :8100."""
-    if not probe.url.startswith("http"):
-        return False
-    parsed = urlparse(probe.url)
-    if parsed.port not in (None, 8100):
-        return False
-    path = (parsed.path or "").lower()
-    return any(path.startswith(prefix) for prefix in _CONNECT_API_PREFIXES)
+def is_monitoring_probe(probe: ProbeTarget, reject_prefixes: Sequence[str] = ()) -> bool:
+    """
+    True when this endpoint should be used for live service health checks.
 
-
-def is_monitoring_probe(probe: ProbeTarget) -> bool:
-    """True when this endpoint should be used for live service health checks."""
-    if _connect_module_api_on_frontend_proxy(probe):
-        return False
+    ``reject_prefixes`` are URL path prefixes to exclude (e.g. module APIs that
+    aren't health endpoints). Empty (the default) rejects nothing — fully generic.
+    """
     if probe.url.startswith("http"):
         path = urlparse(probe.url).path or probe.url
     else:
         path = probe.url
     path_lower = path.lower()
-    if any(path_lower.startswith(prefix) for prefix in _CONNECT_API_PREFIXES):
+    if any(path_lower.startswith(prefix) for prefix in reject_prefixes):
         return False
     if "/execution/" in path_lower:
         return False
@@ -354,6 +356,11 @@ class TestQLMonitor:
         tq = config.testql
         self.scenarios_dir = project_root / (tq.scenario_dir or "testql-scenarios")
         self.discovery = TestQLEndpointDiscovery(str(self.scenarios_dir))
+        self._reject_prefixes = reject_prefixes_for_config(config)
+
+    def _is_monitoring_probe(self, probe: "ProbeTarget") -> bool:
+        """is_monitoring_probe using this project's configured reject-prefixes."""
+        return is_monitoring_probe(probe, self._reject_prefixes)
 
     def _load_dot_env(self) -> Dict[str, str]:
         """Read key=value pairs from .env in project root (best-effort)."""
@@ -474,7 +481,7 @@ class TestQLMonitor:
             )
 
         for service, probe in catalog:
-            if not is_monitoring_probe(probe):
+            if not self._is_monitoring_probe(probe):
                 continue
             if probe.source.endswith(":plugin_health"):
                 continue
@@ -493,7 +500,7 @@ class TestQLMonitor:
                 if not url:
                     continue
                 probe = ProbeTarget(url=url, source="wup.yaml:endpoints_by_service")
-                if is_monitoring_probe(probe):
+                if self._is_monitoring_probe(probe):
                     accumulator.add(svc_name, probe)
 
         for path in self.config.testql.explicit_endpoints or []:
@@ -506,7 +513,7 @@ class TestQLMonitor:
             if not url:
                 continue
             probe = ProbeTarget(url=url, source="wup.yaml:explicit_endpoints")
-            if is_monitoring_probe(probe):
+            if self._is_monitoring_probe(probe):
                 accumulator.add(assigned, probe)
 
     def _add_scenario_probes(
@@ -517,7 +524,7 @@ class TestQLMonitor:
         """Add TestQL scenario probes mapped to services."""
         for scenario in self.discovery.discover_scenarios():
             for probe in parse_scenario_probes(scenario):
-                if not is_monitoring_probe(probe):
+                if not self._is_monitoring_probe(probe):
                     continue
                 assigned = assign_probe_to_service(probe, self.config.services, port_map=port_map)
                 if assigned:
@@ -531,7 +538,7 @@ class TestQLMonitor:
         """Add service-map TOON/YAML probes mapped to services."""
         for map_path in self._service_map_paths():
             for probe in parse_service_map_probes(map_path):
-                if not is_monitoring_probe(probe):
+                if not self._is_monitoring_probe(probe):
                     continue
                 assigned = assign_probe_to_service(probe, self.config.services, port_map=port_map)
                 if assigned:
@@ -582,7 +589,7 @@ class TestQLMonitor:
             if not url:
                 continue
             probe = ProbeTarget(url=url, source="runtime")
-            if not is_monitoring_probe(probe):
+            if not self._is_monitoring_probe(probe):
                 continue
             key = f"{probe.method}:{probe.url}"
             if key in keys:

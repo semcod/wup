@@ -74,7 +74,11 @@ class TestQLConfig:
     docker_service_map: Dict[str, str] = field(default_factory=dict)
     # Optional built-in mapping profile (e.g. "connect") applied after
     # docker_service_map and before generic token matching. Empty = generic only.
+    # Also selects a built-in probe topology (e.g. connect API prefixes/ports).
     service_map_profile: str = ""
+    # URL path prefixes that are NOT valid health probes (rejected in probe
+    # discovery). Empty = accept everything (generic). Overrides the profile.
+    monitoring_reject_prefixes: List[str] = field(default_factory=list)
     base_url: str = ""
     api_base_url: str = ""  # Core API (c2004: http://localhost:8101) — used for backend probes
     base_url_env: str = "WUP_BASE_URL"

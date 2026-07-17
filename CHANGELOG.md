@@ -8,11 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Pluggable endpoint-discovery adapters (`wup/discovery.py`).** `deps.json` is
+  now built by per-ecosystem adapters — FastAPI, Flask, Django, NestJS, Express,
+  Fastify, Hono, Go (gin/echo/net-http) and OpenAPI/Swagger — selected by repo
+  markers instead of a hardcoded four-framework switch. Adding a framework means
+  adding an adapter, not editing the mapper. Endpoints are de-duplicated across
+  adapters and HTTP methods.
+- **OQL — Observability Query Language (`wup/oql.py`, `wup oql`).** A small
+  declarative language over observed state (service health + events):
+  `wup oql "services where status = down"`, `wup oql "events since 10m limit 5"`.
+  Supports `= != > < >= <= ~ !~`, `since <dur>`, `limit`, `--json` output, and a
+  `RunOQL` query on the CQRS event bus so agents can read state programmatically.
+- **AQL — Assertion Query Language (`wup/aql.py`, `wup aql`).** Declarative
+  assertions about a file's data (JSON/YAML/text) that emit `AnomalyResult`
+  violations: `wup aql wup.yaml "yaml .project.name exists" "json .services
+  length > 0"`. Supports paths with `[index]`, predicates `exists/missing`,
+  `= != > < >= <=`, `~ !~`, `matches <regex>`, `length <op> <n>`, `type <t>`,
+  per-rule `severity`, `--json` output (non-zero exit on failure for CI), and a
+  `CheckAQL` bus query. Together TestQL + OQL + AQL give AI agents one declarative
+  surface to test behaviour, read state, and assert invariants.
 - **Config-driven docker→service mapping.** `testql.docker_service_map`
   (`{substring: service}`) and `testql.service_map_profile` let a project map its
   compose services to WUP services without any names hardcoded in WUP. The old
   maskservice/c2004 "connect" fleet rules are now an opt-in built-in profile
   (`service_map_profile: connect`) instead of always-on logic.
+- **Config-driven probe rejection.** `testql.monitoring_reject_prefixes` (and the
+  `connect` profile) control which URL path prefixes are excluded from health
+  probes. The default rejects nothing, so a generic project's `/api/*` health
+  endpoints are no longer wrongly filtered out by hardcoded "connect" fleet paths.
 - `docs/GENERICITY_AUDIT.md` — inventory of how `wup.yaml`/`deps.json` are
   generated, where the tool is hardwired to one project, and a TestQL+OQL+AQL
   roadmap toward a language-agnostic, AI-open design.
@@ -55,6 +78,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `collect_status_snapshot` (status_data), `_create_ticket` (planfile_reporter),
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
+
+## [0.2.74] - 2026-07-17
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update docs/GENERICITY_AUDIT.md
+
+### Test
+- Update tests/test_aql.py
+- Update tests/test_discovery_adapters.py
+- Update tests/test_genericity.py
+- Update tests/test_oql.py
+- Update tests/test_testql_monitor.py
+
+### Other
+- Update app.doql.events.pb
+- Update wup/aql.py
+- Update wup/cli.py
+- Update wup/config.py
+- Update wup/dependency_mapper.py
+- Update wup/discovery.py
+- Update wup/models/config.py
+- Update wup/oql.py
+- Update wup/testql_monitor.py
 
 ## [0.2.73] - 2026-07-17
 
