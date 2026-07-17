@@ -83,9 +83,20 @@ class DiscoveryAdapter:
     # (compiled regex, method-group index or None, path-group index)
     route_patterns: Tuple[Tuple[re.Pattern, Optional[int], int], ...] = ()
     default_method: str = "GET"
+    # When True, a matching route pattern alone counts as detection (for
+    # ecosystems whose route syntax is distinctive enough, e.g. Express
+    # `router.get(`). Kept False where syntax is too generic (Hono, Fastify's
+    # `url:`), which rely on import markers instead to avoid false positives.
+    detect_via_routes: bool = False
 
     def detect(self, index: SourceIndex) -> bool:
-        return any(index.contains(m, self.extensions) for m in self.detect_markers)
+        if any(index.contains(m, self.extensions) for m in self.detect_markers):
+            return True
+        if self.detect_via_routes:
+            for _, content in index.files(self.extensions):
+                if any(p.search(content) for p, _, _ in self.route_patterns):
+                    return True
+        return False
 
     def scan(self, index: SourceIndex) -> List[Endpoint]:
         endpoints: List[Endpoint] = []
@@ -103,6 +114,7 @@ class FastAPIAdapter(DiscoveryAdapter):
     name = "fastapi"
     extensions = PY_EXTENSIONS
     detect_markers = ("FastAPI", "APIRouter", "from fastapi")
+    detect_via_routes = True
     route_patterns = (
         (re.compile(r'@(?:app|router)\.(get|post|put|delete|patch)\s*\(\s*["\']([^"\']+)["\']'), 1, 2),
     )
@@ -112,6 +124,7 @@ class FlaskAdapter(DiscoveryAdapter):
     name = "flask"
     extensions = PY_EXTENSIONS
     detect_markers = ("from flask", "Flask(", "Blueprint(")
+    detect_via_routes = True
     route_patterns = (
         (re.compile(r'@(?:app|bp)\.(get|post|put|delete|patch)\s*\(\s*["\']([^"\']+)["\']'), 1, 2),
         (re.compile(r'@(?:app|bp)\.route\s*\(\s*["\']([^"\']+)["\']'), None, 1),
@@ -131,6 +144,7 @@ class ExpressAdapter(DiscoveryAdapter):
     name = "express"
     extensions = JS_EXTENSIONS
     detect_markers = ("express()", "require('express')", 'require("express")', "from 'express'", 'from "express"')
+    detect_via_routes = True
     route_patterns = (
         (re.compile(r'(?:app|router)\.(get|post|put|delete|patch|all)\s*\(\s*["\'`]([^"\'`]+)["\'`]'), 1, 2),
     )
@@ -169,6 +183,7 @@ class GoAdapter(DiscoveryAdapter):
     name = "go"
     extensions = GO_EXTENSIONS
     detect_markers = ("net/http", "gin-gonic/gin", "labstack/echo", "gorilla/mux")
+    detect_via_routes = True
     route_patterns = (
         # gin/echo: r.GET("/x", ...), e.POST("/x", ...)
         (re.compile(r'\.\b(GET|POST|PUT|DELETE|PATCH)\s*\(\s*"([^"]+)"'), 1, 2),
