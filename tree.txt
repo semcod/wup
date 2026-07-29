@@ -231,16 +231,20 @@
 │   ├── generated-cli-tests.testql.toon.yaml
 │   └── generated-from-pytests.testql.toon.yaml
 ├── tests
+│   ├── test_aql.py
 │   ├── test_assistant.py
 │   ├── test_auto_detection.py
 │   ├── test_cli_bridge.py
 │   ├── test_cli_filtering.py
 │   ├── test_control.py
+│   ├── test_discovery_adapters.py
 │   ├── test_e2e.py
 │   ├── test_endpoints_init_cli.py
+│   ├── test_genericity.py
 │   ├── test_health_summary_passed.py
 │   ├── test_monitoring_manifest.py
 │   ├── test_multi_project.py
+│   ├── test_oql.py
 │   ├── test_planfile_reporter_dedupe.py
 │   ├── TEST_PLAN.md
 │   ├── test_probe_mutex.py
@@ -266,6 +270,7 @@
 ├── wup
 │   ├── anomaly_detector.py
 │   ├── anomaly_models.py
+│   ├── aql.py
 │   ├── assistant_discovery.py
 │   ├── assistant.py
 │   ├── assistant_validator.py
@@ -280,6 +285,7 @@
 │   ├── control.py
 │   ├── core.py
 │   ├── dependency_mapper.py
+│   ├── discovery.py
 │   ├── endpoints.py
 │   ├── event_store.py
 │   ├── file_watcher
@@ -295,6 +301,7 @@
 │   │   └── target.py
 │   ├── monitoring_manifest.py
 │   ├── multi.py
+│   ├── oql.py
 │   ├── paths.py
 │   ├── planfile_reporter.py
 │   ├── status_data.py
@@ -327,4 +334,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-70 directories, 258 files
+70 directories, 265 files

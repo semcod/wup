@@ -1,6 +1,6 @@
 # code2llm call graph | /home/tom/github/semcod/wup
-# generated in 0.12s
-# nodes: 260 | edges: 287 | modules: 53
+# generated in 0.16s
+# nodes: 290 | edges: 307 | modules: 57
 # CC̄=4.7
 
 HUBS[20]:
@@ -22,28 +22,28 @@ HUBS[20]:
     CC=59  in:6  out:37  total:43
   wup.cli.testql_endpoints
     CC=6  in:0  out:43  total:43
-  packages.rest2wup.src.rest2wup.app.create_app
-    CC=1  in:1  out:42  total:43
   packages.dsl2wup.src.dsl2wup.codegen.generate_models
     CC=15  in:1  out:42  total:43
+  packages.rest2wup.src.rest2wup.app.create_app
+    CC=1  in:1  out:42  total:43
   wup.cli.sync_testql
     CC=10  in:0  out:38  total:38
+  wup.aql.parse_rule
+    CC=18  in:1  out:33  total:34
   packages.dsl2wup.src.dsl2wup.events.EventStore.append
     CC=3  in:0  out:33  total:33
   packages.dsl2wup.src.dsl2wup.grammar.to_text
     CC=11  in:14  out:19  total:33
-  wup.status_data.collect_status_snapshot
-    CC=18  in:1  out:30  total:31
-  wup.cli.status
-    CC=8  in:0  out:31  total:31
   packages.dsl2wup.src.dsl2wup.bus.dispatch
     CC=6  in:16  out:15  total:31
+  wup.cli.status
+    CC=8  in:0  out:31  total:31
   wup.cli._add_delta_events_lines
     CC=14  in:1  out:29  total:30
+  wup.config._parse_testql_config
+    CC=2  in:1  out:28  total:29
   packages.dsl2wup.src.dsl2wup.grammar.pick_flag
     CC=3  in:27  out:2  total:29
-  packages.dsl2wup.src.dsl2wup.cli._main_subcommand
-    CC=9  in:1  out:28  total:29
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -185,6 +185,17 @@ MODULES:
     run_quick_testql_dryrun  CC=3  out:4
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
+  wup.aql  [10 funcs]
+    check_file  CC=11  out:21
+    _coerce_number  CC=2  out:1
+    _compare  CC=4  out:3
+    _length_of  CC=2  out:2
+    _passes  CC=11  out:9
+    _resolve_path  CC=13  out:13
+    _split_severity  CC=4  out:5
+    _tokenize  CC=4  out:11
+    _type_name  CC=7  out:5
+    parse_rule  CC=18  out:33
   wup.assistant  [5 funcs]
     _auto_detect_services  CC=1  out:1
     _detect_framework  CC=1  out:1
@@ -198,7 +209,7 @@ MODULES:
   wup.assistant_validator  [2 funcs]
     generate_suggestions  CC=6  out:5
     validate_config  CC=9  out:9
-  wup.cli  [19 funcs]
+  wup.cli  [20 funcs]
     _add_delta_events_lines  CC=14  out:29
     _add_failing_services_lines  CC=13  out:23
     _add_monitoring_manifest_lines  CC=11  out:24
@@ -229,7 +240,7 @@ MODULES:
     _parse_semcod_tools_config  CC=9  out:23
     _parse_services_config  CC=3  out:23
     _parse_strategy_config  CC=1  out:4
-    _parse_testql_config  CC=2  out:24
+    _parse_testql_config  CC=2  out:28
     _parse_testql_extra_args  CC=5  out:8
   wup.control  [12 funcs]
     _result_dict  CC=1  out:2
@@ -244,6 +255,12 @@ MODULES:
     dispatch_status  CC=4  out:1
   wup.core  [1 funcs]
     __init__  CC=7  out:18
+  wup.dependency_mapper  [2 funcs]
+    _detect_framework  CC=2  out:2
+    build_from_codebase  CC=6  out:7
+  wup.discovery  [2 funcs]
+    detect_frameworks  CC=3  out:1
+    discover_endpoints  CC=7  out:6
   wup.endpoints  [1 funcs]
     discover_testql_endpoints  CC=5  out:26
   wup.generate  [2 funcs]
@@ -251,7 +268,7 @@ MODULES:
     generate_wup_config  CC=8  out:20
   wup.init_cli  [1 funcs]
     setup_cli_project  CC=9  out:26
-  wup.monitoring_manifest  [16 funcs]
+  wup.monitoring_manifest  [18 funcs]
     _artifact_row  CC=4  out:5
     _build_docker_rows  CC=5  out:3
     _build_scenario_rows  CC=5  out:8
@@ -259,14 +276,27 @@ MODULES:
     _extract_healthcheck_test  CC=6  out:7
     _extract_service_from_spec  CC=7  out:12
     _load_compose_yaml  CC=5  out:5
-    _map_docker_to_wup_service  CC=17  out:11
+    _map_docker_to_wup_service  CC=14  out:11
     _parse_port_mapping  CC=5  out:4
-    _semcod_tool_row  CC=7  out:10
-  wup.paths  [1 funcs]
+    _semcod_summary_lines  CC=5  out:9
+  wup.oql  [9 funcs]
+    matches  CC=1  out:2
+    _event_rows  CC=5  out:7
+    _service_rows  CC=6  out:9
+    execute  CC=13  out:12
+    _coerce_number  CC=2  out:1
+    _compare  CC=14  out:8
+    _parse_conditions  CC=7  out:10
+    _tokenize  CC=2  out:7
+    parse  CC=11  out:19
+  wup.paths  [2 funcs]
+    health_events_path  CC=1  out:1
     health_state_path  CC=1  out:1
-  wup.status_data  [2 funcs]
+  wup.status_data  [4 funcs]
     _load_json  CC=4  out:4
-    collect_status_snapshot  CC=18  out:30
+    _load_manifest  CC=4  out:2
+    _summarize_deps  CC=4  out:8
+    collect_status_snapshot  CC=12  out:23
   wup.sync  [2 funcs]
     _merge_endpoints  CC=6  out:14
     sync_testql_manifest  CC=9  out:16
@@ -275,12 +305,12 @@ MODULES:
   wup.testing.handlers.health_handlers  [1 funcs]
     register_health_handlers  CC=1  out:3
   wup.testql_monitor  [25 funcs]
+    __init__  CC=2  out:3
     _add_config_endpoints  CC=11  out:14
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
     _build_port_map  CC=6  out:13
-    _resolve_base_url  CC=4  out:6
-    probes_for_service  CC=9  out:11
+    _is_monitoring_probe  CC=1  out:1
     _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
@@ -290,7 +320,7 @@ MODULES:
     _get_config_endpoints_for_service  CC=10  out:7
   wup.validate  [1 funcs]
     validate_wup_file  CC=8  out:15
-  wup.visual_diff  [22 funcs]
+  wup.visual_diff  [23 funcs]
     __init__  CC=2  out:3
     _categorize_page_result  CC=7  out:12
     _check_page  CC=10  out:19

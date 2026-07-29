@@ -1,12 +1,12 @@
-# redup/duplication | 9 groups | 92f 11218L | 2026-07-17
+# redup/duplication | 10 groups | 95f 12177L | 2026-07-29
 
 SUMMARY:
-  files_scanned: 92
-  total_lines:   11218
-  dup_groups:    9
-  dup_fragments: 21
-  saved_lines:   51
-  scan_ms:       9472
+  files_scanned: 95
+  total_lines:   12177
+  dup_groups:    10
+  dup_fragments: 23
+  saved_lines:   56
+  scan_ms:       13459
 
 HOTSPOTS[7] (files with most duplication):
   wup/core.py  dup=12L  groups=1  frags=3  (0.1%)
@@ -17,14 +17,14 @@ HOTSPOTS[7] (files with most duplication):
   packages/uri2wup/src/uri2wup/query.py  dup=9L  groups=1  frags=1  (0.1%)
   examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
 
-DUPLICATES[9] (ranked by impact):
+DUPLICATES[10] (ranked by impact):
   [a8a64d10d1166f5d]   EXAC  _resolve_config_path  L=9 N=2 saved=9 sim=1.00
       packages/uri2wup/src/uri2wup/patch.py:25-33  (_resolve_config_path)
       packages/uri2wup/src/uri2wup/query.py:41-49  (_resolve_config_path)
   [F0003]   FUZZ  on_modified  L=4 N=3 saved=8 sim=0.95
-      wup/core.py:712-715  (on_modified)
-      wup/core.py:717-720  (on_created)
-      wup/core.py:722-725  (on_deleted)
+      wup/core.py:727-730  (on_modified)
+      wup/core.py:732-735  (on_created)
+      wup/core.py:737-740  (on_deleted)
   [8575900946923f44]   STRU  _snapshot_path  L=3 N=3 saved=6 sim=1.00
       wup/_ast_detector.py:59-61  (_snapshot_path)
       wup/_hash_detector.py:22-24  (_snapshot_path)
@@ -39,6 +39,9 @@ DUPLICATES[9] (ranked by impact):
   [ada6007a0d4d4d23]   STRU  login  L=5 N=2 saved=5 sim=1.00
       examples/flask-app/app/auth/routes.py:7-11  (login)
       examples/flask-app/app/auth/routes.py:20-22  (register)
+  [b5bb02e2622cb9c2]   STRU  _coerce_number  L=5 N=2 saved=5 sim=1.00
+      wup/aql.py:182-186  (_coerce_number)
+      wup/oql.py:70-74  (_coerce_number)
   [F0004]   FUZZ  wup_sync  L=5 N=2 saved=5 sim=0.90
       packages/mcp2wup/src/mcp2wup/server.py:69-73  (wup_sync)
       wup/control.py:41-45  (dispatch_sync)
@@ -46,10 +49,10 @@ DUPLICATES[9] (ranked by impact):
       examples/visual_diff_demo.py:62-64  (_save_snapshot)
       wup/visual_diff.py:253-255  (_save_snapshot)
   [F0002]   FUZZ  get_endpoints_for_service  L=3 N=2 saved=3 sim=0.85
-      wup/dependency_mapper.py:211-213  (get_endpoints_for_service)
-      wup/dependency_mapper.py:215-217  (get_files_for_service)
+      wup/dependency_mapper.py:106-108  (get_endpoints_for_service)
+      wup/dependency_mapper.py:110-112  (get_files_for_service)
 
-REFACTOR[9] (ranked by priority):
+REFACTOR[10] (ranked by priority):
   [1] ○ extract_function   → packages/uri2wup/src/uri2wup/utils/_resolve_config_path.py
       WHY: 2 occurrences of 9-line block across 2 files — saves 9 lines
       FILES: packages/uri2wup/src/uri2wup/patch.py, packages/uri2wup/src/uri2wup/query.py
@@ -68,13 +71,16 @@ REFACTOR[9] (ranked by priority):
   [6] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: examples/flask-app/app/auth/routes.py
-  [7] ○ extract_function   → utils/wup_sync.py
+  [7] ○ extract_function   → wup/utils/_coerce_number.py
+      WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
+      FILES: wup/aql.py, wup/oql.py
+  [8] ○ extract_function   → utils/wup_sync.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: packages/mcp2wup/src/mcp2wup/server.py, wup/control.py
-  [8] ○ extract_function   → utils/_save_snapshot.py
+  [9] ○ extract_function   → utils/_save_snapshot.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: examples/visual_diff_demo.py, wup/visual_diff.py
-  [9] ○ extract_class      → wup/utils/get_endpoints_for_service.py
+  [10] ○ extract_class      → wup/utils/get_endpoints_for_service.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: wup/dependency_mapper.py
 
@@ -101,17 +107,18 @@ DEPENDENCY_RISK[3] (duplicates spanning multiple packages):
       examples/visual_diff_demo.py
       wup/visual_diff.py
 
-EFFORT_ESTIMATE (total ≈ 2.2h):
+EFFORT_ESTIMATE (total ≈ 2.3h):
   easy   _resolve_config_path                saved=9L  ~18min
   easy   on_modified                         saved=8L  ~16min
   easy   _snapshot_path                      saved=6L  ~12min
   easy   wup_endpoints                       saved=6L  ~24min
   easy   add_slack                           saved=6L  ~12min
   easy   login                               saved=5L  ~10min
+  easy   _coerce_number                      saved=5L  ~10min
   easy   wup_sync                            saved=5L  ~20min
   easy   _save_snapshot                      saved=3L  ~12min
   easy   get_endpoints_for_service           saved=3L  ~6min
 
 METRICS-TARGET:
-  dup_groups:  9 → 0
-  saved_lines: 51 lines recoverable
+  dup_groups:  10 → 0
+  saved_lines: 56 lines recoverable

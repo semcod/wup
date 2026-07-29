@@ -1,5 +1,5 @@
 % ── Project Metadata ─────────────────────────────────────
-project_metadata('wup', '0.2.69', 'python').
+project_metadata('wup', '0.2.77', 'python').
 
 % ── Project Files ────────────────────────────────────────
 project_file('app.doql.less', 256, 'less').
@@ -78,22 +78,26 @@ project_file('packages/uri2wup/tests/test_decode.py', 27, 'python').
 project_file('packages/uri2wup/tests/test_query.py', 20, 'python').
 project_file('project.sh', 49, 'shell').
 project_file('scripts/run_probe_smoke.py', 89, 'python').
+project_file('tests/test_aql.py', 121, 'python').
 project_file('tests/test_assistant.py', 181, 'python').
 project_file('tests/test_auto_detection.py', 195, 'python').
 project_file('tests/test_cli_bridge.py', 36, 'python').
 project_file('tests/test_cli_filtering.py', 266, 'python').
 project_file('tests/test_control.py', 19, 'python').
+project_file('tests/test_discovery_adapters.py', 119, 'python').
 project_file('tests/test_e2e.py', 517, 'python').
 project_file('tests/test_endpoints_init_cli.py', 69, 'python').
+project_file('tests/test_genericity.py', 136, 'python').
 project_file('tests/test_health_summary_passed.py', 54, 'python').
 project_file('tests/test_monitoring_manifest.py', 73, 'python').
-project_file('tests/test_multi_project.py', 118, 'python').
+project_file('tests/test_multi_project.py', 127, 'python').
+project_file('tests/test_oql.py', 105, 'python').
 project_file('tests/test_planfile_reporter_dedupe.py', 79, 'python').
 project_file('tests/test_probe_mutex.py', 39, 'python').
 project_file('tests/test_service_inference.py', 212, 'python').
 project_file('tests/test_status_data.py', 35, 'python').
 project_file('tests/test_sync.py', 42, 'python').
-project_file('tests/test_testql_monitor.py', 216, 'python').
+project_file('tests/test_testql_monitor.py', 221, 'python').
 project_file('tests/test_testql_watcher.py', 597, 'python').
 project_file('tests/test_visual_diff_periodic_skip.py', 41, 'python').
 project_file('tests/test_visual_diff_progress.py', 57, 'python').
@@ -110,31 +114,34 @@ project_file('wup/_hash_detector.py', 73, 'python').
 project_file('wup/_yaml_detector.py', 129, 'python').
 project_file('wup/anomaly_detector.py', 176, 'python').
 project_file('wup/anomaly_models.py', 36, 'python').
+project_file('wup/aql.py', 307, 'python').
 project_file('wup/assistant.py', 595, 'python').
 project_file('wup/assistant_discovery.py', 100, 'python').
 project_file('wup/assistant_validator.py', 58, 'python').
 project_file('wup/bus.py', 66, 'python').
-project_file('wup/cli.py', 975, 'python').
+project_file('wup/cli.py', 1080, 'python').
 project_file('wup/cli_bridge.py', 81, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
 project_file('wup/cli_scanner.py', 303, 'python').
-project_file('wup/config.py', 602, 'python').
+project_file('wup/config.py', 611, 'python').
 project_file('wup/control.py', 107, 'python').
-project_file('wup/core.py', 726, 'python').
-project_file('wup/dependency_mapper.py', 285, 'python').
+project_file('wup/core.py', 741, 'python').
+project_file('wup/dependency_mapper.py', 178, 'python').
+project_file('wup/discovery.py', 280, 'python').
 project_file('wup/endpoints.py', 45, 'python').
 project_file('wup/event_store.py', 42, 'python').
 project_file('wup/file_watcher/events/file_events.py', 11, 'python').
 project_file('wup/generate.py', 63, 'python').
 project_file('wup/init_cli.py', 61, 'python').
 project_file('wup/models/__init__.py', 37, 'python').
-project_file('wup/models/config.py', 194, 'python').
+project_file('wup/models/config.py', 207, 'python').
 project_file('wup/models/target.py', 24, 'python').
-project_file('wup/monitoring_manifest.py', 429, 'python').
+project_file('wup/monitoring_manifest.py', 479, 'python').
 project_file('wup/multi.py', 82, 'python').
+project_file('wup/oql.py', 268, 'python').
 project_file('wup/paths.py', 17, 'python').
-project_file('wup/planfile_reporter.py', 257, 'python').
-project_file('wup/status_data.py', 104, 'python').
+project_file('wup/planfile_reporter.py', 268, 'python').
+project_file('wup/status_data.py', 115, 'python').
 project_file('wup/sync.py', 71, 'python').
 project_file('wup/testing/events/health_events.py', 12, 'python').
 project_file('wup/testing/events/test_results.py', 23, 'python').
@@ -143,8 +150,8 @@ project_file('wup/testing/handlers/health_handlers.py', 124, 'python').
 project_file('wup/testing/queries/health_queries.py', 8, 'python').
 project_file('wup/testql_cli_generator.py', 216, 'python').
 project_file('wup/testql_discovery.py', 230, 'python').
-project_file('wup/testql_monitor.py', 687, 'python').
-project_file('wup/testql_watcher.py', 1018, 'python').
+project_file('wup/testql_monitor.py', 694, 'python').
+project_file('wup/testql_watcher.py', 1014, 'python').
 project_file('wup/validate.py', 35, 'python').
 project_file('wup/visual_diff.py', 639, 'python').
 project_file('wup/web_client.py', 186, 'python').
@@ -327,6 +334,18 @@ python_function('scripts/run_probe_smoke.py', 'run_quick_testql_dryrun', 2, 3, 3
 python_function('scripts/run_probe_smoke.py', 'print_service_health', 1, 2, 5).
 python_function('scripts/run_probe_smoke.py', 'check_manifest_stale_probes', 1, 2, 3).
 python_function('scripts/run_probe_smoke.py', 'main', 0, 3, 12).
+python_function('tests/test_aql.py', '_sample', 1, 1, 2).
+python_function('tests/test_aql.py', '_check', 2, 1, 3).
+python_function('tests/test_aql.py', 'test_parse_exists', 0, 2, 1).
+python_function('tests/test_aql.py', 'test_parse_length_and_severity', 0, 2, 1).
+python_function('tests/test_aql.py', 'test_parse_errors', 1, 1, 3).
+python_function('tests/test_aql.py', 'test_passing_rules', 2, 2, 2).
+python_function('tests/test_aql.py', 'test_failing_rules', 2, 2, 2).
+python_function('tests/test_aql.py', 'test_violation_carries_severity', 1, 2, 4).
+python_function('tests/test_aql.py', 'test_nested_and_indexed_paths', 1, 3, 1).
+python_function('tests/test_aql.py', 'test_missing_file', 1, 2, 3).
+python_function('tests/test_aql.py', 'test_yaml_file', 1, 2, 3).
+python_function('tests/test_aql.py', 'test_bus_integration', 1, 2, 6).
 python_function('tests/test_assistant.py', 'test_framework_detection_fastapi', 0, 2, 6).
 python_function('tests/test_assistant.py', 'test_framework_detection_flask', 0, 2, 6).
 python_function('tests/test_assistant.py', 'test_framework_detection_none', 0, 2, 5).
@@ -353,12 +372,34 @@ python_function('tests/test_cli_filtering.py', 'test_score_scenario_cli_requires
 python_function('tests/test_cli_filtering.py', 'test_score_scenario_non_cli_uses_original_scoring', 0, 2, 12).
 python_function('tests/test_cli_filtering.py', 'test_scenario_matches_type', 0, 6, 11).
 python_function('tests/test_control.py', 'test_dispatch_validate_shim', 1, 3, 3).
+python_function('tests/test_discovery_adapters.py', '_write', 3, 1, 2).
+python_function('tests/test_discovery_adapters.py', 'test_adapter_detects_and_discovers', 2, 4, 6).
+python_function('tests/test_discovery_adapters.py', 'test_mapper_builds_nonempty_deps', 2, 4, 7).
+python_function('tests/test_discovery_adapters.py', 'test_auto_mode_prefers_specific_framework', 1, 2, 4).
+python_function('tests/test_discovery_adapters.py', 'test_no_endpoints_for_plain_project', 1, 2, 4).
+python_function('tests/test_discovery_adapters.py', 'test_endpoints_deduplicated', 1, 2, 5).
 python_function('tests/test_e2e.py', 'run_wup_command', 5, 1, 5).
 python_function('tests/test_endpoints_init_cli.py', '_write_scenario', 2, 1, 3).
 python_function('tests/test_endpoints_init_cli.py', 'test_discover_testql_endpoints', 1, 3, 3).
 python_function('tests/test_endpoints_init_cli.py', 'test_endpoints_via_bus', 1, 3, 3).
 python_function('tests/test_endpoints_init_cli.py', 'test_init_cli_via_bus', 1, 4, 5).
 python_function('tests/test_endpoints_init_cli.py', 'test_setup_cli_project_core', 1, 3, 3).
+python_function('tests/test_genericity.py', '_dc', 2, 1, 1).
+python_function('tests/test_genericity.py', 'test_express_ts_endpoints_discovered', 1, 4, 6).
+python_function('tests/test_genericity.py', 'test_infer_service_uses_services_dir', 1, 2, 3).
+python_function('tests/test_genericity.py', 'test_to_dict_handles_service_without_endpoints', 1, 4, 5).
+python_function('tests/test_genericity.py', 'test_docker_map_default_is_generic', 0, 2, 2).
+python_function('tests/test_genericity.py', 'test_docker_map_connect_profile_opt_in', 0, 2, 2).
+python_function('tests/test_genericity.py', 'test_docker_map_user_rules', 0, 2, 2).
+python_function('tests/test_genericity.py', 'test_docker_map_generic_token_match', 0, 2, 2).
+python_function('tests/test_genericity.py', 'test_reject_prefixes_generic_by_default', 0, 3, 4).
+python_function('tests/test_genericity.py', 'test_reject_prefixes_connect_profile_opt_in', 0, 3, 4).
+python_function('tests/test_genericity.py', 'test_reject_prefixes_explicit_override', 0, 2, 2).
+python_function('tests/test_genericity.py', '_prefix_matches', 2, 2, 6).
+python_function('tests/test_genericity.py', 'test_service_prefix_generic_default', 0, 3, 2).
+python_function('tests/test_genericity.py', 'test_service_prefix_connect_profile', 0, 2, 2).
+python_function('tests/test_genericity.py', 'test_service_prefix_custom', 0, 3, 2).
+python_function('tests/test_genericity.py', 'test_config_roundtrips_docker_service_map', 0, 3, 1).
 python_function('tests/test_health_summary_passed.py', 'test_health_summary_all_passed_parser', 0, 3, 1).
 python_function('tests/test_health_summary_passed.py', 'test_fleet_health_nonzero_exit_all_passed_counts_as_up', 0, 4, 15).
 python_function('tests/test_monitoring_manifest.py', 'test_discover_docker_compose', 0, 4, 5).
@@ -367,6 +408,7 @@ python_function('tests/test_multi_project.py', '_make_project', 3, 1, 2).
 python_function('tests/test_multi_project.py', '_watcher', 2, 1, 5).
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_uses_existing_dirs', 1, 4, 2).
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_falls_back_when_nothing_matches', 1, 2, 1).
+python_function('tests/test_multi_project.py', 'test_detect_watch_paths_backend_frontend', 1, 3, 2).
 python_function('tests/test_multi_project.py', 'test_default_config_watches_only_real_dirs', 1, 2, 2).
 python_function('tests/test_multi_project.py', 'test_discover_finds_subprojects', 1, 3, 3).
 python_function('tests/test_multi_project.py', 'test_discover_skips_vendor_and_hidden', 1, 3, 2).
@@ -374,6 +416,19 @@ python_function('tests/test_multi_project.py', 'test_resolve_paths_dedupes', 1, 
 python_function('tests/test_multi_project.py', 'test_prepare_observer_none_when_no_valid_paths', 1, 2, 2).
 python_function('tests/test_multi_project.py', 'test_multi_watcher_returns_false_when_all_invalid', 1, 2, 3).
 python_function('tests/test_multi_project.py', 'test_multi_watcher_starts_observers_for_valid_projects', 1, 7, 11).
+python_function('tests/test_oql.py', '_project', 1, 1, 5).
+python_function('tests/test_oql.py', 'test_parse_minimal', 0, 2, 1).
+python_function('tests/test_oql.py', 'test_parse_full', 0, 5, 2).
+python_function('tests/test_oql.py', 'test_parse_operator_without_spaces', 0, 2, 2).
+python_function('tests/test_oql.py', 'test_parse_errors', 1, 1, 3).
+python_function('tests/test_oql.py', 'test_filter_equals', 1, 2, 3).
+python_function('tests/test_oql.py', 'test_filter_not_equals', 1, 2, 3).
+python_function('tests/test_oql.py', 'test_contains_operator', 1, 2, 3).
+python_function('tests/test_oql.py', 'test_since_filters_old_events', 1, 2, 3).
+python_function('tests/test_oql.py', 'test_limit', 1, 2, 4).
+python_function('tests/test_oql.py', 'test_numeric_comparison', 1, 2, 5).
+python_function('tests/test_oql.py', 'test_missing_files_return_empty', 1, 2, 2).
+python_function('tests/test_oql.py', 'test_bus_integration', 1, 2, 5).
 python_function('tests/test_planfile_reporter_dedupe.py', '_reporter', 1, 1, 2).
 python_function('tests/test_planfile_reporter_dedupe.py', '_seed_dedupe', 3, 1, 4).
 python_function('tests/test_planfile_reporter_dedupe.py', 'test_open_ticket_still_mutes_recurrence', 2, 2, 6).
@@ -395,7 +450,7 @@ python_function('tests/test_sync.py', 'test_sync_merge_endpoints_flag', 1, 3, 3)
 python_function('tests/test_testql_monitor.py', 'test_parse_scenario_probes_full_url', 0, 5, 9).
 python_function('tests/test_testql_monitor.py', 'test_hardware_identify_and_peripheral_status_are_live_probes', 0, 3, 2).
 python_function('tests/test_testql_monitor.py', 'test_firmware_plugin_health_catalog_not_periodic_live_probe', 0, 9, 11).
-python_function('tests/test_testql_monitor.py', 'test_connect_api_paths_on_8100_are_not_monitoring_probes', 0, 3, 4).
+python_function('tests/test_testql_monitor.py', 'test_connect_api_paths_rejection_is_opt_in', 0, 4, 4).
 python_function('tests/test_testql_monitor.py', 'test_connect_health_on_8103_not_assigned_to_backend', 0, 2, 3).
 python_function('tests/test_testql_monitor.py', 'test_assign_firmware_service', 0, 2, 3).
 python_function('tests/test_testql_monitor.py', 'test_monitor_merges_config_and_service_map', 0, 5, 11).
@@ -454,6 +509,16 @@ python_function('tests/test_wup_generate.py', 'test_generate_refuses_existing_wi
 python_function('wup/__init__.py', '__getattr__', 1, 2, 1).
 python_function('wup/anomaly_detector.py', 'quick_scan', 2, 2, 3).
 python_function('wup/anomaly_detector.py', 'scan_yaml_changes', 2, 1, 3).
+python_function('wup/aql.py', '_resolve_path', 2, 13, 9).
+python_function('wup/aql.py', '_split_severity', 1, 4, 4).
+python_function('wup/aql.py', '_tokenize', 1, 4, 6).
+python_function('wup/aql.py', 'parse_rule', 1, 18, 11).
+python_function('wup/aql.py', '_coerce_number', 1, 2, 1).
+python_function('wup/aql.py', '_compare', 3, 4, 2).
+python_function('wup/aql.py', '_length_of', 1, 2, 2).
+python_function('wup/aql.py', '_type_name', 1, 7, 1).
+python_function('wup/aql.py', '_passes', 2, 11, 6).
+python_function('wup/aql.py', 'register_aql', 2, 2, 3).
 python_function('wup/assistant.py', 'main', 0, 1, 5).
 python_function('wup/assistant_discovery.py', 'detect_framework', 1, 7, 4).
 python_function('wup/assistant_discovery.py', 'auto_detect_services', 2, 7, 8).
@@ -477,6 +542,8 @@ python_function('wup/cli.py', '_add_monitoring_manifest_lines', 3, 11, 11).
 python_function('wup/cli.py', '_add_visual_diff_lines', 5, 9, 7).
 python_function('wup/cli.py', '_build_status_panel', 9, 1, 9).
 python_function('wup/cli.py', 'status', 7, 8, 18).
+python_function('wup/cli.py', 'oql', 3, 11, 21).
+python_function('wup/cli.py', 'aql', 3, 9, 11).
 python_function('wup/cli.py', 'init', 2, 5, 11).
 python_function('wup/cli.py', 'testql_endpoints', 3, 6, 16).
 python_function('wup/cli.py', 'sync_testql', 4, 10, 19).
@@ -523,6 +590,8 @@ python_function('wup/control.py', 'dispatch_status', 0, 4, 1).
 python_function('wup/control.py', 'dispatch_endpoints', 1, 1, 1).
 python_function('wup/control.py', 'dispatch_init_cli', 0, 3, 1).
 python_function('wup/control.py', 'dispatch_command', 1, 1, 1).
+python_function('wup/discovery.py', 'detect_frameworks', 1, 3, 1).
+python_function('wup/discovery.py', 'discover_endpoints', 3, 7, 5).
 python_function('wup/endpoints.py', 'discover_testql_endpoints', 1, 5, 16).
 python_function('wup/generate.py', '_detect_template', 2, 4, 1).
 python_function('wup/generate.py', 'generate_wup_config', 1, 8, 15).
@@ -533,7 +602,8 @@ python_function('wup/monitoring_manifest.py', '_extract_healthcheck_test', 1, 6,
 python_function('wup/monitoring_manifest.py', '_extract_service_from_spec', 3, 7, 6).
 python_function('wup/monitoring_manifest.py', 'discover_docker_compose_services', 1, 7, 10).
 python_function('wup/monitoring_manifest.py', '_host_port_from_mapping', 1, 4, 5).
-python_function('wup/monitoring_manifest.py', '_map_docker_to_wup_service', 2, 17, 7).
+python_function('wup/monitoring_manifest.py', '_connect_profile_rules', 3, 9, 2).
+python_function('wup/monitoring_manifest.py', '_map_docker_to_wup_service', 2, 14, 6).
 python_function('wup/monitoring_manifest.py', '_probe_row', 1, 2, 0).
 python_function('wup/monitoring_manifest.py', '_build_wup_service_dicts', 1, 3, 2).
 python_function('wup/monitoring_manifest.py', '_build_docker_rows', 3, 5, 2).
@@ -545,24 +615,35 @@ python_function('wup/monitoring_manifest.py', 'build_monitoring_manifest', 2, 9,
 python_function('wup/monitoring_manifest.py', 'manifest_to_yaml_block', 1, 1, 2).
 python_function('wup/monitoring_manifest.py', 'patch_wup_yaml_monitoring', 2, 5, 10).
 python_function('wup/monitoring_manifest.py', 'load_monitoring_manifest_from_yaml', 1, 9, 8).
-python_function('wup/monitoring_manifest.py', 'format_manifest_summary', 1, 15, 6).
+python_function('wup/monitoring_manifest.py', '_service_summary_lines', 2, 5, 3).
+python_function('wup/monitoring_manifest.py', '_semcod_summary_lines', 1, 5, 5).
+python_function('wup/monitoring_manifest.py', 'format_manifest_summary', 1, 7, 9).
+python_function('wup/oql.py', '_coerce_number', 1, 2, 1).
+python_function('wup/oql.py', '_compare', 3, 14, 4).
+python_function('wup/oql.py', '_parse_duration', 1, 2, 6).
+python_function('wup/oql.py', '_tokenize', 1, 2, 3).
+python_function('wup/oql.py', 'parse', 1, 11, 10).
+python_function('wup/oql.py', '_parse_conditions', 3, 7, 5).
+python_function('wup/oql.py', 'register_oql', 2, 1, 3).
 python_function('wup/paths.py', 'health_state_path', 1, 1, 1).
 python_function('wup/paths.py', 'health_events_path', 1, 1, 1).
 python_function('wup/status_data.py', '_load_json', 1, 4, 4).
 python_function('wup/status_data.py', '_recent_health_events', 2, 7, 9).
-python_function('wup/status_data.py', 'collect_status_snapshot', 1, 18, 19).
+python_function('wup/status_data.py', '_summarize_deps', 1, 4, 6).
+python_function('wup/status_data.py', '_load_manifest', 1, 4, 2).
+python_function('wup/status_data.py', 'collect_status_snapshot', 1, 12, 17).
 python_function('wup/sync.py', '_merge_endpoints', 4, 6, 13).
 python_function('wup/sync.py', 'sync_testql_manifest', 1, 9, 13).
 python_function('wup/testing/handlers/event_handlers.py', 'register_testing_event_handlers', 4, 1, 2).
 python_function('wup/testing/handlers/health_handlers.py', 'register_health_handlers', 6, 1, 2).
+python_function('wup/testql_monitor.py', 'reject_prefixes_for_config', 1, 3, 4).
 python_function('wup/testql_monitor.py', '_parse_api_lines', 2, 3, 6).
 python_function('wup/testql_monitor.py', '_parse_shell_curl_lines', 2, 2, 5).
 python_function('wup/testql_monitor.py', 'parse_scenario_probes', 1, 2, 4).
 python_function('wup/testql_monitor.py', '_extract_base_url', 1, 4, 4).
 python_function('wup/testql_monitor.py', '_parse_endpoint_row', 3, 8, 8).
 python_function('wup/testql_monitor.py', 'parse_service_map_probes', 1, 6, 8).
-python_function('wup/testql_monitor.py', '_connect_module_api_on_frontend_proxy', 1, 5, 4).
-python_function('wup/testql_monitor.py', 'is_monitoring_probe', 1, 11, 6).
+python_function('wup/testql_monitor.py', 'is_monitoring_probe', 2, 10, 5).
 python_function('wup/testql_monitor.py', '_service_path_patterns', 1, 6, 7).
 python_function('wup/testql_monitor.py', '_find_service_by_name', 2, 3, 1).
 python_function('wup/testql_monitor.py', '_find_service_by_token', 2, 3, 1).
@@ -810,6 +891,13 @@ python_method('AnomalyDetector', 'get_summary', 1, 2, 2).
 python_method('AnomalyDetector', 'print_report', 1, 7, 12).
 python_class('wup/anomaly_models.py', 'AnomalyResult').
 python_class('wup/anomaly_models.py', 'YAMLAnomalyConfig').
+python_class('wup/aql.py', 'AQLError').
+python_class('wup/aql.py', 'AQLRule').
+python_class('wup/aql.py', 'AQLEngine').
+python_method('AQLEngine', '__init__', 1, 1, 1).
+python_method('AQLEngine', '_load', 2, 3, 3).
+python_method('AQLEngine', 'check_file', 2, 11, 14).
+python_class('wup/aql.py', 'CheckAQL').
 python_class('wup/assistant.py', 'WupAssistant').
 python_method('WupAssistant', '__init__', 1, 1, 4).
 python_method('WupAssistant', '_dispatch_menu_choice', 2, 3, 3).
@@ -869,7 +957,8 @@ python_method('CLIScanner', 'to_dict', 0, 3, 0).
 python_class('wup/core.py', 'WupWatcher').
 python_method('WupWatcher', '__init__', 6, 1, 15).
 python_method('WupWatcher', '_to_relative_path', 1, 2, 2).
-python_method('WupWatcher', 'infer_service', 1, 10, 9).
+python_method('WupWatcher', '_service_name_prefixes', 0, 4, 5).
+python_method('WupWatcher', 'infer_service', 1, 12, 11).
 python_method('WupWatcher', '_is_coincident_pair', 2, 6, 0).
 python_method('WupWatcher', 'detect_service_coincidences', 1, 9, 3).
 python_method('WupWatcher', '_services_share_domain', 2, 1, 3).
@@ -901,21 +990,39 @@ python_method('WupEventHandler', 'on_created', 1, 2, 1).
 python_method('WupEventHandler', 'on_deleted', 1, 2, 1).
 python_class('wup/dependency_mapper.py', 'DependencyMapper').
 python_method('DependencyMapper', '__init__', 1, 1, 2).
-python_method('DependencyMapper', 'build_from_codebase', 1, 5, 7).
-python_method('DependencyMapper', '_detect_framework', 0, 4, 2).
-python_method('DependencyMapper', '_search_codebase', 1, 4, 2).
-python_method('DependencyMapper', '_scan_endpoints', 1, 3, 3).
-python_method('DependencyMapper', '_scan_python_endpoints', 1, 10, 9).
-python_method('DependencyMapper', '_scan_js_endpoints', 0, 4, 7).
-python_method('DependencyMapper', '_infer_service', 1, 6, 4).
+python_method('DependencyMapper', 'build_from_codebase', 1, 6, 6).
+python_method('DependencyMapper', '_detect_framework', 0, 2, 2).
+python_method('DependencyMapper', '_infer_service', 1, 5, 4).
 python_method('DependencyMapper', 'get_endpoints_for_file', 1, 1, 4).
 python_method('DependencyMapper', 'get_endpoints_for_service', 1, 1, 1).
 python_method('DependencyMapper', 'get_files_for_service', 1, 1, 2).
 python_method('DependencyMapper', 'get_service_for_file', 1, 3, 5).
-python_method('DependencyMapper', 'to_dict', 0, 2, 5).
+python_method('DependencyMapper', 'to_dict', 0, 2, 4).
 python_method('DependencyMapper', 'save', 1, 1, 3).
 python_method('DependencyMapper', 'load', 1, 2, 6).
 python_method('DependencyMapper', 'build_from_testql_scenarios', 2, 3, 7).
+python_class('wup/discovery.py', 'Endpoint').
+python_method('Endpoint', 'as_dict', 0, 1, 0).
+python_class('wup/discovery.py', 'SourceIndex').
+python_method('SourceIndex', '__init__', 1, 1, 1).
+python_method('SourceIndex', '_read_ext', 1, 6, 7).
+python_method('SourceIndex', 'files', 1, 2, 1).
+python_method('SourceIndex', 'contains', 2, 2, 2).
+python_class('wup/discovery.py', 'DiscoveryAdapter').
+python_method('DiscoveryAdapter', 'detect', 1, 6, 4).
+python_method('DiscoveryAdapter', 'scan', 1, 8, 6).
+python_class('wup/discovery.py', 'FastAPIAdapter').
+python_class('wup/discovery.py', 'FlaskAdapter').
+python_class('wup/discovery.py', 'DjangoAdapter').
+python_class('wup/discovery.py', 'ExpressAdapter').
+python_class('wup/discovery.py', 'FastifyAdapter').
+python_class('wup/discovery.py', 'HonoAdapter').
+python_class('wup/discovery.py', 'NestJSAdapter').
+python_class('wup/discovery.py', 'GoAdapter').
+python_class('wup/discovery.py', 'OpenAPIAdapter').
+python_method('OpenAPIAdapter', '_load_spec', 1, 4, 5).
+python_method('OpenAPIAdapter', 'detect', 1, 6, 4).
+python_method('OpenAPIAdapter', 'scan', 1, 8, 10).
 python_class('wup/event_store.py', 'EventStore').
 python_method('EventStore', '__init__', 1, 1, 1).
 python_method('EventStore', 'append', 1, 2, 8).
@@ -940,13 +1047,26 @@ python_class('wup/monitoring_manifest.py', 'DockerComposeService').
 python_class('wup/multi.py', 'MultiProjectWatcher').
 python_method('MultiProjectWatcher', '__init__', 2, 2, 1).
 python_method('MultiProjectWatcher', 'start_watching', 0, 11, 10).
+python_class('wup/oql.py', 'OQLError').
+python_class('wup/oql.py', 'Condition').
+python_method('Condition', 'matches', 1, 1, 2).
+python_class('wup/oql.py', 'OQLQuery').
+python_class('wup/oql.py', 'OQLEngine').
+python_method('OQLEngine', '__init__', 1, 1, 1).
+python_method('OQLEngine', '_service_rows', 0, 6, 8).
+python_method('OQLEngine', '_event_rows', 0, 5, 7).
+python_method('OQLEngine', 'execute', 1, 13, 9).
+python_class('wup/oql.py', 'RunOQL').
 python_class('wup/planfile_reporter.py', 'PlanfileReporter').
 python_method('PlanfileReporter', '__init__', 3, 2, 2).
 python_method('PlanfileReporter', 'enabled', 0, 1, 1).
 python_method('PlanfileReporter', 'report_failure', 0, 6, 9).
 python_method('PlanfileReporter', '_ticket_is_closed', 1, 6, 7).
 python_method('PlanfileReporter', 'clear_service_stage', 0, 7, 6).
-python_method('PlanfileReporter', '_create_ticket', 0, 24, 9).
+python_method('PlanfileReporter', '_build_ticket_cmd', 3, 3, 1).
+python_method('PlanfileReporter', '_run_planfile', 1, 4, 4).
+python_method('PlanfileReporter', '_retry_without_files', 1, 5, 2).
+python_method('PlanfileReporter', '_create_ticket', 0, 14, 7).
 python_method('PlanfileReporter', '_wait_for_planfile_store_ready', 1, 6, 7).
 python_method('PlanfileReporter', '_load_dedupe', 0, 4, 4).
 python_method('PlanfileReporter', '_save_dedupe', 1, 1, 3).
@@ -990,7 +1110,8 @@ python_class('wup/testql_monitor.py', '_ProbeAccumulator').
 python_method('_ProbeAccumulator', '__init__', 1, 2, 1).
 python_method('_ProbeAccumulator', 'add', 2, 3, 3).
 python_class('wup/testql_monitor.py', 'TestQLMonitor').
-python_method('TestQLMonitor', '__init__', 2, 2, 2).
+python_method('TestQLMonitor', '__init__', 2, 2, 3).
+python_method('TestQLMonitor', '_is_monitoring_probe', 1, 1, 1).
 python_method('TestQLMonitor', '_load_dot_env', 0, 7, 6).
 python_method('TestQLMonitor', '_build_port_map', 0, 6, 11).
 python_method('TestQLMonitor', '_service_map_paths', 0, 3, 3).
@@ -1029,7 +1150,9 @@ python_method('TestQLWatcher', '_get_smoke_fallback', 1, 6, 3).
 python_method('TestQLWatcher', '_resolve_scenario_path', 1, 7, 4).
 python_method('TestQLWatcher', '_testql_trailing_json_ok', 1, 6, 6).
 python_method('TestQLWatcher', '_health_summary_all_passed', 1, 5, 4).
-python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 19, 10).
+python_method('TestQLWatcher', '_resolve_stage_config', 2, 6, 1).
+python_method('TestQLWatcher', '_filter_connect_scenario', 1, 4, 2).
+python_method('TestQLWatcher', '_select_scenarios_for_service', 1, 9, 9).
 python_method('TestQLWatcher', '_filter_scenarios_by_type', 2, 8, 1).
 python_method('TestQLWatcher', '_scenario_matches_type', 2, 4, 1).
 python_method('TestQLWatcher', '_run_testql', 2, 4, 3).

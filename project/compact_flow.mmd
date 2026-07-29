@@ -1,5 +1,5 @@
 flowchart TD
-%% generated in 0.07s
+%% generated in 0.09s
     examples__c2004_monorepo_demo["examples.c2004_monorepo_demo<br/>10 funcs"]
     examples__visual_diff_demo["examples.visual_diff_demo<br/>9 funcs"]
     packages__cli2wup["packages.cli2wup<br/>2 funcs"]
@@ -13,22 +13,25 @@ flowchart TD
     wup__assistant["wup.assistant<br/>24 funcs"]
     wup__assistant_discovery["wup.assistant_discovery<br/>3 funcs"]
     wup__assistant_validator["wup.assistant_validator<br/>2 funcs"]
-    wup__cli["wup.cli<br/>23 funcs"]
+    wup__cli["wup.cli<br/>25 funcs"]
     wup__cli_bridge["wup.cli_bridge<br/>9 funcs"]
     wup__cli_config_generator["wup.cli_config_generator<br/>6 funcs"]
     wup__config["wup.config<br/>19 funcs"]
     wup__control["wup.control<br/>12 funcs"]
-    wup__core["wup.core<br/>31 funcs"]
+    wup__core["wup.core<br/>32 funcs"]
+    wup__dependency_mapper["wup.dependency_mapper<br/>12 funcs"]
+    wup__discovery["wup.discovery<br/>12 funcs"]
     wup__endpoints["wup.endpoints<br/>1 funcs"]
     wup__generate["wup.generate<br/>2 funcs"]
     wup__init_cli["wup.init_cli<br/>1 funcs"]
-    wup__monitoring_manifest["wup.monitoring_manifest<br/>19 funcs"]
+    wup__monitoring_manifest["wup.monitoring_manifest<br/>22 funcs"]
+    wup__oql["wup.oql<br/>12 funcs"]
     wup__paths["wup.paths<br/>2 funcs"]
-    wup__status_data["wup.status_data<br/>3 funcs"]
+    wup__status_data["wup.status_data<br/>5 funcs"]
     wup__sync["wup.sync<br/>2 funcs"]
     wup__testing["wup.testing<br/>10 funcs"]
-    wup__testql_monitor["wup.testql_monitor<br/>39 funcs"]
-    wup__testql_watcher["wup.testql_watcher<br/>50 funcs"]
+    wup__testql_monitor["wup.testql_monitor<br/>40 funcs"]
+    wup__testql_watcher["wup.testql_watcher<br/>52 funcs"]
     wup__validate["wup.validate<br/>1 funcs"]
     wup__visual_diff["wup.visual_diff<br/>26 funcs"]
     packages__mcp2wup ==>|12| packages__dsl2wup
@@ -49,15 +52,17 @@ flowchart TD
     packages__uri2wup -->|2| wup__config
     packages__nlp2wup -->|2| packages__uri2wup
     packages__mcp2wup -->|2| packages__nlp2wup
-    wup__status_data -->|2| wup__config
-    wup__status_data -->|2| wup__paths
-    wup__testql_monitor -->|2| wup__monitoring_manifest
     wup__validate -->|2| wup__config
     wup__assistant -->|2| wup__assistant_validator
     wup__sync -->|2| wup__config
-    wup__testql_watcher -->|2| wup__testing
     examples__visual_diff_demo -->|2| wup__config
     scripts__run_probe_smoke -->|2| wup__monitoring_manifest
+    wup__status_data -->|2| wup__config
+    wup__status_data -->|2| wup__paths
+    wup__oql -->|2| wup__paths
+    wup__testql_monitor -->|2| wup__monitoring_manifest
+    wup__dependency_mapper -->|2| wup__discovery
+    wup__testql_watcher -->|2| wup__testing
     packages__uri2wup -->|1| packages__dsl2wup
     packages__nlp2wup -->|1| wup__validate
     packages__nlp2wup -->|1| wup__generate
@@ -68,15 +73,15 @@ flowchart TD
     packages__dsl2wup -->|1| wup__status_data
     packages__dsl2wup -->|1| wup__endpoints
     packages__dsl2wup -->|1| wup__paths
-    wup__status_data -->|1| wup__monitoring_manifest
     wup__validate -->|1| wup__assistant_validator
     wup__generate -->|1| wup__config
     wup__cli_config_generator -->|1| wup__config
-    wup__core -->|1| wup__config
     wup__control -->|1| packages__dsl2wup
-    wup__testql_watcher -->|1| wup__config
-    wup__testql_watcher -->|1| wup__testql_monitor
-    wup__visual_diff -->|1| wup__testql_monitor
     wup__visual_diff -->|1| wup___ast_detector
     examples__c2004_monorepo_demo -->|1| wup__config
     scripts__run_probe_smoke -->|1| wup__config
+    wup__status_data -->|1| wup__monitoring_manifest
+    wup__cli -->|1| wup__oql
+    wup__core -->|1| wup__config
+    wup__testql_watcher -->|1| wup__config
+    wup__testql_watcher -->|1| wup__testql_monitor
