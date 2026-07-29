@@ -83,6 +83,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
 
+## [0.2.79] - 2026-07-29
+
+### Docs
+- Update README.md
+
+### Other
+- Update app.doql.events.pb
+- Update tree.txt
+- Update wup/aql.py
+
 ## [0.2.78] - 2026-07-29
 
 ### Docs

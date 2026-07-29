@@ -213,6 +213,7 @@
 │       │       └── top_level.txt
 │       └── tests
 │           ├── test_decode.py
+│           ├── test_patch.py
 │           └── test_query.py
 ├── project.sh
 ├── pyproject.toml
@@ -234,6 +235,7 @@
 │   ├── test_aql.py
 │   ├── test_assistant.py
 │   ├── test_auto_detection.py
+│   ├── test_bootstrap.py
 │   ├── test_cli_bridge.py
 │   ├── test_cli_filtering.py
 │   ├── test_control.py
@@ -276,6 +278,7 @@
 │   ├── assistant_validator.py
 │   ├── _ast_detector.py
 │   ├── _base_detector.py
+│   ├── bootstrap.py
 │   ├── bus.py
 │   ├── cli_bridge.py
 │   ├── cli_config_generator.py
@@ -334,4 +337,4 @@
 ├── wup.yaml
 └── wup.yaml.example
 
-70 directories, 265 files
+70 directories, 268 files

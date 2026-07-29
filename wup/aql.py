@@ -65,36 +65,43 @@ class AQLRule:
 
 # --- path resolution ------------------------------------------------------
 
-def _resolve_path(data: Any, path: str) -> Any:
-    """Resolve a dotted/indexed path (e.g. ``.a.b[0]``) or return ``_MISSING``."""
-    if path in ("", "."):
-        return data
-    # Split ".a.b[0].c" into ['a','b',0,'c'].
+def _path_tokens(path: str) -> List[Any] | None:
+    """Split ``.a.b[0].c`` into ``['a', 'b', 0, 'c']``."""
     tokens: List[Any] = []
     for part in path.lstrip(".").split("."):
         if not part:
             continue
         match = re.match(r"^([^\[\]]*)((?:\[\d+\])*)$", part)
         if not match:
-            return _MISSING
+            return None
         key, indices = match.group(1), match.group(2)
         if key:
             tokens.append(key)
         for idx in re.findall(r"\[(\d+)\]", indices):
             tokens.append(int(idx))
+    return tokens
 
+
+def _path_child(current: Any, token: Any) -> Any:
+    if isinstance(token, int) and isinstance(current, (list, tuple)) and 0 <= token < len(current):
+        return current[token]
+    if isinstance(token, str) and isinstance(current, dict) and token in current:
+        return current[token]
+    return _MISSING
+
+
+def _resolve_path(data: Any, path: str) -> Any:
+    """Resolve a dotted/indexed path (e.g. ``.a.b[0]``) or return ``_MISSING``."""
+    if path in ("", "."):
+        return data
+    tokens = _path_tokens(path)
+    if tokens is None:
+        return _MISSING
     current = data
     for token in tokens:
-        if isinstance(token, int):
-            if isinstance(current, (list, tuple)) and 0 <= token < len(current):
-                current = current[token]
-            else:
-                return _MISSING
-        else:
-            if isinstance(current, dict) and token in current:
-                current = current[token]
-            else:
-                return _MISSING
+        current = _path_child(current, token)
+        if current is _MISSING:
+            return _MISSING
     return current
 
 
@@ -141,26 +148,40 @@ def _rule_selector(tokens: List[str]) -> Tuple[str, str]:
     return selector, tokens.pop(0)
 
 
+def _predicate_value(tokens: List[str], message: str) -> str:
+    if tokens:
+        return tokens.pop(0)
+    raise AQLError(message)
+
+
+def _length_rule(selector: str, path: str, tokens: List[str], severity: str, raw: str) -> AQLRule:
+    if len(tokens) < 2 or tokens[0] not in _COMPARATORS:
+        raise AQLError("'length' requires an operator and number, e.g. length > 0")
+    operator, number = tokens[0], tokens[1]
+    if not number.lstrip("-").isdigit():
+        raise AQLError(f"'length' expects an integer, got {number!r}")
+    return AQLRule(selector, path, "length", number, length_op=operator, severity=severity, raw=raw)
+
+
+def _type_rule(selector: str, path: str, tokens: List[str], severity: str, raw: str) -> AQLRule:
+    value = _predicate_value(tokens, f"'type' requires one of {', '.join(sorted(_TYPE_NAMES))}").lower()
+    if value not in _TYPE_NAMES:
+        raise AQLError(f"'type' requires one of {', '.join(sorted(_TYPE_NAMES))}")
+    return AQLRule(selector, path, "type", value, severity=severity, raw=raw)
+
+
 def _predicate_rule(selector: str, path: str, keyword: str, tokens: List[str], severity: str, raw: str) -> AQLRule:
     lower = keyword.lower()
     if lower in ("exists", "missing"):
         return AQLRule(selector, path, lower, severity=severity, raw=raw)
     if lower == "matches":
-        if tokens:
-            return AQLRule(selector, path, "matches", tokens.pop(0), severity=severity, raw=raw)
-        raise AQLError("'matches' requires a regex")
+        return AQLRule(selector, path, "matches", _predicate_value(tokens, "'matches' requires a regex"), severity=severity, raw=raw)
     if lower == "type":
-        if tokens and tokens[0].lower() in _TYPE_NAMES:
-            return AQLRule(selector, path, "type", tokens.pop(0).lower(), severity=severity, raw=raw)
-        raise AQLError(f"'type' requires one of {', '.join(sorted(_TYPE_NAMES))}")
+        return _type_rule(selector, path, tokens, severity, raw)
     if lower == "length":
-        if len(tokens) >= 2 and tokens[0] in _COMPARATORS and tokens[1].lstrip("-").isdigit():
-            return AQLRule(selector, path, "length", tokens[1], length_op=tokens[0], severity=severity, raw=raw)
-        raise AQLError("'length' requires an operator and number, e.g. length > 0")
-    if keyword in _COMPARATORS and tokens:
-        return AQLRule(selector, path, keyword, tokens.pop(0), severity=severity, raw=raw)
+        return _length_rule(selector, path, tokens, severity, raw)
     if keyword in _COMPARATORS:
-        raise AQLError(f"operator {keyword!r} requires a value")
+        return AQLRule(selector, path, keyword, _predicate_value(tokens, f"operator {keyword!r} requires a value"), severity=severity, raw=raw)
     raise AQLError(f"unknown predicate {keyword!r}")
 
 
@@ -222,6 +243,25 @@ def _type_name(value: Any) -> str:
     return "unknown"
 
 
+def _matches_value(rule: AQLRule, value: Any) -> bool:
+    if rule.op == "matches":
+        return re.search(rule.value, str(value)) is not None
+    if rule.op == "type":
+        wanted = "bool" if rule.value in ("bool", "boolean") else rule.value
+        return _type_name(value) == wanted
+    return False
+
+
+def _collection_passes(rule: AQLRule, value: Any) -> bool | None:
+    if rule.op == "length":
+        length = _length_of(value)
+        return length is not None and _compare(length, rule.length_op, rule.value)
+    if rule.op in ("~", "!~"):
+        contains = rule.value.lower() in str(value).lower()
+        return contains if rule.op == "~" else not contains
+    return None
+
+
 def _passes(rule: AQLRule, value: Any) -> bool:
     present = value is not _MISSING
     if rule.op == "exists":
@@ -231,17 +271,12 @@ def _passes(rule: AQLRule, value: Any) -> bool:
     if not present:
         return False  # every other predicate needs the value to exist
 
-    if rule.op == "matches":
-        return re.search(rule.value, str(value)) is not None
-    if rule.op == "type":
-        wanted = "bool" if rule.value in ("bool", "boolean") else rule.value
-        return _type_name(value) == wanted
-    if rule.op == "length":
-        length = _length_of(value)
-        return length is not None and _compare(length, rule.length_op, rule.value)
-    if rule.op in ("~", "!~"):
-        contains = rule.value.lower() in str(value).lower()
-        return contains if rule.op == "~" else not contains
+    if rule.op in ("matches", "type"):
+        return _matches_value(rule, value)
+    if result := _collection_passes(rule, value):
+        return result
+    if rule.op in ("length", "~", "!~"):
+        return False
     return _compare(value, rule.op, rule.value)
 
 
@@ -261,6 +296,20 @@ class AQLEngine:
         except json.JSONDecodeError:
             return yaml.safe_load(text)
 
+    def _value_for_rule(self, file_path: Path, rule: AQLRule) -> Any:
+        data = self._load(file_path, rule.selector)
+        value = data if rule.selector == "text" else _resolve_path(data, rule.path)
+        return sorted(value.keys()) if rule.selector == "keys" and isinstance(value, dict) else value
+
+    @staticmethod
+    def _violation(file_path: Path, rule: AQLRule, value: Any) -> AnomalyResult:
+        shown = "(missing)" if value is _MISSING else repr(value)[:60]
+        return AnomalyResult(
+            detector="aql", file_path=str(file_path), anomaly_type="assertion", severity=rule.severity,
+            message=f"assertion failed: {rule.raw.strip()} (actual: {shown})",
+            details={"rule": rule.raw.strip(), "actual": None if value is _MISSING else value},
+        )
+
     def check_file(self, file_path: Path | str, rules: List[str | AQLRule]) -> List[AnomalyResult]:
         """Evaluate rules against one file; return a violation per failing rule."""
         file_path = Path(file_path)
@@ -271,24 +320,13 @@ class AQLEngine:
         for rule in rules:
             parsed = rule if isinstance(rule, AQLRule) else parse_rule(rule)
             try:
-                data = self._load(file_path, parsed.selector)
-                value = data if parsed.selector == "text" else _resolve_path(data, parsed.path)
-                if parsed.selector == "keys":
-                    value = sorted(value.keys()) if isinstance(value, dict) else value
+                value = self._value_for_rule(file_path, parsed)
             except (OSError, yaml.YAMLError) as exc:
                 violations.append(AnomalyResult("aql", str(file_path), "error", "high", f"could not read: {exc}"))
                 continue
 
             if not _passes(parsed, value):
-                shown = "(missing)" if value is _MISSING else repr(value)[:60]
-                violations.append(AnomalyResult(
-                    detector="aql",
-                    file_path=str(file_path),
-                    anomaly_type="assertion",
-                    severity=parsed.severity,
-                    message=f"assertion failed: {parsed.raw.strip()} (actual: {shown})",
-                    details={"rule": parsed.raw.strip(), "actual": None if value is _MISSING else value},
-                ))
+                violations.append(self._violation(file_path, parsed, value))
         return violations
 
 
