@@ -1,7 +1,6 @@
 """Unit tests for WupAssistant."""
 import tempfile
 from pathlib import Path
-import pytest
 
 from wup.assistant import WupAssistant
 from wup.models.config import WupConfig, ProjectConfig, ServiceConfig

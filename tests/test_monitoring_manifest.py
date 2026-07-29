@@ -1,7 +1,6 @@
 import tempfile
 from pathlib import Path
 
-import yaml
 
 from wup.models.config import ProjectConfig, ServiceConfig, TestQLConfig, WupConfig, WatchConfig
 from wup.monitoring_manifest import (

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from wup.cli import _discover_projects, _resolve_project_paths
-from wup.config import detect_watch_paths, get_default_config
+from wup.config import detect_watch_paths, get_default_config, load_config
 from wup.core import WupWatcher
 from wup.models.config import ProjectConfig, WatchConfig, WupConfig
 from wup.multi import MultiProjectWatcher
@@ -61,6 +62,33 @@ def test_default_config_watches_only_real_dirs(tmp_path: Path) -> None:
     (tmp_path / "services").mkdir()
     cfg = get_default_config(tmp_path)
     assert cfg.watch.paths == ["services/**"]
+
+
+def test_project_dotenv_is_resolved_without_cross_project_leakage(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.delenv("WUP_BASE_URL", raising=False)
+    monkeypatch.delenv("WUPBRO_ENDPOINT", raising=False)
+    alpha = _make_project(tmp_path, "alpha")
+    beta = _make_project(tmp_path, "beta")
+    (alpha / ".wup.env").write_text(
+        "WUP_BASE_URL=http://alpha.invalid\nWUPBRO_ENDPOINT=http://alpha-web.invalid\n",
+        encoding="utf-8",
+    )
+    (beta / ".wup.env").write_text(
+        "WUP_BASE_URL=http://beta.invalid\nWUPBRO_ENDPOINT=http://beta-web.invalid\n",
+        encoding="utf-8",
+    )
+
+    alpha_cfg = load_config(alpha)
+    beta_cfg = load_config(beta)
+
+    assert alpha_cfg.testql.base_url == "http://alpha.invalid"
+    assert beta_cfg.testql.base_url == "http://beta.invalid"
+    assert alpha_cfg.web.endpoint == "http://alpha-web.invalid"
+    assert beta_cfg.web.endpoint == "http://beta-web.invalid"
+    assert "WUP_BASE_URL" not in os.environ
+    assert "WUPBRO_ENDPOINT" not in os.environ
 
 
 def test_discover_finds_subprojects(tmp_path: Path) -> None:

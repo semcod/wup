@@ -10,14 +10,14 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Set
 from urllib import error, request
 
 from .config import load_config
 from .core import WupWatcher
 from .models.target import ServiceTestTarget
 from wup.bus import bus
-from wup.testing.events.test_results import ScenarioFailed, ScenarioPassed
+from wup.testing.events.test_results import ScenarioFailed
 from .models.config import WupConfig, ServiceConfig, ServiceTestConfig
 from .visual_diff import VisualDiffer
 from .web_client import WebClient

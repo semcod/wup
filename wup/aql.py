@@ -130,51 +130,53 @@ def _tokenize(rule: str) -> List[str]:
     return [placeholder.get(t, t) for t in tokens]
 
 
+def _rule_selector(tokens: List[str]) -> Tuple[str, str]:
+    selector = tokens.pop(0).lower()
+    if selector not in _SELECTORS:
+        raise AQLError(f"unknown selector {selector!r}; expected one of {', '.join(_SELECTORS)}")
+    if selector == "text":
+        return selector, ""
+    if not tokens:
+        raise AQLError(f"selector {selector!r} requires a path")
+    return selector, tokens.pop(0)
+
+
+def _predicate_rule(selector: str, path: str, keyword: str, tokens: List[str], severity: str, raw: str) -> AQLRule:
+    lower = keyword.lower()
+    if lower in ("exists", "missing"):
+        return AQLRule(selector, path, lower, severity=severity, raw=raw)
+    if lower == "matches":
+        if tokens:
+            return AQLRule(selector, path, "matches", tokens.pop(0), severity=severity, raw=raw)
+        raise AQLError("'matches' requires a regex")
+    if lower == "type":
+        if tokens and tokens[0].lower() in _TYPE_NAMES:
+            return AQLRule(selector, path, "type", tokens.pop(0).lower(), severity=severity, raw=raw)
+        raise AQLError(f"'type' requires one of {', '.join(sorted(_TYPE_NAMES))}")
+    if lower == "length":
+        if len(tokens) >= 2 and tokens[0] in _COMPARATORS and tokens[1].lstrip("-").isdigit():
+            return AQLRule(selector, path, "length", tokens[1], length_op=tokens[0], severity=severity, raw=raw)
+        raise AQLError("'length' requires an operator and number, e.g. length > 0")
+    if keyword in _COMPARATORS and tokens:
+        return AQLRule(selector, path, keyword, tokens.pop(0), severity=severity, raw=raw)
+    if keyword in _COMPARATORS:
+        raise AQLError(f"operator {keyword!r} requires a value")
+    raise AQLError(f"unknown predicate {keyword!r}")
+
+
 def parse_rule(rule: str) -> AQLRule:
     """Parse a single AQL rule string into an :class:`AQLRule`."""
     tokens, severity = _split_severity(_tokenize(rule))
     if not tokens:
         raise AQLError("empty rule")
 
-    selector = tokens.pop(0).lower()
-    if selector not in _SELECTORS:
-        raise AQLError(f"unknown selector {selector!r}; expected one of {', '.join(_SELECTORS)}")
-
-    path = ""
-    if selector != "text":
-        if not tokens:
-            raise AQLError(f"selector {selector!r} requires a path")
-        path = tokens.pop(0)
+    selector, path = _rule_selector(tokens)
 
     if not tokens:
         raise AQLError("rule requires a predicate (exists, =, length, type, …)")
 
     keyword = tokens.pop(0)
-    kw_lower = keyword.lower()
-
-    if kw_lower in ("exists", "missing"):
-        return AQLRule(selector, path, kw_lower, severity=severity, raw=rule)
-    if kw_lower == "matches":
-        if not tokens:
-            raise AQLError("'matches' requires a regex")
-        return AQLRule(selector, path, "matches", tokens.pop(0), severity=severity, raw=rule)
-    if kw_lower == "type":
-        if not tokens or tokens[0].lower() not in _TYPE_NAMES:
-            raise AQLError(f"'type' requires one of {', '.join(sorted(_TYPE_NAMES))}")
-        return AQLRule(selector, path, "type", tokens.pop(0).lower(), severity=severity, raw=rule)
-    if kw_lower == "length":
-        if len(tokens) < 2 or tokens[0] not in _COMPARATORS:
-            raise AQLError("'length' requires an operator and number, e.g. length > 0")
-        length_op, number = tokens[0], tokens[1]
-        if not number.lstrip("-").isdigit():
-            raise AQLError(f"'length' expects an integer, got {number!r}")
-        return AQLRule(selector, path, "length", number, length_op=length_op, severity=severity, raw=rule)
-    if keyword in _COMPARATORS:
-        if not tokens:
-            raise AQLError(f"operator {keyword!r} requires a value")
-        return AQLRule(selector, path, keyword, tokens.pop(0), severity=severity, raw=rule)
-
-    raise AQLError(f"unknown predicate {keyword!r}")
+    return _predicate_rule(selector, path, keyword, tokens, severity, rule)
 
 
 # --- evaluation -----------------------------------------------------------

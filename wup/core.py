@@ -12,7 +12,7 @@ import urllib.error
 import urllib.request
 from collections import defaultdict, deque
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set
 
 import psutil
 from rich.console import Console
@@ -104,7 +104,7 @@ class WupWatcher:
         if Path(deps_file).exists():
             self.dependency_mapper.load(deps_file)
         else:
-            self.console.print(f"[yellow]Building dependency map...[/yellow]")
+            self.console.print("[yellow]Building dependency map...[/yellow]")
             self.dependency_mapper.build_from_codebase()
             self.dependency_mapper.save(deps_file)
 

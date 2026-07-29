@@ -1,55 +1,57 @@
-# wup | 608 func | 83f | 21062L | python | 2026-07-29
+# wup | 651 func | 84f | 21216L | python | 2026-07-29
 # generated in 0.00s
 
 HEALTH:
-  CC̄=4.7  critical=63 (limit:10)  dup=1  cycles=0
+  CC̄=4.2  critical=56 (limit:10)  dup=1  cycles=0
 
 ALERTS[20]:
-  !!! cc_exceeded      parse_line = 59 (limit:15)
-  !!! cc_exceeded      envelope_to_dict = 58 (limit:15)
   !!! high_fan_out     create_app = 26 (limit:10)
-  !!! high_fan_out     query_uri = 26 (limit:10)
   !!! high_fan_out     EventStore.append = 22 (limit:10)
   !!! high_fan_out     oql = 21 (limit:10)
-  !!  cc_exceeded      to_dsl = 24 (limit:15)
-  !!  cc_exceeded      query_uri = 23 (limit:15)
-  !!  cc_exceeded      _intent = 21 (limit:15)
-  !!  cc_exceeded      decode_uri = 20 (limit:15)
+  !!  high_fan_out     map_deps = 19 (limit:10)
+  !!  high_fan_out     status = 19 (limit:10)
+  !!  high_fan_out     testql_endpoints = 19 (limit:10)
+  !!  high_fan_out     sync_testql = 19 (limit:10)
+  !!  high_fan_out     TestQLWatcher._run_fleet_health_scenario = 19 (limit:10)
+  !!  high_fan_out     collect_status_snapshot = 18 (limit:10)
+  !!  high_fan_out     discover_testql_endpoints = 17 (limit:10)
 
-MODULES[158] (top by size):
+MODULES[159] (top by size):
   M[duplication.json] 3481L C:0 F:0 CC↑0 D:0 (json)
   M[wup/cli.py] 1079L C:0 F:25 CC↑14 D:0 (python)
   M[wup/testql_watcher.py] 1013L C:2 F:52 CC↑13 D:0 (python)
   M[wup/core.py] 740L C:2 F:32 CC↑12 D:0 (python)
-  M[wup/testql_monitor.py] 693L C:3 F:40 CC↑13 D:1 (python)
+  M[wup/testql_monitor.py] 693L C:3 F:40 CC↑13 D:2 (python)
   M[wup/visual_diff.py] 638L C:1 F:26 CC↑11 D:1 (python)
-  M[wup/config.py] 610L C:0 F:19 CC↑10 D:14 (python)
-  M[wup/assistant.py] 594L C:1 F:24 CC↑14 D:0 (python)
+  M[wup/assistant.py] 584L C:1 F:24 CC↑14 D:0 (python)
+  M[wup/config.py] 584L C:0 F:21 CC↑10 D:15 (python)
   M[goal.yaml] 528L C:0 F:0 CC↑0 D:0 (yaml)
   M[wup/monitoring_manifest.py] 478L C:1 F:22 CC↑14 D:5 (python)
   M[examples/webhook_notifications.py] 375L C:1 F:10 CC↑6 D:0 (python)
   M[examples/ci_cd_integration.py] 339L C:0 F:4 CC↑3 D:0 (python)
-  M[tree.txt] 330L C:0 F:0 CC↑0 D:0 (txt)
+  M[tree.txt] 337L C:0 F:0 CC↑0 D:0 (txt)
   M[testql-deps.json] 311L C:0 F:0 CC↑0 D:0 (json)
-  M[wup/aql.py] 306L C:4 F:13 CC↑18 D:0 (python)
-  LANGS: python:101/json:16/txt:12/yaml:12/toml:7/other:3/shell:3/yml:2/proto:2
+  M[wup/aql.py] 308L C:4 F:15 CC↑14 D:0 (python)
+  LANGS: python:102/json:16/txt:12/yaml:12/toml:7/other:3/shell:3/yml:2/proto:2
 
 HOTSPOTS[10]:
   ★ create_app fan=26  // Orchestrates 26 calls
-  ★ query_uri fan=26  // Orchestrates 26 calls
   ★ EventStore.append fan=22  // Orchestrates 22 calls
   ★ oql fan=21  // Query observed state with OQL (Observability Query Language).
 
 Examples:
   wup o
-  ★ main fan=19  // Orchestrates 19 calls
+  ★ map_deps fan=19  // Build dependency map by scanning the codebase.
 
-REFACTOR[15]:
-  [1] H/L Split envelope_to_dict (CC=58)
-  [2] H/L Split parse_line (CC=59)
-  [3] H/H Split god module wup/assistant.py (594L, 1 classes)
-  [4] H/H Split god module wup/cli.py (1079L, 0 classes)
-  [5] H/H Split god module wup/testql_monitor.py (693L, 3 classes)
+Maps files → endpoints → service
+  ★ status fan=19  // Show dependency map status and configuration.
+
+REFACTOR[12]:
+  [1] H/H Split god module wup/assistant.py (584L, 1 classes)
+  [2] H/H Split god module wup/cli.py (1079L, 0 classes)
+  [3] H/H Split god module wup/testql_monitor.py (693L, 3 classes)
+  [4] H/H Split god module wup/testql_watcher.py (1013L, 2 classes)
+  [5] H/H Split god module wup/core.py (740L, 2 classes)
 
 EVOLUTION:
-  2026-07-29 CC̄=4.7 crit=63 21062L // Automated analysis
+  2026-07-29 CC̄=4.2 crit=56 21216L // Automated analysis

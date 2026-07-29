@@ -1,45 +1,45 @@
 flowchart TD
-%% generated in 0.09s
+%% generated in 0.02s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
+        wup__init_cli__setup_cli_project["setup_cli_project"]
+        wup__web_client___httpx_available["_httpx_available"]
+        wup__web_client__resolve_endpoint["resolve_endpoint"]
+        wup__web_client___normalize["_normalize"]
+        wup__web_client__WebClient___headers["_headers"]
+        wup__web_client__WebClient__send_event["send_event"]
+        wup__web_client__WebClient__send_regression["send_regression"]
+        wup__web_client__WebClient__send_pass["send_pass"]
+        wup__web_client__WebClient__send_health_transition["send_health_transition"]
+        wup__web_client__WebClient__send_visual_diff["send_visual_diff"]
         packages__cli2wup__src__cli2wup__cli__run_shell["run_shell"]
+        packages__cli2wup__src__cli2wup__cli___print_result["_print_result"]
+        packages__cli2wup__src__cli2wup__cli___run_script["_run_script"]
+        packages__cli2wup__src__cli2wup__cli___run_command["_run_command"]
         packages__cli2wup__src__cli2wup__cli__main["main"]
-        wup__testql_cli_generator__TestQLCLIGenerator__generate["generate"]
-        wup__testql_cli_generator__TestQLCLIGenerator___generate_smoke_scenario["_generate_smoke_scenario"]
-        wup__testql_cli_generator__TestQLCLIGenerator___generate_command_scenario["_generate_command_scenario"]
-        wup__testql_cli_generator__TestQLCLIGenerator__generate_custom_scenario["generate_custom_scenario"]
-        wup__testql_cli_generator__TestQLCLIGenerator__print_summary["print_summary"]
-        wup__cli_bridge___fail["_fail"]
-        wup__cli_bridge__run_map_deps["run_map_deps"]
-        wup__cli_bridge__run_init["run_init"]
-        wup__cli_bridge__run_sync["run_sync"]
-        wup__cli_bridge__run_generate["run_generate"]
-        wup__cli_bridge__run_validate["run_validate"]
-        wup__cli_bridge__run_status["run_status"]
-        wup__cli_bridge__run_endpoints["run_endpoints"]
-        ...["+52 more"]
+        ...["+56 more"]
     end
 
     subgraph Core
         packages__rest2wup__src__rest2wup__cli__main["main"]
-        packages__uri2wup__src__uri2wup__cli__main["main"]
         packages__uri2wup__src__uri2wup__nlp2uri__UriHit__to_dict["to_dict"]
-        packages__uri2wup__src__uri2wup__query__QueryResult__to_dict["to_dict"]
-        packages__uri2wup__src__uri2wup__query__query_uri{{query_uri CC=23}}
-        packages__uri2wup__src__uri2wup__decode__decode_uri{{decode_uri CC=20}}
+        packages__uri2wup__src__uri2wup__uri___decode["_decode"]
         packages__uri2wup__src__uri2wup__uri__uri_for_cmd["uri_for_cmd"]
-        packages__uri2wup__src__uri2wup__patch__PatchResult__to_dict["to_dict"]
-        packages__uri2wup__src__uri2wup__patch__patch_uri{{patch_uri CC=17}}
+        packages__uri2wup__src__uri2wup__uri__parse_wup_uri["parse_wup_uri"]
         packages__nlp2wup__src__nlp2wup__cli__main["main"]
         packages__nlp2wup__src__nlp2wup__validate__validate_wup_config["validate_wup_config"]
-        packages__nlp2wup__src__nlp2wup__generate__generate_from_nl["generate_from_nl"]
-        packages__nlp2wup__src__nlp2wup__apply__ApplyResult__to_dict["to_dict"]
-        packages__nlp2wup__src__nlp2wup__apply___intent{{_intent CC=21}}
-        packages__nlp2wup__src__nlp2wup__apply__to_dsl{{to_dsl CC=24}}
-        ...["+257 more"]
+        packages__dsl2wup__src__dsl2wup__bus___dispatch_cmd["_dispatch_cmd"]
+        packages__dsl2wup__src__dsl2wup__bus__dispatch["dispatch"]
+        packages__dsl2wup__src__dsl2wup__bus__execute_dsl_line["execute_dsl_line"]
+        packages__dsl2wup__src__dsl2wup__bus__execute_dsl["execute_dsl"]
+        packages__dsl2wup__src__dsl2wup__codec__encode_text["encode_text"]
+        packages__dsl2wup__src__dsl2wup__result__DslResult__to_dict["to_dict"]
+        packages__dsl2wup__src__dsl2wup__handlers__query__handle_query["handle_query"]
+        packages__dsl2wup__src__dsl2wup__handlers__query__handle_validate["handle_validate"]
+        ...["+279 more"]
     end
 
-    class packages__cli2wup__src__cli2wup__cli__run_shell,packages__cli2wup__src__cli2wup__cli__main,packages__rest2wup__src__rest2wup__cli__main,packages__uri2wup__src__uri2wup__cli__main,packages__uri2wup__src__uri2wup__nlp2uri__UriHit__to_dict,packages__uri2wup__src__uri2wup__query__QueryResult__to_dict,packages__uri2wup__src__uri2wup__uri__uri_for_cmd,packages__uri2wup__src__uri2wup__patch__PatchResult__to_dict,packages__nlp2wup__src__nlp2wup__cli__main,packages__nlp2wup__src__nlp2wup__validate__validate_wup_config entry
+    class packages__rest2wup__src__rest2wup__cli__main,packages__uri2wup__src__uri2wup__nlp2uri__UriHit__to_dict,packages__uri2wup__src__uri2wup__uri__uri_for_cmd,packages__nlp2wup__src__nlp2wup__cli__main,packages__nlp2wup__src__nlp2wup__validate__validate_wup_config,packages__dsl2wup__src__dsl2wup__codec__encode_text,packages__dsl2wup__src__dsl2wup__result__DslResult__to_dict,packages__dsl2wup__src__dsl2wup__handlers__query__handle_query,packages__dsl2wup__src__dsl2wup__handlers__query__handle_validate,packages__dsl2wup__src__dsl2wup__handlers__query__handle_resolve entry

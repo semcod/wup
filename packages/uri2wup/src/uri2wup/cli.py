@@ -11,6 +11,33 @@ from uri2wup.nlp2uri import nlp2uri
 from uri2wup.query import query_uri
 
 
+def _run_resolve(args: argparse.Namespace) -> int:
+    hits = nlp2uri(args.prompt, file=args.file or None, project=args.project)
+    print(json.dumps([hit.to_dict() for hit in hits], ensure_ascii=False, indent=2))
+    return 0
+
+
+def _run_decode(args: argparse.Namespace) -> int:
+    print(decode_uri(args.uri))
+    return 0
+
+
+def _run_query(args: argparse.Namespace) -> int:
+    result = query_uri(args.uri, file=args.file or None, fmt=args.format, project=args.project)
+    print(result.rendered or json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    return 0 if result.ok else 1
+
+
+def _run_dispatch(args: argparse.Namespace) -> int:
+    from dsl2wup import dispatch
+
+    result = dispatch(decode_uri(args.uri), default_file=args.file or None)
+    print(result.output or json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    if result.error:
+        print(f"error: {result.error}", file=sys.stderr)
+    return 0 if result.ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="uri2wup", description="wup:// URI tools")
     sub = parser.add_subparsers(dest="cmd")
@@ -34,26 +61,9 @@ def main(argv: list[str] | None = None) -> int:
     query.add_argument("--project", default=".")
 
     args = parser.parse_args(argv or sys.argv[1:])
-    if args.cmd == "resolve":
-        hits = nlp2uri(args.prompt, file=args.file or None, project=args.project)
-        print(json.dumps([h.to_dict() for h in hits], ensure_ascii=False, indent=2))
-        return 0
-    if args.cmd == "decode":
-        print(decode_uri(args.uri))
-        return 0
-    if args.cmd == "query":
-        result = query_uri(args.uri, file=args.file or None, fmt=args.format, project=args.project)
-        print(result.rendered or json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
-        return 0 if result.ok else 1
-    if args.cmd == "run":
-        from dsl2wup import dispatch
-
-        line = decode_uri(args.uri)
-        result = dispatch(line, default_file=args.file or None)
-        print(result.output or json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
-        if result.error:
-            print(f"error: {result.error}", file=sys.stderr)
-        return 0 if result.ok else 1
+    handlers = {"resolve": _run_resolve, "decode": _run_decode, "query": _run_query, "run": _run_dispatch}
+    if handler := handlers.get(args.cmd):
+        return handler(args)
     parser.print_help()
     return 1
 

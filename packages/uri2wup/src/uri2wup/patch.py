@@ -33,6 +33,35 @@ def _resolve_config_path(project: str, file_param: str | None) -> Path:
     return found or (project_path / "wup.yaml")
 
 
+def _replace_at_path(
+    raw: dict[str, Any], parts: list[str], fragment: Any
+) -> dict[str, Any]:
+    if parts and parts[0] == "config":
+        parts = parts[1:]
+    if not parts:
+        if not isinstance(fragment, dict):
+            raise ValueError("PATCH config root requires a mapping fragment")
+        return fragment
+
+    parent: Any = raw
+    for part in parts[:-1]:
+        if isinstance(parent, dict):
+            parent = parent.setdefault(part, {})
+        elif isinstance(parent, list):
+            parent = parent[int(part)]
+        else:
+            raise TypeError(f"cannot descend into PATCH path component: {part}")
+
+    leaf = parts[-1]
+    if isinstance(parent, dict):
+        parent[leaf] = fragment
+    elif isinstance(parent, list):
+        parent[int(leaf)] = fragment
+    else:
+        raise TypeError(f"cannot replace PATCH path component: {leaf}")
+    return raw
+
+
 def patch_uri(
     uri: str,
     *,
@@ -42,27 +71,21 @@ def patch_uri(
 ) -> PatchResult:
     try:
         parsed = parse_wup_uri(uri)
+        if parsed["source"] != "block":
+            raise ValueError(f"unsupported wup source: {parsed['source']}")
         parts = list(parsed["parts"])  # type: ignore[arg-type]
         project_path = str(parsed.get("project") or project)
-        config_path = _resolve_config_path(project_path, file or str(parsed.get("file") or ""))
+        config_path = _resolve_config_path(
+            project_path, file or str(parsed.get("file") or "")
+        )
         raw = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
         fragment = yaml.safe_load(content) or {}
 
-        if not parts:
-            raise ValueError("PATCH target must specify block, e.g. wup://block/services")
-        block = parts[0]
-        if block == "services" and isinstance(fragment, list):
-            raw["services"] = fragment
-        elif block == "watch" and isinstance(fragment, dict):
-            raw["watch"] = fragment
-        elif block == "testql" and isinstance(fragment, dict):
-            raw["testql"] = fragment
-        elif block == "project" and isinstance(fragment, dict):
-            raw["project"] = fragment
-        else:
-            raw[block] = fragment
+        raw = _replace_at_path(raw, parts, fragment)
 
-        config_path.write_text(yaml.safe_dump(raw, sort_keys=False, allow_unicode=True), encoding="utf-8")
+        config_path.write_text(
+            yaml.safe_dump(raw, sort_keys=False, allow_unicode=True), encoding="utf-8"
+        )
         return PatchResult(ok=True, uri=uri, file=str(config_path))
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - public API returns PatchResult failures.
         return PatchResult(ok=False, uri=uri, file=file or "", error=str(exc))

@@ -22,7 +22,7 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, testql(4), app.doql.less, goal.yaml, .env.example, src(38 mod), project/(5 analysis files)
+- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, testql(4), app.doql.less, goal.yaml, .env.example, src(39 mod), project/(5 analysis files)
 
 ## Architecture
 
@@ -42,8 +42,9 @@ app {
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
-  dev: "pytest>=7.0.0, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
+  dev: "pytest>=7.0.0, pytest-cov>=5.0, ruff>=0.8, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
   visual: "playwright>=1.40,<2";
+  control: "dsl2wup>=0.1.0, uri2wup>=0.1.0";
 }
 
 entity[name="AdoptCommand"] {
@@ -149,7 +150,7 @@ interface[type="cli"] {
   framework: argparse;
 }
 interface[type="cli"] page[name="wup"] {
-  entry: wup.cli:app;
+  entry: wup.bootstrap:main;
 }
 
 interface[type="web"] {
@@ -159,7 +160,7 @@ interface[type="web"] {
 
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd...";
+  step-1: run cmd=echo "📦 Installing WUP...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e .; \;
   step-4: run cmd=else \;
@@ -170,7 +171,7 @@ workflow[name="install"] {
 
 workflow[name="install-dev"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd with dev dependencies...";
+  step-1: run cmd=echo "📦 Installing WUP with dev dependencies...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e ".[dev]"; \;
   step-4: run cmd=else \;
@@ -182,27 +183,29 @@ workflow[name="install-dev"] {
 workflow[name="test"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --tb=short;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --tb=short;
 }
 
 workflow[name="test-cov"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests with coverage...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json;
 }
 
 workflow[name="lint"] {
   trigger: manual;
   step-1: run cmd=echo "🔍 Running linting with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff check sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff check wup/;
   step-3: run cmd=.venv/bin/python -m ruff check tests/;
+  step-4: run cmd=.venv/bin/python -m ruff check packages/;
 }
 
 workflow[name="format"] {
   trigger: manual;
   step-1: run cmd=echo "📝 Formatting code with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff format sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff format wup/;
   step-3: run cmd=.venv/bin/python -m ruff format tests/;
+  step-4: run cmd=.venv/bin/python -m ruff format packages/;
 }
 
 workflow[name="clean"] {
@@ -217,13 +220,18 @@ workflow[name="clean"] {
 
 workflow[name="publish"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Publishing to PyPI...";
+  step-1: run cmd=echo "📦 Building release artifacts (no upload)...";
   step-2: run cmd=command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build);
   step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
   step-4: run cmd=.venv/bin/python -m build;
   step-5: run cmd=.venv/bin/twine check dist/*;
-  step-6: run cmd=echo "⚡ Ready to upload.";
-  step-7: run cmd=.venv/bin/twine upload dist/*;
+  step-6: run cmd=echo "✅ Release artifacts are valid. Run 'make publish-confirm' to upload.";
+}
+
+workflow[name="publish-confirm"] {
+  trigger: manual;
+  step-1: run cmd=echo "⚡ Uploading release artifacts to PyPI...";
+  step-2: run cmd=.venv/bin/twine upload dist/*;
 }
 
 workflow[name="publish-test"] {
@@ -239,7 +247,7 @@ workflow[name="version"] {
   trigger: manual;
   step-1: run cmd=echo "📦 Version information...";
   step-2: run cmd=cat VERSION;
-  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"sumd\")}')";
+  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"wup\")}')";
 }
 
 workflow[name="wup:watch"] {
@@ -302,6 +310,7 @@ environment[name="local"] {
 - `wup.assistant`
 - `wup.assistant_discovery`
 - `wup.assistant_validator`
+- `wup.bootstrap`
 - `wup.bus`
 - `wup.cli`
 - `wup.cli_bridge`
@@ -386,6 +395,8 @@ pyyaml>=6.0
 
 ```text markpact:deps python scope=dev
 pytest>=7.0.0
+pytest-cov>=5.0
+ruff>=0.8
 goal>=2.1.0
 costs>=0.1.20
 pfix>=0.1.60
@@ -612,68 +623,68 @@ def init_cli(project, output_config, output_scenarios, merge, infer_args)  # CC=
 
 ## Call Graph
 
-*290 nodes · 307 edges · 57 modules · CC̄=4.7*
+*331 nodes · 352 edges · 59 modules · CC̄=4.2*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
-| `_set_body` *(in packages.dsl2wup.src.dsl2wup.pb_codec)* | 16 ⚠ | 1 | 88 | **89** |
 | `show_ci_cd_demo` *(in examples.ci_cd_integration)* | 2 | 1 | 69 | **70** |
 | `show_webhook_demo` *(in examples.webhook_notifications)* | 4 | 1 | 68 | **69** |
 | `_run_with_mock_services` *(in examples.testql_demo)* | 6 | 2 | 60 | **62** |
-| `query_uri` *(in packages.uri2wup.src.uri2wup.query)* | 23 ⚠ | 3 | 49 | **52** |
-| `_parse_visual_diff_config` *(in wup.config)* | 6 | 1 | 48 | **49** |
+| `_parse_visual_diff_config` *(in wup.config)* | 7 | 1 | 49 | **50** |
 | `map_deps` *(in wup.cli)* | 12 ⚠ | 0 | 45 | **45** |
-| `parse_line` *(in packages.dsl2wup.src.dsl2wup.grammar)* | 59 ⚠ | 6 | 37 | **43** |
+| `create_app` *(in packages.rest2wup.src.rest2wup.app)* | 1 | 1 | 42 | **43** |
+| `testql_endpoints` *(in wup.cli)* | 6 | 0 | 43 | **43** |
+| `sync_testql` *(in wup.cli)* | 10 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.16s
-# nodes: 290 | edges: 307 | modules: 57
-# CC̄=4.7
+# nodes: 331 | edges: 352 | modules: 59
+# CC̄=4.2
 
 HUBS[20]:
-  packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-    CC=16  in:1  out:88  total:89
   examples.ci_cd_integration.show_ci_cd_demo
     CC=2  in:1  out:69  total:70
   examples.webhook_notifications.show_webhook_demo
     CC=4  in:1  out:68  total:69
   examples.testql_demo._run_with_mock_services
     CC=6  in:2  out:60  total:62
-  packages.uri2wup.src.uri2wup.query.query_uri
-    CC=23  in:3  out:49  total:52
   wup.config._parse_visual_diff_config
-    CC=6  in:1  out:48  total:49
+    CC=7  in:1  out:49  total:50
   wup.cli.map_deps
     CC=12  in:0  out:45  total:45
-  packages.dsl2wup.src.dsl2wup.grammar.parse_line
-    CC=59  in:6  out:37  total:43
-  wup.cli.testql_endpoints
-    CC=6  in:0  out:43  total:43
-  packages.dsl2wup.src.dsl2wup.codegen.generate_models
-    CC=15  in:1  out:42  total:43
   packages.rest2wup.src.rest2wup.app.create_app
     CC=1  in:1  out:42  total:43
+  wup.cli.testql_endpoints
+    CC=6  in:0  out:43  total:43
   wup.cli.sync_testql
     CC=10  in:0  out:38  total:38
-  wup.aql.parse_rule
-    CC=18  in:1  out:33  total:34
   packages.dsl2wup.src.dsl2wup.events.EventStore.append
     CC=3  in:0  out:33  total:33
-  packages.dsl2wup.src.dsl2wup.grammar.to_text
-    CC=11  in:14  out:19  total:33
   packages.dsl2wup.src.dsl2wup.bus.dispatch
     CC=6  in:16  out:15  total:31
   wup.cli.status
     CC=8  in:0  out:31  total:31
+  wup.config._parse_testql_config
+    CC=3  in:1  out:29  total:30
   wup.cli._add_delta_events_lines
     CC=14  in:1  out:29  total:30
-  wup.config._parse_testql_config
-    CC=2  in:1  out:28  total:29
-  packages.dsl2wup.src.dsl2wup.grammar.pick_flag
-    CC=3  in:27  out:2  total:29
+  packages.dsl2wup.src.dsl2wup.cli._main_subcommand
+    CC=9  in:1  out:28  total:29
+  wup.init_cli.setup_cli_project
+    CC=9  in:2  out:26  total:28
+  packages.dsl2wup.src.dsl2wup.grammar.to_text
+    CC=11  in:9  out:19  total:28
+  wup.endpoints.discover_testql_endpoints
+    CC=5  in:2  out:26  total:28
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
+  packages.uri2wup.src.uri2wup.query.query_uri
+    CC=13  in:3  out:23  total:26
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -704,7 +715,10 @@ MODULES:
   examples.webhook_notifications  [2 funcs]
     main  CC=3  out:7
     show_webhook_demo  CC=4  out:68
-  packages.cli2wup.src.cli2wup.cli  [1 funcs]
+  packages.cli2wup.src.cli2wup.cli  [4 funcs]
+    _print_result  CC=4  out:6
+    _run_command  CC=2  out:2
+    _run_script  CC=3  out:4
     run_shell  CC=9  out:12
   packages.dsl2wup.src.dsl2wup.bus  [5 funcs]
     _bytes_to_cmd  CC=3  out:5
@@ -721,21 +735,30 @@ MODULES:
     encode_protobuf  CC=1  out:1
     encode_text  CC=2  out:2
     roundtrip_text  CC=3  out:6
-  packages.dsl2wup.src.dsl2wup.codegen  [2 funcs]
-    generate_models  CC=15  out:42
+  packages.dsl2wup.src.dsl2wup.codegen  [5 funcs]
+    _append_model  CC=4  out:15
+    _field_line  CC=10  out:7
+    _field_type  CC=3  out:5
+    generate_models  CC=3  out:11
     main  CC=1  out:4
   packages.dsl2wup.src.dsl2wup.events  [2 funcs]
     append  CC=3  out:33
     default_event_store  CC=2  out:6
-  packages.dsl2wup.src.dsl2wup.grammar  [4 funcs]
-    parse_line  CC=59  out:37
-    pick_flag  CC=3  out:2
-    split_command  CC=4  out:4
-    to_text  CC=11  out:19
+  packages.dsl2wup.src.dsl2wup.grammar  [18 funcs]
+    _flag_values  CC=3  out:2
+    _parse_adopt  CC=2  out:1
+    _parse_endpoints  CC=2  out:1
+    _parse_generate  CC=2  out:3
+    _parse_health  CC=3  out:1
+    _parse_init  CC=2  out:1
+    _parse_init_cli  CC=4  out:3
+    _parse_map  CC=2  out:1
+    _parse_patch  CC=2  out:1
+    _parse_query  CC=2  out:1
   packages.dsl2wup.src.dsl2wup.handlers.command  [9 funcs]
     _project_root  CC=2  out:4
     _read_content  CC=1  out:3
-    handle_from_tokens  CC=16  out:21
+    handle_from_tokens  CC=6  out:14
     handle_generate  CC=4  out:11
     handle_init  CC=4  out:11
     handle_init_cli  CC=4  out:12
@@ -750,14 +773,16 @@ MODULES:
     handle_resolve  CC=4  out:9
     handle_status  CC=4  out:11
     handle_validate  CC=5  out:13
-  packages.dsl2wup.src.dsl2wup.pb_codec  [8 funcs]
-    _set_body  CC=16  out:88
+  packages.dsl2wup.src.dsl2wup.pb_codec  [10 funcs]
+    _body_to_dict  CC=10  out:3
+    _canonical_verb  CC=2  out:0
+    _set_body  CC=7  out:13
     decode_protobuf  CC=1  out:3
     decode_protobuf_to_text  CC=1  out:2
     encode_protobuf  CC=1  out:6
     encode_result_protobuf  CC=1  out:2
     encode_text_to_protobuf  CC=2  out:3
-    envelope_to_dict  CC=58  out:5
+    envelope_to_dict  CC=3  out:7
     result_to_pb  CC=4  out:4
   packages.dsl2wup.src.dsl2wup.schema_registry  [6 funcs]
     _load_schemas  CC=3  out:9
@@ -773,10 +798,13 @@ MODULES:
     _require_fastmcp  CC=2  out:1
     create_server  CC=1  out:1
     run_server  CC=1  out:2
-  packages.nlp2wup.src.nlp2wup.apply  [3 funcs]
-    _intent  CC=21  out:11
-    apply_nl  CC=5  out:6
-    to_dsl  CC=24  out:20
+  packages.nlp2wup.src.nlp2wup.apply  [6 funcs]
+    _generated_command  CC=3  out:1
+    _intent  CC=4  out:2
+    _simple_command  CC=2  out:1
+    _special_command  CC=11  out:5
+    apply_nl  CC=4  out:10
+    to_dsl  CC=11  out:11
   packages.nlp2wup.src.nlp2wup.generate  [2 funcs]
     _extract_template  CC=3  out:1
     generate_from_nl  CC=1  out:2
@@ -786,19 +814,29 @@ MODULES:
     create_app  CC=1  out:42
   packages.rest2wup.src.rest2wup.cli  [1 funcs]
     main  CC=4  out:9
-  packages.uri2wup.src.uri2wup.decode  [2 funcs]
+  packages.uri2wup.src.uri2wup.cli  [4 funcs]
+    _run_decode  CC=1  out:2
+    _run_dispatch  CC=5  out:6
+    _run_query  CC=4  out:4
+    _run_resolve  CC=3  out:4
+  packages.uri2wup.src.uri2wup.decode  [4 funcs]
+    _block_query  CC=4  out:2
+    _command_from_params  CC=7  out:6
     _dict_to_dsl  CC=7  out:7
-    decode_uri  CC=20  out:23
+    decode_uri  CC=4  out:9
   packages.uri2wup.src.uri2wup.nlp2uri  [2 funcs]
     best_uri  CC=2  out:1
     nlp2uri  CC=4  out:9
-  packages.uri2wup.src.uri2wup.patch  [2 funcs]
+  packages.uri2wup.src.uri2wup.patch  [3 funcs]
+    _replace_at_path  CC=10  out:11
     _resolve_config_path  CC=4  out:7
-    patch_uri  CC=17  out:21
-  packages.uri2wup.src.uri2wup.query  [3 funcs]
-    _extract_block  CC=14  out:21
+    patch_uri  CC=9  out:18
+  packages.uri2wup.src.uri2wup.query  [5 funcs]
+    _extract_block  CC=8  out:6
     _resolve_config_path  CC=4  out:7
-    query_uri  CC=23  out:49
+    _runtime_block  CC=6  out:13
+    _success  CC=4  out:7
+    query_uri  CC=13  out:23
   packages.uri2wup.src.uri2wup.uri  [6 funcs]
     _decode  CC=2  out:1
     _encode  CC=1  out:1
@@ -815,17 +853,17 @@ MODULES:
     run_quick_testql_dryrun  CC=3  out:4
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.aql  [10 funcs]
+  wup.aql  [12 funcs]
     check_file  CC=11  out:21
     _coerce_number  CC=2  out:1
     _compare  CC=4  out:3
     _length_of  CC=2  out:2
     _passes  CC=11  out:9
+    _predicate_rule  CC=14  out:21
     _resolve_path  CC=13  out:13
+    _rule_selector  CC=4  out:6
     _split_severity  CC=4  out:5
     _tokenize  CC=4  out:11
-    _type_name  CC=7  out:5
-    parse_rule  CC=18  out:33
   wup.assistant  [5 funcs]
     _auto_detect_services  CC=1  out:1
     _detect_framework  CC=1  out:1
@@ -839,6 +877,9 @@ MODULES:
   wup.assistant_validator  [2 funcs]
     generate_suggestions  CC=6  out:5
     validate_config  CC=9  out:9
+  wup.bootstrap  [2 funcs]
+    _watchdog_preflight  CC=5  out:3
+    main  CC=6  out:5
   wup.cli  [20 funcs]
     _add_delta_events_lines  CC=14  out:29
     _add_failing_services_lines  CC=13  out:23
@@ -850,30 +891,32 @@ MODULES:
     _create_watcher  CC=2  out:6
     _discover_projects  CC=6  out:7
     _is_project_dir  CC=2  out:2
-  wup.cli_bridge  [8 funcs]
-    run_endpoints  CC=1  out:1
-    run_generate  CC=1  out:1
-    run_init  CC=1  out:1
-    run_init_cli  CC=1  out:1
-    run_map_deps  CC=1  out:1
-    run_status  CC=1  out:1
-    run_sync  CC=1  out:1
-    run_validate  CC=1  out:1
+  wup.cli_bridge  [10 funcs]
+    _guard  CC=3  out:6
+    _result  CC=3  out:4
+    run_endpoints  CC=1  out:2
+    run_generate  CC=2  out:2
+    run_init  CC=1  out:10
+    run_init_cli  CC=1  out:2
+    run_map_deps  CC=2  out:21
+    run_status  CC=3  out:3
+    run_sync  CC=1  out:2
+    run_validate  CC=1  out:2
   wup.cli_config_generator  [1 funcs]
     generate  CC=4  out:5
-  wup.config  [19 funcs]
-    _load_dotenv  CC=10  out:10
+  wup.config  [20 funcs]
+    _load_dotenv  CC=3  out:3
     _normalize_testql_extra_args  CC=5  out:10
     _normalize_testql_timeout  CC=3  out:4
+    _parse_anomaly_detection_config  CC=1  out:19
     _parse_planfile_config  CC=5  out:15
     _parse_project_config  CC=2  out:5
-    _parse_semcod_tools_config  CC=9  out:23
     _parse_services_config  CC=3  out:23
     _parse_strategy_config  CC=1  out:4
-    _parse_testql_config  CC=2  out:28
+    _parse_testql_config  CC=3  out:29
     _parse_testql_extra_args  CC=5  out:8
   wup.control  [12 funcs]
-    _result_dict  CC=1  out:2
+    _result_dict  CC=3  out:3
     dispatch_command  CC=1  out:1
     dispatch_endpoints  CC=1  out:1
     dispatch_generate  CC=3  out:1
@@ -934,23 +977,23 @@ MODULES:
     register_testing_event_handlers  CC=1  out:3
   wup.testing.handlers.health_handlers  [1 funcs]
     register_health_handlers  CC=1  out:3
-  wup.testql_monitor  [25 funcs]
+  wup.testql_monitor  [26 funcs]
     __init__  CC=2  out:3
     _add_config_endpoints  CC=11  out:14
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
     _build_port_map  CC=6  out:13
     _is_monitoring_probe  CC=1  out:1
+    _resolve_base_url  CC=4  out:6
     _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_by_port_8100  CC=2  out:3
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:17
     _get_config_endpoints_for_service  CC=10  out:7
   wup.validate  [1 funcs]
     validate_wup_file  CC=8  out:15
-  wup.visual_diff  [23 funcs]
+  wup.visual_diff  [22 funcs]
     __init__  CC=2  out:3
     _categorize_page_result  CC=7  out:12
     _check_page  CC=10  out:19
@@ -968,40 +1011,20 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  packages.cli2wup.src.cli2wup.cli.run_shell → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
   packages.rest2wup.src.rest2wup.cli.main → packages.rest2wup.src.rest2wup.app.create_app
   packages.rest2wup.src.rest2wup.app.create_app → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
   packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri → packages.uri2wup.src.uri2wup.uri.uri_for_block
   packages.uri2wup.src.uri2wup.nlp2uri.best_uri → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
-  packages.uri2wup.src.uri2wup.query._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.query._extract_block → wup.paths.health_state_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._resolve_config_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._extract_block
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.decode._dict_to_dsl
   packages.uri2wup.src.uri2wup.uri.uri_for_cmd → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.uri_for_block → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri._decode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri.is_wup_uri
-  packages.uri2wup.src.uri2wup.patch._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.patch._resolve_config_path
   packages.nlp2wup.src.nlp2wup.validate.validate_wup_config → wup.validate.validate_wup_file
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → wup.generate.generate_wup_config
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → packages.nlp2wup.src.nlp2wup.generate._extract_template
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.nlp2wup.src.nlp2wup.apply._intent
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.dsl2wup.src.dsl2wup.grammar.to_text
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply.to_dsl
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.dsl2wup.src.dsl2wup.bus.dispatch
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply._intent
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.grammar.split_command
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.events.default_event_store
-  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf
+  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.codec.decode_protobuf
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.parse_line
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.split_command
@@ -1010,14 +1033,34 @@ EDGES:
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line → packages.dsl2wup.src.dsl2wup.bus.dispatch
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl
-  packages.dsl2wup.src.dsl2wup.cli._main_subcommand → packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_legacy
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_subcommand
-  packages.dsl2wup.src.dsl2wup.events.EventStore.append → packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf
-  packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-  packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
+  packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.all_schemas → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._schema_verb_for
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.to_text
+  packages.dsl2wup.src.dsl2wup.codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.encode_text_to_protobuf
+  packages.dsl2wup.src.dsl2wup.codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf_to_text
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.uri2wup.src.uri2wup.query.query_uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → wup.validate.validate_wup_file
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → wup.status_data.collect_status_snapshot
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_endpoints → wup.endpoints.discover_testql_endpoints
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → wup.paths.health_state_path
+  packages.mcp2wup.src.mcp2wup.cli.main → packages.mcp2wup.src.mcp2wup.server.run_server
+  packages.mcp2wup.src.mcp2wup.server.WupMCPServer.__post_init__ → packages.mcp2wup.src.mcp2wup.server._require_fastmcp
+  packages.mcp2wup.src.mcp2wup.server.run_server → packages.mcp2wup.src.mcp2wup.server.create_server
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
 ```
 
 ## Test Contracts
@@ -1048,50 +1091,50 @@ EDGES:
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.16s
-# nodes: 290 | edges: 307 | modules: 57
-# CC̄=4.7
+# nodes: 331 | edges: 352 | modules: 59
+# CC̄=4.2
 
 HUBS[20]:
-  packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-    CC=16  in:1  out:88  total:89
   examples.ci_cd_integration.show_ci_cd_demo
     CC=2  in:1  out:69  total:70
   examples.webhook_notifications.show_webhook_demo
     CC=4  in:1  out:68  total:69
   examples.testql_demo._run_with_mock_services
     CC=6  in:2  out:60  total:62
-  packages.uri2wup.src.uri2wup.query.query_uri
-    CC=23  in:3  out:49  total:52
   wup.config._parse_visual_diff_config
-    CC=6  in:1  out:48  total:49
+    CC=7  in:1  out:49  total:50
   wup.cli.map_deps
     CC=12  in:0  out:45  total:45
-  packages.dsl2wup.src.dsl2wup.grammar.parse_line
-    CC=59  in:6  out:37  total:43
-  wup.cli.testql_endpoints
-    CC=6  in:0  out:43  total:43
-  packages.dsl2wup.src.dsl2wup.codegen.generate_models
-    CC=15  in:1  out:42  total:43
   packages.rest2wup.src.rest2wup.app.create_app
     CC=1  in:1  out:42  total:43
+  wup.cli.testql_endpoints
+    CC=6  in:0  out:43  total:43
   wup.cli.sync_testql
     CC=10  in:0  out:38  total:38
-  wup.aql.parse_rule
-    CC=18  in:1  out:33  total:34
   packages.dsl2wup.src.dsl2wup.events.EventStore.append
     CC=3  in:0  out:33  total:33
-  packages.dsl2wup.src.dsl2wup.grammar.to_text
-    CC=11  in:14  out:19  total:33
   packages.dsl2wup.src.dsl2wup.bus.dispatch
     CC=6  in:16  out:15  total:31
   wup.cli.status
     CC=8  in:0  out:31  total:31
+  wup.config._parse_testql_config
+    CC=3  in:1  out:29  total:30
   wup.cli._add_delta_events_lines
     CC=14  in:1  out:29  total:30
-  wup.config._parse_testql_config
-    CC=2  in:1  out:28  total:29
-  packages.dsl2wup.src.dsl2wup.grammar.pick_flag
-    CC=3  in:27  out:2  total:29
+  packages.dsl2wup.src.dsl2wup.cli._main_subcommand
+    CC=9  in:1  out:28  total:29
+  wup.init_cli.setup_cli_project
+    CC=9  in:2  out:26  total:28
+  packages.dsl2wup.src.dsl2wup.grammar.to_text
+    CC=11  in:9  out:19  total:28
+  wup.endpoints.discover_testql_endpoints
+    CC=5  in:2  out:26  total:28
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
+  packages.uri2wup.src.uri2wup.query.query_uri
+    CC=13  in:3  out:23  total:26
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -1122,7 +1165,10 @@ MODULES:
   examples.webhook_notifications  [2 funcs]
     main  CC=3  out:7
     show_webhook_demo  CC=4  out:68
-  packages.cli2wup.src.cli2wup.cli  [1 funcs]
+  packages.cli2wup.src.cli2wup.cli  [4 funcs]
+    _print_result  CC=4  out:6
+    _run_command  CC=2  out:2
+    _run_script  CC=3  out:4
     run_shell  CC=9  out:12
   packages.dsl2wup.src.dsl2wup.bus  [5 funcs]
     _bytes_to_cmd  CC=3  out:5
@@ -1139,21 +1185,30 @@ MODULES:
     encode_protobuf  CC=1  out:1
     encode_text  CC=2  out:2
     roundtrip_text  CC=3  out:6
-  packages.dsl2wup.src.dsl2wup.codegen  [2 funcs]
-    generate_models  CC=15  out:42
+  packages.dsl2wup.src.dsl2wup.codegen  [5 funcs]
+    _append_model  CC=4  out:15
+    _field_line  CC=10  out:7
+    _field_type  CC=3  out:5
+    generate_models  CC=3  out:11
     main  CC=1  out:4
   packages.dsl2wup.src.dsl2wup.events  [2 funcs]
     append  CC=3  out:33
     default_event_store  CC=2  out:6
-  packages.dsl2wup.src.dsl2wup.grammar  [4 funcs]
-    parse_line  CC=59  out:37
-    pick_flag  CC=3  out:2
-    split_command  CC=4  out:4
-    to_text  CC=11  out:19
+  packages.dsl2wup.src.dsl2wup.grammar  [18 funcs]
+    _flag_values  CC=3  out:2
+    _parse_adopt  CC=2  out:1
+    _parse_endpoints  CC=2  out:1
+    _parse_generate  CC=2  out:3
+    _parse_health  CC=3  out:1
+    _parse_init  CC=2  out:1
+    _parse_init_cli  CC=4  out:3
+    _parse_map  CC=2  out:1
+    _parse_patch  CC=2  out:1
+    _parse_query  CC=2  out:1
   packages.dsl2wup.src.dsl2wup.handlers.command  [9 funcs]
     _project_root  CC=2  out:4
     _read_content  CC=1  out:3
-    handle_from_tokens  CC=16  out:21
+    handle_from_tokens  CC=6  out:14
     handle_generate  CC=4  out:11
     handle_init  CC=4  out:11
     handle_init_cli  CC=4  out:12
@@ -1168,14 +1223,16 @@ MODULES:
     handle_resolve  CC=4  out:9
     handle_status  CC=4  out:11
     handle_validate  CC=5  out:13
-  packages.dsl2wup.src.dsl2wup.pb_codec  [8 funcs]
-    _set_body  CC=16  out:88
+  packages.dsl2wup.src.dsl2wup.pb_codec  [10 funcs]
+    _body_to_dict  CC=10  out:3
+    _canonical_verb  CC=2  out:0
+    _set_body  CC=7  out:13
     decode_protobuf  CC=1  out:3
     decode_protobuf_to_text  CC=1  out:2
     encode_protobuf  CC=1  out:6
     encode_result_protobuf  CC=1  out:2
     encode_text_to_protobuf  CC=2  out:3
-    envelope_to_dict  CC=58  out:5
+    envelope_to_dict  CC=3  out:7
     result_to_pb  CC=4  out:4
   packages.dsl2wup.src.dsl2wup.schema_registry  [6 funcs]
     _load_schemas  CC=3  out:9
@@ -1191,10 +1248,13 @@ MODULES:
     _require_fastmcp  CC=2  out:1
     create_server  CC=1  out:1
     run_server  CC=1  out:2
-  packages.nlp2wup.src.nlp2wup.apply  [3 funcs]
-    _intent  CC=21  out:11
-    apply_nl  CC=5  out:6
-    to_dsl  CC=24  out:20
+  packages.nlp2wup.src.nlp2wup.apply  [6 funcs]
+    _generated_command  CC=3  out:1
+    _intent  CC=4  out:2
+    _simple_command  CC=2  out:1
+    _special_command  CC=11  out:5
+    apply_nl  CC=4  out:10
+    to_dsl  CC=11  out:11
   packages.nlp2wup.src.nlp2wup.generate  [2 funcs]
     _extract_template  CC=3  out:1
     generate_from_nl  CC=1  out:2
@@ -1204,19 +1264,29 @@ MODULES:
     create_app  CC=1  out:42
   packages.rest2wup.src.rest2wup.cli  [1 funcs]
     main  CC=4  out:9
-  packages.uri2wup.src.uri2wup.decode  [2 funcs]
+  packages.uri2wup.src.uri2wup.cli  [4 funcs]
+    _run_decode  CC=1  out:2
+    _run_dispatch  CC=5  out:6
+    _run_query  CC=4  out:4
+    _run_resolve  CC=3  out:4
+  packages.uri2wup.src.uri2wup.decode  [4 funcs]
+    _block_query  CC=4  out:2
+    _command_from_params  CC=7  out:6
     _dict_to_dsl  CC=7  out:7
-    decode_uri  CC=20  out:23
+    decode_uri  CC=4  out:9
   packages.uri2wup.src.uri2wup.nlp2uri  [2 funcs]
     best_uri  CC=2  out:1
     nlp2uri  CC=4  out:9
-  packages.uri2wup.src.uri2wup.patch  [2 funcs]
+  packages.uri2wup.src.uri2wup.patch  [3 funcs]
+    _replace_at_path  CC=10  out:11
     _resolve_config_path  CC=4  out:7
-    patch_uri  CC=17  out:21
-  packages.uri2wup.src.uri2wup.query  [3 funcs]
-    _extract_block  CC=14  out:21
+    patch_uri  CC=9  out:18
+  packages.uri2wup.src.uri2wup.query  [5 funcs]
+    _extract_block  CC=8  out:6
     _resolve_config_path  CC=4  out:7
-    query_uri  CC=23  out:49
+    _runtime_block  CC=6  out:13
+    _success  CC=4  out:7
+    query_uri  CC=13  out:23
   packages.uri2wup.src.uri2wup.uri  [6 funcs]
     _decode  CC=2  out:1
     _encode  CC=1  out:1
@@ -1233,17 +1303,17 @@ MODULES:
     run_quick_testql_dryrun  CC=3  out:4
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.aql  [10 funcs]
+  wup.aql  [12 funcs]
     check_file  CC=11  out:21
     _coerce_number  CC=2  out:1
     _compare  CC=4  out:3
     _length_of  CC=2  out:2
     _passes  CC=11  out:9
+    _predicate_rule  CC=14  out:21
     _resolve_path  CC=13  out:13
+    _rule_selector  CC=4  out:6
     _split_severity  CC=4  out:5
     _tokenize  CC=4  out:11
-    _type_name  CC=7  out:5
-    parse_rule  CC=18  out:33
   wup.assistant  [5 funcs]
     _auto_detect_services  CC=1  out:1
     _detect_framework  CC=1  out:1
@@ -1257,6 +1327,9 @@ MODULES:
   wup.assistant_validator  [2 funcs]
     generate_suggestions  CC=6  out:5
     validate_config  CC=9  out:9
+  wup.bootstrap  [2 funcs]
+    _watchdog_preflight  CC=5  out:3
+    main  CC=6  out:5
   wup.cli  [20 funcs]
     _add_delta_events_lines  CC=14  out:29
     _add_failing_services_lines  CC=13  out:23
@@ -1268,30 +1341,32 @@ MODULES:
     _create_watcher  CC=2  out:6
     _discover_projects  CC=6  out:7
     _is_project_dir  CC=2  out:2
-  wup.cli_bridge  [8 funcs]
-    run_endpoints  CC=1  out:1
-    run_generate  CC=1  out:1
-    run_init  CC=1  out:1
-    run_init_cli  CC=1  out:1
-    run_map_deps  CC=1  out:1
-    run_status  CC=1  out:1
-    run_sync  CC=1  out:1
-    run_validate  CC=1  out:1
+  wup.cli_bridge  [10 funcs]
+    _guard  CC=3  out:6
+    _result  CC=3  out:4
+    run_endpoints  CC=1  out:2
+    run_generate  CC=2  out:2
+    run_init  CC=1  out:10
+    run_init_cli  CC=1  out:2
+    run_map_deps  CC=2  out:21
+    run_status  CC=3  out:3
+    run_sync  CC=1  out:2
+    run_validate  CC=1  out:2
   wup.cli_config_generator  [1 funcs]
     generate  CC=4  out:5
-  wup.config  [19 funcs]
-    _load_dotenv  CC=10  out:10
+  wup.config  [20 funcs]
+    _load_dotenv  CC=3  out:3
     _normalize_testql_extra_args  CC=5  out:10
     _normalize_testql_timeout  CC=3  out:4
+    _parse_anomaly_detection_config  CC=1  out:19
     _parse_planfile_config  CC=5  out:15
     _parse_project_config  CC=2  out:5
-    _parse_semcod_tools_config  CC=9  out:23
     _parse_services_config  CC=3  out:23
     _parse_strategy_config  CC=1  out:4
-    _parse_testql_config  CC=2  out:28
+    _parse_testql_config  CC=3  out:29
     _parse_testql_extra_args  CC=5  out:8
   wup.control  [12 funcs]
-    _result_dict  CC=1  out:2
+    _result_dict  CC=3  out:3
     dispatch_command  CC=1  out:1
     dispatch_endpoints  CC=1  out:1
     dispatch_generate  CC=3  out:1
@@ -1352,23 +1427,23 @@ MODULES:
     register_testing_event_handlers  CC=1  out:3
   wup.testing.handlers.health_handlers  [1 funcs]
     register_health_handlers  CC=1  out:3
-  wup.testql_monitor  [25 funcs]
+  wup.testql_monitor  [26 funcs]
     __init__  CC=2  out:3
     _add_config_endpoints  CC=11  out:14
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
     _build_port_map  CC=6  out:13
     _is_monitoring_probe  CC=1  out:1
+    _resolve_base_url  CC=4  out:6
     _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_by_port_8100  CC=2  out:3
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:17
     _get_config_endpoints_for_service  CC=10  out:7
   wup.validate  [1 funcs]
     validate_wup_file  CC=8  out:15
-  wup.visual_diff  [23 funcs]
+  wup.visual_diff  [22 funcs]
     __init__  CC=2  out:3
     _categorize_page_result  CC=7  out:12
     _check_page  CC=10  out:19
@@ -1386,40 +1461,20 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  packages.cli2wup.src.cli2wup.cli.run_shell → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
   packages.rest2wup.src.rest2wup.cli.main → packages.rest2wup.src.rest2wup.app.create_app
   packages.rest2wup.src.rest2wup.app.create_app → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
   packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri → packages.uri2wup.src.uri2wup.uri.uri_for_block
   packages.uri2wup.src.uri2wup.nlp2uri.best_uri → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
-  packages.uri2wup.src.uri2wup.query._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.query._extract_block → wup.paths.health_state_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._resolve_config_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._extract_block
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.decode._dict_to_dsl
   packages.uri2wup.src.uri2wup.uri.uri_for_cmd → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.uri_for_block → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri._decode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri.is_wup_uri
-  packages.uri2wup.src.uri2wup.patch._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.patch._resolve_config_path
   packages.nlp2wup.src.nlp2wup.validate.validate_wup_config → wup.validate.validate_wup_file
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → wup.generate.generate_wup_config
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → packages.nlp2wup.src.nlp2wup.generate._extract_template
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.nlp2wup.src.nlp2wup.apply._intent
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.dsl2wup.src.dsl2wup.grammar.to_text
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply.to_dsl
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.dsl2wup.src.dsl2wup.bus.dispatch
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply._intent
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.grammar.split_command
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.events.default_event_store
-  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf
+  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.codec.decode_protobuf
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.parse_line
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.split_command
@@ -1428,170 +1483,226 @@ EDGES:
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line → packages.dsl2wup.src.dsl2wup.bus.dispatch
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl
-  packages.dsl2wup.src.dsl2wup.cli._main_subcommand → packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_legacy
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_subcommand
-  packages.dsl2wup.src.dsl2wup.events.EventStore.append → packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf
-  packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-  packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
+  packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.all_schemas → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._schema_verb_for
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.to_text
+  packages.dsl2wup.src.dsl2wup.codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.encode_text_to_protobuf
+  packages.dsl2wup.src.dsl2wup.codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf_to_text
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.uri2wup.src.uri2wup.query.query_uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → wup.validate.validate_wup_file
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → wup.status_data.collect_status_snapshot
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_endpoints → wup.endpoints.discover_testql_endpoints
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → wup.paths.health_state_path
+  packages.mcp2wup.src.mcp2wup.cli.main → packages.mcp2wup.src.mcp2wup.server.run_server
+  packages.mcp2wup.src.mcp2wup.server.WupMCPServer.__post_init__ → packages.mcp2wup.src.mcp2wup.server._require_fastmcp
+  packages.mcp2wup.src.mcp2wup.server.run_server → packages.mcp2wup.src.mcp2wup.server.create_server
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 158f 21062L | python:101,json:16,yaml:12,txt:12,toml:7,shell:3,yml:2,proto:2 | 2026-07-29
+# code2llm | 159f 21216L | python:102,json:16,yaml:12,txt:12,toml:7,shell:3,yml:2,proto:2 | 2026-07-29
 # generated in 0.04s
-# CC̅=4.7 | critical:13/608 | dups:0 | cycles:0
+# CC̅=4.2 | critical:0/651 | dups:0 | cycles:0
 
-HEALTH[13]:
-  🟡 CC    main CC=15 (limit:15)
-  🟡 CC    main CC=15 (limit:15)
-  🟡 CC    query_uri CC=23 (limit:15)
-  🟡 CC    decode_uri CC=20 (limit:15)
-  🟡 CC    patch_uri CC=17 (limit:15)
-  🟡 CC    _intent CC=21 (limit:15)
-  🟡 CC    to_dsl CC=24 (limit:15)
-  🟡 CC    _set_body CC=16 (limit:15)
-  🟡 CC    envelope_to_dict CC=58 (limit:15)
-  🟡 CC    generate_models CC=15 (limit:15)
-  🟡 CC    parse_line CC=59 (limit:15)
-  🟡 CC    handle_from_tokens CC=16 (limit:15)
-  🟡 CC    parse_rule CC=18 (limit:15)
+HEALTH[0]: ok
 
-REFACTOR[1]:
-  1. split 13 high-CC methods  (CC>15)
+REFACTOR[0]: none needed
 
-PIPELINES[339]:
-  [1] Src [main]: main → run_shell → execute_dsl_line → dispatch → ...(1 more)
+PIPELINES[375]:
+  [1] Src [main]: main → create_app → schema_for_verb → _load_schemas
       PURITY: 100% pure
-  [2] Src [main]: main → create_app → schema_for_verb → _load_schemas
+  [2] Src [uri_for_cmd]: uri_for_cmd → _encode
       PURITY: 100% pure
-  [3] Src [main]: main → nlp2uri → uri_for_block → _encode
+  [3] Src [main]: main → apply_nl → to_dsl → _intent
       PURITY: 100% pure
-  [4] Src [uri_for_cmd]: uri_for_cmd → _encode
+  [4] Src [validate_wup_config]: validate_wup_config → validate_wup_file → find_config_file
       PURITY: 100% pure
-  [5] Src [main]: main → apply_nl → to_dsl → _intent
+  [5] Src [encode_text]: encode_text → parse_line → split_command
       PURITY: 100% pure
-  [6] Src [validate_wup_config]: validate_wup_config → validate_wup_file → find_config_file
+  [6] Src [handle_query]: handle_query → query_uri → parse_wup_uri → _decode
       PURITY: 100% pure
-  [7] Src [generate_from_nl]: generate_from_nl → generate_wup_config → save_config
+  [7] Src [handle_validate]: handle_validate → validate_wup_file → find_config_file
       PURITY: 100% pure
-  [8] Src [main]: main → _main_legacy → execute_dsl_line → dispatch → ...(1 more)
+  [8] Src [handle_resolve]: handle_resolve → nlp2uri → uri_for_block → _encode
       PURITY: 100% pure
-  [9] Src [to_dict]: to_dict
+  [9] Src [handle_status]: handle_status → collect_status_snapshot → load_config → _read_dotenv
       PURITY: 100% pure
-  [10] Src [__init__]: __init__
+  [10] Src [handle_endpoints]: handle_endpoints → discover_testql_endpoints
       PURITY: 100% pure
-  [11] Src [append]: append → encode_protobuf → _set_body
+  [11] Src [handle_health]: handle_health → _project_root
       PURITY: 100% pure
-  [12] Src [replay]: replay → envelope_to_dict
+  [12] Src [main]: main → run_server → create_server
       PURITY: 100% pure
-  [13] Src [main]: main → generate_models
+  [13] Src [__post_init__]: __post_init__ → _require_fastmcp
       PURITY: 100% pure
-  [14] Src [encode_text]: encode_text → parse_line → split_command
+  [14] Src [_register_tools]: _register_tools → query_uri → parse_wup_uri → _decode
       PURITY: 100% pure
-  [15] Src [encode_protobuf]: encode_protobuf → encode_text_to_protobuf → parse_line → split_command
+  [15] Src [run]: run
       PURITY: 100% pure
-  [16] Src [decode_protobuf]: decode_protobuf → decode_protobuf_to_text → to_text
+  [16] Src [_host_port_from_mapping]: _host_port_from_mapping
       PURITY: 100% pure
-  [17] Src [main]: main → run_server → create_server
+  [17] Src [_connect_profile_rules]: _connect_profile_rules
       PURITY: 100% pure
-  [18] Src [__post_init__]: __post_init__ → _require_fastmcp
+  [18] Src [__init__]: __init__
       PURITY: 100% pure
-  [19] Src [_register_tools]: _register_tools → query_uri → parse_wup_uri → _decode
+  [19] Src [subscribe]: subscribe
       PURITY: 100% pure
-  [20] Src [run]: run
+  [20] Src [publish]: publish
       PURITY: 100% pure
-  [21] Src [__init__]: __init__
+  [21] Src [execute]: execute
       PURITY: 100% pure
-  [22] Src [generate]: generate
+  [22] Src [query]: query
       PURITY: 100% pure
-  [23] Src [_generate_smoke_scenario]: _generate_smoke_scenario
+  [23] Src [__init__]: __init__
       PURITY: 100% pure
-  [24] Src [_generate_command_scenario]: _generate_command_scenario
+  [24] Src [_should_scan]: _should_scan
       PURITY: 100% pure
-  [25] Src [generate_custom_scenario]: generate_custom_scenario
+  [25] Src [scan_file]: scan_file
       PURITY: 100% pure
-  [26] Src [print_summary]: print_summary
+  [26] Src [scan_directory]: scan_directory
       PURITY: 100% pure
-  [27] Src [__init__]: __init__
+  [27] Src [get_summary]: get_summary
       PURITY: 100% pure
-  [28] Src [subscribe]: subscribe
+  [28] Src [print_report]: print_report
       PURITY: 100% pure
-  [29] Src [publish]: publish
+  [29] Src [quick_scan]: quick_scan
       PURITY: 100% pure
-  [30] Src [execute]: execute
+  [30] Src [scan_yaml_changes]: scan_yaml_changes
       PURITY: 100% pure
-  [31] Src [query]: query
+  [31] Src [matches]: matches → _compare → _coerce_number
       PURITY: 100% pure
   [32] Src [__init__]: __init__
       PURITY: 100% pure
-  [33] Src [_should_scan]: _should_scan
+  [33] Src [_service_rows]: _service_rows → health_state_path
       PURITY: 100% pure
-  [34] Src [scan_file]: scan_file
+  [34] Src [_event_rows]: _event_rows → health_events_path
       PURITY: 100% pure
-  [35] Src [scan_directory]: scan_directory
+  [35] Src [execute]: execute → parse → _tokenize
       PURITY: 100% pure
-  [36] Src [get_summary]: get_summary
+  [36] Src [register_oql]: register_oql
       PURITY: 100% pure
-  [37] Src [print_report]: print_report
+  [37] Src [probe]: probe
       PURITY: 100% pure
-  [38] Src [quick_scan]: quick_scan
+  [38] Src [__init__]: __init__
       PURITY: 100% pure
-  [39] Src [scan_yaml_changes]: scan_yaml_changes
+  [39] Src [add]: add
       PURITY: 100% pure
-  [40] Src [_fail]: _fail
+  [40] Src [__init__]: __init__ → reject_prefixes_for_config
       PURITY: 100% pure
-  [41] Src [run_validate]: run_validate → dispatch_validate → _result_dict → dispatch → ...(1 more)
+  [41] Src [_is_monitoring_probe]: _is_monitoring_probe → is_monitoring_probe
       PURITY: 100% pure
-  [42] Src [__init__]: __init__
+  [42] Src [_load_dot_env]: _load_dot_env
       PURITY: 100% pure
-  [43] Src [_dispatch_menu_choice]: _dispatch_menu_choice
+  [43] Src [_build_port_map]: _build_port_map → discover_docker_compose_services → _load_compose_yaml
       PURITY: 100% pure
-  [44] Src [run]: run
+  [44] Src [_service_map_paths]: _service_map_paths
       PURITY: 100% pure
-  [45] Src [_init_project]: _init_project
+  [45] Src [_add_hardware_usb_module_endpoints]: _add_hardware_usb_module_endpoints
       PURITY: 100% pure
-  [46] Src [_detect_framework]: _detect_framework → detect_framework
+  [46] Src [_add_config_endpoints]: _add_config_endpoints → assign_probe_to_service → _assign_by_longest_token → _service_path_patterns
       PURITY: 100% pure
-  [47] Src [_auto_detect_services]: _auto_detect_services → auto_detect_services → detect_service_type
+  [47] Src [_add_scenario_probes]: _add_scenario_probes → parse_scenario_probes → _parse_api_lines
       PURITY: 100% pure
-  [48] Src [_detect_service_type]: _detect_service_type → detect_service_type
+  [48] Src [_add_service_map_probes]: _add_service_map_probes → parse_service_map_probes → _extract_base_url
       PURITY: 100% pure
-  [49] Src [_configure_services]: _configure_services
+  [49] Src [discover_probes_by_service]: discover_probes_by_service
       PURITY: 100% pure
-  [50] Src [_add_service_interactive]: _add_service_interactive
+  [50] Src [_resolve_base_url_for_service]: _resolve_base_url_for_service
       PURITY: 100% pure
 
 LAYERS:
-  packages/                       CC̄=6.3    ←in:0  →out:0
-  │ !! pb_codec                   235L  0C    8m  CC=58     ←6
-  │ !! command                    232L  0C   10m  CC=16     ←1
-  │ !! query                      164L  1C    4m  CC=23     ←3
-  │ !! grammar                    156L  0C    4m  CC=59     ←5
+  wup/                            CC̄=4.7    ←in:24  →out:3
+  │ !! cli                       1079L  0C   25m  CC=14     ←0
+  │ !! testql_watcher            1013L  2C   52m  CC=13     ←0
+  │ !! core                       740L  2C   32m  CC=12     ←0
+  │ !! testql_monitor             693L  3C   40m  CC=13     ←2
+  │ !! visual_diff                638L  1C   26m  CC=11     ←1
+  │ !! config                     584L  0C   21m  CC=10     ←15
+  │ !! assistant                  584L  1C   24m  CC=14     ←0
+  │ monitoring_manifest        478L  1C   22m  CC=14     ←5
+  │ aql                        308L  4C   15m  CC=14     ←0
+  │ cli_scanner                301L  3C   12m  CC=10     ←0
+  │ discovery                  279L  12C   12m  CC=8      ←1
+  │ oql                        267L  5C   12m  CC=14     ←1
+  │ planfile_reporter          267L  1C   16m  CC=14     ←0
+  │ testql_discovery           229L  1C    7m  CC=11     ←0
+  │ cli_config_generator       223L  1C    6m  CC=6      ←0
+  │ testql_cli_generator       215L  1C    6m  CC=6      ←0
+  │ config                     206L  14C    0m  CC=0.0    ←0
+  │ cli_bridge                 194L  0C   10m  CC=3      ←1
+  │ web_client                 185L  1C   10m  CC=6      ←0
+  │ dependency_mapper          177L  1C   12m  CC=6      ←0
+  │ anomaly_detector           175L  1C    8m  CC=7      ←0
+  │ _yaml_detector             128L  1C    8m  CC=8      ←0
+  │ control                    127L  0C   12m  CC=4      ←0
+  │ _ast_detector              124L  1C    9m  CC=11     ←1
+  │ health_handlers            123L  1C    6m  CC=8      ←1
+  │ status_data                114L  0C    5m  CC=12     ←2
+  │ assistant_discovery         99L  0C    3m  CC=11     ←1
+  │ multi                       81L  1C    2m  CC=11     ←0
+  │ _hash_detector              72L  1C    4m  CC=5      ←0
+  │ sync                        70L  0C    2m  CC=9      ←2
+  │ bus                         65L  5C    5m  CC=4      ←0
+  │ generate                    62L  0C    2m  CC=8      ←3
+  │ bootstrap                   61L  0C    2m  CC=6      ←0
+  │ init_cli                    60L  0C    1m  CC=9      ←2
+  │ assistant_validator         57L  0C    2m  CC=9      ←2
+  │ event_handlers              55L  1C    4m  CC=5      ←1
+  │ __init__                    46L  0C    1m  CC=2      ←0
+  │ endpoints                   44L  0C    1m  CC=5      ←2
+  │ event_store                 41L  1C    3m  CC=4      ←0
+  │ __init__                    36L  0C    0m  CC=0.0    ←0
+  │ anomaly_models              35L  2C    0m  CC=0.0    ←0
+  │ validate                    34L  0C    1m  CC=8      ←3
+  │ target                      23L  1C    0m  CC=0.0    ←0
+  │ _base_detector              18L  1C    2m  CC=1      ←0
+  │ paths                       16L  0C    2m  CC=1      ←4
+  │ health_events               11L  1C    0m  CC=0.0    ←0
+  │ file_events                 10L  1C    0m  CC=0.0    ←0
+  │ health_queries               7L  1C    0m  CC=0.0    ←0
+  │
+  packages/                       CC̄=3.8    ←in:0  →out:0
+  │ command                    271L  0C   12m  CC=8      ←1
+  │ apply                      167L  1C    7m  CC=11     ←2
+  │ grammar                    153L  0C   18m  CC=11     ←5
   │ server                     149L  1C    6m  CC=2      ←1
-  │ query                      137L  0C    7m  CC=5      ←1
+  │ query                      147L  1C    6m  CC=13     ←3
+  │ pb_codec                   147L  0C   10m  CC=10     ←4
+  │ query                      137L  0C    7m  CC=5      ←0
   │ models                     129L  13C    0m  CC=0.0    ←0
-  │ !! apply                      126L  1C    4m  CC=24     ←2
   │ events                     116L  2C    5m  CC=7      ←3
   │ cli                        108L  0C    3m  CC=9      ←0
   │ command.proto              104L  0C    0m  CC=0.0    ←0
-  │ !! cli                        100L  0C    2m  CC=15     ←0
-  │ !! codegen                     98L  0C    2m  CC=15     ←0
+  │ cli                        100L  0C    5m  CC=9      ←0
   │ uri                         92L  0C    6m  CC=7      ←4
+  │ patch                       91L  1C    4m  CC=10     ←3
   │ schema_registry             84L  0C    6m  CC=13     ←4
   │ bus                         79L  0C    5m  CC=6      ←7
-  │ !! decode                      72L  0C    2m  CC=20     ←1
+  │ cli                         72L  0C    5m  CC=5      ←0
+  │ codegen                     70L  0C    5m  CC=10     ←0
   │ app                         68L  0C    1m  CC=1      ←1
-  │ !! patch                       68L  1C    3m  CC=17     ←2
-  │ !! cli                         62L  0C    1m  CC=15     ←0
   │ command_pb2                 62L  0C    0m  CC=0.0    ←0
+  │ decode                      61L  0C    4m  CC=7      ←1
   │ nlp2uri                     48L  1C    3m  CC=4      ←4
   │ cli                         43L  0C    1m  CC=9      ←0
   │ result_pb2                  39L  0C    0m  CC=0.0    ←0
-  │ codec                       35L  0C    4m  CC=3      ←1
+  │ codec                       35L  0C    4m  CC=3      ←3
   │ pyproject.toml              34L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              29L  0C    0m  CC=0.0    ←0
   │ cli                         28L  0C    1m  CC=4      ←0
@@ -1600,8 +1711,8 @@ LAYERS:
   │ pyproject.toml              27L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              27L  0C    0m  CC=0.0    ←0
   │ pyproject.toml              26L  0C    0m  CC=0.0    ←0
-  │ generate                    25L  0C    2m  CC=3      ←1
   │ cli                         24L  0C    1m  CC=4      ←0
+  │ generate                    24L  0C    2m  CC=3      ←1
   │ install-dev.sh              24L  0C    0m  CC=0.0    ←0
   │ result.proto                23L  0C    0m  CC=0.0    ←0
   │ init_cli.schema.json        14L  0C    0m  CC=0.0    ←0
@@ -1632,55 +1743,6 @@ LAYERS:
   │ __init__                     5L  0C    0m  CC=0.0    ←0
   │ __init__                     5L  0C    0m  CC=0.0    ←0
   │ __init__                     1L  0C    0m  CC=0.0    ←0
-  │
-  wup/                            CC̄=4.7    ←in:27  →out:3
-  │ !! cli                       1079L  0C   25m  CC=14     ←0
-  │ !! testql_watcher            1013L  2C   52m  CC=13     ←0
-  │ !! core                       740L  2C   32m  CC=12     ←0
-  │ !! testql_monitor             693L  3C   40m  CC=13     ←1
-  │ !! visual_diff                638L  1C   26m  CC=11     ←1
-  │ !! config                     610L  0C   19m  CC=10     ←14
-  │ !! assistant                  594L  1C   24m  CC=14     ←0
-  │ monitoring_manifest        478L  1C   22m  CC=14     ←5
-  │ !! aql                        306L  4C   13m  CC=18     ←0
-  │ cli_scanner                302L  3C   12m  CC=10     ←0
-  │ discovery                  279L  12C   12m  CC=8      ←1
-  │ oql                        267L  5C   12m  CC=14     ←1
-  │ planfile_reporter          267L  1C   16m  CC=14     ←0
-  │ testql_discovery           229L  1C    7m  CC=11     ←0
-  │ cli_config_generator       223L  1C    6m  CC=6      ←0
-  │ testql_cli_generator       215L  1C    6m  CC=6      ←0
-  │ config                     206L  14C    0m  CC=0.0    ←0
-  │ web_client                 185L  1C   10m  CC=6      ←0
-  │ dependency_mapper          177L  1C   12m  CC=6      ←0
-  │ anomaly_detector           175L  1C    8m  CC=7      ←0
-  │ _yaml_detector             128L  1C    8m  CC=8      ←0
-  │ _ast_detector              124L  1C    9m  CC=11     ←1
-  │ health_handlers            123L  1C    6m  CC=8      ←1
-  │ status_data                114L  0C    5m  CC=12     ←1
-  │ control                    106L  0C   12m  CC=4      ←1
-  │ assistant_discovery         99L  0C    3m  CC=11     ←1
-  │ multi                       81L  1C    2m  CC=11     ←0
-  │ cli_bridge                  80L  0C    9m  CC=3      ←1
-  │ _hash_detector              72L  1C    4m  CC=5      ←0
-  │ sync                        70L  0C    2m  CC=9      ←1
-  │ bus                         65L  5C    5m  CC=4      ←0
-  │ generate                    62L  0C    2m  CC=8      ←2
-  │ init_cli                    60L  0C    1m  CC=9      ←1
-  │ assistant_validator         57L  0C    2m  CC=9      ←2
-  │ event_handlers              55L  1C    4m  CC=5      ←1
-  │ __init__                    46L  0C    1m  CC=2      ←0
-  │ endpoints                   44L  0C    1m  CC=5      ←1
-  │ event_store                 41L  1C    3m  CC=4      ←0
-  │ __init__                    36L  0C    0m  CC=0.0    ←0
-  │ anomaly_models              35L  2C    0m  CC=0.0    ←0
-  │ validate                    34L  0C    1m  CC=8      ←2
-  │ target                      23L  1C    0m  CC=0.0    ←0
-  │ _base_detector              18L  1C    2m  CC=1      ←0
-  │ paths                       16L  0C    2m  CC=1      ←4
-  │ health_events               11L  1C    0m  CC=0.0    ←0
-  │ file_events                 10L  1C    0m  CC=0.0    ←0
-  │ health_queries               7L  1C    0m  CC=0.0    ←0
   │
   scripts/                        CC̄=3.3    ←in:0  →out:3
   │ run_probe_smoke             88L  0C    6m  CC=6      ←0
@@ -1718,11 +1780,11 @@ LAYERS:
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! duplication.json          3481L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  528L  0C    0m  CC=0.0    ←0
-  │ tree.txt                   330L  0C    0m  CC=0.0    ←0
+  │ tree.txt                   337L  0C    0m  CC=0.0    ←0
   │ testql-deps.json           311L  0C    0m  CC=0.0    ←0
+  │ pyproject.toml             143L  0C    0m  CC=0.0    ←0
   │ koru.yaml                  133L  0C    0m  CC=0.0    ←0
-  │ pyproject.toml             127L  0C    0m  CC=0.0    ←0
-  │ Makefile                    96L  0C    0m  CC=0.0    ←0
+  │ Makefile                   101L  0C    0m  CC=0.0    ←0
   │ regix.yaml                  51L  0C    0m  CC=0.0    ←0
   │ project.sh                  49L  0C    0m  CC=0.0    ←0
   │ Taskfile.yml                32L  0C    0m  CC=0.0    ←0
@@ -1741,23 +1803,23 @@ LAYERS:
 
 COUPLING:
                       packages.dsl2wup                wup   packages.mcp2wup   packages.nlp2wup   packages.uri2wup  packages.rest2wup           examples   packages.cli2wup            scripts        wup.testing
-   packages.dsl2wup                 ──                 10                ←12                ←11                  3                 ←7                                    ←3                                        hub
-                wup                  1                 ──                                    ←2                 ←6                                    ←6                                    ←3                  2  hub
+   packages.dsl2wup                 ──                 10                ←12                 ←6                  3                 ←7                                    ←3                                        hub
+                wup                  1                 ──                                    ←2                 ←3                                    ←6                                    ←3                  2  hub
    packages.mcp2wup                 12                                    ──                  2                  3                                                                                                 !! fan-out
-   packages.nlp2wup                 11                  2                 ←2                 ──                  2                                                                                                 !! fan-out
-   packages.uri2wup                  1                  6                 ←3                 ←2                 ──                                                                                                 hub
+   packages.nlp2wup                  6                  2                 ←2                 ──                  3                                                                                                 !! fan-out
+   packages.uri2wup                  1                  3                 ←3                 ←3                 ──                                                                                                 hub
   packages.rest2wup                  7                                                                                             ──                                                                            
            examples                                     6                                                                                             ──                                                         
    packages.cli2wup                  3                                                                                                                                   ──                                      
             scripts                                     3                                                                                                                                   ──                   
         wup.testing                                    ←2                                                                                                                                                      ──
   CYCLES: none
-  HUB: packages.uri2wup/ (fan-in=8)
-  HUB: packages.dsl2wup/ (fan-in=35)
-  HUB: wup/ (fan-in=27)
-  SMELL: packages.dsl2wup/ fan-out=13 → split needed
-  SMELL: packages.nlp2wup/ fan-out=15 → split needed
+  HUB: wup/ (fan-in=24)
+  HUB: packages.uri2wup/ (fan-in=9)
+  HUB: packages.dsl2wup/ (fan-in=30)
+  SMELL: packages.nlp2wup/ fan-out=11 → split needed
   SMELL: packages.mcp2wup/ fan-out=17 → split needed
+  SMELL: packages.dsl2wup/ fan-out=13 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
@@ -1767,26 +1829,26 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 10 groups | 95f 12177L | 2026-07-29
+# redup/duplication | 11 groups | 96f 12303L | 2026-07-29
 
 SUMMARY:
-  files_scanned: 95
-  total_lines:   12177
-  dup_groups:    10
-  dup_fragments: 23
-  saved_lines:   56
-  scan_ms:       13459
+  files_scanned: 96
+  total_lines:   12303
+  dup_groups:    11
+  dup_fragments: 26
+  saved_lines:   62
+  scan_ms:       13936
 
 HOTSPOTS[7] (files with most duplication):
+  wup/control.py  dup=14L  groups=2  frags=2  (0.1%)
   wup/core.py  dup=12L  groups=1  frags=3  (0.1%)
-  wup/control.py  dup=12L  groups=2  frags=2  (0.1%)
   examples/webhook_notifications.py  dup=12L  groups=1  frags=3  (0.1%)
   packages/mcp2wup/src/mcp2wup/server.py  dup=11L  groups=2  frags=2  (0.1%)
   packages/uri2wup/src/uri2wup/patch.py  dup=9L  groups=1  frags=1  (0.1%)
   packages/uri2wup/src/uri2wup/query.py  dup=9L  groups=1  frags=1  (0.1%)
-  examples/flask-app/app/auth/routes.py  dup=8L  groups=1  frags=2  (0.1%)
+  packages/dsl2wup/src/dsl2wup/grammar.py  dup=9L  groups=1  frags=3  (0.1%)
 
-DUPLICATES[10] (ranked by impact):
+DUPLICATES[11] (ranked by impact):
   [a8a64d10d1166f5d]   EXAC  _resolve_config_path  L=9 N=2 saved=9 sim=1.00
       packages/uri2wup/src/uri2wup/patch.py:25-33  (_resolve_config_path)
       packages/uri2wup/src/uri2wup/query.py:41-49  (_resolve_config_path)
@@ -1794,13 +1856,17 @@ DUPLICATES[10] (ranked by impact):
       wup/core.py:727-730  (on_modified)
       wup/core.py:732-735  (on_created)
       wup/core.py:737-740  (on_deleted)
+  [6342ad0e8e805cbe]   STRU  _parse_validate  L=3 N=3 saved=6 sim=1.00
+      packages/dsl2wup/src/dsl2wup/grammar.py:38-40  (_parse_validate)
+      packages/dsl2wup/src/dsl2wup/grammar.py:64-66  (_parse_init)
+      packages/dsl2wup/src/dsl2wup/grammar.py:81-83  (_parse_adopt)
   [8575900946923f44]   STRU  _snapshot_path  L=3 N=3 saved=6 sim=1.00
       wup/_ast_detector.py:59-61  (_snapshot_path)
       wup/_hash_detector.py:22-24  (_snapshot_path)
       wup/_yaml_detector.py:49-51  (_snapshot_path)
   [F0005]   FUZZ  wup_endpoints  L=6 N=2 saved=6 sim=0.90
       packages/mcp2wup/src/mcp2wup/server.py:88-93  (wup_endpoints)
-      wup/control.py:80-86  (dispatch_endpoints)
+      wup/control.py:99-105  (dispatch_endpoints)
   [F0001]   FUZZ  add_slack  L=3 N=3 saved=6 sim=0.89
       examples/webhook_notifications.py:193-195  (add_slack)
       examples/webhook_notifications.py:197-199  (add_teams)
@@ -1809,11 +1875,11 @@ DUPLICATES[10] (ranked by impact):
       examples/flask-app/app/auth/routes.py:7-11  (login)
       examples/flask-app/app/auth/routes.py:20-22  (register)
   [b5bb02e2622cb9c2]   STRU  _coerce_number  L=5 N=2 saved=5 sim=1.00
-      wup/aql.py:182-186  (_coerce_number)
+      wup/aql.py:184-188  (_coerce_number)
       wup/oql.py:70-74  (_coerce_number)
-  [F0004]   FUZZ  wup_sync  L=5 N=2 saved=5 sim=0.90
+  [F0004]   FUZZ  wup_sync  L=5 N=2 saved=5 sim=0.89
       packages/mcp2wup/src/mcp2wup/server.py:69-73  (wup_sync)
-      wup/control.py:41-45  (dispatch_sync)
+      wup/control.py:58-64  (dispatch_sync)
   [dc68eab4ed2dec80]   STRU  _save_snapshot  L=3 N=2 saved=3 sim=1.00
       examples/visual_diff_demo.py:62-64  (_save_snapshot)
       wup/visual_diff.py:253-255  (_save_snapshot)
@@ -1821,48 +1887,53 @@ DUPLICATES[10] (ranked by impact):
       wup/dependency_mapper.py:106-108  (get_endpoints_for_service)
       wup/dependency_mapper.py:110-112  (get_files_for_service)
 
-REFACTOR[10] (ranked by priority):
+REFACTOR[11] (ranked by priority):
   [1] ○ extract_function   → packages/uri2wup/src/uri2wup/utils/_resolve_config_path.py
       WHY: 2 occurrences of 9-line block across 2 files — saves 9 lines
       FILES: packages/uri2wup/src/uri2wup/patch.py, packages/uri2wup/src/uri2wup/query.py
   [2] ○ extract_class      → wup/utils/on_modified.py
       WHY: 3 occurrences of 4-line block across 1 files — saves 8 lines
       FILES: wup/core.py
-  [3] ○ extract_function   → wup/utils/_snapshot_path.py
+  [3] ○ extract_function   → packages/dsl2wup/src/dsl2wup/utils/_parse_validate.py
+      WHY: 3 occurrences of 3-line block across 1 files — saves 6 lines
+      FILES: packages/dsl2wup/src/dsl2wup/grammar.py
+  [4] ○ extract_function   → wup/utils/_snapshot_path.py
       WHY: 3 occurrences of 3-line block across 3 files — saves 6 lines
       FILES: wup/_ast_detector.py, wup/_hash_detector.py, wup/_yaml_detector.py
-  [4] ○ extract_function   → utils/wup_endpoints.py
+  [5] ○ extract_function   → utils/wup_endpoints.py
       WHY: 2 occurrences of 6-line block across 2 files — saves 6 lines
       FILES: packages/mcp2wup/src/mcp2wup/server.py, wup/control.py
-  [5] ○ extract_class      → examples/utils/add_slack.py
+  [6] ○ extract_class      → examples/utils/add_slack.py
       WHY: 3 occurrences of 3-line block across 1 files — saves 6 lines
       FILES: examples/webhook_notifications.py
-  [6] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
+  [7] ○ extract_function   → examples/flask-app/app/auth/utils/login.py
       WHY: 2 occurrences of 5-line block across 1 files — saves 5 lines
       FILES: examples/flask-app/app/auth/routes.py
-  [7] ○ extract_function   → wup/utils/_coerce_number.py
+  [8] ○ extract_function   → wup/utils/_coerce_number.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: wup/aql.py, wup/oql.py
-  [8] ○ extract_function   → utils/wup_sync.py
+  [9] ○ extract_function   → utils/wup_sync.py
       WHY: 2 occurrences of 5-line block across 2 files — saves 5 lines
       FILES: packages/mcp2wup/src/mcp2wup/server.py, wup/control.py
-  [9] ○ extract_function   → utils/_save_snapshot.py
+  [10] ○ extract_function   → utils/_save_snapshot.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: examples/visual_diff_demo.py, wup/visual_diff.py
-  [10] ○ extract_class      → wup/utils/get_endpoints_for_service.py
+  [11] ○ extract_class      → wup/utils/get_endpoints_for_service.py
       WHY: 2 occurrences of 3-line block across 1 files — saves 3 lines
       FILES: wup/dependency_mapper.py
 
-QUICK_WINS[5] (low risk, high savings — do first):
+QUICK_WINS[6] (low risk, high savings — do first):
   [1] extract_function   saved=9L  → packages/uri2wup/src/uri2wup/utils/_resolve_config_path.py
       FILES: patch.py, query.py
   [2] extract_class      saved=8L  → wup/utils/on_modified.py
       FILES: core.py
-  [3] extract_function   saved=6L  → wup/utils/_snapshot_path.py
+  [3] extract_function   saved=6L  → packages/dsl2wup/src/dsl2wup/utils/_parse_validate.py
+      FILES: grammar.py
+  [4] extract_function   saved=6L  → wup/utils/_snapshot_path.py
       FILES: _ast_detector.py, _hash_detector.py, _yaml_detector.py
-  [4] extract_function   saved=6L  → utils/wup_endpoints.py
+  [5] extract_function   saved=6L  → utils/wup_endpoints.py
       FILES: server.py, control.py
-  [5] extract_class      saved=6L  → examples/utils/add_slack.py
+  [6] extract_class      saved=6L  → examples/utils/add_slack.py
       FILES: webhook_notifications.py
 
 DEPENDENCY_RISK[3] (duplicates spanning multiple packages):
@@ -1876,9 +1947,10 @@ DEPENDENCY_RISK[3] (duplicates spanning multiple packages):
       examples/visual_diff_demo.py
       wup/visual_diff.py
 
-EFFORT_ESTIMATE (total ≈ 2.3h):
+EFFORT_ESTIMATE (total ≈ 2.5h):
   easy   _resolve_config_path                saved=9L  ~18min
   easy   on_modified                         saved=8L  ~16min
+  easy   _parse_validate                     saved=6L  ~12min
   easy   _snapshot_path                      saved=6L  ~12min
   easy   wup_endpoints                       saved=6L  ~24min
   easy   add_slack                           saved=6L  ~12min
@@ -1886,20 +1958,20 @@ EFFORT_ESTIMATE (total ≈ 2.3h):
   easy   _coerce_number                      saved=5L  ~10min
   easy   wup_sync                            saved=5L  ~20min
   easy   _save_snapshot                      saved=3L  ~12min
-  easy   get_endpoints_for_service           saved=3L  ~6min
+  ... +1 more (~6min)
 
 METRICS-TARGET:
-  dup_groups:  10 → 0
-  saved_lines: 56 lines recoverable
+  dup_groups:  11 → 0
+  saved_lines: 62 lines recoverable
 ```
 
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 531 func | 66f | 2026-07-29
+# code2llm/evolution | 574 func | 67f | 2026-07-29
 # generated in 0.00s
 
-NEXT[10] (ranked by impact):
+NEXT[3] (ranked by impact):
   [1] !! SPLIT           wup/cli.py
       WHY: 1079L, 0 classes, max CC=14
       EFFORT: ~4h  IMPACT: 15106
@@ -1908,37 +1980,9 @@ NEXT[10] (ranked by impact):
       WHY: 1013L, 2 classes, max CC=13
       EFFORT: ~4h  IMPACT: 13169
 
-  [3] !  SPLIT-FUNC      query_uri  CC=23  fan=26
-      WHY: CC=23 exceeds 15
-      EFFORT: ~1h  IMPACT: 598
-
-  [4] !! SPLIT-FUNC      parse_line  CC=59  fan=7
-      WHY: CC=59 exceeds 15
-      EFFORT: ~1h  IMPACT: 413
-
-  [5] !! SPLIT-FUNC      envelope_to_dict  CC=58  fan=5
-      WHY: CC=58 exceeds 15
-      EFFORT: ~1h  IMPACT: 290
-
-  [6] !  SPLIT-FUNC      main  CC=15  fan=19
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 285
-
-  [7] !  SPLIT-FUNC      generate_models  CC=15  fan=19
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 285
-
-  [8] !  SPLIT-FUNC      handle_from_tokens  CC=16  fan=17
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 272
-
-  [9] !  SPLIT-FUNC      main  CC=15  fan=17
-      WHY: CC=15 exceeds 15
-      EFFORT: ~1h  IMPACT: 255
-
-  [10] !  SPLIT-FUNC      to_dsl  CC=24  fan=9
-      WHY: CC=24 exceeds 15
-      EFFORT: ~1h  IMPACT: 216
+  [3] !! SPLIT           duplication.json
+      WHY: 3481L, 0 classes, max CC=0
+      EFFORT: ~4h  IMPACT: 0
 
 
 RISKS[3]:
@@ -1947,10 +1991,10 @@ RISKS[3]:
   ⚠ Splitting wup/testql_watcher.py may break 52 import paths
 
 METRICS-TARGET:
-  CC̄:          5.0 → ≤3.5
-  max-CC:      59 → ≤20
+  CC̄:          4.5 → ≤3.1
+  max-CC:      14 → ≤7
   god-modules: 9 → 0
-  high-CC(≥15): 13 → ≤6
+  high-CC(≥15): 0 → ≤0
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -1978,7 +2022,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.0 → now CC̄=5.0
+  prev CC̄=5.0 → now CC̄=4.5
 ```
 
 ## Intent

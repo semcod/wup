@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import json
 
 from dsl2wup import dispatch
 from dsl2wup.pb_codec import encode_protobuf

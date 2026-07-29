@@ -83,6 +83,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
 
+## [0.2.78] - 2026-07-29
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_assistant.py
+- Update tests/test_auto_detection.py
+- Update tests/test_bootstrap.py
+- Update tests/test_cli_filtering.py
+- Update tests/test_e2e.py
+- Update tests/test_monitoring_manifest.py
+- Update tests/test_multi_project.py
+- Update tests/test_service_inference.py
+- Update tests/test_testql_monitor.py
+- Update tests/test_visual_diff_progress.py
+- ... and 1 more files
+
+### Other
+- Update Makefile
+- Update app.doql.events.pb
+- Update app.doql.less
+- Update packages/cli2wup/src/cli2wup/cli.py
+- Update packages/dsl2wup/src/dsl2wup/cli.py
+- Update packages/dsl2wup/src/dsl2wup/codegen.py
+- Update packages/dsl2wup/src/dsl2wup/events.py
+- Update packages/dsl2wup/src/dsl2wup/grammar.py
+- Update packages/dsl2wup/src/dsl2wup/handlers/command.py
+- Update packages/dsl2wup/src/dsl2wup/pb_codec.py
+- ... and 41 more files
+
 ## [0.2.77] - 2026-07-17
 
 ### Docs

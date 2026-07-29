@@ -32,29 +32,59 @@ class ApplyResult:
         }
 
 
+_INTENT_KEYWORDS = (
+    ("init_cli", ("init-cli", "init cli", "cli setup", "cli scan")),
+    ("validate", ("validate", "waliduj", "sprawdź", "sprawdz")),
+    ("patch", ("patch", "update", "zmień", "zmien", "edytuj", "edit")),
+    ("map", ("map", "deps", "dependency", "map-deps")),
+    ("sync", ("sync", "monitoring", "manifest")),
+    ("generate", ("generate", "wygeneruj", "init", "stwórz", "stworz", "create")),
+    ("endpoints", ("endpoints", "testql-endpoints", "scenarios")),
+    ("status", ("status", "stan", "podsumowanie")),
+    ("health", ("health", "zdrowie")),
+    ("query", ("query", "pokaż", "pokaz", "read", "show", "get", "config")),
+)
+
+
 def _intent(prompt: str) -> str:
     text = prompt.lower()
-    if any(w in text for w in ("validate", "waliduj", "sprawdź", "sprawdz")):
-        return "validate"
-    if any(w in text for w in ("generate", "wygeneruj", "init", "stwórz", "stworz", "create")):
-        return "generate"
-    if any(w in text for w in ("patch", "update", "zmień", "zmien", "edytuj", "edit")):
-        return "patch"
-    if any(w in text for w in ("map", "deps", "dependency", "map-deps")):
-        return "map"
-    if any(w in text for w in ("sync", "monitoring", "manifest")):
-        return "sync"
-    if any(w in text for w in ("init-cli", "init cli", "cli setup", "cli scan")):
-        return "init_cli"
-    if any(w in text for w in ("endpoints", "testql-endpoints", "scenarios")):
-        return "endpoints"
-    if any(w in text for w in ("status", "stan", "podsumowanie")):
-        return "status"
-    if any(w in text for w in ("health", "zdrowie")):
-        return "health"
-    if any(w in text for w in ("query", "pokaż", "pokaz", "read", "show", "get", "config")):
-        return "query"
+    for intent, keywords in _INTENT_KEYWORDS:
+        if any(word in text for word in keywords):
+            return intent
     return "query"
+
+
+def _simple_command(intent: str, explicit_file: str | None, project: str) -> dict[str, str] | None:
+    commands = {
+        "validate": {"verb": "VALIDATE", "path": explicit_file or "wup.yaml", "project": project},
+        "map": {"verb": "MAP", "project": project, "out": "deps.json"},
+        "status": {"verb": "STATUS", "project": project},
+        "health": {"verb": "HEALTH", "project": project},
+    }
+    return commands.get(intent)
+
+
+def _generated_command(prompt: str, explicit_file: str | None, project: str) -> dict[str, str]:
+    from nlp2wup.generate import _extract_template
+
+    cmd = {"verb": "GENERATE", "text": prompt, "out": explicit_file or "wup.yaml", "project": project}
+    if template := _extract_template(prompt):
+        cmd["template"] = template
+    return cmd
+
+
+def _special_command(intent: str, prompt: str, explicit_file: str | None, file: str | None, project: str) -> dict[str, Any] | None:
+    text = prompt.lower()
+    if intent == "generate":
+        return _generated_command(prompt, explicit_file, project)
+    if intent == "sync":
+        return {"verb": "SYNC", "project": project, "file": explicit_file or file or "", "merge_endpoints": any(word in text for word in ("merge", "endpoints", "połącz", "polacz"))}
+    if intent == "init_cli":
+        return {"verb": "INIT_CLI", "project": project, "out": explicit_file or "wup.yaml", "merge": "merge" in text}
+    if intent == "endpoints":
+        match = re.search(r"([\w./-]+scenarios[\w./-]*)", prompt, re.IGNORECASE)
+        return {"verb": "ENDPOINTS", "scenarios_dir": match.group(1) if match else "scenarios/tests", "out": explicit_file or "testql-deps.json"}
+    return None
 
 
 def to_dsl(prompt: str, *, file: str | None = None, project: str = ".") -> str:
@@ -65,40 +95,38 @@ def to_dsl(prompt: str, *, file: str | None = None, project: str = ".") -> str:
     path_match = re.search(r"([\w./-]+\.(?:ya?ml|json))", prompt, re.IGNORECASE)
     explicit_file = path_match.group(1) if path_match else file
 
-    if intent == "validate":
-        return to_text({"verb": "VALIDATE", "path": explicit_file or "wup.yaml", "project": project})
-    if intent == "generate":
-        from nlp2wup.generate import _extract_template
-
-        cmd = {"verb": "GENERATE", "text": prompt, "out": explicit_file or "wup.yaml", "project": project}
-        if tpl := _extract_template(prompt):
-            cmd["template"] = tpl
+    if cmd := _simple_command(intent, explicit_file, project):
         return to_text(cmd)
-    if intent == "map":
-        return to_text({"verb": "MAP", "project": project, "out": "deps.json"})
-    if intent == "sync":
-        cmd = {"verb": "SYNC", "project": project, "file": explicit_file or file or ""}
-        if any(w in prompt.lower() for w in ("merge", "endpoints", "połącz", "polacz")):
-            cmd["merge_endpoints"] = True
+    if cmd := _special_command(intent, prompt, explicit_file, file, project):
         return to_text(cmd)
-    if intent == "init_cli":
-        cmd = {"verb": "INIT_CLI", "project": project, "out": explicit_file or "wup.yaml"}
-        if "merge" in prompt.lower():
-            cmd["merge"] = True
-        return to_text(cmd)
-    if intent == "endpoints":
-        scen = "scenarios/tests"
-        if m := re.search(r"([\w./-]+scenarios[\w./-]*)", prompt, re.IGNORECASE):
-            scen = m.group(1)
-        return to_text({"verb": "ENDPOINTS", "scenarios_dir": scen, "out": explicit_file or "testql-deps.json"})
-    if intent == "status":
-        return to_text({"verb": "STATUS", "project": project})
-    if intent == "health":
-        return to_text({"verb": "HEALTH", "project": project})
     hit = best_uri(prompt, file=explicit_file, project=project)
+    if intent == "patch":
+        target = hit.uri if hit else "wup://block/config"
+        return to_text(
+            {
+                "verb": "PATCH",
+                "target": target,
+                "file": explicit_file or file or "",
+                "project": project,
+            }
+        )
     if hit:
-        return to_text({"verb": "QUERY", "target": hit.uri, "file": explicit_file or "", "project": project})
-    return to_text({"verb": "RESOLVE", "text": prompt, "file": explicit_file or "", "project": project})
+        return to_text(
+            {
+                "verb": "QUERY",
+                "target": hit.uri,
+                "file": explicit_file or "",
+                "project": project,
+            }
+        )
+    return to_text(
+        {
+            "verb": "RESOLVE",
+            "text": prompt,
+            "file": explicit_file or "",
+            "project": project,
+        }
+    )
 
 
 def apply_nl(
@@ -108,13 +136,26 @@ def apply_nl(
     project: str = ".",
     content: str | None = None,
 ) -> ApplyResult:
+    line = to_dsl(prompt, file=file, project=project)
+    if _intent(prompt) == "patch" and content is not None:
+        from uri2wup.patch import patch_uri
+
+        hit = best_uri(prompt, file=file, project=project)
+        target = hit.uri if hit else "wup://block/config"
+        patched = patch_uri(target, content=content, file=file, project=project)
+        payload = patched.to_dict()
+        return ApplyResult(
+            ok=patched.ok,
+            prompt=prompt,
+            action="patch",
+            uri=target,
+            output=json.dumps(payload, ensure_ascii=False, indent=2),
+            data=payload,
+            error=patched.error,
+        )
+
     from dsl2wup import dispatch
 
-    line = to_dsl(prompt, file=file, project=project)
-    if _intent(prompt) == "patch" and content:
-        hit = best_uri(prompt, file=file, project=project)
-        if hit:
-            line = f'PATCH {hit.uri} WITH patch.fragment.yaml FILE {file or "wup.yaml"} PROJECT {project}'
     result = dispatch(line, default_file=file)
     return ApplyResult(
         ok=result.ok,

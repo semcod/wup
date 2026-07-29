@@ -78,7 +78,7 @@ class TestQLEndpointDiscovery:
                                     method = item[0]
                                     path = item[1]
                                     endpoints.append(f"{method.upper()} {path}")
-            except:
+            except (AttributeError, TypeError, yaml.YAMLError):
                 pass
             
         except Exception as e:

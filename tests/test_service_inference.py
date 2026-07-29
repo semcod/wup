@@ -1,7 +1,6 @@
 """Unit tests for service inference logic."""
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock
 
 from wup.core import WupWatcher
 from wup.models.config import (
@@ -201,7 +200,6 @@ def test_file_change_uses_configured_services_when_inference_fails():
         
         # Mock schedule_quick_test to track which services are tested
         tested_services = []
-        original_schedule = watcher.schedule_quick_test
         watcher.schedule_quick_test = lambda s: tested_services.append(s)
         
         # Trigger file change

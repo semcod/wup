@@ -2,16 +2,17 @@
 CLI interface for WUP (What's Up) - Intelligent file watcher for regression testing.
 """
 
+from __future__ import annotations
+
 import asyncio
 from pathlib import Path
 from typing import List, Optional
 
 import typer
-from rich.console import Console
+from rich.console import Console, Group
 
 from .config import find_config_file, load_config
 from .core import WupWatcher
-from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig
 from .multi import MultiProjectWatcher
 from .testql_watcher import TestQLWatcher
@@ -47,7 +48,7 @@ def _print_watch_header(
     config_path: Optional[Path],
 ) -> None:
     """Print watcher startup banner."""
-    console.print(f"[bold cyan]🚀 WUP Watcher[/bold cyan]")
+    console.print("[bold cyan]🚀 WUP Watcher[/bold cyan]")
     console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
     console.print(f"[dim]Description: {wup_config.project.description}[/dim]")
     console.print(f"[dim]CPU Throttle: {cpu_throttle * 100}%[/dim]")
@@ -383,7 +384,7 @@ def map_deps(
     config_path = Path(config) if config else None
     wup_config = load_config(project_path, config_path)
     
-    console.print(f"[bold cyan]🔍 Building dependency map[/bold cyan]")
+    console.print("[bold cyan]🔍 Building dependency map[/bold cyan]")
     console.print(f"[dim]Project: {wup_config.project.name}[/dim]")
     console.print(f"[dim]Framework: {framework}[/dim]")
     if wup_config.services:
@@ -812,7 +813,7 @@ def init(
 
     output_path = Path((result.get("data") or {}).get("output") or output)
     console.print(f"[green]✓ Created wup.yaml configuration at {output_path}[/green]")
-    console.print(f"[dim]Edit this file to customize your WUP setup[/dim]")
+    console.print("[dim]Edit this file to customize your WUP setup[/dim]")
 
 
 @app.command()
@@ -832,7 +833,7 @@ def testql_endpoints(
         console.print(f"[red]Error: Scenarios directory '{scenarios_dir}' does not exist[/red]")
         raise typer.Exit(1)
     
-    console.print(f"[cyan]🔍 Discovering endpoints from TestQL scenarios...[/cyan]")
+    console.print("[cyan]🔍 Discovering endpoints from TestQL scenarios...[/cyan]")
     console.print(f"[dim]Scenarios directory: {scenarios_dir}[/dim]")
     console.print()
     
@@ -869,7 +870,7 @@ def testql_endpoints(
     
     console.print(table)
     console.print()
-    console.print(f"[bold]Summary:[/bold]")
+    console.print("[bold]Summary:[/bold]")
     console.print(f"  Services: {len(dependency_map.get('services', {}))}")
     console.print(f"  Total endpoints: {total_endpoints}")
     console.print(f"  Total scenarios: {total_scenarios}")
@@ -905,7 +906,6 @@ def sync_testql(
         MANIFEST_BEGIN,
         build_monitoring_manifest,
         format_manifest_summary,
-        patch_wup_yaml_monitoring,
     )
     from .testql_monitor import TestQLMonitor
 
@@ -1034,7 +1034,7 @@ def init_cli(
         console.print(f"[red]Error: Project path '{project}' does not exist[/red]")
         raise typer.Exit(1)
 
-    console.print(f"[cyan]🔍 Scanning project for CLI commands...[/cyan]")
+    console.print("[cyan]🔍 Scanning project for CLI commands...[/cyan]")
     console.print(f"[dim]Project: {project_path}[/dim]\n")
 
     from .cli_bridge import run_init_cli

@@ -46,7 +46,7 @@ class EventStore:
         )
         self.path.parent.mkdir(parents=True, exist_ok=True)
         if self.fmt == "protobuf":
-            from dsl2wup.pb_codec import encode_protobuf, envelope_to_dict, result_to_pb
+            from dsl2wup.pb_codec import encode_protobuf, result_to_pb
             from dsl2wup.v1 import result_pb2
 
             pb = result_pb2.DslEvent()

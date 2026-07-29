@@ -2,7 +2,7 @@
 project_metadata('wup', '0.2.77', 'python').
 
 % ── Project Files ────────────────────────────────────────
-project_file('app.doql.less', 256, 'less').
+project_file('app.doql.less', 264, 'less').
 project_file('examples/c2004_monorepo_demo.py', 259, 'python').
 project_file('examples/ci_cd_integration.py', 340, 'python').
 project_file('examples/fastapi-app/app/__init__.py', 1, 'python').
@@ -31,23 +31,23 @@ project_file('packages/dsl2wup/src/dsl2wup/__init__.py', 7, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/bus.py', 80, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/cli.py', 109, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/codec.py', 36, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/codegen.py', 99, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/codegen.py', 71, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/engine.py', 9, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/events.py', 117, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/grammar.py', 157, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/handlers/command.py', 233, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/grammar.py', 154, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/handlers/command.py', 272, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/handlers/query.py', 138, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/models.py', 130, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/pb_codec.py', 236, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/pb_codec.py', 148, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/result.py', 29, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/schema_registry.py', 85, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/__init__.py', 1, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/command_pb2.py', 63, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/result_pb2.py', 40, 'python').
-project_file('packages/dsl2wup/tests/test_dsl2wup.py', 40, 'python').
+project_file('packages/dsl2wup/tests/test_dsl2wup.py', 38, 'python').
 project_file('packages/dsl2wup/tests/test_generate.py', 15, 'python').
 project_file('packages/dsl2wup/tests/test_health_paths.py', 19, 'python').
-project_file('packages/dsl2wup/tests/test_parity.py', 67, 'python').
+project_file('packages/dsl2wup/tests/test_parity.py', 66, 'python').
 project_file('packages/dsl2wup/tests/test_parity_across_adapters.py', 77, 'python').
 project_file('packages/dsl2wup/tests/test_protobuf.py', 18, 'python').
 project_file('packages/dsl2wup/tests/test_protobuf_extended.py', 21, 'python').
@@ -58,53 +58,55 @@ project_file('packages/mcp2wup/src/mcp2wup/cli.py', 25, 'python').
 project_file('packages/mcp2wup/src/mcp2wup/server.py', 150, 'python').
 project_file('packages/mcp2wup/tests/test_mcp2wup.py', 12, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/__init__.py', 8, 'python').
-project_file('packages/nlp2wup/src/nlp2wup/apply.py', 127, 'python').
+project_file('packages/nlp2wup/src/nlp2wup/apply.py', 168, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/cli.py', 44, 'python').
-project_file('packages/nlp2wup/src/nlp2wup/generate.py', 26, 'python').
+project_file('packages/nlp2wup/src/nlp2wup/generate.py', 25, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/validate.py', 12, 'python').
-project_file('packages/nlp2wup/tests/test_apply.py', 16, 'python').
+project_file('packages/nlp2wup/tests/test_apply.py', 45, 'python').
 project_file('packages/rest2wup/src/rest2wup/__init__.py', 6, 'python').
 project_file('packages/rest2wup/src/rest2wup/app.py', 69, 'python').
 project_file('packages/rest2wup/src/rest2wup/cli.py', 29, 'python').
 project_file('packages/rest2wup/tests/test_rest2wup.py', 21, 'python').
 project_file('packages/uri2wup/src/uri2wup/__init__.py', 8, 'python').
-project_file('packages/uri2wup/src/uri2wup/cli.py', 63, 'python').
-project_file('packages/uri2wup/src/uri2wup/decode.py', 73, 'python').
+project_file('packages/uri2wup/src/uri2wup/cli.py', 73, 'python').
+project_file('packages/uri2wup/src/uri2wup/decode.py', 62, 'python').
 project_file('packages/uri2wup/src/uri2wup/nlp2uri.py', 49, 'python').
-project_file('packages/uri2wup/src/uri2wup/patch.py', 69, 'python').
-project_file('packages/uri2wup/src/uri2wup/query.py', 165, 'python').
+project_file('packages/uri2wup/src/uri2wup/patch.py', 92, 'python').
+project_file('packages/uri2wup/src/uri2wup/query.py', 154, 'python').
 project_file('packages/uri2wup/src/uri2wup/uri.py', 93, 'python').
 project_file('packages/uri2wup/tests/test_decode.py', 27, 'python').
-project_file('packages/uri2wup/tests/test_query.py', 20, 'python').
+project_file('packages/uri2wup/tests/test_patch.py', 29, 'python').
+project_file('packages/uri2wup/tests/test_query.py', 36, 'python').
 project_file('project.sh', 49, 'shell').
 project_file('scripts/run_probe_smoke.py', 89, 'python').
 project_file('tests/test_aql.py', 121, 'python').
-project_file('tests/test_assistant.py', 181, 'python').
+project_file('tests/test_assistant.py', 180, 'python').
 project_file('tests/test_auto_detection.py', 195, 'python').
+project_file('tests/test_bootstrap.py', 32, 'python').
 project_file('tests/test_cli_bridge.py', 36, 'python').
 project_file('tests/test_cli_filtering.py', 266, 'python').
 project_file('tests/test_control.py', 19, 'python').
 project_file('tests/test_discovery_adapters.py', 119, 'python').
-project_file('tests/test_e2e.py', 517, 'python').
+project_file('tests/test_e2e.py', 515, 'python').
 project_file('tests/test_endpoints_init_cli.py', 69, 'python').
 project_file('tests/test_genericity.py', 136, 'python').
 project_file('tests/test_health_summary_passed.py', 54, 'python').
-project_file('tests/test_monitoring_manifest.py', 73, 'python').
-project_file('tests/test_multi_project.py', 127, 'python').
+project_file('tests/test_monitoring_manifest.py', 72, 'python').
+project_file('tests/test_multi_project.py', 155, 'python').
 project_file('tests/test_oql.py', 105, 'python').
 project_file('tests/test_planfile_reporter_dedupe.py', 79, 'python').
 project_file('tests/test_probe_mutex.py', 39, 'python').
-project_file('tests/test_service_inference.py', 212, 'python').
+project_file('tests/test_service_inference.py', 210, 'python').
 project_file('tests/test_status_data.py', 35, 'python').
 project_file('tests/test_sync.py', 42, 'python').
-project_file('tests/test_testql_monitor.py', 221, 'python').
+project_file('tests/test_testql_monitor.py', 218, 'python').
 project_file('tests/test_testql_watcher.py', 597, 'python').
 project_file('tests/test_visual_diff_periodic_skip.py', 41, 'python').
-project_file('tests/test_visual_diff_progress.py', 57, 'python').
+project_file('tests/test_visual_diff_progress.py', 56, 'python').
 project_file('tests/test_watch_exclude.py', 35, 'python').
 project_file('tests/test_watch_no_paths_exit.py', 31, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
-project_file('tests/test_wup.py', 1940, 'python').
+project_file('tests/test_wup.py', 1978, 'python').
 project_file('tests/test_wup_generate.py', 22, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
@@ -114,17 +116,18 @@ project_file('wup/_hash_detector.py', 73, 'python').
 project_file('wup/_yaml_detector.py', 129, 'python').
 project_file('wup/anomaly_detector.py', 176, 'python').
 project_file('wup/anomaly_models.py', 36, 'python').
-project_file('wup/aql.py', 307, 'python').
-project_file('wup/assistant.py', 595, 'python').
+project_file('wup/aql.py', 309, 'python').
+project_file('wup/assistant.py', 585, 'python').
 project_file('wup/assistant_discovery.py', 100, 'python').
 project_file('wup/assistant_validator.py', 58, 'python').
+project_file('wup/bootstrap.py', 62, 'python').
 project_file('wup/bus.py', 66, 'python').
 project_file('wup/cli.py', 1080, 'python').
-project_file('wup/cli_bridge.py', 81, 'python').
+project_file('wup/cli_bridge.py', 195, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
-project_file('wup/cli_scanner.py', 303, 'python').
-project_file('wup/config.py', 611, 'python').
-project_file('wup/control.py', 107, 'python').
+project_file('wup/cli_scanner.py', 302, 'python').
+project_file('wup/config.py', 585, 'python').
+project_file('wup/control.py', 128, 'python').
 project_file('wup/core.py', 741, 'python').
 project_file('wup/dependency_mapper.py', 178, 'python').
 project_file('wup/discovery.py', 280, 'python').
@@ -144,7 +147,7 @@ project_file('wup/planfile_reporter.py', 268, 'python').
 project_file('wup/status_data.py', 115, 'python').
 project_file('wup/sync.py', 71, 'python').
 project_file('wup/testing/events/health_events.py', 12, 'python').
-project_file('wup/testing/events/test_results.py', 23, 'python').
+project_file('wup/testing/events/test_results.py', 22, 'python').
 project_file('wup/testing/handlers/event_handlers.py', 56, 'python').
 project_file('wup/testing/handlers/health_handlers.py', 124, 'python').
 project_file('wup/testing/queries/health_queries.py', 8, 'python').
@@ -219,7 +222,10 @@ python_function('examples/webhook_notifications.py', 'create_discord_payload', 1
 python_function('examples/webhook_notifications.py', 'show_webhook_demo', 0, 4, 16).
 python_function('examples/webhook_notifications.py', 'main', 0, 3, 5).
 python_function('packages/cli2wup/src/cli2wup/cli.py', 'run_shell', 0, 9, 8).
-python_function('packages/cli2wup/src/cli2wup/cli.py', 'main', 1, 15, 17).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_print_result', 1, 4, 4).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_run_script', 1, 3, 4).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_run_command', 1, 2, 2).
+python_function('packages/cli2wup/src/cli2wup/cli.py', 'main', 1, 4, 13).
 python_function('packages/cli2wup/tests/test_cli2wup.py', 'test_cli_help', 0, 2, 1).
 python_function('packages/dsl2wup/src/dsl2wup/bus.py', '_dispatch_cmd', 1, 5, 12).
 python_function('packages/dsl2wup/src/dsl2wup/bus.py', '_bytes_to_cmd', 1, 3, 5).
@@ -233,12 +239,29 @@ python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'encode_text', 1, 2, 2)
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'roundtrip_text', 1, 3, 5).
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'encode_protobuf', 1, 1, 1).
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'decode_protobuf', 1, 1, 1).
-python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'generate_models', 0, 15, 16).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_field_type', 1, 3, 3).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_field_line', 3, 10, 5).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_append_model', 2, 4, 13).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'generate_models', 0, 3, 7).
 python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'main', 0, 1, 4).
 python_function('packages/dsl2wup/src/dsl2wup/events.py', 'default_event_store', 1, 2, 3).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'split_command', 1, 4, 3).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'pick_flag', 2, 3, 2).
-python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'parse_line', 1, 59, 7).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_flag_values', 2, 3, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_query', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_validate', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_resolve', 2, 1, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_health', 2, 3, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_patch', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_map', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_init', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_generate', 2, 2, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_sync', 2, 3, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_adopt', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_endpoints', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_status', 2, 4, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_init_cli', 2, 4, 3).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'parse_line', 1, 3, 4).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'to_text', 1, 11, 6).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_read_content', 1, 1, 3).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_project_root', 1, 2, 4).
@@ -248,8 +271,10 @@ python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_gene
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_patch', 1, 3, 10).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_sync', 1, 4, 7).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_init_cli', 1, 4, 6).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_query_handlers', 0, 1, 0).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_command_handlers', 0, 1, 0).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_adopt', 1, 8, 13).
-python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_from_tokens', 2, 16, 17).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_from_tokens', 2, 6, 9).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', '_project_root', 2, 2, 4).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_query', 1, 4, 8).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_validate', 1, 5, 8).
@@ -257,8 +282,10 @@ python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_resolv
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_status', 1, 4, 8).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_endpoints', 1, 4, 5).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_health', 1, 5, 9).
-python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_set_body', 2, 16, 6).
-python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'envelope_to_dict', 1, 58, 5).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_canonical_verb', 1, 2, 0).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_set_body', 2, 7, 8).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_body_to_dict', 2, 10, 3).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'envelope_to_dict', 1, 3, 7).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'encode_protobuf', 1, 1, 6).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'decode_protobuf', 1, 1, 3).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'encode_text_to_protobuf', 1, 2, 3).
@@ -296,29 +323,46 @@ python_function('packages/mcp2wup/src/mcp2wup/server.py', '_require_fastmcp', 0,
 python_function('packages/mcp2wup/src/mcp2wup/server.py', 'create_server', 1, 1, 1).
 python_function('packages/mcp2wup/src/mcp2wup/server.py', 'run_server', 0, 1, 2).
 python_function('packages/mcp2wup/tests/test_mcp2wup.py', 'test_create_server', 0, 3, 1).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_intent', 1, 21, 2).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'to_dsl', 1, 24, 8).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'apply_nl', 1, 5, 6).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_intent', 1, 4, 2).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_simple_command', 3, 2, 1).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_generated_command', 3, 3, 1).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_special_command', 5, 11, 5).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'to_dsl', 1, 11, 7).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'apply_nl', 1, 4, 8).
 python_function('packages/nlp2wup/src/nlp2wup/cli.py', 'main', 1, 9, 11).
 python_function('packages/nlp2wup/src/nlp2wup/generate.py', '_extract_template', 1, 3, 1).
 python_function('packages/nlp2wup/src/nlp2wup/generate.py', 'generate_from_nl', 1, 1, 2).
 python_function('packages/nlp2wup/src/nlp2wup/validate.py', 'validate_wup_config', 1, 1, 1).
 python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_validate', 0, 2, 2).
 python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_map', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_init_cli_is_not_misclassified_as_generate', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_patch_is_not_misclassified_as_query', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_apply_patch_uses_supplied_content_without_fragment_file', 1, 3, 5).
 python_function('packages/rest2wup/src/rest2wup/app.py', 'create_app', 0, 1, 24).
 python_function('packages/rest2wup/src/rest2wup/cli.py', 'main', 1, 4, 8).
 python_function('packages/rest2wup/tests/test_rest2wup.py', 'test_health_endpoint', 0, 3, 4).
 python_function('packages/rest2wup/tests/test_rest2wup.py', 'test_post_dsl_health', 0, 2, 3).
-python_function('packages/uri2wup/src/uri2wup/cli.py', 'main', 1, 15, 13).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_resolve', 1, 3, 4).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_decode', 1, 1, 2).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_query', 1, 4, 4).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_dispatch', 1, 5, 5).
+python_function('packages/uri2wup/src/uri2wup/cli.py', 'main', 1, 3, 8).
 python_function('packages/uri2wup/src/uri2wup/decode.py', '_dict_to_dsl', 1, 7, 5).
-python_function('packages/uri2wup/src/uri2wup/decode.py', 'decode_uri', 1, 20, 8).
+python_function('packages/uri2wup/src/uri2wup/decode.py', '_command_from_params', 2, 7, 3).
+python_function('packages/uri2wup/src/uri2wup/decode.py', '_block_query', 2, 4, 2).
+python_function('packages/uri2wup/src/uri2wup/decode.py', 'decode_uri', 1, 4, 8).
 python_function('packages/uri2wup/src/uri2wup/nlp2uri.py', 'nlp2uri', 1, 4, 6).
 python_function('packages/uri2wup/src/uri2wup/nlp2uri.py', 'best_uri', 1, 2, 1).
 python_function('packages/uri2wup/src/uri2wup/patch.py', '_resolve_config_path', 2, 4, 5).
-python_function('packages/uri2wup/src/uri2wup/patch.py', 'patch_uri', 1, 17, 12).
+python_function('packages/uri2wup/src/uri2wup/patch.py', '_replace_at_path', 3, 10, 5).
+python_function('packages/uri2wup/src/uri2wup/patch.py', 'patch_uri', 1, 9, 12).
 python_function('packages/uri2wup/src/uri2wup/query.py', '_resolve_config_path', 2, 4, 5).
-python_function('packages/uri2wup/src/uri2wup/query.py', '_extract_block', 2, 14, 10).
-python_function('packages/uri2wup/src/uri2wup/query.py', 'query_uri', 1, 23, 24).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_extract_block', 2, 8, 3).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_runtime_block', 2, 6, 8).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_success', 5, 4, 7).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_query_context', 4, 7, 6).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_query_data', 3, 5, 6).
+python_function('packages/uri2wup/src/uri2wup/query.py', 'query_uri', 1, 4, 7).
 python_function('packages/uri2wup/src/uri2wup/uri.py', '_encode', 1, 1, 1).
 python_function('packages/uri2wup/src/uri2wup/uri.py', '_decode', 1, 2, 1).
 python_function('packages/uri2wup/src/uri2wup/uri.py', 'uri_for_cmd', 1, 7, 4).
@@ -327,7 +371,9 @@ python_function('packages/uri2wup/src/uri2wup/uri.py', 'is_wup_uri', 1, 1, 2).
 python_function('packages/uri2wup/src/uri2wup/uri.py', 'parse_wup_uri', 1, 7, 6).
 python_function('packages/uri2wup/tests/test_decode.py', 'test_decode_cmd_query', 0, 4, 4).
 python_function('packages/uri2wup/tests/test_decode.py', 'test_decode_block_defaults_to_query', 0, 3, 3).
+python_function('packages/uri2wup/tests/test_patch.py', 'test_patch_nested_value_preserves_sibling_keys', 1, 4, 5).
 python_function('packages/uri2wup/tests/test_query.py', 'test_query_config_block', 1, 3, 3).
+python_function('packages/uri2wup/tests/test_query.py', 'test_query_nested_config_value', 1, 3, 3).
 python_function('scripts/run_probe_smoke.py', 'print_probe_plan', 1, 6, 5).
 python_function('scripts/run_probe_smoke.py', 'run_live_http_probes', 2, 4, 3).
 python_function('scripts/run_probe_smoke.py', 'run_quick_testql_dryrun', 2, 3, 3).
@@ -362,6 +408,8 @@ python_function('tests/test_auto_detection.py', 'test_cli_config_generator_creat
 python_function('tests/test_auto_detection.py', 'test_cli_config_generator_web_project_uses_default', 0, 4, 6).
 python_function('tests/test_auto_detection.py', 'test_auto_generate_config_detects_cli', 0, 4, 7).
 python_function('tests/test_auto_detection.py', 'test_auto_generate_config_web_uses_default', 0, 3, 6).
+python_function('tests/test_bootstrap.py', 'test_watchdog_preflight_reports_signal', 1, 3, 3).
+python_function('tests/test_bootstrap.py', 'test_main_stops_before_importing_cli_on_failed_watch_preflight', 2, 3, 3).
 python_function('tests/test_cli_bridge.py', 'test_bridge_init', 1, 3, 3).
 python_function('tests/test_cli_bridge.py', 'test_bridge_map_deps', 1, 3, 4).
 python_function('tests/test_cli_bridge.py', 'test_bridge_validate', 1, 2, 3).
@@ -410,6 +458,7 @@ python_function('tests/test_multi_project.py', 'test_detect_watch_paths_uses_exi
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_falls_back_when_nothing_matches', 1, 2, 1).
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_backend_frontend', 1, 3, 2).
 python_function('tests/test_multi_project.py', 'test_default_config_watches_only_real_dirs', 1, 2, 2).
+python_function('tests/test_multi_project.py', 'test_project_dotenv_is_resolved_without_cross_project_leakage', 2, 7, 4).
 python_function('tests/test_multi_project.py', 'test_discover_finds_subprojects', 1, 3, 3).
 python_function('tests/test_multi_project.py', 'test_discover_skips_vendor_and_hidden', 1, 3, 2).
 python_function('tests/test_multi_project.py', 'test_resolve_paths_dedupes', 1, 2, 4).
@@ -456,7 +505,7 @@ python_function('tests/test_testql_monitor.py', 'test_assign_firmware_service', 
 python_function('tests/test_testql_monitor.py', 'test_monitor_merges_config_and_service_map', 0, 5, 11).
 python_function('tests/test_testql_monitor.py', 'test_firmware_live_probe_prefers_oqlos_8202', 0, 2, 2).
 python_function('tests/test_testql_monitor.py', 'test_probes_for_service_ignores_non_health_extra_paths', 0, 3, 9).
-python_function('tests/test_testql_monitor.py', 'test_live_probe_failure_updates_health', 0, 4, 15).
+python_function('tests/test_testql_monitor.py', 'test_live_probe_failure_updates_health', 0, 4, 14).
 python_function('tests/test_testql_watcher.py', 'test_process_changed_file_creates_track_on_failure', 0, 5, 16).
 python_function('tests/test_testql_watcher.py', 'test_browser_event_file_is_written_without_service_url', 0, 5, 11).
 python_function('tests/test_testql_watcher.py', 'test_config_endpoints_use_base_url_from_yaml_config', 0, 3, 9).
@@ -512,7 +561,9 @@ python_function('wup/anomaly_detector.py', 'scan_yaml_changes', 2, 1, 3).
 python_function('wup/aql.py', '_resolve_path', 2, 13, 9).
 python_function('wup/aql.py', '_split_severity', 1, 4, 4).
 python_function('wup/aql.py', '_tokenize', 1, 4, 6).
-python_function('wup/aql.py', 'parse_rule', 1, 18, 11).
+python_function('wup/aql.py', '_rule_selector', 1, 4, 4).
+python_function('wup/aql.py', '_predicate_rule', 6, 14, 9).
+python_function('wup/aql.py', 'parse_rule', 1, 3, 6).
 python_function('wup/aql.py', '_coerce_number', 1, 2, 1).
 python_function('wup/aql.py', '_compare', 3, 4, 2).
 python_function('wup/aql.py', '_length_of', 1, 2, 2).
@@ -525,6 +576,8 @@ python_function('wup/assistant_discovery.py', 'auto_detect_services', 2, 7, 8).
 python_function('wup/assistant_discovery.py', 'detect_service_type', 2, 11, 5).
 python_function('wup/assistant_validator.py', 'validate_config', 2, 9, 3).
 python_function('wup/assistant_validator.py', 'generate_suggestions', 1, 6, 2).
+python_function('wup/bootstrap.py', '_watchdog_preflight', 0, 5, 3).
+python_function('wup/bootstrap.py', 'main', 1, 6, 5).
 python_function('wup/cli.py', '_load_watch_config', 4, 4, 3).
 python_function('wup/cli.py', '_print_watch_header', 5, 3, 1).
 python_function('wup/cli.py', '_refresh_monitoring_manifest', 3, 3, 3).
@@ -550,18 +603,20 @@ python_function('wup/cli.py', 'sync_testql', 4, 10, 19).
 python_function('wup/cli.py', 'assistant', 3, 8, 13).
 python_function('wup/cli.py', 'version', 0, 1, 2).
 python_function('wup/cli.py', 'init_cli', 5, 9, 13).
-python_function('wup/cli_bridge.py', '_fail', 1, 3, 2).
-python_function('wup/cli_bridge.py', 'run_map_deps', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_init', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_sync', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_generate', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_validate', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_status', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_endpoints', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_init_cli', 0, 1, 1).
+python_function('wup/cli_bridge.py', '_result', 2, 3, 3).
+python_function('wup/cli_bridge.py', '_guard', 2, 3, 4).
+python_function('wup/cli_bridge.py', 'run_map_deps', 0, 2, 15).
+python_function('wup/cli_bridge.py', 'run_init', 0, 1, 9).
+python_function('wup/cli_bridge.py', 'run_sync', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_generate', 0, 2, 2).
+python_function('wup/cli_bridge.py', 'run_validate', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_status', 0, 3, 3).
+python_function('wup/cli_bridge.py', 'run_endpoints', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_init_cli', 0, 1, 2).
 python_function('wup/config.py', 'find_config_file', 1, 3, 1).
-python_function('wup/config.py', '_load_dotenv', 1, 10, 6).
-python_function('wup/config.py', 'load_config', 2, 5, 8).
+python_function('wup/config.py', '_read_dotenv', 1, 10, 6).
+python_function('wup/config.py', '_load_dotenv', 2, 3, 3).
+python_function('wup/config.py', 'load_config', 2, 5, 9).
 python_function('wup/config.py', '_parse_project_config', 1, 2, 3).
 python_function('wup/config.py', '_parse_watch_config', 1, 1, 2).
 python_function('wup/config.py', '_parse_services_config', 1, 3, 5).
@@ -569,16 +624,17 @@ python_function('wup/config.py', '_parse_strategy_config', 1, 1, 2).
 python_function('wup/config.py', '_normalize_testql_timeout', 1, 3, 4).
 python_function('wup/config.py', '_parse_testql_extra_args', 1, 5, 5).
 python_function('wup/config.py', '_normalize_testql_extra_args', 1, 5, 5).
-python_function('wup/config.py', '_parse_testql_config', 1, 2, 6).
-python_function('wup/config.py', '_parse_visual_diff_config', 1, 6, 7).
-python_function('wup/config.py', '_parse_web_config', 1, 1, 3).
-python_function('wup/config.py', '_parse_planfile_config', 1, 5, 7).
+python_function('wup/config.py', '_parse_testql_config', 2, 3, 6).
+python_function('wup/config.py', '_parse_visual_diff_config', 2, 7, 7).
+python_function('wup/config.py', '_parse_web_config', 2, 2, 3).
+python_function('wup/config.py', '_parse_planfile_config', 2, 5, 7).
+python_function('wup/config.py', '_parse_anomaly_detection_config', 1, 1, 6).
 python_function('wup/config.py', '_parse_semcod_tools_config', 1, 9, 7).
-python_function('wup/config.py', 'validate_config', 1, 1, 10).
+python_function('wup/config.py', 'validate_config', 1, 2, 11).
 python_function('wup/config.py', 'detect_watch_paths', 1, 4, 1).
 python_function('wup/config.py', 'get_default_config', 1, 1, 6).
-python_function('wup/config.py', 'save_config', 2, 5, 13).
-python_function('wup/control.py', '_result_dict', 1, 1, 2).
+python_function('wup/config.py', 'save_config', 2, 1, 11).
+python_function('wup/control.py', '_result_dict', 1, 3, 3).
 python_function('wup/control.py', 'dispatch_validate', 1, 1, 1).
 python_function('wup/control.py', 'dispatch_query', 1, 3, 3).
 python_function('wup/control.py', 'dispatch_health', 0, 2, 2).
@@ -825,6 +881,7 @@ python_method('TestVisualDiffer', 'test_get_recent_diffs_filters_by_age', 0, 3, 
 python_class('tests/test_wup.py', 'TestConfigLoader').
 python_method('TestConfigLoader', 'test_get_default_config', 0, 5, 5).
 python_method('TestConfigLoader', 'test_save_and_load_config', 0, 5, 12).
+python_method('TestConfigLoader', 'test_save_and_load_preserves_every_non_default_section', 0, 6, 12).
 python_method('TestConfigLoader', 'test_load_config_from_yaml', 0, 9, 5).
 python_method('TestConfigLoader', 'test_load_config_auto_detect', 0, 2, 4).
 python_method('TestConfigLoader', 'test_load_config_no_file_returns_default', 0, 3, 4).
@@ -1214,6 +1271,7 @@ makefile_target('lint', 'Code quality').
 makefile_target('format', '').
 makefile_target('clean', 'Utilities').
 makefile_target('publish', 'Release helpers').
+makefile_target('publish-confirm', '').
 makefile_target('publish-test', '').
 makefile_target('version', '').
 
@@ -1259,7 +1317,7 @@ sumd_interface('cli', 'argparse').
 sumd_interface('cli', '').
 sumd_interface('web', '').
 sumd_workflow('install', 'manual').
-sumd_workflow_step('install', 1, 'echo "📦 Installing sumd..."').
+sumd_workflow_step('install', 1, 'echo "📦 Installing WUP..."').
 sumd_workflow_step('install', 2, 'if command -v uv > /dev/null 2>&1').
 sumd_workflow_step('install', 3, 'uv pip install -e .').
 sumd_workflow_step('install', 4, 'else \').
@@ -1267,7 +1325,7 @@ sumd_workflow_step('install', 5, 'pip install -e .').
 sumd_workflow_step('install', 6, 'fi').
 sumd_workflow_step('install', 7, 'echo "✅ Installation completed!"').
 sumd_workflow('install-dev', 'manual').
-sumd_workflow_step('install-dev', 1, 'echo "📦 Installing sumd with dev dependencies..."').
+sumd_workflow_step('install-dev', 1, 'echo "📦 Installing WUP with dev dependencies..."').
 sumd_workflow_step('install-dev', 2, 'if command -v uv > /dev/null 2>&1').
 sumd_workflow_step('install-dev', 3, 'uv pip install -e ".[dev]"').
 sumd_workflow_step('install-dev', 4, 'else \').
@@ -1276,30 +1334,34 @@ sumd_workflow_step('install-dev', 6, 'fi').
 sumd_workflow_step('install-dev', 7, 'echo "✅ Dev installation completed!"').
 sumd_workflow('test', 'manual').
 sumd_workflow_step('test', 1, 'echo "🧪 Running tests..."').
-sumd_workflow_step('test', 2, '.venv/bin/python -m pytest tests/ -v --tb=short').
+sumd_workflow_step('test', 2, '.venv/bin/python -m pytest tests/ packages/ -v --tb=short').
 sumd_workflow('test-cov', 'manual').
 sumd_workflow_step('test-cov', 1, 'echo "🧪 Running tests with coverage..."').
-sumd_workflow_step('test-cov', 2, '.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json').
+sumd_workflow_step('test-cov', 2, '.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json').
 sumd_workflow('lint', 'manual').
 sumd_workflow_step('lint', 1, 'echo "🔍 Running linting with ruff..."').
-sumd_workflow_step('lint', 2, '.venv/bin/python -m ruff check sumd/').
+sumd_workflow_step('lint', 2, '.venv/bin/python -m ruff check wup/').
 sumd_workflow_step('lint', 3, '.venv/bin/python -m ruff check tests/').
+sumd_workflow_step('lint', 4, '.venv/bin/python -m ruff check packages/').
 sumd_workflow('format', 'manual').
 sumd_workflow_step('format', 1, 'echo "📝 Formatting code with ruff..."').
-sumd_workflow_step('format', 2, '.venv/bin/python -m ruff format sumd/').
+sumd_workflow_step('format', 2, '.venv/bin/python -m ruff format wup/').
 sumd_workflow_step('format', 3, '.venv/bin/python -m ruff format tests/').
+sumd_workflow_step('format', 4, '.venv/bin/python -m ruff format packages/').
 sumd_workflow('clean', 'manual').
 sumd_workflow_step('clean', 1, 'echo "🧹 Cleaning temporary files..."').
 sumd_workflow_step('clean', 2, 'find . -type f -name "*.pyc" -delete').
 sumd_workflow_step('clean', 3, 'find . -type d -name "__pycache__" -delete').
 sumd_workflow('publish', 'manual').
-sumd_workflow_step('publish', 1, 'echo "📦 Publishing to PyPI..."').
+sumd_workflow_step('publish', 1, 'echo "📦 Building release artifacts (no upload)..."').
 sumd_workflow_step('publish', 2, 'command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build)').
 sumd_workflow_step('publish', 3, 'rm -rf dist/ build/ *.egg-info/').
 sumd_workflow_step('publish', 4, '.venv/bin/python -m build').
 sumd_workflow_step('publish', 5, '.venv/bin/twine check dist/*').
-sumd_workflow_step('publish', 6, 'echo "⚡ Ready to upload."').
-sumd_workflow_step('publish', 7, '.venv/bin/twine upload dist/*').
+sumd_workflow_step('publish', 6, 'echo "✅ Release artifacts are valid. Run \'make publish-confirm\' to upload."').
+sumd_workflow('publish-confirm', 'manual').
+sumd_workflow_step('publish-confirm', 1, 'echo "⚡ Uploading release artifacts to PyPI..."').
+sumd_workflow_step('publish-confirm', 2, '.venv/bin/twine upload dist/*').
 sumd_workflow('publish-test', 'manual').
 sumd_workflow_step('publish-test', 1, 'echo "📦 Publishing to TestPyPI..."').
 sumd_workflow_step('publish-test', 2, 'command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build)').

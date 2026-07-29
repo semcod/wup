@@ -24,6 +24,27 @@ def _dict_to_dsl(cmd: dict[str, str]) -> str:
     return " ".join(parts)
 
 
+def _command_from_params(parts: list[str], params: dict[str, str]) -> dict[str, str]:
+    verb = (parts[0] if parts else params.get("verb", "")).upper()
+    if not verb:
+        raise ValueError("wup://cmd requires verb in path or ?verb=")
+    cmd = {"verb": verb}
+    for key in ("target", "path", "text", "service", "file", "project", "format", "out", "framework", "root"):
+        if value := params.get(key):
+            cmd[key] = value
+    if value := params.get("with") or params.get("with_path"):
+        cmd["with_path"] = value
+    return cmd
+
+
+def _block_query(uri: str, parsed: dict[str, object]) -> dict[str, str]:
+    cmd = {"verb": "QUERY", "target": uri}
+    for key in ("file", "project", "format"):
+        if value := str(parsed.get(key) or ""):
+            cmd[key] = value
+    return cmd
+
+
 def decode_uri(uri: str) -> str:
     """Convert wup:// URI to a canonical DSL command line."""
     parsed = parse_wup_uri(uri)
@@ -33,40 +54,8 @@ def decode_uri(uri: str) -> str:
     assert isinstance(params, dict)
 
     if source == "cmd":
-        verb = (parts[0] if parts else params.get("verb", "")).upper()
-        if not verb:
-            raise ValueError("wup://cmd requires verb in path or ?verb=")
-        cmd: dict[str, str] = {"verb": verb}
-        if target := params.get("target"):
-            cmd["target"] = target
-        if path := params.get("path"):
-            cmd["path"] = path
-        if text := params.get("text"):
-            cmd["text"] = text
-        if service := params.get("service"):
-            cmd["service"] = service
-        if with_path := params.get("with") or params.get("with_path"):
-            cmd["with_path"] = with_path
-        for key, param in (
-            ("file", "file"),
-            ("project", "project"),
-            ("format", "format"),
-            ("out", "out"),
-            ("framework", "framework"),
-            ("root", "root"),
-        ):
-            if val := params.get(param):
-                cmd[key] = val
-        return _dict_to_dsl(cmd)
-
+        return _dict_to_dsl(_command_from_params(parts, params))
     if source == "block":
-        cmd = {"verb": "QUERY", "target": uri}
-        if file := str(parsed.get("file") or ""):
-            cmd["file"] = file
-        if project := str(parsed.get("project") or ""):
-            cmd["project"] = project
-        if fmt := str(parsed.get("format") or ""):
-            cmd["format"] = fmt
-        return _dict_to_dsl(cmd)
+        return _dict_to_dsl(_block_query(uri, parsed))
 
     raise ValueError(f"unsupported wup uri source for decode: {source}")

@@ -7,9 +7,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import List
 
-import pytest
 
 
 def run_wup_command(args, cwd=None, timeout=30, capture_output=True, text=True):
@@ -115,7 +113,7 @@ def get_users():
                 "files": {"app/users/routes.py": ["/users"]}
             }))
             
-            result = run_wup_command(
+            run_wup_command(
                 [sys.executable, "-m", "wup.cli", "status", "--deps", str(deps_file)],
                 cwd=tmpdir,
                 capture_output=True,

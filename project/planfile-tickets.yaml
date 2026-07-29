@@ -1,49 +1,31 @@
 source: code2llm
-# generated in 0.11s
+# generated in 0.07s
 schema: code2llm.planfile_tickets.v1
 project_root: /home/tom/github/semcod/wup
 tickets:
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.dsl2wup.src.dsl2wup.grammar.parse_line
-    (CC=59)'
-  description: 'code2llm reports `packages.dsl2wup.src.dsl2wup.grammar.parse_line`
-    at `packages/dsl2wup/src/dsl2wup/grammar.py:27` with cyclomatic complexity 59
-    (limit 15).
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: cmd'
+  description: 'code2llm reports `Shotgun Surgery: cmd` in `packages/dsl2wup/src/dsl2wup/grammar.py:86`.
 
 
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
+    Mutation of variable ''cmd'' spans 15 functions in /home/tom/github/semcod/wup/packages/dsl2wup/src/dsl2wup/grammar.py.
+    Changing this logic requires work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
   priority: high
   labels:
   - llm-ready
   - code2llm
-  - complexity
-  - refactor
+  - code-smell
+  - shotgun-surgery
   files:
   - packages/dsl2wup/src/dsl2wup/grammar.py
-  dedupe_key: code2llm:cc:packages/dsl2wup/src/dsl2wup/grammar.py:packages.dsl2wup.src.dsl2wup.grammar.parse_line
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
-    (CC=58)'
-  description: 'code2llm reports `packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict`
-    at `packages/dsl2wup/src/dsl2wup/pb_codec.py:94` with cyclomatic complexity 58
-    (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/dsl2wup/src/dsl2wup/pb_codec.py
-  dedupe_key: code2llm:cc:packages/dsl2wup/src/dsl2wup/pb_codec.py:packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
+  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/grammar.py:86:Shotgun
+    Surgery: cmd'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: line'
-  description: 'code2llm reports `Shotgun Surgery: line` in `wup/control.py:28`.
+  description: 'code2llm reports `Shotgun Surgery: line` in `wup/control.py:39`.
 
 
     Mutation of variable ''line'' spans 5 functions in /home/tom/github/semcod/wup/wup/control.py.
@@ -59,10 +41,10 @@ tickets:
   - shotgun-surgery
   files:
   - wup/control.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/control.py:28:Shotgun Surgery: line'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/control.py:39:Shotgun Surgery: line'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: lines'
-  description: 'code2llm reports `Shotgun Surgery: lines` in `wup/cli.py:461`.
+  description: 'code2llm reports `Shotgun Surgery: lines` in `wup/cli.py:507`.
 
 
     Mutation of variable ''lines'' spans 5 functions in /home/tom/github/semcod/wup/wup/cli.py.
@@ -78,10 +60,10 @@ tickets:
   - shotgun-surgery
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:461:Shotgun Surgery: lines'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:507:Shotgun Surgery: lines'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: payload'
-  description: 'code2llm reports `Shotgun Surgery: payload` in `packages/dsl2wup/src/dsl2wup/handlers/query.py:35`.
+  description: 'code2llm reports `Shotgun Surgery: payload` in `packages/dsl2wup/src/dsl2wup/handlers/query.py:68`.
 
 
     Mutation of variable ''payload'' spans 5 functions in /home/tom/github/semcod/wup/packages/dsl2wup/src/dsl2wup/handlers/query.py.
@@ -97,31 +79,11 @@ tickets:
   - shotgun-surgery
   files:
   - packages/dsl2wup/src/dsl2wup/handlers/query.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/query.py:35:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/query.py:68:Shotgun
     Surgery: payload'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: project'
-  description: 'code2llm reports `Shotgun Surgery: project` in `packages/dsl2wup/src/dsl2wup/handlers/command.py:117`.
-
-
-    Mutation of variable ''project'' spans 6 functions in /home/tom/github/semcod/wup/packages/dsl2wup/src/dsl2wup/handlers/command.py.
-    Changing this logic requires work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - packages/dsl2wup/src/dsl2wup/handlers/command.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/command.py:117:Shotgun
-    Surgery: project'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: project'
-  description: 'code2llm reports `Shotgun Surgery: project` in `packages/dsl2wup/src/dsl2wup/handlers/query.py:12`.
+  description: 'code2llm reports `Shotgun Surgery: project` in `packages/dsl2wup/src/dsl2wup/handlers/query.py:68`.
 
 
     Mutation of variable ''project'' spans 6 functions in /home/tom/github/semcod/wup/packages/dsl2wup/src/dsl2wup/handlers/query.py.
@@ -137,11 +99,31 @@ tickets:
   - shotgun-surgery
   files:
   - packages/dsl2wup/src/dsl2wup/handlers/query.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/query.py:12:Shotgun
+  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/query.py:68:Shotgun
+    Surgery: project'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: project'
+  description: 'code2llm reports `Shotgun Surgery: project` in `packages/dsl2wup/src/dsl2wup/handlers/command.py:56`.
+
+
+    Mutation of variable ''project'' spans 6 functions in /home/tom/github/semcod/wup/packages/dsl2wup/src/dsl2wup/handlers/command.py.
+    Changing this logic requires work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - shotgun-surgery
+  files:
+  - packages/dsl2wup/src/dsl2wup/handlers/command.py
+  dedupe_key: 'code2llm:smell:shotgun_surgery:packages/dsl2wup/src/dsl2wup/handlers/command.py:56:Shotgun
     Surgery: project'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: project_path'
-  description: 'code2llm reports `Shotgun Surgery: project_path` in `wup/cli.py:688`.
+  description: 'code2llm reports `Shotgun Surgery: project_path` in `wup/cli.py:366`.
 
 
     Mutation of variable ''project_path'' spans 6 functions in /home/tom/github/semcod/wup/wup/cli.py.
@@ -157,10 +139,10 @@ tickets:
   - shotgun-surgery
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:688:Shotgun Surgery: project_path'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:366:Shotgun Surgery: project_path'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: result'
-  description: 'code2llm reports `Shotgun Surgery: result` in `wup/cli.py:1013`.
+  description: 'code2llm reports `Shotgun Surgery: result` in `wup/cli.py:366`.
 
 
     Mutation of variable ''result'' spans 7 functions in /home/tom/github/semcod/wup/wup/cli.py.
@@ -176,208 +158,26 @@ tickets:
   - shotgun-surgery
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:1013:Shotgun Surgery: result'
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.cli2wup.src.cli2wup.cli.main (CC=15)'
-  description: 'code2llm reports `packages.cli2wup.src.cli2wup.cli.main` at `packages/cli2wup/src/cli2wup/cli.py:39`
-    with cyclomatic complexity 15 (limit 15).
+  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/cli.py:366:Shotgun Surgery: result'
+- signal: code2llm_smell_shotgun_surgery
+  title: 'Address code smell: Shotgun Surgery: tokens'
+  description: 'code2llm reports `Shotgun Surgery: tokens` in `wup/aql.py:133`.
 
 
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
+    Mutation of variable ''tokens'' spans 6 functions in /home/tom/github/semcod/wup/wup/aql.py.
+    Changing this logic requires work in many places.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: high
   labels:
   - llm-ready
   - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/cli2wup/src/cli2wup/cli.py
-  dedupe_key: code2llm:cc:packages/cli2wup/src/cli2wup/cli.py:packages.cli2wup.src.cli2wup.cli.main
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.dsl2wup.src.dsl2wup.codegen.generate_models
-    (CC=15)'
-  description: 'code2llm reports `packages.dsl2wup.src.dsl2wup.codegen.generate_models`
-    at `packages/dsl2wup/src/dsl2wup/codegen.py:9` with cyclomatic complexity 15 (limit
-    15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/dsl2wup/src/dsl2wup/codegen.py
-  dedupe_key: code2llm:cc:packages/dsl2wup/src/dsl2wup/codegen.py:packages.dsl2wup.src.dsl2wup.codegen.generate_models
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens
-    (CC=16)'
-  description: 'code2llm reports `packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens`
-    at `packages/dsl2wup/src/dsl2wup/handlers/command.py:189` with cyclomatic complexity
-    16 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/dsl2wup/src/dsl2wup/handlers/command.py
-  dedupe_key: code2llm:cc:packages/dsl2wup/src/dsl2wup/handlers/command.py:packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-    (CC=16)'
-  description: 'code2llm reports `packages.dsl2wup.src.dsl2wup.pb_codec._set_body`
-    at `packages/dsl2wup/src/dsl2wup/pb_codec.py:31` with cyclomatic complexity 16
-    (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/dsl2wup/src/dsl2wup/pb_codec.py
-  dedupe_key: code2llm:cc:packages/dsl2wup/src/dsl2wup/pb_codec.py:packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.nlp2wup.src.nlp2wup.apply._intent
-    (CC=21)'
-  description: 'code2llm reports `packages.nlp2wup.src.nlp2wup.apply._intent` at `packages/nlp2wup/src/nlp2wup/apply.py:35`
-    with cyclomatic complexity 21 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/nlp2wup/src/nlp2wup/apply.py
-  dedupe_key: code2llm:cc:packages/nlp2wup/src/nlp2wup/apply.py:packages.nlp2wup.src.nlp2wup.apply._intent
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.nlp2wup.src.nlp2wup.apply.to_dsl
-    (CC=24)'
-  description: 'code2llm reports `packages.nlp2wup.src.nlp2wup.apply.to_dsl` at `packages/nlp2wup/src/nlp2wup/apply.py:60`
-    with cyclomatic complexity 24 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/nlp2wup/src/nlp2wup/apply.py
-  dedupe_key: code2llm:cc:packages/nlp2wup/src/nlp2wup/apply.py:packages.nlp2wup.src.nlp2wup.apply.to_dsl
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.uri2wup.src.uri2wup.cli.main (CC=15)'
-  description: 'code2llm reports `packages.uri2wup.src.uri2wup.cli.main` at `packages/uri2wup/src/uri2wup/cli.py:14`
-    with cyclomatic complexity 15 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/uri2wup/src/uri2wup/cli.py
-  dedupe_key: code2llm:cc:packages/uri2wup/src/uri2wup/cli.py:packages.uri2wup.src.uri2wup.cli.main
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.uri2wup.src.uri2wup.decode.decode_uri
-    (CC=20)'
-  description: 'code2llm reports `packages.uri2wup.src.uri2wup.decode.decode_uri`
-    at `packages/uri2wup/src/uri2wup/decode.py:27` with cyclomatic complexity 20 (limit
-    15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/uri2wup/src/uri2wup/decode.py
-  dedupe_key: code2llm:cc:packages/uri2wup/src/uri2wup/decode.py:packages.uri2wup.src.uri2wup.decode.decode_uri
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.uri2wup.src.uri2wup.patch.patch_uri
-    (CC=17)'
-  description: 'code2llm reports `packages.uri2wup.src.uri2wup.patch.patch_uri` at
-    `packages/uri2wup/src/uri2wup/patch.py:36` with cyclomatic complexity 17 (limit
-    15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/uri2wup/src/uri2wup/patch.py
-  dedupe_key: code2llm:cc:packages/uri2wup/src/uri2wup/patch.py:packages.uri2wup.src.uri2wup.patch.patch_uri
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: packages.uri2wup.src.uri2wup.query.query_uri
-    (CC=23)'
-  description: 'code2llm reports `packages.uri2wup.src.uri2wup.query.query_uri` at
-    `packages/uri2wup/src/uri2wup/query.py:90` with cyclomatic complexity 23 (limit
-    15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - packages/uri2wup/src/uri2wup/query.py
-  dedupe_key: code2llm:cc:packages/uri2wup/src/uri2wup/query.py:packages.uri2wup.src.uri2wup.query.query_uri
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: wup.aql.parse_rule (CC=18)'
-  description: 'code2llm reports `wup.aql.parse_rule` at `wup/aql.py:133` with cyclomatic
-    complexity 18 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
+  - code-smell
+  - shotgun-surgery
   files:
   - wup/aql.py
-  dedupe_key: code2llm:cc:wup/aql.py:wup.aql.parse_rule
+  dedupe_key: 'code2llm:smell:shotgun_surgery:wup/aql.py:133:Shotgun Surgery: tokens'
 - signal: code2llm_smell_data_clump
   title: 'Address code smell: Data Clump: accumulator, self, port_map'
   description: 'code2llm reports `Data Clump: accumulator, self, port_map` in `wup/testql_monitor.py:519`.
@@ -418,6 +218,109 @@ tickets:
   - wup/testql_monitor.py
   dedupe_key: 'code2llm:smell:data_clump:wup/testql_monitor.py:533:Data Clump: accumulator,
     self, port_map'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: endpoints, self, service'
+  description: 'code2llm reports `Data Clump: endpoints, self, service` in `examples/testql_integration.py:50`.
+
+
+    Arguments (endpoints, self, service) are used together in multiple functions:
+    examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - examples/testql_integration.py
+  dedupe_key: 'code2llm:smell:data_clump:examples/testql_integration.py:50:Data Clump:
+    endpoints, self, service'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: endpoints, self, service'
+  description: 'code2llm reports `Data Clump: endpoints, self, service` in `examples/testql_integration.py:102`.
+
+
+    Arguments (endpoints, self, service) are used together in multiple functions:
+    examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - examples/testql_integration.py
+  dedupe_key: 'code2llm:smell:data_clump:examples/testql_integration.py:102:Data Clump:
+    endpoints, self, service'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: endpoints, self, service'
+  description: 'code2llm reports `Data Clump: endpoints, self, service` in `wup/testql_watcher.py:536`.
+
+
+    Arguments (endpoints, self, service) are used together in multiple functions:
+    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
+    wup.testql_watcher.TestQLWatcher.run_detail_test.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - wup/testql_watcher.py
+  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:536:Data Clump: endpoints,
+    self, service'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: endpoints, self, service'
+  description: 'code2llm reports `Data Clump: endpoints, self, service` in `wup/testql_watcher.py:822`.
+
+
+    Arguments (endpoints, self, service) are used together in multiple functions:
+    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
+    wup.testql_watcher.TestQLWatcher.run_detail_test.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - wup/testql_watcher.py
+  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:822:Data Clump: endpoints,
+    self, service'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: endpoints, self, service'
+  description: 'code2llm reports `Data Clump: endpoints, self, service` in `wup/testql_watcher.py:874`.
+
+
+    Arguments (endpoints, self, service) are used together in multiple functions:
+    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
+    wup.testql_watcher.TestQLWatcher.run_detail_test.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - wup/testql_watcher.py
+  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:874:Data Clump: endpoints,
+    self, service'
 - signal: code2llm_smell_data_clump
   title: 'Address code smell: Data Clump: merged_endpoints, self, service'
   description: 'code2llm reports `Data Clump: merged_endpoints, self, service` in
@@ -485,11 +388,11 @@ tickets:
   dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:774:Data Clump: merged_endpoints,
     self, service'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: new, path, self, old'
-  description: 'code2llm reports `Data Clump: new, path, self, old` in `wup/_yaml_detector.py:53`.
+  title: 'Address code smell: Data Clump: path, self, old, new'
+  description: 'code2llm reports `Data Clump: path, self, old, new` in `wup/_yaml_detector.py:53`.
 
 
-    Arguments (new, path, self, old) are used together in multiple functions: wup._yaml_detector.YAMLStructureDetector._compare_structures,
+    Arguments (path, self, old, new) are used together in multiple functions: wup._yaml_detector.YAMLStructureDetector._compare_structures,
     wup._yaml_detector.YAMLStructureDetector._compare_dict_structures.
 
 
@@ -502,14 +405,14 @@ tickets:
   - data-clump
   files:
   - wup/_yaml_detector.py
-  dedupe_key: 'code2llm:smell:data_clump:wup/_yaml_detector.py:53:Data Clump: new,
-    path, self, old'
+  dedupe_key: 'code2llm:smell:data_clump:wup/_yaml_detector.py:53:Data Clump: path,
+    self, old, new'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: new, path, self, old'
-  description: 'code2llm reports `Data Clump: new, path, self, old` in `wup/_yaml_detector.py:70`.
+  title: 'Address code smell: Data Clump: path, self, old, new'
+  description: 'code2llm reports `Data Clump: path, self, old, new` in `wup/_yaml_detector.py:70`.
 
 
-    Arguments (new, path, self, old) are used together in multiple functions: wup._yaml_detector.YAMLStructureDetector._compare_structures,
+    Arguments (path, self, old, new) are used together in multiple functions: wup._yaml_detector.YAMLStructureDetector._compare_structures,
     wup._yaml_detector.YAMLStructureDetector._compare_dict_structures.
 
 
@@ -522,111 +425,8 @@ tickets:
   - data-clump
   files:
   - wup/_yaml_detector.py
-  dedupe_key: 'code2llm:smell:data_clump:wup/_yaml_detector.py:70:Data Clump: new,
-    path, self, old'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, endpoints, service'
-  description: 'code2llm reports `Data Clump: self, endpoints, service` in `examples/testql_integration.py:50`.
-
-
-    Arguments (self, endpoints, service) are used together in multiple functions:
-    examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - examples/testql_integration.py
-  dedupe_key: 'code2llm:smell:data_clump:examples/testql_integration.py:50:Data Clump:
-    self, endpoints, service'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, endpoints, service'
-  description: 'code2llm reports `Data Clump: self, endpoints, service` in `examples/testql_integration.py:102`.
-
-
-    Arguments (self, endpoints, service) are used together in multiple functions:
-    examples.testql_integration.CustomTestQLWatcher.run_quick_test, examples.testql_integration.CustomTestQLWatcher.run_detail_test.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - examples/testql_integration.py
-  dedupe_key: 'code2llm:smell:data_clump:examples/testql_integration.py:102:Data Clump:
-    self, endpoints, service'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, endpoints, service'
-  description: 'code2llm reports `Data Clump: self, endpoints, service` in `wup/testql_watcher.py:536`.
-
-
-    Arguments (self, endpoints, service) are used together in multiple functions:
-    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
-    wup.testql_watcher.TestQLWatcher.run_detail_test.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - wup/testql_watcher.py
-  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:536:Data Clump: self,
-    endpoints, service'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, endpoints, service'
-  description: 'code2llm reports `Data Clump: self, endpoints, service` in `wup/testql_watcher.py:822`.
-
-
-    Arguments (self, endpoints, service) are used together in multiple functions:
-    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
-    wup.testql_watcher.TestQLWatcher.run_detail_test.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - wup/testql_watcher.py
-  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:822:Data Clump: self,
-    endpoints, service'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: self, endpoints, service'
-  description: 'code2llm reports `Data Clump: self, endpoints, service` in `wup/testql_watcher.py:874`.
-
-
-    Arguments (self, endpoints, service) are used together in multiple functions:
-    wup.testql_watcher.TestQLWatcher._merge_endpoints, wup.testql_watcher.TestQLWatcher.run_quick_test,
-    wup.testql_watcher.TestQLWatcher.run_detail_test.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - wup/testql_watcher.py
-  dedupe_key: 'code2llm:smell:data_clump:wup/testql_watcher.py:874:Data Clump: self,
-    endpoints, service'
+  dedupe_key: 'code2llm:smell:data_clump:wup/_yaml_detector.py:70:Data Clump: path,
+    self, old, new'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: __init__'
   description: 'code2llm reports `God Function: __init__` in `wup/core.py:42`.
@@ -666,7 +466,7 @@ tickets:
     __init__'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _add_delta_events_lines'
-  description: 'code2llm reports `God Function: _add_delta_events_lines` in `wup/cli.py:461`.
+  description: 'code2llm reports `God Function: _add_delta_events_lines` in `wup/cli.py:462`.
 
 
     Function ''_add_delta_events_lines'' is oversized: CC=14, fan-out=12, mutations=18.
@@ -681,10 +481,10 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:461:God Function: _add_delta_events_lines'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:462:God Function: _add_delta_events_lines'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _add_failing_services_lines'
-  description: 'code2llm reports `God Function: _add_failing_services_lines` in `wup/cli.py:425`.
+  description: 'code2llm reports `God Function: _add_failing_services_lines` in `wup/cli.py:426`.
 
 
     Function ''_add_failing_services_lines'' is oversized: CC=13, fan-out=10, mutations=12.
@@ -699,7 +499,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:425:God Function: _add_failing_services_lines'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:426:God Function: _add_failing_services_lines'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _add_hardware_usb_module_endpoints'
   description: 'code2llm reports `God Function: _add_hardware_usb_module_endpoints`
@@ -724,7 +524,7 @@ tickets:
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _add_monitoring_manifest_lines'
   description: 'code2llm reports `God Function: _add_monitoring_manifest_lines` in
-    `wup/cli.py:506`.
+    `wup/cli.py:507`.
 
 
     Function ''_add_monitoring_manifest_lines'' is oversized: CC=11, fan-out=13, mutations=9.
@@ -739,10 +539,10 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:506:God Function: _add_monitoring_manifest_lines'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:507:God Function: _add_monitoring_manifest_lines'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _add_visual_diff_lines'
-  description: 'code2llm reports `God Function: _add_visual_diff_lines` in `wup/cli.py:537`.
+  description: 'code2llm reports `God Function: _add_visual_diff_lines` in `wup/cli.py:538`.
 
 
     Function ''_add_visual_diff_lines'' is oversized: CC=9, fan-out=9, mutations=13.
@@ -757,7 +557,26 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:537:God Function: _add_visual_diff_lines'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:538:God Function: _add_visual_diff_lines'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _append_model'
+  description: 'code2llm reports `God Function: _append_model` in `packages/dsl2wup/src/dsl2wup/codegen.py:35`.
+
+
+    Function ''_append_model'' is oversized: CC=4, fan-out=13, mutations=8.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/dsl2wup/src/dsl2wup/codegen.py
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/codegen.py:35:God
+    Function: _append_model'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _assign_by_path_prefix'
   description: 'code2llm reports `God Function: _assign_by_path_prefix` in `wup/testql_monitor.py:283`.
@@ -777,6 +596,25 @@ tickets:
   - wup/testql_monitor.py
   dedupe_key: 'code2llm:smell:god_function:wup/testql_monitor.py:283:God Function:
     _assign_by_path_prefix'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _body_to_dict'
+  description: 'code2llm reports `God Function: _body_to_dict` in `packages/dsl2wup/src/dsl2wup/pb_codec.py:76`.
+
+
+    Function ''_body_to_dict'' is oversized: CC=10, fan-out=3, mutations=12.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/dsl2wup/src/dsl2wup/pb_codec.py
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/pb_codec.py:76:God
+    Function: _body_to_dict'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _build_port_map'
   description: 'code2llm reports `God Function: _build_port_map` in `wup/testql_monitor.py:382`.
@@ -798,7 +636,7 @@ tickets:
     _build_port_map'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _build_project_watcher'
-  description: 'code2llm reports `God Function: _build_project_watcher` in `wup/cli.py:172`.
+  description: 'code2llm reports `God Function: _build_project_watcher` in `wup/cli.py:173`.
 
 
     Function ''_build_project_watcher'' is oversized: CC=9, fan-out=11, mutations=4.
@@ -813,7 +651,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:172:God Function: _build_project_watcher'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:173:God Function: _build_project_watcher'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _check_page'
   description: 'code2llm reports `God Function: _check_page` in `wup/visual_diff.py:542`.
@@ -852,7 +690,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/oql.py:77:God Function: _compare'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _compare'
-  description: 'code2llm reports `God Function: _compare` in `wup/aql.py:189`.
+  description: 'code2llm reports `God Function: _compare` in `wup/aql.py:191`.
 
 
     Function ''_compare'' is oversized: CC=4, fan-out=2, mutations=12.
@@ -867,10 +705,10 @@ tickets:
   - god-function
   files:
   - wup/aql.py
-  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:189:God Function: _compare'
+  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:191:God Function: _compare'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _configure_services'
-  description: 'code2llm reports `God Function: _configure_services` in `wup/assistant.py:189`.
+  description: 'code2llm reports `God Function: _configure_services` in `wup/assistant.py:179`.
 
 
     Function ''_configure_services'' is oversized: CC=14, fan-out=13, mutations=0.
@@ -885,7 +723,7 @@ tickets:
   - god-function
   files:
   - wup/assistant.py
-  dedupe_key: 'code2llm:smell:god_function:wup/assistant.py:189:God Function: _configure_services'
+  dedupe_key: 'code2llm:smell:god_function:wup/assistant.py:179:God Function: _configure_services'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _create_ticket'
   description: 'code2llm reports `God Function: _create_ticket` in `wup/planfile_reporter.py:168`.
@@ -979,25 +817,6 @@ tickets:
   - wup/_ast_detector.py
   dedupe_key: 'code2llm:smell:god_function:wup/_ast_detector.py:41:God Function: _extract_ast_info'
 - signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: _extract_block'
-  description: 'code2llm reports `God Function: _extract_block` in `packages/uri2wup/src/uri2wup/query.py:52`.
-
-
-    Function ''_extract_block'' is oversized: CC=14, fan-out=12, mutations=5.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - god-function
-  files:
-  - packages/uri2wup/src/uri2wup/query.py
-  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/query.py:52:God
-    Function: _extract_block'
-- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _fetch_dom_snapshot'
   description: 'code2llm reports `God Function: _fetch_dom_snapshot` in `wup/visual_diff.py:120`.
 
@@ -1015,24 +834,6 @@ tickets:
   files:
   - wup/visual_diff.py
   dedupe_key: 'code2llm:smell:god_function:wup/visual_diff.py:120:God Function: _fetch_dom_snapshot'
-- signal: code2llm_smell_god_function
-  title: 'Address code smell: God Function: _load_dotenv'
-  description: 'code2llm reports `God Function: _load_dotenv` in `wup/config.py:50`.
-
-
-    Function ''_load_dotenv'' is oversized: CC=10, fan-out=9, mutations=12.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - god-function
-  files:
-  - wup/config.py
-  dedupe_key: 'code2llm:smell:god_function:wup/config.py:50:God Function: _load_dotenv'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _main_legacy'
   description: 'code2llm reports `God Function: _main_legacy` in `packages/dsl2wup/src/dsl2wup/cli.py:18`.
@@ -1110,7 +911,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/sync.py:15:God Function: _merge_endpoints'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _normalize_testql_extra_args'
-  description: 'code2llm reports `God Function: _normalize_testql_extra_args` in `wup/config.py:195`.
+  description: 'code2llm reports `God Function: _normalize_testql_extra_args` in `wup/config.py:219`.
 
 
     Function ''_normalize_testql_extra_args'' is oversized: CC=5, fan-out=5, mutations=12.
@@ -1125,7 +926,7 @@ tickets:
   - god-function
   files:
   - wup/config.py
-  dedupe_key: 'code2llm:smell:god_function:wup/config.py:195:God Function: _normalize_testql_extra_args'
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:219:God Function: _normalize_testql_extra_args'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _parse_conditions'
   description: 'code2llm reports `God Function: _parse_conditions` in `wup/oql.py:166`.
@@ -1146,7 +947,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/oql.py:166:God Function: _parse_conditions'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _parse_services_config'
-  description: 'code2llm reports `God Function: _parse_services_config` in `wup/config.py:124`.
+  description: 'code2llm reports `God Function: _parse_services_config` in `wup/config.py:144`.
 
 
     Function ''_parse_services_config'' is oversized: CC=3, fan-out=9, mutations=7.
@@ -1161,13 +962,13 @@ tickets:
   - god-function
   files:
   - wup/config.py
-  dedupe_key: 'code2llm:smell:god_function:wup/config.py:124:God Function: _parse_services_config'
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:144:God Function: _parse_services_config'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _parse_visual_diff_config'
-  description: 'code2llm reports `God Function: _parse_visual_diff_config` in `wup/config.py:248`.
+  description: 'code2llm reports `God Function: _parse_visual_diff_config` in `wup/config.py:272`.
 
 
-    Function ''_parse_visual_diff_config'' is oversized: CC=6, fan-out=10, mutations=16.
+    Function ''_parse_visual_diff_config'' is oversized: CC=7, fan-out=10, mutations=17.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -1179,7 +980,25 @@ tickets:
   - god-function
   files:
   - wup/config.py
-  dedupe_key: 'code2llm:smell:god_function:wup/config.py:248:God Function: _parse_visual_diff_config'
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:272:God Function: _parse_visual_diff_config'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _predicate_rule'
+  description: 'code2llm reports `God Function: _predicate_rule` in `wup/aql.py:144`.
+
+
+    Function ''_predicate_rule'' is oversized: CC=14, fan-out=10, mutations=4.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - wup/aql.py
+  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:144:God Function: _predicate_rule'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _quick_pass_actions'
   description: 'code2llm reports `God Function: _quick_pass_actions` in `wup/testql_watcher.py:581`.
@@ -1200,6 +1019,24 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/testql_watcher.py:581:God Function:
     _quick_pass_actions'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _read_dotenv'
+  description: 'code2llm reports `God Function: _read_dotenv` in `wup/config.py:52`.
+
+
+    Function ''_read_dotenv'' is oversized: CC=10, fan-out=9, mutations=12.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - wup/config.py
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:52:God Function: _read_dotenv'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _register_tools'
   description: 'code2llm reports `God Function: _register_tools` in `packages/mcp2wup/src/mcp2wup/server.py:28`.
 
@@ -1218,6 +1055,25 @@ tickets:
   - packages/mcp2wup/src/mcp2wup/server.py
   dedupe_key: 'code2llm:smell:god_function:packages/mcp2wup/src/mcp2wup/server.py:28:God
     Function: _register_tools'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _replace_at_path'
+  description: 'code2llm reports `God Function: _replace_at_path` in `packages/uri2wup/src/uri2wup/patch.py:36`.
+
+
+    Function ''_replace_at_path'' is oversized: CC=10, fan-out=5, mutations=10.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/uri2wup/src/uri2wup/patch.py
+  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/patch.py:36:God
+    Function: _replace_at_path'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _resolve_path'
   description: 'code2llm reports `God Function: _resolve_path` in `wup/aql.py:68`.
@@ -1256,8 +1112,27 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/testql_watcher.py:719:God Function:
     _run_fleet_health_scenario'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _runtime_block'
+  description: 'code2llm reports `God Function: _runtime_block` in `packages/uri2wup/src/uri2wup/query.py:74`.
+
+
+    Function ''_runtime_block'' is oversized: CC=6, fan-out=11, mutations=4.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/uri2wup/src/uri2wup/query.py
+  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/query.py:74:God
+    Function: _runtime_block'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _save_configuration'
-  description: 'code2llm reports `God Function: _save_configuration` in `wup/assistant.py:498`.
+  description: 'code2llm reports `God Function: _save_configuration` in `wup/assistant.py:488`.
 
 
     Function ''_save_configuration'' is oversized: CC=3, fan-out=12, mutations=0.
@@ -1272,10 +1147,10 @@ tickets:
   - god-function
   files:
   - wup/assistant.py
-  dedupe_key: 'code2llm:smell:god_function:wup/assistant.py:498:God Function: _save_configuration'
+  dedupe_key: 'code2llm:smell:god_function:wup/assistant.py:488:God Function: _save_configuration'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _scan_pyproject_toml'
-  description: 'code2llm reports `God Function: _scan_pyproject_toml` in `wup/cli_scanner.py:114`.
+  description: 'code2llm reports `God Function: _scan_pyproject_toml` in `wup/cli_scanner.py:113`.
 
 
     Function ''_scan_pyproject_toml'' is oversized: CC=6, fan-out=11, mutations=0.
@@ -1290,7 +1165,26 @@ tickets:
   - god-function
   files:
   - wup/cli_scanner.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli_scanner.py:114:God Function: _scan_pyproject_toml'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli_scanner.py:113:God Function: _scan_pyproject_toml'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: _set_body'
+  description: 'code2llm reports `God Function: _set_body` in `packages/dsl2wup/src/dsl2wup/pb_codec.py:56`.
+
+
+    Function ''_set_body'' is oversized: CC=7, fan-out=11, mutations=9.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/dsl2wup/src/dsl2wup/pb_codec.py
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/pb_codec.py:56:God
+    Function: _set_body'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _tokenize'
   description: 'code2llm reports `God Function: _tokenize` in `wup/oql.py:116`.
@@ -1386,7 +1280,7 @@ tickets:
     Function: append'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: aql'
-  description: 'code2llm reports `God Function: aql` in `wup/cli.py:738`.
+  description: 'code2llm reports `God Function: aql` in `wup/cli.py:739`.
 
 
     Function ''aql'' is oversized: CC=9, fan-out=11, mutations=3.
@@ -1401,7 +1295,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:738:God Function: aql'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:739:God Function: aql'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: assistant'
   description: 'code2llm reports `God Function: assistant` in `wup/cli.py:958`.
@@ -1441,7 +1335,7 @@ tickets:
     build_monitoring_manifest'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: check_file'
-  description: 'code2llm reports `God Function: check_file` in `wup/aql.py:262`.
+  description: 'code2llm reports `God Function: check_file` in `wup/aql.py:264`.
 
 
     Function ''check_file'' is oversized: CC=11, fan-out=14, mutations=0.
@@ -1456,7 +1350,7 @@ tickets:
   - god-function
   files:
   - wup/aql.py
-  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:262:God Function: check_file'
+  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:264:God Function: check_file'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: collect_status_snapshot'
   description: 'code2llm reports `God Function: collect_status_snapshot` in `wup/status_data.py:69`.
@@ -1701,6 +1595,25 @@ tickets:
   - wup/oql.py
   dedupe_key: 'code2llm:smell:god_function:wup/oql.py:229:God Function: execute'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: generate_models'
+  description: 'code2llm reports `God Function: generate_models` in `packages/dsl2wup/src/dsl2wup/codegen.py:48`.
+
+
+    Function ''generate_models'' is oversized: CC=3, fan-out=7, mutations=8.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/dsl2wup/src/dsl2wup/codegen.py
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/codegen.py:48:God
+    Function: generate_models'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: generate_wup_config'
   description: 'code2llm reports `God Function: generate_wup_config` in `wup/generate.py:23`.
 
@@ -1738,7 +1651,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/visual_diff.py:621:God Function: get_recent_diffs'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: handle_adopt'
-  description: 'code2llm reports `God Function: handle_adopt` in `packages/dsl2wup/src/dsl2wup/handlers/command.py:160`.
+  description: 'code2llm reports `God Function: handle_adopt` in `packages/dsl2wup/src/dsl2wup/handlers/command.py:210`.
 
 
     Function ''handle_adopt'' is oversized: CC=8, fan-out=14, mutations=10.
@@ -1753,7 +1666,7 @@ tickets:
   - god-function
   files:
   - packages/dsl2wup/src/dsl2wup/handlers/command.py
-  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/handlers/command.py:160:God
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/handlers/command.py:210:God
     Function: handle_adopt'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: handle_map'
@@ -1794,7 +1707,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/core.py:130:God Function: infer_service'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: init'
-  description: 'code2llm reports `God Function: init` in `wup/cli.py:793`.
+  description: 'code2llm reports `God Function: init` in `wup/cli.py:794`.
 
 
     Function ''init'' is oversized: CC=5, fan-out=12, mutations=3.
@@ -1809,7 +1722,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:793:God Function: init'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:794:God Function: init'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: init_cli'
   description: 'code2llm reports `God Function: init_cli` in `wup/cli.py:1013`.
@@ -1886,8 +1799,46 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:scripts/run_probe_smoke.py:62:God Function:
     main'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: main'
+  description: 'code2llm reports `God Function: main` in `packages/cli2wup/src/cli2wup/cli.py:65`.
+
+
+    Function ''main'' is oversized: CC=4, fan-out=15, mutations=22.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/cli2wup/src/cli2wup/cli.py
+  dedupe_key: 'code2llm:smell:god_function:packages/cli2wup/src/cli2wup/cli.py:65:God
+    Function: main'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: main'
+  description: 'code2llm reports `God Function: main` in `packages/uri2wup/src/uri2wup/cli.py:41`.
+
+
+    Function ''main'' is oversized: CC=3, fan-out=11, mutations=23.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/uri2wup/src/uri2wup/cli.py
+  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/cli.py:41:God
+    Function: main'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: map_deps'
-  description: 'code2llm reports `God Function: map_deps` in `wup/cli.py:365`.
+  description: 'code2llm reports `God Function: map_deps` in `wup/cli.py:366`.
 
 
     Function ''map_deps'' is oversized: CC=12, fan-out=19, mutations=14.
@@ -1902,10 +1853,10 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:365:God Function: map_deps'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:366:God Function: map_deps'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: oql'
-  description: 'code2llm reports `God Function: oql` in `wup/cli.py:688`.
+  description: 'code2llm reports `God Function: oql` in `wup/cli.py:689`.
 
 
     Function ''oql'' is oversized: CC=11, fan-out=21, mutations=8.
@@ -1920,7 +1871,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:688:God Function: oql'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:689:God Function: oql'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: parse'
   description: 'code2llm reports `God Function: parse` in `wup/oql.py:130`.
@@ -1939,6 +1890,43 @@ tickets:
   files:
   - wup/oql.py
   dedupe_key: 'code2llm:smell:god_function:wup/oql.py:130:God Function: parse'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: parse_line'
+  description: 'code2llm reports `God Function: parse_line` in `packages/dsl2wup/src/dsl2wup/grammar.py:112`.
+
+
+    Function ''parse_line'' is oversized: CC=3, fan-out=4, mutations=7.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/dsl2wup/src/dsl2wup/grammar.py
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/grammar.py:112:God
+    Function: parse_line'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: parse_rule'
+  description: 'code2llm reports `God Function: parse_rule` in `wup/aql.py:167`.
+
+
+    Function ''parse_rule'' is oversized: CC=3, fan-out=6, mutations=10.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - wup/aql.py
+  dedupe_key: 'code2llm:smell:god_function:wup/aql.py:167:God Function: parse_rule'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: parse_scenario_endpoints'
   description: 'code2llm reports `God Function: parse_scenario_endpoints` in `wup/testql_discovery.py:44`.
@@ -1978,6 +1966,25 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/uri.py:71:God
     Function: parse_wup_uri'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: patch_uri'
+  description: 'code2llm reports `God Function: patch_uri` in `packages/uri2wup/src/uri2wup/patch.py:65`.
+
+
+    Function ''patch_uri'' is oversized: CC=9, fan-out=12, mutations=7.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/uri2wup/src/uri2wup/patch.py
+  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/patch.py:65:God
+    Function: patch_uri'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: patch_wup_yaml_monitoring'
   description: 'code2llm reports `God Function: patch_wup_yaml_monitoring` in `wup/monitoring_manifest.py:382`.
 
@@ -2016,6 +2023,25 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/anomaly_detector.py:125:God Function:
     print_report'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: query_uri'
+  description: 'code2llm reports `God Function: query_uri` in `packages/uri2wup/src/uri2wup/query.py:112`.
+
+
+    Function ''query_uri'' is oversized: CC=13, fan-out=15, mutations=10.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - packages/uri2wup/src/uri2wup/query.py
+  dedupe_key: 'code2llm:smell:god_function:packages/uri2wup/src/uri2wup/query.py:112:God
+    Function: query_uri'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: replay'
   description: 'code2llm reports `God Function: replay` in `packages/dsl2wup/src/dsl2wup/events.py:76`.
 
@@ -2036,7 +2062,7 @@ tickets:
     Function: replay'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: result_to_pb'
-  description: 'code2llm reports `God Function: result_to_pb` in `packages/dsl2wup/src/dsl2wup/pb_codec.py:221`.
+  description: 'code2llm reports `God Function: result_to_pb` in `packages/dsl2wup/src/dsl2wup/pb_codec.py:133`.
 
 
     Function ''result_to_pb'' is oversized: CC=4, fan-out=4, mutations=9.
@@ -2051,7 +2077,7 @@ tickets:
   - god-function
   files:
   - packages/dsl2wup/src/dsl2wup/pb_codec.py
-  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/pb_codec.py:221:God
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/pb_codec.py:133:God
     Function: result_to_pb'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: run_detail_test'
@@ -2091,6 +2117,24 @@ tickets:
   - wup/visual_diff.py
   dedupe_key: 'code2llm:smell:god_function:wup/visual_diff.py:463:God Function: run_for_service'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: run_map_deps'
+  description: 'code2llm reports `God Function: run_map_deps` in `wup/cli_bridge.py:45`.
+
+
+    Function ''run_map_deps'' is oversized: CC=2, fan-out=16, mutations=3.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - wup/cli_bridge.py
+  dedupe_key: 'code2llm:smell:god_function:wup/cli_bridge.py:45:God Function: run_map_deps'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: run_with_dashboard'
   description: 'code2llm reports `God Function: run_with_dashboard` in `wup/core.py:691`.
 
@@ -2110,10 +2154,10 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/core.py:691:God Function: run_with_dashboard'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: save_config'
-  description: 'code2llm reports `God Function: save_config` in `wup/config.py:444`.
+  description: 'code2llm reports `God Function: save_config` in `wup/config.py:529`.
 
 
-    Function ''save_config'' is oversized: CC=5, fan-out=13, mutations=8.
+    Function ''save_config'' is oversized: CC=1, fan-out=11, mutations=6.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -2125,7 +2169,7 @@ tickets:
   - god-function
   files:
   - wup/config.py
-  dedupe_key: 'code2llm:smell:god_function:wup/config.py:444:God Function: save_config'
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:529:God Function: save_config'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: setup_cli_project'
   description: 'code2llm reports `God Function: setup_cli_project` in `wup/init_cli.py:13`.
@@ -2183,7 +2227,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/multi.py:35:God Function: start_watching'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: status'
-  description: 'code2llm reports `God Function: status` in `wup/cli.py:598`.
+  description: 'code2llm reports `God Function: status` in `wup/cli.py:599`.
 
 
     Function ''status'' is oversized: CC=8, fan-out=19, mutations=7.
@@ -2198,10 +2242,10 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:598:God Function: status'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:599:God Function: status'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: sync_testql'
-  description: 'code2llm reports `God Function: sync_testql` in `wup/cli.py:882`.
+  description: 'code2llm reports `God Function: sync_testql` in `wup/cli.py:883`.
 
 
     Function ''sync_testql'' is oversized: CC=10, fan-out=19, mutations=7.
@@ -2216,7 +2260,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:882:God Function: sync_testql'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:883:God Function: sync_testql'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: sync_testql_manifest'
   description: 'code2llm reports `God Function: sync_testql_manifest` in `wup/sync.py:37`.
@@ -2237,7 +2281,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/sync.py:37:God Function: sync_testql_manifest'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: testql_endpoints'
-  description: 'code2llm reports `God Function: testql_endpoints` in `wup/cli.py:819`.
+  description: 'code2llm reports `God Function: testql_endpoints` in `wup/cli.py:820`.
 
 
     Function ''testql_endpoints'' is oversized: CC=6, fan-out=19, mutations=15.
@@ -2252,10 +2296,10 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:819:God Function: testql_endpoints'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:820:God Function: testql_endpoints'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: to_text'
-  description: 'code2llm reports `God Function: to_text` in `packages/dsl2wup/src/dsl2wup/grammar.py:129`.
+  description: 'code2llm reports `God Function: to_text` in `packages/dsl2wup/src/dsl2wup/grammar.py:126`.
 
 
     Function ''to_text'' is oversized: CC=11, fan-out=6, mutations=7.
@@ -2270,7 +2314,7 @@ tickets:
   - god-function
   files:
   - packages/dsl2wup/src/dsl2wup/grammar.py
-  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/grammar.py:129:God
+  dedupe_key: 'code2llm:smell:god_function:packages/dsl2wup/src/dsl2wup/grammar.py:126:God
     Function: to_text'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: uri_for_cmd'
@@ -2311,6 +2355,24 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:wup/assistant_validator.py:10:God Function:
     validate_config'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: validate_config'
+  description: 'code2llm reports `God Function: validate_config` in `wup/config.py:441`.
+
+
+    Function ''validate_config'' is oversized: CC=2, fan-out=11, mutations=1.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - wup/config.py
+  dedupe_key: 'code2llm:smell:god_function:wup/config.py:441:God Function: validate_config'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: validate_schema_registry'
   description: 'code2llm reports `God Function: validate_schema_registry` in `packages/dsl2wup/src/dsl2wup/schema_registry.py:54`.
 
@@ -2331,7 +2393,7 @@ tickets:
     Function: validate_schema_registry'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: watch'
-  description: 'code2llm reports `God Function: watch` in `wup/cli.py:229`.
+  description: 'code2llm reports `God Function: watch` in `wup/cli.py:230`.
 
 
     Function ''watch'' is oversized: CC=13, fan-out=15, mutations=6.
@@ -2346,7 +2408,7 @@ tickets:
   - god-function
   files:
   - wup/cli.py
-  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:229:God Function: watch'
+  dedupe_key: 'code2llm:smell:god_function:wup/cli.py:230:God Function: watch'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Module: packages.dsl2wup.src.dsl2wup.models'
   description: 'code2llm reports `God Module: packages.dsl2wup.src.dsl2wup.models`

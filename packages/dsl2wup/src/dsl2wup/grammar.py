@@ -24,103 +24,100 @@ def pick_flag(tokens: list[str], flag: str) -> str | None:
     return None
 
 
-def parse_line(line: str) -> dict[str, Any] | None:
-    tokens = split_command(line)
-    if not tokens:
-        return None
-    verb = tokens[0].upper()
-    rest = tokens[1:]
-    cmd: dict[str, Any] = {"verb": verb}
+def _flag_values(cmd: dict[str, Any], tokens: list[str], *flags: tuple[str, str, object]) -> None:
+    for key, flag, transform in flags:
+        if value := pick_flag(tokens, flag):
+            cmd[key] = transform(value)
 
-    if verb == "QUERY":
+
+def _parse_query(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["target"] = rest[0] if rest else ""
-        if f := pick_flag(rest, "FILE"):
-            cmd["file"] = f
-        if f := pick_flag(rest, "FORMAT"):
-            cmd["format"] = f.lower()
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-    elif verb == "VALIDATE":
+        _flag_values(cmd, rest, ("file", "FILE", str), ("format", "FORMAT", str.lower), ("project", "PROJECT", str))
+
+
+def _parse_validate(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["path"] = rest[0] if rest else ""
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-    elif verb == "RESOLVE":
+        _flag_values(cmd, rest, ("project", "PROJECT", str))
+
+
+def _parse_resolve(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["text"] = " ".join(rest)
-        if f := pick_flag(rest, "FILE"):
-            cmd["file"] = f
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-    elif verb == "HEALTH":
+        _flag_values(cmd, rest, ("file", "FILE", str), ("project", "PROJECT", str))
+
+
+def _parse_health(rest: list[str], cmd: dict[str, Any]) -> None:
         if rest and rest[0] != "PROJECT":
             cmd["service"] = rest[0]
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-    elif verb in {"PATCH", "UPDATE", "REPLACE"}:
+        _flag_values(cmd, rest, ("project", "PROJECT", str))
+
+
+def _parse_patch(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["target"] = rest[0] if rest else ""
-        if f := pick_flag(rest, "WITH"):
-            cmd["with_path"] = f
-        if f := pick_flag(rest, "FILE"):
-            cmd["file"] = f
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-    elif verb == "MAP":
+        _flag_values(cmd, rest, ("with_path", "WITH", str), ("file", "FILE", str), ("project", "PROJECT", str))
+
+
+def _parse_map(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["project"] = rest[0] if rest else "."
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-        if f := pick_flag(rest, "FRAMEWORK"):
-            cmd["framework"] = f.lower()
-    elif verb == "INIT":
+        _flag_values(cmd, rest, ("out", "OUT", str), ("framework", "FRAMEWORK", str.lower))
+
+
+def _parse_init(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["project"] = rest[0] if rest else "."
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-    elif verb == "GENERATE":
+        _flag_values(cmd, rest, ("out", "OUT", str))
+
+
+def _parse_generate(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["text"] = rest[0].strip('"').strip("'") if rest else ""
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-        if f := pick_flag(rest, "TEMPLATE"):
-            cmd["template"] = f.lower()
-    elif verb == "SYNC":
+        _flag_values(cmd, rest, ("out", "OUT", str), ("project", "PROJECT", str), ("template", "TEMPLATE", str.lower))
+
+
+def _parse_sync(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["project"] = rest[0] if rest else "."
-        if f := pick_flag(rest, "FILE"):
-            cmd["file"] = f
+        _flag_values(cmd, rest, ("file", "FILE", str))
         if "MERGE" in rest:
             cmd["merge_endpoints"] = True
-    elif verb == "ADOPT":
+
+
+def _parse_adopt(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["root"] = rest[0] if rest else "."
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-    elif verb == "ENDPOINTS":
+        _flag_values(cmd, rest, ("out", "OUT", str))
+
+
+def _parse_endpoints(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["scenarios_dir"] = rest[0] if rest else ""
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-        if f := pick_flag(rest, "TESTQL_BIN"):
-            cmd["testql_bin"] = f
-    elif verb == "STATUS":
+        _flag_values(cmd, rest, ("out", "OUT", str), ("testql_bin", "TESTQL_BIN", str))
+
+
+def _parse_status(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["project"] = "."
         if rest and rest[0] not in {"PROJECT", "DEPS", "FILE", "DELTA", "FAILED_ONLY"}:
             cmd["project"] = rest[0]
-        if f := pick_flag(rest, "PROJECT"):
-            cmd["project"] = f
-        if f := pick_flag(rest, "DEPS"):
-            cmd["deps_file"] = f
-        if f := pick_flag(rest, "FILE"):
-            cmd["file"] = f
-        if f := pick_flag(rest, "DELTA"):
-            cmd["delta_seconds"] = int(f)
+        _flag_values(cmd, rest, ("project", "PROJECT", str), ("deps_file", "DEPS", str), ("file", "FILE", str), ("delta_seconds", "DELTA", int))
         if "FAILED_ONLY" in rest:
             cmd["failed_only"] = True
-    elif verb == "INIT_CLI":
+
+
+def _parse_init_cli(rest: list[str], cmd: dict[str, Any]) -> None:
         cmd["project"] = rest[0] if rest else "."
-        if f := pick_flag(rest, "OUT"):
-            cmd["out"] = f
-        if f := pick_flag(rest, "SCENARIOS"):
-            cmd["scenarios"] = f
+        _flag_values(cmd, rest, ("out", "OUT", str), ("scenarios", "SCENARIOS", str))
         if "MERGE" in rest:
             cmd["merge"] = True
         if f := pick_flag(rest, "INFER_ARGS"):
             cmd["infer_args"] = f.lower() not in {"false", "0", "no"}
+
+
+_PARSERS = {"QUERY": _parse_query, "VALIDATE": _parse_validate, "RESOLVE": _parse_resolve, "HEALTH": _parse_health, "PATCH": _parse_patch, "UPDATE": _parse_patch, "REPLACE": _parse_patch, "MAP": _parse_map, "INIT": _parse_init, "GENERATE": _parse_generate, "SYNC": _parse_sync, "ADOPT": _parse_adopt, "ENDPOINTS": _parse_endpoints, "STATUS": _parse_status, "INIT_CLI": _parse_init_cli}
+
+
+def parse_line(line: str) -> dict[str, Any] | None:
+    tokens = split_command(line)
+    if not tokens:
+        return None
+    verb, rest = tokens[0].upper(), tokens[1:]
+    cmd: dict[str, Any] = {"verb": verb}
+    parser = _PARSERS.get(verb)
+    if parser:
+        parser(rest, cmd)
     else:
         cmd["args"] = rest
     return cmd

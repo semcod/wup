@@ -28,67 +28,70 @@ _BODY_MAP = {
 }
 
 
+_BODY_DEFAULTS = {
+    "QUERY": {"format": "json"}, "STATUS": {"project": ".", "deps_file": "deps.json"},
+    "MAP": {"project": ".", "out": "deps.json", "framework": "auto"},
+    "INIT": {"project": ".", "out": "wup.yaml"}, "SYNC": {"project": "."},
+    "ADOPT": {"root": "."}, "ENDPOINTS": {"out": "testql-deps.json", "testql_bin": "testql"},
+    "INIT_CLI": {"project": ".", "out": "wup.yaml", "scenarios": "testql-scenarios"},
+}
+_BODY_FIELDS = {
+    "QUERY": ("target", "file", "format", "project"), "VALIDATE": ("path", "project"),
+    "RESOLVE": ("text", "file", "project"), "HEALTH": ("service", "project"),
+    "STATUS": ("project", "deps_file", "file", "delta_seconds", "failed_only"),
+    "PATCH": ("target", "with_path", "file", "project"), "MAP": ("project", "out", "framework"),
+    "INIT": ("project", "out"), "GENERATE": ("text", "out", "project", "template"),
+    "SYNC": ("project", "file", "merge_endpoints"), "ADOPT": ("root", "out"),
+    "ENDPOINTS": ("scenarios_dir", "out", "testql_bin"),
+    "INIT_CLI": ("project", "out", "scenarios", "merge", "infer_args"),
+}
+_BOOL_FIELDS = {"failed_only", "merge_endpoints", "merge"}
+_INT_FIELDS = {"delta_seconds"}
+
+
+def _canonical_verb(verb: str) -> str:
+    return "PATCH" if verb in {"UPDATE", "REPLACE"} else verb
+
+
 def _set_body(envelope: command_pb2.DslEnvelope, cmd: dict[str, Any]) -> None:
-    verb = str(cmd.get("verb", "")).upper()
+    verb = _canonical_verb(str(cmd.get("verb", "")).upper())
     field = _BODY_MAP.get(verb)
     if not field:
         return
     msg = getattr(envelope, field)
-    if verb == "QUERY":
-        msg.target = str(cmd.get("target", ""))
-        msg.file = str(cmd.get("file", ""))
-        msg.format = str(cmd.get("format", "json"))
-        msg.project = str(cmd.get("project", ""))
-    elif verb == "VALIDATE":
-        msg.path = str(cmd.get("path", ""))
-        msg.project = str(cmd.get("project", ""))
-    elif verb == "RESOLVE":
-        msg.text = str(cmd.get("text", ""))
-        msg.file = str(cmd.get("file", ""))
-        msg.project = str(cmd.get("project", ""))
-    elif verb == "HEALTH":
-        msg.service = str(cmd.get("service", ""))
-        msg.project = str(cmd.get("project", ""))
-    elif verb == "STATUS":
-        msg.project = str(cmd.get("project", "."))
-        msg.deps_file = str(cmd.get("deps_file", "deps.json"))
-        msg.file = str(cmd.get("file", ""))
-        msg.delta_seconds = int(cmd.get("delta_seconds") or 0)
-        msg.failed_only = bool(cmd.get("failed_only"))
-    elif verb in {"PATCH", "UPDATE", "REPLACE"}:
-        msg.target = str(cmd.get("target", ""))
-        msg.with_path = str(cmd.get("with_path", ""))
-        msg.file = str(cmd.get("file", ""))
-        msg.project = str(cmd.get("project", ""))
-    elif verb == "MAP":
-        msg.project = str(cmd.get("project", "."))
-        msg.out = str(cmd.get("out", "deps.json"))
-        msg.framework = str(cmd.get("framework", "auto"))
-    elif verb == "INIT":
-        msg.project = str(cmd.get("project", "."))
-        msg.out = str(cmd.get("out", "wup.yaml"))
-    elif verb == "GENERATE":
-        msg.text = str(cmd.get("text", ""))
-        msg.out = str(cmd.get("out", ""))
-        msg.project = str(cmd.get("project", ""))
-        msg.template = str(cmd.get("template", ""))
-    elif verb == "SYNC":
-        msg.project = str(cmd.get("project", "."))
-        msg.file = str(cmd.get("file", ""))
-        msg.merge_endpoints = bool(cmd.get("merge_endpoints"))
-    elif verb == "ADOPT":
-        msg.root = str(cmd.get("root", "."))
-        msg.out = str(cmd.get("out", ""))
-    elif verb == "ENDPOINTS":
-        msg.scenarios_dir = str(cmd.get("scenarios_dir", ""))
-        msg.out = str(cmd.get("out", "testql-deps.json"))
-        msg.testql_bin = str(cmd.get("testql_bin", "testql"))
-    elif verb == "INIT_CLI":
-        msg.project = str(cmd.get("project", "."))
-        msg.out = str(cmd.get("out", "wup.yaml"))
-        msg.scenarios = str(cmd.get("scenarios", "testql-scenarios"))
-        msg.merge = bool(cmd.get("merge"))
-        msg.infer_args = cmd.get("infer_args", True) is not False
+    defaults = _BODY_DEFAULTS.get(verb, {})
+    for name in _BODY_FIELDS[verb]:
+        value = cmd.get(name, defaults.get(name, ""))
+        if name == "infer_args":
+            value = value is not False
+        elif name in _BOOL_FIELDS:
+            value = bool(value)
+        elif name in _INT_FIELDS:
+            value = int(value or 0)
+        else:
+            value = str(value)
+        setattr(msg, name, value)
+
+
+def _body_to_dict(verb: str, msg: Any) -> dict[str, Any]:
+    cmd: dict[str, Any] = {}
+    defaults = _BODY_DEFAULTS.get(verb, {})
+    for name in _BODY_FIELDS[verb]:
+        value = getattr(msg, name)
+        if name == "infer_args":
+            if not value:
+                cmd[name] = False
+        elif name in _BOOL_FIELDS:
+            if value:
+                cmd[name] = True
+        elif name in _INT_FIELDS:
+            if value:
+                cmd[name] = int(value)
+        elif value:
+            cmd[name] = value
+        elif name in defaults:
+            cmd[name] = defaults[name]
+    return cmd
 
 
 def envelope_to_dict(envelope: command_pb2.DslEnvelope) -> dict[str, Any]:
@@ -97,98 +100,7 @@ def envelope_to_dict(envelope: command_pb2.DslEnvelope) -> dict[str, Any]:
     field = _BODY_MAP.get(verb)
     if not field or envelope.WhichOneof("body") != field:
         return cmd
-    msg = getattr(envelope, field)
-    if verb == "QUERY":
-        if msg.target:
-            cmd["target"] = msg.target
-        if msg.file:
-            cmd["file"] = msg.file
-        if msg.format:
-            cmd["format"] = msg.format
-        if msg.project:
-            cmd["project"] = msg.project
-    elif verb == "VALIDATE":
-        if msg.path:
-            cmd["path"] = msg.path
-        if msg.project:
-            cmd["project"] = msg.project
-    elif verb == "RESOLVE":
-        if msg.text:
-            cmd["text"] = msg.text
-        if msg.file:
-            cmd["file"] = msg.file
-        if msg.project:
-            cmd["project"] = msg.project
-    elif verb == "HEALTH":
-        if msg.service:
-            cmd["service"] = msg.service
-        if msg.project:
-            cmd["project"] = msg.project
-    elif verb == "STATUS":
-        cmd["project"] = msg.project or "."
-        if msg.deps_file:
-            cmd["deps_file"] = msg.deps_file
-        if msg.file:
-            cmd["file"] = msg.file
-        if msg.delta_seconds:
-            cmd["delta_seconds"] = int(msg.delta_seconds)
-        if msg.failed_only:
-            cmd["failed_only"] = True
-    elif verb in {"PATCH", "UPDATE", "REPLACE"}:
-        if msg.target:
-            cmd["target"] = msg.target
-        if msg.with_path:
-            cmd["with_path"] = msg.with_path
-        if msg.file:
-            cmd["file"] = msg.file
-        if msg.project:
-            cmd["project"] = msg.project
-    elif verb == "MAP":
-        cmd["project"] = msg.project or "."
-        if msg.out:
-            cmd["out"] = msg.out
-        if msg.framework:
-            cmd["framework"] = msg.framework
-    elif verb == "INIT":
-        cmd["project"] = msg.project or "."
-        if msg.out:
-            cmd["out"] = msg.out
-    elif verb == "GENERATE":
-        if msg.text:
-            cmd["text"] = msg.text
-        if msg.out:
-            cmd["out"] = msg.out
-        if msg.project:
-            cmd["project"] = msg.project
-        if msg.template:
-            cmd["template"] = msg.template
-    elif verb == "SYNC":
-        cmd["project"] = msg.project or "."
-        if msg.file:
-            cmd["file"] = msg.file
-        if msg.merge_endpoints:
-            cmd["merge_endpoints"] = True
-    elif verb == "ADOPT":
-        cmd["root"] = msg.root or "."
-        if msg.out:
-            cmd["out"] = msg.out
-    elif verb == "ENDPOINTS":
-        if msg.scenarios_dir:
-            cmd["scenarios_dir"] = msg.scenarios_dir
-        if msg.out:
-            cmd["out"] = msg.out
-        if msg.testql_bin:
-            cmd["testql_bin"] = msg.testql_bin
-    elif verb == "INIT_CLI":
-        cmd["project"] = msg.project or "."
-        if msg.out:
-            cmd["out"] = msg.out
-        if msg.scenarios:
-            cmd["scenarios"] = msg.scenarios
-        if msg.merge:
-            cmd["merge"] = True
-        if not msg.infer_args:
-            cmd["infer_args"] = False
+    cmd.update(_body_to_dict(_canonical_verb(verb), getattr(envelope, field)))
     return cmd
 
 

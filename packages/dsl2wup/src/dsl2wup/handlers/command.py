@@ -17,7 +17,9 @@ def _project_root(cmd: dict[str, Any]) -> Path:
     return Path(cmd.get("project") or ".").expanduser().resolve()
 
 
-def handle_map(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def handle_map(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.config import load_config
     from wup.dependency_mapper import DependencyMapper
 
@@ -51,7 +53,9 @@ def handle_map(cmd: dict[str, Any], *, line: str, default_file: str | None) -> D
     )
 
 
-def handle_init(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def handle_init(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.config import get_default_config, save_config
 
     project = _project_root(cmd)
@@ -60,7 +64,12 @@ def handle_init(cmd: dict[str, Any], *, line: str, default_file: str | None) -> 
     if not output_path.is_absolute():
         output_path = project / output_path
     if output_path.exists():
-        return DslResult(ok=False, command=line, action="init", error=f"config already exists: {output_path}")
+        return DslResult(
+            ok=False,
+            command=line,
+            action="init",
+            error=f"config already exists: {output_path}",
+        )
     config = get_default_config(project)
     save_config(config, output_path)
     return DslResult(
@@ -72,7 +81,9 @@ def handle_init(cmd: dict[str, Any], *, line: str, default_file: str | None) -> 
     )
 
 
-def handle_generate(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def handle_generate(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.generate import generate_wup_config
 
     project = _project_root(cmd)
@@ -90,7 +101,9 @@ def handle_generate(cmd: dict[str, Any], *, line: str, default_file: str | None)
     )
 
 
-def handle_patch(cmd: dict[str, Any], *, line: str, default_file: str | None, verb: str = "patch") -> DslResult:
+def handle_patch(
+    cmd: dict[str, Any], *, line: str, default_file: str | None, verb: str = "patch"
+) -> DslResult:
     from uri2wup.patch import patch_uri
 
     with_path = cmd.get("with_path")
@@ -114,7 +127,9 @@ def handle_patch(cmd: dict[str, Any], *, line: str, default_file: str | None, ve
     )
 
 
-def handle_sync(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def handle_sync(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.sync import sync_testql_manifest
 
     project = _project_root(cmd)
@@ -125,7 +140,9 @@ def handle_sync(cmd: dict[str, Any], *, line: str, default_file: str | None) -> 
         write=True,
     )
     if not payload.get("ok"):
-        return DslResult(ok=False, command=line, action="sync", error=str(payload.get("error")))
+        return DslResult(
+            ok=False, command=line, action="sync", error=str(payload.get("error"))
+        )
     manifest = payload.get("manifest") or {}
     return DslResult(
         ok=True,
@@ -136,7 +153,9 @@ def handle_sync(cmd: dict[str, Any], *, line: str, default_file: str | None) -> 
     )
 
 
-def handle_init_cli(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def handle_init_cli(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.init_cli import setup_cli_project
 
     project = _project_root(cmd)
@@ -157,7 +176,40 @@ def handle_init_cli(cmd: dict[str, Any], *, line: str, default_file: str | None)
     )
 
 
-def handle_adopt(cmd: dict[str, Any], *, line: str, default_file: str | None) -> DslResult:
+def _query_handlers() -> dict[str, Any]:
+    from dsl2wup.handlers.query import (
+        handle_endpoints,
+        handle_health,
+        handle_query,
+        handle_resolve,
+        handle_status,
+        handle_validate,
+    )
+
+    return {
+        "QUERY": handle_query,
+        "VALIDATE": handle_validate,
+        "RESOLVE": handle_resolve,
+        "HEALTH": handle_health,
+        "STATUS": handle_status,
+        "ENDPOINTS": handle_endpoints,
+    }
+
+
+def _command_handlers() -> dict[str, Any]:
+    return {
+        "MAP": handle_map,
+        "INIT": handle_init,
+        "GENERATE": handle_generate,
+        "SYNC": handle_sync,
+        "ADOPT": handle_adopt,
+        "INIT_CLI": handle_init_cli,
+    }
+
+
+def handle_adopt(
+    cmd: dict[str, Any], *, line: str, default_file: str | None
+) -> DslResult:
     from wup.cli_scanner import CLIScanner
 
     root = Path(cmd.get("root", ".")).expanduser().resolve()
@@ -172,7 +224,9 @@ def handle_adopt(cmd: dict[str, Any], *, line: str, default_file: str | None) ->
         for cmd_entry in pkg.commands:
             name = cmd_entry.name or "cli"
             module = cmd_entry.entry_point or f"{cmd_entry.module}:{cmd_entry.function}"
-            lines.append(f'interface[type="cli"] page[name="{name}"] {{\n  entry: {module};\n}}\n')
+            lines.append(
+                f'interface[type="cli"] page[name="{name}"] {{\n  entry: {module};\n}}\n'
+            )
     buffer_path = Path(out)
     if not buffer_path.is_absolute():
         buffer_path = root / buffer_path
@@ -182,51 +236,36 @@ def handle_adopt(cmd: dict[str, Any], *, line: str, default_file: str | None) ->
         command=line,
         action="adopt",
         output=str(buffer_path.resolve()),
-        data={"root": str(root), "output": str(buffer_path.resolve()), "packages": len(packages)},
+        data={
+            "root": str(root),
+            "output": str(buffer_path.resolve()),
+            "packages": len(packages),
+        },
     )
 
 
-def handle_from_tokens(line: str, tokens: list[str], *, default_file: str | None) -> DslResult:
+def handle_from_tokens(
+    line: str, tokens: list[str], *, default_file: str | None
+) -> DslResult:
     from dsl2wup.grammar import parse_line
-    from dsl2wup.handlers.query import handle_health, handle_query, handle_resolve, handle_validate
 
     cmd = parse_line(line)
     if cmd is None:
         return DslResult(ok=True, command=line, action="noop")
     verb = cmd["verb"]
     try:
-        if verb == "QUERY":
-            from dsl2wup.handlers.query import handle_query
-            return handle_query(cmd, line=line, default_file=default_file)
-        if verb == "VALIDATE":
-            from dsl2wup.handlers.query import handle_validate
-            return handle_validate(cmd, line=line, default_file=default_file)
-        if verb == "RESOLVE":
-            from dsl2wup.handlers.query import handle_resolve
-            return handle_resolve(cmd, line=line, default_file=default_file)
-        if verb == "HEALTH":
-            from dsl2wup.handlers.query import handle_health
-            return handle_health(cmd, line=line, default_file=default_file)
-        if verb == "STATUS":
-            from dsl2wup.handlers.query import handle_status
-            return handle_status(cmd, line=line, default_file=default_file)
-        if verb == "MAP":
-            return handle_map(cmd, line=line, default_file=default_file)
-        if verb == "INIT":
-            return handle_init(cmd, line=line, default_file=default_file)
-        if verb == "GENERATE":
-            return handle_generate(cmd, line=line, default_file=default_file)
         if verb in {"PATCH", "UPDATE", "REPLACE"}:
-            return handle_patch(cmd, line=line, default_file=default_file, verb=verb.lower())
-        if verb == "SYNC":
-            return handle_sync(cmd, line=line, default_file=default_file)
-        if verb == "ADOPT":
-            return handle_adopt(cmd, line=line, default_file=default_file)
-        if verb == "INIT_CLI":
-            return handle_init_cli(cmd, line=line, default_file=default_file)
-        if verb == "ENDPOINTS":
-            from dsl2wup.handlers.query import handle_endpoints
-            return handle_endpoints(cmd, line=line, default_file=default_file)
-        return DslResult(ok=False, command=line, action=verb.lower(), error=f"unknown command: {verb}")
-    except Exception as exc:
+            return handle_patch(
+                cmd, line=line, default_file=default_file, verb=verb.lower()
+            )
+        handler = _query_handlers().get(verb) or _command_handlers().get(verb)
+        if handler:
+            return handler(cmd, line=line, default_file=default_file)
+        return DslResult(
+            ok=False,
+            command=line,
+            action=verb.lower(),
+            error=f"unknown command: {verb}",
+        )
+    except Exception as exc:  # noqa: BLE001 - DSL boundary returns structured failures.
         return DslResult(ok=False, command=line, action=verb.lower(), error=str(exc))

@@ -11,7 +11,6 @@ from wup.testql_monitor import (
     assign_probe_to_service,
     is_monitoring_probe,
     parse_scenario_probes,
-    parse_service_map_probes,
 )
 from wup.testql_watcher import TestQLWatcher
 
@@ -205,8 +204,6 @@ def test_live_probe_failure_updates_health():
             scenarios_dir="testql-scenarios",
             config=cfg,
         )
-
-        failing = ProbeTarget(url="http://localhost:8100/firmware/api/v1/health")
 
         def fake_probe(self, timeout_s=10.0):
             return False, "HTTP 500 (expected 200)"

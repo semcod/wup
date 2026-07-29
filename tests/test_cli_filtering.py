@@ -258,8 +258,8 @@ def test_scenario_matches_type():
         )
         
         # Test type matching
-        assert watcher._scenario_matches_type(cli_scenario, "shell") == True
-        assert watcher._scenario_matches_type(cli_scenario, "web") == False
-        assert watcher._scenario_matches_type(web_scenario, "shell") == False
-        assert watcher._scenario_matches_type(web_scenario, "web") == True
-        assert watcher._scenario_matches_type(cli_scenario, "auto") == True
+        assert watcher._scenario_matches_type(cli_scenario, "shell") is True
+        assert watcher._scenario_matches_type(cli_scenario, "web") is False
+        assert watcher._scenario_matches_type(web_scenario, "shell") is False
+        assert watcher._scenario_matches_type(web_scenario, "web") is True
+        assert watcher._scenario_matches_type(cli_scenario, "auto") is True

@@ -5,12 +5,12 @@
 
 - **Project**: /home/tom/github/semcod/wup
 - **Primary Language**: python
-- **Languages**: python: 101, json: 16, yaml: 12, txt: 12, toml: 7
+- **Languages**: python: 102, json: 16, yaml: 12, txt: 12, toml: 7
 - **Analysis Mode**: static
-- **Total Functions**: 608
+- **Total Functions**: 651
 - **Total Classes**: 98
-- **Modules**: 158
-- **Entry Points**: 363
+- **Modules**: 159
+- **Entry Points**: 399
 
 ## Architecture by Module
 
@@ -49,8 +49,12 @@
 - **File**: `monitoring_manifest.py`
 
 ### wup.config
-- **Functions**: 19
+- **Functions**: 21
 - **File**: `config.py`
+
+### packages.dsl2wup.src.dsl2wup.grammar
+- **Functions**: 18
+- **File**: `grammar.py`
 
 ### wup.planfile_reporter
 - **Functions**: 16
@@ -58,18 +62,9 @@
 - **File**: `planfile_reporter.py`
 
 ### wup.aql
-- **Functions**: 13
+- **Functions**: 15
 - **Classes**: 4
 - **File**: `aql.py`
-
-### wup.cli_scanner
-- **Functions**: 12
-- **Classes**: 3
-- **File**: `cli_scanner.py`
-
-### wup.control
-- **Functions**: 12
-- **File**: `control.py`
 
 ### wup.oql
 - **Functions**: 12
@@ -87,8 +82,17 @@
 - **File**: `discovery.py`
 
 ### packages.dsl2wup.src.dsl2wup.handlers.command
-- **Functions**: 10
+- **Functions**: 12
 - **File**: `command.py`
+
+### wup.cli_scanner
+- **Functions**: 12
+- **Classes**: 3
+- **File**: `cli_scanner.py`
+
+### wup.control
+- **Functions**: 12
+- **File**: `control.py`
 
 ### wup.web_client
 - **Functions**: 10
@@ -103,10 +107,6 @@
 - **Functions**: 10
 - **Classes**: 1
 - **File**: `webhook_notifications.py`
-
-### wup.cli_bridge
-- **Functions**: 9
-- **File**: `cli_bridge.py`
 
 ## Key Entry Points
 
@@ -144,12 +144,6 @@ With ``--write``, appends/updates the auto-generated ``monitoring:`` block
 Pass several project directories to test them **simultaneously**
 (``wup watch p
 - **Calls**: app.command, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
-
-### packages.cli2wup.src.cli2wup.cli.main
-- **Calls**: argparse.ArgumentParser, parser.add_subparsers, sub.add_parser, shell.add_argument, shell.add_argument, sub.add_parser, run.add_argument, run.add_argument
-
-### packages.uri2wup.src.uri2wup.cli.main
-- **Calls**: argparse.ArgumentParser, parser.add_subparsers, sub.add_parser, resolve.add_argument, resolve.add_argument, resolve.add_argument, sub.add_parser, decode.add_argument
 
 ### packages.dsl2wup.src.dsl2wup.events.EventStore.append
 - **Calls**: DslEvent, self.path.parent.mkdir, result_pb2.DslEvent, pb.command.ParseFromString, DslResult, pb.result.CopyFrom, pb.SerializeToString, str
@@ -198,6 +192,9 @@ Examples:
 Returns list of diff results (one per page).
 - **Calls**: self._pages_for_service, max, self._build_progress, self._print_scan_summary, wup.visual_diff._playwright_available, wup.visual_diff._warn_playwright_missing, int, len
 
+### packages.cli2wup.src.cli2wup.cli.main
+- **Calls**: argparse.ArgumentParser, parser.add_subparsers, sub.add_parser, shell.add_argument, shell.add_argument, sub.add_parser, run.add_argument, run.add_argument
+
 ### wup.cli.aql
 > Assert facts about a file with AQL (Assertion Query Language).
 
@@ -212,17 +209,26 @@ Guides you through setting up services, file watching, TestQL integration,
 web dashboard, and visua
 - **Calls**: app.command, typer.Option, typer.Option, typer.Argument, None.resolve, WupAssistant, assistant.run, project_path.exists
 
-### wup.assistant.WupAssistant._configure_services
-> Interactive service configuration.
-- **Calls**: console.print, console.print, enumerate, Prompt.ask, console.print, self._add_service_interactive, len, self._edit_service
-
 ### wup.testql_monitor.TestQLMonitor._add_hardware_usb_module_endpoints
 > Expand hardware_usb_modules from wup.yaml into OqlOS + proxy API probes.
 - **Calls**: None.rstrip, None.rstrip, getattr, raw.get, isinstance, None.strip, catalog.append, catalog.append
 
+### wup.assistant.WupAssistant._configure_services
+> Interactive service configuration.
+- **Calls**: console.print, console.print, enumerate, Prompt.ask, console.print, self._add_service_interactive, len, self._edit_service
+
 ### wup.aql.AQLEngine.check_file
 > Evaluate rules against one file; return a violation per failing rule.
 - **Calls**: Path, file_path.exists, AnomalyResult, isinstance, wup.aql.parse_rule, self._load, wup.aql._passes, violations.append
+
+### packages.uri2wup.src.uri2wup.cli.main
+- **Calls**: argparse.ArgumentParser, parser.add_subparsers, sub.add_parser, resolve.add_argument, resolve.add_argument, resolve.add_argument, sub.add_parser, decode.add_argument
+
+### packages.dsl2wup.src.dsl2wup.handlers.command.handle_map
+- **Calls**: packages.dsl2wup.src.dsl2wup.handlers.command._project_root, Path, wup.config.load_config, DependencyMapper, mapper.build_from_codebase, mapper.save, DslResult, cmd.get
+
+### packages.dsl2wup.src.dsl2wup.handlers.command.handle_adopt
+- **Calls**: None.resolve, CLIScanner, scanner.scan, Path, buffer_path.write_text, DslResult, cmd.get, str
 
 ### wup._ast_detector.ASTDetector.detect
 > Detect changes in Python file structure.
@@ -242,19 +248,6 @@ Returns:
     False when no project yielded a valid path to watch (nothing was
     started)
 - **Calls**: None.join, self.console.print, watcher.start_background_tasks, watcher.prepare_observer, observers.append, active.append, self.console.print, len
-
-### examples.testql_demo.simulate_testql_analysis
-> Simulate WUP analysis on TestQL project.
-- **Calls**: print, print, print, print, Path, print, print, print
-
-### wup.core.WupWatcher.__init__
-> Initialize the WUP watcher.
-
-Args:
-    project_root: Path to the project root directory
-    deps_file: Path to the dependency map JSON file
-    cpu_th
-- **Calls**: Path, DependencyMapper, set, deque, defaultdict, Console, PlanfileReporter, None.exists
 
 ## Process Flows
 
@@ -290,19 +283,19 @@ sync_testql [wup.cli]
 watch [wup.cli]
 ```
 
-### Flow 7: main
-```
-main [packages.cli2wup.src.cli2wup.cli]
-```
-
-### Flow 8: append
+### Flow 7: append
 ```
 append [packages.dsl2wup.src.dsl2wup.events.EventStore]
 ```
 
-### Flow 9: status
+### Flow 8: status
 ```
 status [wup.cli]
+```
+
+### Flow 9: main
+```
+main [examples.testql_integration]
 ```
 
 ### Flow 10: print_report
@@ -341,15 +334,15 @@ Implements 3-layer testing:
 - **Methods**: 17
 - **Key Methods**: wup.planfile_reporter.PlanfileReporter.__init__, wup.planfile_reporter.PlanfileReporter.enabled, wup.planfile_reporter.PlanfileReporter.report_failure, wup.planfile_reporter.PlanfileReporter._ticket_is_closed, wup.planfile_reporter.PlanfileReporter.clear_service_stage, wup.planfile_reporter.PlanfileReporter._build_ticket_cmd, wup.planfile_reporter.PlanfileReporter._run_planfile, wup.planfile_reporter.PlanfileReporter._retry_without_files, wup.planfile_reporter.PlanfileReporter._create_ticket, wup.planfile_reporter.PlanfileReporter._wait_for_planfile_store_ready
 
-### wup.cli_scanner.CLIScanner
-> Scanner for detecting CLI commands in a project.
-- **Methods**: 12
-- **Key Methods**: wup.cli_scanner.CLIScanner.__init__, wup.cli_scanner.CLIScanner.scan, wup.cli_scanner.CLIScanner._scan_setup_py, wup.cli_scanner.CLIScanner._scan_setup_cfg, wup.cli_scanner.CLIScanner._scan_pyproject_toml, wup.cli_scanner.CLIScanner._scan_main_modules, wup.cli_scanner.CLIScanner._parse_entry_points_dict, wup.cli_scanner.CLIScanner._add_entry_point, wup.cli_scanner.CLIScanner.infer_command_args, wup.cli_scanner.CLIScanner._find_module_path
-
 ### wup.dependency_mapper.DependencyMapper
 > Maps project dependencies for intelligent testing.
 - **Methods**: 12
 - **Key Methods**: wup.dependency_mapper.DependencyMapper.__init__, wup.dependency_mapper.DependencyMapper.build_from_codebase, wup.dependency_mapper.DependencyMapper._detect_framework, wup.dependency_mapper.DependencyMapper._infer_service, wup.dependency_mapper.DependencyMapper.get_endpoints_for_file, wup.dependency_mapper.DependencyMapper.get_endpoints_for_service, wup.dependency_mapper.DependencyMapper.get_files_for_service, wup.dependency_mapper.DependencyMapper.get_service_for_file, wup.dependency_mapper.DependencyMapper.to_dict, wup.dependency_mapper.DependencyMapper.save
+
+### wup.cli_scanner.CLIScanner
+> Scanner for detecting CLI commands in a project.
+- **Methods**: 12
+- **Key Methods**: wup.cli_scanner.CLIScanner.__init__, wup.cli_scanner.CLIScanner.scan, wup.cli_scanner.CLIScanner._scan_setup_py, wup.cli_scanner.CLIScanner._scan_setup_cfg, wup.cli_scanner.CLIScanner._scan_pyproject_toml, wup.cli_scanner.CLIScanner._scan_main_modules, wup.cli_scanner.CLIScanner._parse_entry_points_dict, wup.cli_scanner.CLIScanner._add_entry_point, wup.cli_scanner.CLIScanner.infer_command_args, wup.cli_scanner.CLIScanner._find_module_path
 
 ### wup._ast_detector.ASTDetector
 > Detect changes in Python files using AST comparison.
@@ -387,15 +380,15 @@ Usage::
 - **Methods**: 7
 - **Key Methods**: wup.testql_discovery.TestQLEndpointDiscovery.__init__, wup.testql_discovery.TestQLEndpointDiscovery.discover_scenarios, wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints, wup.testql_discovery.TestQLEndpointDiscovery.infer_service_from_scenario, wup.testql_discovery.TestQLEndpointDiscovery.discover_all_endpoints, wup.testql_discovery.TestQLEndpointDiscovery.discover_via_testql_cli, wup.testql_discovery.TestQLEndpointDiscovery.to_dependency_map
 
-### wup.testql_cli_generator.TestQLCLIGenerator
-> Generate TestQL scenarios for CLI command testing.
-- **Methods**: 6
-- **Key Methods**: wup.testql_cli_generator.TestQLCLIGenerator.__init__, wup.testql_cli_generator.TestQLCLIGenerator.generate, wup.testql_cli_generator.TestQLCLIGenerator._generate_smoke_scenario, wup.testql_cli_generator.TestQLCLIGenerator._generate_command_scenario, wup.testql_cli_generator.TestQLCLIGenerator.generate_custom_scenario, wup.testql_cli_generator.TestQLCLIGenerator.print_summary
-
 ### wup.anomaly_detector.AnomalyDetector
 > Main anomaly detector combining multiple detection methods.
 - **Methods**: 6
 - **Key Methods**: wup.anomaly_detector.AnomalyDetector.__init__, wup.anomaly_detector.AnomalyDetector._should_scan, wup.anomaly_detector.AnomalyDetector.scan_file, wup.anomaly_detector.AnomalyDetector.scan_directory, wup.anomaly_detector.AnomalyDetector.get_summary, wup.anomaly_detector.AnomalyDetector.print_report
+
+### wup.testql_cli_generator.TestQLCLIGenerator
+> Generate TestQL scenarios for CLI command testing.
+- **Methods**: 6
+- **Key Methods**: wup.testql_cli_generator.TestQLCLIGenerator.__init__, wup.testql_cli_generator.TestQLCLIGenerator.generate, wup.testql_cli_generator.TestQLCLIGenerator._generate_smoke_scenario, wup.testql_cli_generator.TestQLCLIGenerator._generate_command_scenario, wup.testql_cli_generator.TestQLCLIGenerator.generate_custom_scenario, wup.testql_cli_generator.TestQLCLIGenerator.print_summary
 
 ### wup.cli_config_generator.CLIConfigGenerator
 > Generate wup.yaml configuration for CLI/shell services.
@@ -425,19 +418,14 @@ Overrides test methods to run actual Test
 - **Methods**: 5
 - **Key Methods**: examples.webhook_notifications.NotificationRouter.__init__, examples.webhook_notifications.NotificationRouter.add_slack, examples.webhook_notifications.NotificationRouter.add_teams, examples.webhook_notifications.NotificationRouter.add_discord, examples.webhook_notifications.NotificationRouter.send
 
-### wup._hash_detector.HashDetector
-> Fast anomaly detection using file hashes.
+### wup.oql.OQLEngine
+> Executes OQL queries against a project's observed state.
 - **Methods**: 4
-- **Key Methods**: wup._hash_detector.HashDetector.__init__, wup._hash_detector.HashDetector._compute_hash, wup._hash_detector.HashDetector._snapshot_path, wup._hash_detector.HashDetector.detect
-- **Inherits**: BaseDetector
+- **Key Methods**: wup.oql.OQLEngine.__init__, wup.oql.OQLEngine._service_rows, wup.oql.OQLEngine._event_rows, wup.oql.OQLEngine.execute
 
 ## Data Transformation Functions
 
 Key functions that process and transform data:
-
-### packages.uri2wup.src.uri2wup.decode.decode_uri
-> Convert wup:// URI to a canonical DSL command line.
-- **Output to**: packages.uri2wup.src.uri2wup.uri.parse_wup_uri, str, list, isinstance, ValueError
 
 ### packages.uri2wup.src.uri2wup.uri._encode
 - **Output to**: quote
@@ -451,30 +439,12 @@ Key functions that process and transform data:
 ### packages.nlp2wup.src.nlp2wup.validate.validate_wup_config
 - **Output to**: wup.validate.validate_wup_file
 
-### packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf
-- **Output to**: command_pb2.DslEnvelope, None.upper, packages.dsl2wup.src.dsl2wup.pb_codec._set_body, envelope.SerializeToString, str
-
-### packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf
-- **Output to**: command_pb2.DslEnvelope, envelope.ParseFromString, packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
-
-### packages.dsl2wup.src.dsl2wup.pb_codec.encode_text_to_protobuf
-- **Output to**: packages.dsl2wup.src.dsl2wup.grammar.parse_line, packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf, ValueError
-
-### packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf_to_text
-- **Output to**: packages.dsl2wup.src.dsl2wup.grammar.to_text, packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf
-
-### packages.dsl2wup.src.dsl2wup.pb_codec.encode_result_protobuf
-- **Output to**: None.SerializeToString, packages.dsl2wup.src.dsl2wup.pb_codec.result_to_pb
-
 ### packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
 - **Output to**: None.upper, packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb, jsonschema.Draft202012Validator, str, sorted
 
 ### packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry
 > Audit registry: handler verbs, schema files, protobuf codec alignment.
 - **Output to**: packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas, schemas.items, sorted, set, sorted
-
-### packages.dsl2wup.src.dsl2wup.grammar.parse_line
-- **Output to**: packages.dsl2wup.src.dsl2wup.grammar.split_command, None.upper, packages.dsl2wup.src.dsl2wup.grammar.pick_flag, packages.dsl2wup.src.dsl2wup.grammar.pick_flag, f.lower
 
 ### packages.dsl2wup.src.dsl2wup.codec.encode_text
 - **Output to**: packages.dsl2wup.src.dsl2wup.grammar.parse_line, packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
@@ -488,40 +458,59 @@ Key functions that process and transform data:
 ### packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate
 - **Output to**: str, wup.validate.validate_wup_file, DslResult, packages.dsl2wup.src.dsl2wup.handlers.query._project_root, cmd.get
 
-### wup.cli_bridge.run_validate
-- **Output to**: wup.control.dispatch_validate
+### wup.monitoring_manifest._parse_port_mapping
+- **Output to**: isinstance, isinstance, str, str
+
+### wup.monitoring_manifest.format_manifest_summary
+> Short human-readable summary for CLI.
+- **Output to**: manifest.get, sorted, lines.extend, None.join, lines.append
+
+### wup.oql._parse_duration
+- **Output to**: re.fullmatch, None.lower, OQLError, int, match.group
+
+### wup.oql.parse
+> Parse an OQL string into an :class:`OQLQuery`.
+- **Output to**: wup.oql._tokenize, None.lower, OQLQuery, OQLError, OQLError
+
+### wup.oql._parse_conditions
+> Consume `<field> <op> <value> [and ...]` conditions; return next index.
+- **Output to**: len, OQLError, len, parsed.conditions.append, len
+
+### wup.testql_monitor._parse_api_lines
+- **Output to**: _API_LINE.findall, probes.append, int, ProbeTarget, target.strip
+
+### wup.testql_monitor._parse_shell_curl_lines
+- **Output to**: _SHELL_CURL_URL.findall, None.rstrip, probes.append, ProbeTarget, url.strip
+
+### wup.testql_monitor.parse_scenario_probes
+> Extract API probe rows from a TestQL TOON scenario file.
+- **Output to**: scenario_path.read_text, wup.testql_monitor._parse_api_lines, wup.testql_monitor._parse_shell_curl_lines, str, str
+
+### wup.testql_monitor._parse_endpoint_row
+> Convert a single endpoints list entry into a ProbeTarget.
+- **Output to**: None.strip, None.upper, int, ProbeTarget, isinstance
+
+### wup.testql_monitor.parse_service_map_probes
+> Extract probes from c2004-style service map YAML (endpoints: list).
+- **Output to**: wup.testql_monitor._extract_base_url, str, yaml.safe_load, isinstance, data.get
 
 ### wup.validate.validate_wup_file
 > Validate a wup.yaml file and return a structured result dict.
 - **Output to**: None.resolve, None.expanduser, wup.config.find_config_file, wup.config.load_config, wup.assistant_validator.validate_config
 
-### wup.assistant.WupAssistant._review_and_validate
-> Review and validate configuration.
-- **Output to**: console.print, console.print, console.print, console.print, console.print
-
-### wup.assistant.WupAssistant._validate_config
-> Validate current configuration.
-- **Output to**: wup.assistant_validator.validate_config
+### wup.planfile_reporter.PlanfileReporter._parse_ticket_id
+- **Output to**: re.search, match.group
 
 ### wup.assistant_validator.validate_config
 > Validate current WUP configuration and return a list of discovered issues.
 - **Output to**: issues.append, issues.append, issues.append, None.replace, resolved.exists
 
-### wup.testql_discovery.TestQLEndpointDiscovery.parse_scenario_endpoints
-> Extract endpoints from a TestQL scenario file.
+### packages.uri2wup.src.uri2wup.cli._run_decode
+- **Output to**: print, packages.uri2wup.src.uri2wup.decode.decode_uri
 
-Args:
-    scenario_path: Path to scenario file
-    
-
-- **Output to**: list, re.compile, api_pattern.findall, set, open
-
-### wup.cli_scanner.CLIScanner._parse_entry_points_dict
-> Parse entry points dictionary string.
-- **Output to**: re.search, console_match.group, re.findall, self._add_entry_point
-
-### wup.control.dispatch_validate
-- **Output to**: wup.control._result_dict
+### packages.uri2wup.src.uri2wup.decode.decode_uri
+> Convert wup:// URI to a canonical DSL command line.
+- **Output to**: packages.uri2wup.src.uri2wup.uri.parse_wup_uri, str, list, isinstance, ValueError
 
 ## Behavioral Patterns
 
@@ -551,19 +540,13 @@ Functions exposed as public API (no underscore prefix):
 
 - `examples.ci_cd_integration.show_ci_cd_demo` - 69 calls
 - `examples.webhook_notifications.show_webhook_demo` - 68 calls
-- `packages.uri2wup.src.uri2wup.query.query_uri` - 49 calls
 - `wup.cli.map_deps` - 45 calls
 - `wup.cli.testql_endpoints` - 43 calls
 - `packages.rest2wup.src.rest2wup.app.create_app` - 42 calls
-- `packages.dsl2wup.src.dsl2wup.codegen.generate_models` - 42 calls
 - `wup.cli.init_cli` - 42 calls
 - `wup.cli.sync_testql` - 38 calls
-- `packages.dsl2wup.src.dsl2wup.grammar.parse_line` - 37 calls
 - `wup.cli.watch` - 36 calls
-- `packages.cli2wup.src.cli2wup.cli.main` - 34 calls
-- `packages.uri2wup.src.uri2wup.cli.main` - 34 calls
 - `packages.dsl2wup.src.dsl2wup.events.EventStore.append` - 33 calls
-- `wup.aql.parse_rule` - 33 calls
 - `wup.cli.status` - 31 calls
 - `examples.testql_integration.main` - 27 calls
 - `wup.anomaly_detector.AnomalyDetector.print_report` - 26 calls
@@ -573,22 +556,28 @@ Functions exposed as public API (no underscore prefix):
 - `examples.visual_diff_demo.demo_snapshot_persistence` - 26 calls
 - `wup.cli.oql` - 26 calls
 - `wup.testql_watcher.TestQLWatcher.run_detail_test` - 25 calls
-- `packages.uri2wup.src.uri2wup.decode.decode_uri` - 23 calls
 - `wup.status_data.collect_status_snapshot` - 23 calls
+- `packages.uri2wup.src.uri2wup.query.query_uri` - 23 calls
 - `packages.nlp2wup.src.nlp2wup.cli.main` - 22 calls
 - `wup.visual_diff.VisualDiffer.run_for_service` - 22 calls
+- `packages.cli2wup.src.cli2wup.cli.main` - 22 calls
 - `wup.cli.aql` - 22 calls
 - `wup.cli.assistant` - 22 calls
-- `packages.uri2wup.src.uri2wup.patch.patch_uri` - 21 calls
-- `packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens` - 21 calls
+- `wup.cli_bridge.run_map_deps` - 21 calls
 - `wup.aql.AQLEngine.check_file` - 21 calls
-- `packages.nlp2wup.src.nlp2wup.apply.to_dsl` - 20 calls
+- `wup.generate.generate_wup_config` - 20 calls
+- `packages.uri2wup.src.uri2wup.cli.main` - 20 calls
 - `packages.dsl2wup.src.dsl2wup.handlers.command.handle_map` - 20 calls
 - `packages.dsl2wup.src.dsl2wup.handlers.command.handle_adopt` - 20 calls
-- `wup.generate.generate_wup_config` - 20 calls
 - `packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry` - 19 calls
-- `packages.dsl2wup.src.dsl2wup.grammar.to_text` - 19 calls
+- `wup.oql.parse` - 19 calls
 - `wup._ast_detector.ASTDetector.detect` - 19 calls
+- `packages.dsl2wup.src.dsl2wup.grammar.to_text` - 19 calls
+- `wup.cli.init` - 19 calls
+- `wup.multi.MultiProjectWatcher.start_watching` - 18 calls
+- `examples.testql_demo.simulate_testql_analysis` - 18 calls
+- `packages.uri2wup.src.uri2wup.patch.patch_uri` - 18 calls
+- `wup._yaml_detector.YAMLStructureDetector.detect` - 17 calls
 
 ## System Interactions
 
@@ -613,10 +602,6 @@ graph TD
     watch --> command
     watch --> Argument
     watch --> Option
-    main --> ArgumentParser
-    main --> add_subparsers
-    main --> add_parser
-    main --> add_argument
     append --> DslEvent
     append --> mkdir
     append --> ParseFromString
@@ -626,6 +611,10 @@ graph TD
     main --> print
     main --> VisualDiffConfig
     main --> CustomTestQLWatcher
+    print_report --> get_summary
+    print_report --> print
+    print_report --> Table
+    print_report --> add_column
 ```
 
 ## Reverse Engineering Guidelines

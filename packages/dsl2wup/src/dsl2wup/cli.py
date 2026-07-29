@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from dsl2wup.bus import dispatch, execute_dsl, execute_dsl_line
+from dsl2wup.bus import execute_dsl, execute_dsl_line
 from dsl2wup.codec import decode_protobuf, encode_protobuf, roundtrip_text
 from dsl2wup.events import default_event_store
 from dsl2wup.schema_registry import validate_schema_registry

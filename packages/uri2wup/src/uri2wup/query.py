@@ -50,41 +50,82 @@ def _resolve_config_path(project: str, file_param: str | None) -> Path:
 
 
 def _extract_block(raw: dict[str, Any], parts: list[str]) -> Any:
-    if not parts or parts[0] == "config":
+    if not parts:
         return raw
-    if parts[0] == "project":
-        return raw.get("project", {})
-    if parts[0] == "watch":
-        return raw.get("watch", {})
-    if parts[0] == "services":
-        return raw.get("services", [])
-    if parts[0] == "testql":
-        return raw.get("testql", {})
-    if parts[0] == "test_strategy":
-        return raw.get("test_strategy", {})
-    if parts[0] == "status":
-        deps_path = Path("deps.json")
-        from wup.paths import health_state_path
+    if parts[0] == "config":
+        parts = parts[1:]
 
-        health_path = health_state_path(".")
-        return {
-            "deps_exists": deps_path.exists(),
-            "health_exists": health_path.exists(),
-        }
-    if parts[0] == "deps":
-        deps_file = parts[1] if len(parts) > 1 else "deps.json"
-        path = Path(deps_file)
-        if not path.exists():
-            raise FileNotFoundError(deps_file)
-        return json.loads(path.read_text(encoding="utf-8"))
-    if parts[0] == "health":
-        from wup.paths import health_state_path
+    node: Any = raw
+    for part in parts:
+        if isinstance(node, dict):
+            if part not in node:
+                raise KeyError(part)
+            node = node[part]
+        elif isinstance(node, list):
+            try:
+                node = node[int(part)]
+            except (ValueError, IndexError) as exc:
+                raise KeyError(part) from exc
+        else:
+            raise KeyError(part)
+    return node
 
-        path = health_state_path(".")
-        if not path.exists():
-            return {}
-        return json.loads(path.read_text(encoding="utf-8"))
-    raise ValueError(f"unsupported block path: {'/'.join(parts)}")
+
+def _runtime_block(parts: list[str], project: str) -> Any:
+    cwd = Path(project).expanduser().resolve()
+    kind = parts[0]
+    if kind == "deps":
+        path = cwd / (parts[1] if len(parts) > 1 else "deps.json")
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    from wup.paths import health_state_path
+
+    health_path = health_state_path(cwd)
+    if kind == "health":
+        return (
+            json.loads(health_path.read_text(encoding="utf-8"))
+            if health_path.exists()
+            else {}
+        )
+    return {
+        "deps_exists": (cwd / "deps.json").exists(),
+        "health_exists": health_path.exists(),
+    }
+
+
+def _success(
+    uri: str, parts: list[str], data: Any, output_fmt: str, file: str = ""
+) -> QueryResult:
+    return QueryResult(
+        ok=True,
+        uri=uri,
+        selector="/".join(parts) or "config",
+        file=file,
+        data=data,
+        rendered=yaml.safe_dump(data, sort_keys=False)
+        if output_fmt == "yaml"
+        else json.dumps(data, ensure_ascii=False, indent=2),
+        format=output_fmt,
+        keys=sorted(data.keys()) if isinstance(data, dict) else [],
+    )
+
+
+def _query_context(uri: str, file: str | None, fmt: str | None, project: str) -> tuple[list[str], str, str, str]:
+    parsed = parse_wup_uri(uri)
+    source = str(parsed["source"])
+    if source != "block":
+        raise ValueError(f"unsupported wup source: {source}")
+    parts = list(parsed["parts"])  # type: ignore[arg-type]
+    file_param = file or str(parsed.get("file") or "")
+    output_fmt = (fmt or str(parsed.get("format") or "json")).lower()
+    return parts, file_param, output_fmt, str(parsed.get("project") or project)
+
+
+def _query_data(parts: list[str], project: str, file_param: str) -> tuple[Any, str]:
+    if parts and parts[0] in {"status", "deps", "health"}:
+        return _runtime_block(parts, project), ""
+    config_path = _resolve_config_path(project, file_param or None)
+    raw = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    return _extract_block(raw, parts), str(config_path)
 
 
 def query_uri(
@@ -94,66 +135,14 @@ def query_uri(
     fmt: str | None = None,
     project: str = ".",
 ) -> QueryResult:
-    parsed = parse_wup_uri(uri)
-    source = str(parsed["source"])
-    parts = list(parsed["parts"])  # type: ignore[arg-type]
-    params = parsed["params"]
-    assert isinstance(params, dict)
-    file_param = file or str(parsed.get("file") or "")
-    output_fmt = (fmt or str(parsed.get("format") or "json")).lower()
-    project_path = str(parsed.get("project") or project)
-
+    parts: list[str] = []
+    file_param = file or ""
+    output_fmt = (fmt or "json").lower()
     try:
-        if source != "block":
-            raise ValueError(f"unsupported wup source: {source}")
-
-        if parts and parts[0] in {"status", "deps", "health"}:
-            cwd = Path(project_path).expanduser().resolve()
-            data = _extract_block({}, parts)
-            if parts[0] == "deps":
-                deps_file = parts[1] if len(parts) > 1 else "deps.json"
-                path = cwd / deps_file
-                data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-            elif parts[0] == "health":
-                from wup.paths import health_state_path
-
-                path = health_state_path(cwd)
-                data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-            else:
-                from wup.paths import health_state_path
-
-                deps_exists = (cwd / "deps.json").exists()
-                health_exists = health_state_path(cwd).exists()
-                data = {"deps_exists": deps_exists, "health_exists": health_exists}
-            rendered = yaml.safe_dump(data, sort_keys=False) if output_fmt == "yaml" else json.dumps(data, ensure_ascii=False, indent=2)
-            return QueryResult(
-                ok=True,
-                uri=uri,
-                selector="/".join(parts),
-                file="",
-                data=data,
-                rendered=rendered,
-                format=output_fmt,
-                keys=sorted(data.keys()) if isinstance(data, dict) else [],
-            )
-
-        config_path = _resolve_config_path(project_path, file_param or None)
-        raw = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-        data = _extract_block(raw, parts)
-        rendered = yaml.safe_dump(data, sort_keys=False) if output_fmt == "yaml" else json.dumps(data, ensure_ascii=False, indent=2)
-        selector = "/".join(parts) if parts else "config"
-        keys = sorted(data.keys()) if isinstance(data, dict) else []
-        return QueryResult(
-            ok=True,
-            uri=uri,
-            selector=selector,
-            file=str(config_path),
-            data=data,
-            rendered=rendered,
-            format=output_fmt,
-            keys=keys,
-        )
-    except Exception as exc:
+        parts, file_param, output_fmt, project_path = _query_context(uri, file, fmt, project)
+        data, config_file = _query_data(parts, project_path, file_param)
+        return _success(uri, parts, data, output_fmt, config_file)
+    except Exception as exc:  # noqa: BLE001 - public API returns QueryResult failures.
         return QueryResult(
             ok=False,
             uri=uri,

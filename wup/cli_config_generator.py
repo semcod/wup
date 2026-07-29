@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import yaml
 
-from .cli_scanner import CLIScanner, CLIPackage, CLICommand
+from .cli_scanner import CLIScanner, CLIPackage
 from .models.config import (
     ProjectConfig,
     ServiceConfig,

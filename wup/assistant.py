@@ -11,12 +11,9 @@ Usage:
 
 from __future__ import annotations
 
-import json
-import re
-import sys
-from dataclasses import asdict, field
+from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import yaml
 
@@ -24,19 +21,12 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, IntPrompt, Prompt
 from rich.table import Table
-from rich.tree import Tree
 
 from .models.config import (
     AnomalyDetectionConfig,
-    NotifyConfig,
     ProjectConfig,
     ServiceConfig,
     ServiceType,
-    TestQLConfig,
-    TestStrategyConfig,
-    VisualDiffConfig,
-    WatchConfig,
-    WebConfig,
     WupConfig,
 )
 from .assistant_discovery import (
@@ -52,7 +42,7 @@ from .assistant_validator import (
 
 # Import ServiceType for type checking
 if False:  # TYPE_CHECKING
-    from .models.config import ServiceType as ServiceTypeLiteral
+    pass
 
 console = Console()
 
@@ -513,7 +503,7 @@ class WupAssistant:
             yaml.dump(config_dict, default_flow_style=False, sort_keys=False, allow_unicode=True)
         )
         
-        console.print(f"\n[bold green]✓ Configuration saved to wup.yaml[/bold green]")
+        console.print("\n[bold green]✓ Configuration saved to wup.yaml[/bold green]")
         
         # Clean up draft
         if self.draft_path.exists():

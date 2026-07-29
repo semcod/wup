@@ -6,16 +6,27 @@ from typing import Any
 
 
 def _result_dict(line: str, *, default_file: str | None = None) -> dict[str, Any]:
-    from dsl2wup import dispatch
+    try:
+        from dsl2wup import dispatch
+    except ModuleNotFoundError as exc:
+        if exc.name == "dsl2wup":
+            raise RuntimeError(
+                "WUP control DSL is optional; install it with `pip install 'wup[control]'`"
+            ) from exc
+        raise
 
     return dispatch(line, default_file=default_file).to_dict()
 
 
-def dispatch_validate(path: str = "wup.yaml", *, project: str = ".", default_file: str | None = None) -> dict[str, Any]:
+def dispatch_validate(
+    path: str = "wup.yaml", *, project: str = ".", default_file: str | None = None
+) -> dict[str, Any]:
     return _result_dict(f"VALIDATE {path} PROJECT {project}", default_file=default_file)
 
 
-def dispatch_query(target: str, *, file: str = "", project: str = ".", fmt: str = "json") -> dict[str, Any]:
+def dispatch_query(
+    target: str, *, file: str = "", project: str = ".", fmt: str = "json"
+) -> dict[str, Any]:
     parts = [f"QUERY {target}"]
     if file:
         parts.append(f"FILE {file}")
@@ -26,11 +37,17 @@ def dispatch_query(target: str, *, file: str = "", project: str = ".", fmt: str 
 
 
 def dispatch_health(*, service: str = "", project: str = ".") -> dict[str, Any]:
-    line = f"HEALTH {service} PROJECT {project}".strip() if service else f"HEALTH PROJECT {project}"
+    line = (
+        f"HEALTH {service} PROJECT {project}".strip()
+        if service
+        else f"HEALTH PROJECT {project}"
+    )
     return _result_dict(line)
 
 
-def dispatch_map(*, project: str = ".", out: str = "deps.json", framework: str = "auto") -> dict[str, Any]:
+def dispatch_map(
+    *, project: str = ".", out: str = "deps.json", framework: str = "auto"
+) -> dict[str, Any]:
     return _result_dict(f"MAP {project} OUT {out} FRAMEWORK {framework}")
 
 
@@ -38,7 +55,9 @@ def dispatch_init(*, project: str = ".", out: str = "wup.yaml") -> dict[str, Any
     return _result_dict(f"INIT {project} OUT {out}")
 
 
-def dispatch_sync(*, project: str = ".", file: str = "wup.yaml", merge_endpoints: bool = False) -> dict[str, Any]:
+def dispatch_sync(
+    *, project: str = ".", file: str = "wup.yaml", merge_endpoints: bool = False
+) -> dict[str, Any]:
     line = f"SYNC {project} FILE {file}"
     if merge_endpoints:
         line += " MERGE"
@@ -102,5 +121,7 @@ def dispatch_init_cli(
     return _result_dict(line)
 
 
-def dispatch_command(command: str, *, default_file: str | None = None) -> dict[str, Any]:
+def dispatch_command(
+    command: str, *, default_file: str | None = None
+) -> dict[str, Any]:
     return _result_dict(command, default_file=default_file)

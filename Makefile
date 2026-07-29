@@ -1,16 +1,16 @@
-# Makefile for sumd
+# Makefile for WUP
 # Provides convenient commands for development, testing, and deployment
 
 .PHONY: help install install-dev test clean publish publish-confirm publish-test version
 
 # Default target
 help:
-	@echo "🚀 SUMD Development Commands"
+	@echo "🚀 WUP Development Commands"
 	@echo "============================"
 	@echo ""
 	@echo "Setup:"
-	@echo "  install          Install sumd in development mode"
-	@echo "  install-dev      Install sumd with dev dependencies"
+	@echo "  install          Install WUP in development mode"
+	@echo "  install-dev      Install WUP with dev dependencies"
 	@echo ""
 	@echo "Development:"
 	@echo "  test             Run tests"
@@ -27,7 +27,7 @@ help:
 
 # Installation
 install:
-	@echo "📦 Installing sumd..."
+	@echo "📦 Installing WUP..."
 	@if command -v uv > /dev/null 2>&1; then \
 		uv pip install -e .; \
 	else \
@@ -36,7 +36,7 @@ install:
 	@echo "✅ Installation completed!"
 
 install-dev:
-	@echo "📦 Installing sumd with dev dependencies..."
+	@echo "📦 Installing WUP with dev dependencies..."
 	@if command -v uv > /dev/null 2>&1; then \
 		uv pip install -e ".[dev]"; \
 	else \
@@ -47,22 +47,24 @@ install-dev:
 # Testing
 test:
 	@echo "🧪 Running tests..."
-	.venv/bin/python -m pytest tests/ -v --tb=short
+	.venv/bin/python -m pytest tests/ packages/ -v --tb=short
 
 test-cov:
 	@echo "🧪 Running tests with coverage..."
-	.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json
+	.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json
 
 # Code quality
 lint:
 	@echo "🔍 Running linting with ruff..."
-	.venv/bin/python -m ruff check sumd/
+	.venv/bin/python -m ruff check wup/
 	.venv/bin/python -m ruff check tests/
+	.venv/bin/python -m ruff check packages/
 
 format:
 	@echo "📝 Formatting code with ruff..."
-	.venv/bin/python -m ruff format sumd/
+	.venv/bin/python -m ruff format wup/
 	.venv/bin/python -m ruff format tests/
+	.venv/bin/python -m ruff format packages/
 
 # Utilities
 clean:
@@ -75,12 +77,15 @@ clean:
 
 # Release helpers
 publish:
-	@echo "📦 Publishing to PyPI..."
+	@echo "📦 Building release artifacts (no upload)..."
 	@command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build)
 	rm -rf dist/ build/ *.egg-info/
 	.venv/bin/python -m build
 	.venv/bin/twine check dist/*
-	@echo "⚡ Ready to upload."
+	@echo "✅ Release artifacts are valid. Run 'make publish-confirm' to upload."
+
+publish-confirm: publish
+	@echo "⚡ Uploading release artifacts to PyPI..."
 	.venv/bin/twine upload dist/*
 
 publish-test:
@@ -93,4 +98,4 @@ publish-test:
 version:
 	@echo "📦 Version information..."
 	@cat VERSION
-	@.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"sumd\")}')"
+	@.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"wup\")}')"

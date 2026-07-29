@@ -28,7 +28,7 @@ WUP (What's Up) - Intelligent file watcher for regression testing in large proje
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, testql(4), app.doql.less, goal.yaml, .env.example, src(38 mod), project/(3 analysis files)
+- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, testql(4), app.doql.less, goal.yaml, .env.example, src(39 mod), project/(3 analysis files)
 
 ## Architecture
 
@@ -48,8 +48,9 @@ app {
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
-  dev: "pytest>=7.0.0, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
+  dev: "pytest>=7.0.0, pytest-cov>=5.0, ruff>=0.8, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
   visual: "playwright>=1.40,<2";
+  control: "dsl2wup>=0.1.0, uri2wup>=0.1.0";
 }
 
 entity[name="AdoptCommand"] {
@@ -155,7 +156,7 @@ interface[type="cli"] {
   framework: argparse;
 }
 interface[type="cli"] page[name="wup"] {
-  entry: wup.cli:app;
+  entry: wup.bootstrap:main;
 }
 
 interface[type="web"] {
@@ -165,7 +166,7 @@ interface[type="web"] {
 
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd...";
+  step-1: run cmd=echo "📦 Installing WUP...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e .; \;
   step-4: run cmd=else \;
@@ -176,7 +177,7 @@ workflow[name="install"] {
 
 workflow[name="install-dev"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd with dev dependencies...";
+  step-1: run cmd=echo "📦 Installing WUP with dev dependencies...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e ".[dev]"; \;
   step-4: run cmd=else \;
@@ -188,27 +189,29 @@ workflow[name="install-dev"] {
 workflow[name="test"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --tb=short;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --tb=short;
 }
 
 workflow[name="test-cov"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests with coverage...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json;
 }
 
 workflow[name="lint"] {
   trigger: manual;
   step-1: run cmd=echo "🔍 Running linting with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff check sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff check wup/;
   step-3: run cmd=.venv/bin/python -m ruff check tests/;
+  step-4: run cmd=.venv/bin/python -m ruff check packages/;
 }
 
 workflow[name="format"] {
   trigger: manual;
   step-1: run cmd=echo "📝 Formatting code with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff format sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff format wup/;
   step-3: run cmd=.venv/bin/python -m ruff format tests/;
+  step-4: run cmd=.venv/bin/python -m ruff format packages/;
 }
 
 workflow[name="clean"] {
@@ -223,13 +226,18 @@ workflow[name="clean"] {
 
 workflow[name="publish"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Publishing to PyPI...";
+  step-1: run cmd=echo "📦 Building release artifacts (no upload)...";
   step-2: run cmd=command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build);
   step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
   step-4: run cmd=.venv/bin/python -m build;
   step-5: run cmd=.venv/bin/twine check dist/*;
-  step-6: run cmd=echo "⚡ Ready to upload.";
-  step-7: run cmd=.venv/bin/twine upload dist/*;
+  step-6: run cmd=echo "✅ Release artifacts are valid. Run 'make publish-confirm' to upload.";
+}
+
+workflow[name="publish-confirm"] {
+  trigger: manual;
+  step-1: run cmd=echo "⚡ Uploading release artifacts to PyPI...";
+  step-2: run cmd=.venv/bin/twine upload dist/*;
 }
 
 workflow[name="publish-test"] {
@@ -245,7 +253,7 @@ workflow[name="version"] {
   trigger: manual;
   step-1: run cmd=echo "📦 Version information...";
   step-2: run cmd=cat VERSION;
-  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"sumd\")}')";
+  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"wup\")}')";
 }
 
 workflow[name="wup:watch"] {
@@ -308,6 +316,7 @@ environment[name="local"] {
 - `wup.assistant`
 - `wup.assistant_discovery`
 - `wup.assistant_validator`
+- `wup.bootstrap`
 - `wup.bus`
 - `wup.cli`
 - `wup.cli_bridge`
@@ -564,6 +573,8 @@ pyyaml>=6.0
 
 ```text markpact:deps python scope=dev
 pytest>=7.0.0
+pytest-cov>=5.0
+ruff>=0.8
 goal>=2.1.0
 costs>=0.1.20
 pfix>=0.1.60
@@ -620,6 +631,7 @@ pip install -e .[dev]
 - `format`
 - `clean` — Utilities
 - `publish` — Release helpers
+- `publish-confirm`
 - `publish-test`
 - `version`
 
@@ -628,15 +640,15 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# wup | 158f 21062L | json:16,yaml:12,txt:12,python:101,yml:2,shell:3,toml:7,proto:2 | 2026-07-29
+# wup | 159f 21216L | json:16,yaml:12,txt:12,python:102,yml:2,shell:3,toml:7,proto:2 | 2026-07-29
 # generated in 0.02s
-# stats: 608 func | 0 cls | 158 mod | CC̄=4.7 | critical:13 | cycles:0
-# alerts[5]: CC parse_line=59; CC envelope_to_dict=58; fan-out create_app=26; fan-out query_uri=26; fan-out EventStore.append=22
-# hotspots[5]: create_app fan=26; query_uri fan=26; EventStore.append fan=22; oql fan=21; main fan=19
-# evolution: CC̄ 5.0→4.7 (improved -0.3)
+# stats: 651 func | 0 cls | 159 mod | CC̄=4.2 | critical:0 | cycles:0
+# alerts[5]: fan-out create_app=26; fan-out EventStore.append=22; fan-out oql=21; fan-out TestQLWatcher._run_fleet_health_scenario=19; fan-out map_deps=19
+# hotspots[5]: create_app fan=26; EventStore.append fan=22; oql fan=21; map_deps fan=19; status fan=19
+# evolution: CC̄ 5.0→4.2 (improved -0.8)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[158]:
-  Makefile,96
+M[159]:
+  Makefile,101
   Taskfile.yml,32
   deps.json,4
   duplication.json,3481
@@ -684,14 +696,14 @@ M[158]:
   packages/dsl2wup/src/dsl2wup/bus.py,79
   packages/dsl2wup/src/dsl2wup/cli.py,108
   packages/dsl2wup/src/dsl2wup/codec.py,35
-  packages/dsl2wup/src/dsl2wup/codegen.py,98
+  packages/dsl2wup/src/dsl2wup/codegen.py,70
   packages/dsl2wup/src/dsl2wup/engine.py,8
   packages/dsl2wup/src/dsl2wup/events.py,116
-  packages/dsl2wup/src/dsl2wup/grammar.py,156
-  packages/dsl2wup/src/dsl2wup/handlers/command.py,232
+  packages/dsl2wup/src/dsl2wup/grammar.py,153
+  packages/dsl2wup/src/dsl2wup/handlers/command.py,271
   packages/dsl2wup/src/dsl2wup/handlers/query.py,137
   packages/dsl2wup/src/dsl2wup/models.py,129
-  packages/dsl2wup/src/dsl2wup/pb_codec.py,235
+  packages/dsl2wup/src/dsl2wup/pb_codec.py,147
   packages/dsl2wup/src/dsl2wup/result.py,28
   packages/dsl2wup/src/dsl2wup/schema/commands/adopt.schema.json,11
   packages/dsl2wup/src/dsl2wup/schema/commands/endpoints.schema.json,12
@@ -718,9 +730,9 @@ M[158]:
   packages/nlp2wup/local.dev.txt,10
   packages/nlp2wup/pyproject.toml,27
   packages/nlp2wup/src/nlp2wup/__init__.py,7
-  packages/nlp2wup/src/nlp2wup/apply.py,126
+  packages/nlp2wup/src/nlp2wup/apply.py,167
   packages/nlp2wup/src/nlp2wup/cli.py,43
-  packages/nlp2wup/src/nlp2wup/generate.py,25
+  packages/nlp2wup/src/nlp2wup/generate.py,24
   packages/nlp2wup/src/nlp2wup/validate.py,11
   packages/rest2wup/local.dev.txt,9
   packages/rest2wup/pyproject.toml,28
@@ -730,14 +742,14 @@ M[158]:
   packages/uri2wup/local.dev.txt,9
   packages/uri2wup/pyproject.toml,27
   packages/uri2wup/src/uri2wup/__init__.py,7
-  packages/uri2wup/src/uri2wup/cli.py,62
-  packages/uri2wup/src/uri2wup/decode.py,72
+  packages/uri2wup/src/uri2wup/cli.py,72
+  packages/uri2wup/src/uri2wup/decode.py,61
   packages/uri2wup/src/uri2wup/nlp2uri.py,48
-  packages/uri2wup/src/uri2wup/patch.py,68
-  packages/uri2wup/src/uri2wup/query.py,164
+  packages/uri2wup/src/uri2wup/patch.py,91
+  packages/uri2wup/src/uri2wup/query.py,147
   packages/uri2wup/src/uri2wup/uri.py,92
   project.sh,49
-  pyproject.toml,127
+  pyproject.toml,143
   regix.yaml,51
   scripts/run_probe_smoke.py,88
   testql-deps.json,311
@@ -746,7 +758,7 @@ M[158]:
   testql-scenarios/generated-cli-tests.testql.toon.yaml,20
   testql-scenarios/generated-from-pytests.testql.toon.yaml,82
   todo.txt,12
-  tree.txt,330
+  tree.txt,337
   wup/__init__.py,46
   wup/_ast_detector.py,124
   wup/_base_detector.py,18
@@ -754,17 +766,18 @@ M[158]:
   wup/_yaml_detector.py,128
   wup/anomaly_detector.py,175
   wup/anomaly_models.py,35
-  wup/aql.py,306
-  wup/assistant.py,594
+  wup/aql.py,308
+  wup/assistant.py,584
   wup/assistant_discovery.py,99
   wup/assistant_validator.py,57
+  wup/bootstrap.py,61
   wup/bus.py,65
   wup/cli.py,1079
-  wup/cli_bridge.py,80
+  wup/cli_bridge.py,194
   wup/cli_config_generator.py,223
-  wup/cli_scanner.py,302
-  wup/config.py,610
-  wup/control.py,106
+  wup/cli_scanner.py,301
+  wup/config.py,584
+  wup/control.py,127
   wup/core.py,740
   wup/dependency_mapper.py,177
   wup/discovery.py,279
@@ -795,86 +808,6 @@ M[158]:
   wup/visual_diff.py,638
   wup/web_client.py,185
 D:
-  packages/dsl2wup/src/dsl2wup/grammar.py:
-    e: split_command,pick_flag,parse_line,to_text
-    split_command(line)
-    pick_flag(tokens;flag)
-    parse_line(line)
-    to_text(cmd)
-  packages/dsl2wup/src/dsl2wup/pb_codec.py:
-    e: _set_body,envelope_to_dict,encode_protobuf,decode_protobuf,encode_text_to_protobuf,decode_protobuf_to_text,result_to_pb,encode_result_protobuf
-    _set_body(envelope;cmd)
-    envelope_to_dict(envelope)
-    encode_protobuf(cmd)
-    decode_protobuf(data)
-    encode_text_to_protobuf(line)
-    decode_protobuf_to_text(data)
-    result_to_pb(result)
-    encode_result_protobuf(result)
-  packages/nlp2wup/src/nlp2wup/apply.py:
-    e: ApplyResult,_intent,to_dsl,apply_nl
-    ApplyResult: to_dict(0)
-    _intent(prompt)
-    to_dsl(prompt)
-    apply_nl(prompt)
-  packages/uri2wup/src/uri2wup/query.py:
-    e: QueryResult,_resolve_config_path,_extract_block,query_uri
-    QueryResult: to_dict(0)
-    _resolve_config_path(project;file_param)
-    _extract_block(raw;parts)
-    query_uri(uri)
-  packages/uri2wup/src/uri2wup/decode.py:
-    e: _dict_to_dsl,decode_uri
-    _dict_to_dsl(cmd)
-    decode_uri(uri)
-  wup/aql.py:
-    e: AQLError,AQLRule,AQLEngine,CheckAQL,_resolve_path,_split_severity,_tokenize,parse_rule,_coerce_number,_compare,_length_of,_type_name,_passes,register_aql
-    AQLError(ValueError):  # Raised for malformed AQL rules...
-    AQLRule:
-    AQLEngine: __init__(1),_load(1),check_file(2)  # Evaluates AQL rules against a file's data, producing Anomaly...
-    CheckAQL(Query):  # Query message: evaluate AQL rules against a file via the eve...
-    _resolve_path(data;path)
-    _split_severity(tokens)
-    _tokenize(rule)
-    parse_rule(rule)
-    _coerce_number(value)
-    _compare(actual;op;expected)
-    _length_of(value)
-    _type_name(value)
-    _passes(rule;value)
-    register_aql(bus;project_root)
-  packages/uri2wup/src/uri2wup/patch.py:
-    e: PatchResult,_resolve_config_path,patch_uri
-    PatchResult: to_dict(0)
-    _resolve_config_path(project;file_param)
-    patch_uri(uri)
-  packages/dsl2wup/src/dsl2wup/handlers/command.py:
-    e: _read_content,_project_root,handle_map,handle_init,handle_generate,handle_patch,handle_sync,handle_init_cli,handle_adopt,handle_from_tokens
-    _read_content(path)
-    _project_root(cmd)
-    handle_map(cmd)
-    handle_init(cmd)
-    handle_generate(cmd)
-    handle_patch(cmd)
-    handle_sync(cmd)
-    handle_init_cli(cmd)
-    handle_adopt(cmd)
-    handle_from_tokens(line;tokens)
-  packages/cli2wup/src/cli2wup/cli.py:
-    e: run_shell,main
-    run_shell()
-    main(argv)
-  packages/uri2wup/src/uri2wup/cli.py:
-    e: main
-    main(argv)
-  packages/dsl2wup/src/dsl2wup/codegen.py:
-    e: generate_models,main
-    generate_models()
-    main()
-  wup/assistant.py:
-    e: WupAssistant,main
-    WupAssistant: __init__(1),_dispatch_menu_choice(2),run(2),_init_project(1),_detect_framework(0),_auto_detect_services(1),_detect_service_type(2),_configure_services(0),_add_service_interactive(0),_edit_service(1),_setup_watch(0),_configure_testql(0),_setup_web_dashboard(0),_setup_visual_diff(0),_setup_anomaly_detection(0),_review_and_validate(0),_validate_config(0),_generate_suggestions(0),_save_configuration(0),_save_draft(0),_load_draft(0),_config_to_dict(1),_quick_setup(1)  # Interactive configuration assistant...
-    main()
   wup/monitoring_manifest.py:
     e: DockerComposeService,_parse_port_mapping,_load_compose_yaml,_extract_healthcheck_test,_extract_service_from_spec,discover_docker_compose_services,_host_port_from_mapping,_connect_profile_rules,_map_docker_to_wup_service,_probe_row,_build_wup_service_dicts,_build_docker_rows,_build_scenario_rows,_artifact_row,_semcod_tool_row,discover_semcod_tools,build_monitoring_manifest,manifest_to_yaml_block,patch_wup_yaml_monitoring,load_monitoring_manifest_from_yaml,_service_summary_lines,_semcod_summary_lines,format_manifest_summary
     DockerComposeService:
@@ -914,6 +847,9 @@ D:
     parse(query)
     _parse_conditions(tokens;start;parsed)
     register_oql(bus;project_root)
+  wup/planfile_reporter.py:
+    e: PlanfileReporter
+    PlanfileReporter: __init__(3),report_failure(0),_ticket_is_closed(1),clear_service_stage(0),_build_ticket_cmd(3),_run_planfile(1),_retry_without_files(1),_create_ticket(0),_wait_for_planfile_store_ready(1),_load_dedupe(0),_save_dedupe(1),_fingerprint(-1),_parse_ticket_id(0),_files_option_unsupported(0),_ticket_name(-1),_ticket_description(-1)  # Create deduplicated planfile tickets for WUP-detected failur...
   wup/cli.py:
     e: _load_watch_config,_print_watch_header,_refresh_monitoring_manifest,_create_watcher,_is_project_dir,_discover_projects,_resolve_project_paths,_build_project_watcher,watch,_auto_generate_config,map_deps,_add_failing_services_lines,_add_delta_events_lines,_add_monitoring_manifest_lines,_add_visual_diff_lines,_build_status_panel,status,oql,aql,init,testql_endpoints,sync_testql,assistant,version,init_cli
     _load_watch_config(project_path;config_path;probe_interval;mode)
@@ -941,9 +877,28 @@ D:
     assistant(quick;template;project)
     version()
     init_cli(project;output_config;output_scenarios;merge;infer_args)
-  wup/planfile_reporter.py:
-    e: PlanfileReporter
-    PlanfileReporter: __init__(3),report_failure(0),_ticket_is_closed(1),clear_service_stage(0),_build_ticket_cmd(3),_run_planfile(1),_retry_without_files(1),_create_ticket(0),_wait_for_planfile_store_ready(1),_load_dedupe(0),_save_dedupe(1),_fingerprint(-1),_parse_ticket_id(0),_files_option_unsupported(0),_ticket_name(-1),_ticket_description(-1)  # Create deduplicated planfile tickets for WUP-detected failur...
+  wup/assistant.py:
+    e: WupAssistant,main
+    WupAssistant: __init__(1),_dispatch_menu_choice(2),run(2),_init_project(1),_detect_framework(0),_auto_detect_services(1),_detect_service_type(2),_configure_services(0),_add_service_interactive(0),_edit_service(1),_setup_watch(0),_configure_testql(0),_setup_web_dashboard(0),_setup_visual_diff(0),_setup_anomaly_detection(0),_review_and_validate(0),_validate_config(0),_generate_suggestions(0),_save_configuration(0),_save_draft(0),_load_draft(0),_config_to_dict(1),_quick_setup(1)  # Interactive configuration assistant...
+    main()
+  wup/aql.py:
+    e: AQLError,AQLRule,AQLEngine,CheckAQL,_resolve_path,_split_severity,_tokenize,_rule_selector,_predicate_rule,parse_rule,_coerce_number,_compare,_length_of,_type_name,_passes,register_aql
+    AQLError(ValueError):  # Raised for malformed AQL rules...
+    AQLRule:
+    AQLEngine: __init__(1),_load(1),check_file(2)  # Evaluates AQL rules against a file's data, producing Anomaly...
+    CheckAQL(Query):  # Query message: evaluate AQL rules against a file via the eve...
+    _resolve_path(data;path)
+    _split_severity(tokens)
+    _tokenize(rule)
+    _rule_selector(tokens)
+    _predicate_rule(selector;path;keyword;tokens;severity;raw)
+    parse_rule(rule)
+    _coerce_number(value)
+    _compare(actual;op;expected)
+    _length_of(value)
+    _type_name(value)
+    _passes(rule;value)
+    register_aql(bus;project_root)
   packages/dsl2wup/src/dsl2wup/schema_registry.py:
     e: _load_schemas,schema_for_verb,all_schemas,validate_command_dict,_schema_verb_for,validate_schema_registry
     _load_schemas()
@@ -976,6 +931,14 @@ D:
     _assign_by_longest_token(path_lower;services)
     _assign_by_path_prefix(path_lower;services)
     assign_probe_to_service(probe;services;port_map)
+  packages/uri2wup/src/uri2wup/query.py:
+    e: QueryResult,_resolve_config_path,_extract_block,_runtime_block,_success,query_uri
+    QueryResult: to_dict(0)
+    _resolve_config_path(project;file_param)
+    _extract_block(raw;parts)
+    _runtime_block(parts;project)
+    _success(uri;parts;data;output_fmt;file)
+    query_uri(uri)
   wup/testql_watcher.py:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file...
@@ -998,9 +961,6 @@ Implements...
     detect_framework(project_root)
     auto_detect_services(project_root;framework)
     detect_service_type(name;path)
-  wup/testql_discovery.py:
-    e: TestQLEndpointDiscovery
-    TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files...
   wup/multi.py:
     e: MultiProjectWatcher
     MultiProjectWatcher: __init__(2),start_watching(0)  # Drive multiple watchers from one loop, one observer per proj...
@@ -1031,15 +991,68 @@ Usage::
     _flatten(node;depth;max_depth)
     _diff_snapshots(old;new;max_depth;threshold_added;threshold_removed;threshold_changed)
     _resolve_base_url(cfg)
-  wup/cli_scanner.py:
-    e: CLICommand,CLIPackage,CLIScanner
-    CLICommand:  # Represents a detected CLI command...
-    CLIPackage:  # Represents a detected CLI package...
-    CLIScanner: __init__(1),scan(0),_scan_setup_py(1),_scan_setup_cfg(1),_scan_pyproject_toml(1),_scan_main_modules(0),_parse_entry_points_dict(2),_add_entry_point(4),infer_command_args(1),_find_module_path(1),_get_help_arguments(1),to_dict(0)  # Scanner for detecting CLI commands in a project...
+  packages/nlp2wup/src/nlp2wup/apply.py:
+    e: ApplyResult,_intent,_simple_command,_generated_command,_special_command,to_dsl,apply_nl
+    ApplyResult: to_dict(0)
+    _intent(prompt)
+    _simple_command(intent;explicit_file;project)
+    _generated_command(prompt;explicit_file;project)
+    _special_command(intent;prompt;explicit_file;file;project)
+    to_dsl(prompt)
+    apply_nl(prompt)
+  packages/dsl2wup/src/dsl2wup/grammar.py:
+    e: split_command,pick_flag,_flag_values,_parse_query,_parse_validate,_parse_resolve,_parse_health,_parse_patch,_parse_map,_parse_init,_parse_generate,_parse_sync,_parse_adopt,_parse_endpoints,_parse_status,_parse_init_cli,parse_line,to_text
+    split_command(line)
+    pick_flag(tokens;flag)
+    _flag_values(cmd;tokens)
+    _parse_query(rest;cmd)
+    _parse_validate(rest;cmd)
+    _parse_resolve(rest;cmd)
+    _parse_health(rest;cmd)
+    _parse_patch(rest;cmd)
+    _parse_map(rest;cmd)
+    _parse_init(rest;cmd)
+    _parse_generate(rest;cmd)
+    _parse_sync(rest;cmd)
+    _parse_adopt(rest;cmd)
+    _parse_endpoints(rest;cmd)
+    _parse_status(rest;cmd)
+    _parse_init_cli(rest;cmd)
+    parse_line(line)
+    to_text(cmd)
+  wup/testql_discovery.py:
+    e: TestQLEndpointDiscovery
+    TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files...
+  packages/uri2wup/src/uri2wup/patch.py:
+    e: PatchResult,_resolve_config_path,_replace_at_path,patch_uri
+    PatchResult: to_dict(0)
+    _resolve_config_path(project;file_param)
+    _replace_at_path(raw;parts;fragment)
+    patch_uri(uri)
+  packages/dsl2wup/src/dsl2wup/pb_codec.py:
+    e: _canonical_verb,_set_body,_body_to_dict,envelope_to_dict,encode_protobuf,decode_protobuf,encode_text_to_protobuf,decode_protobuf_to_text,result_to_pb,encode_result_protobuf
+    _canonical_verb(verb)
+    _set_body(envelope;cmd)
+    _body_to_dict(verb;msg)
+    envelope_to_dict(envelope)
+    encode_protobuf(cmd)
+    decode_protobuf(data)
+    encode_text_to_protobuf(line)
+    decode_protobuf_to_text(data)
+    result_to_pb(result)
+    encode_result_protobuf(result)
+  packages/dsl2wup/src/dsl2wup/codegen.py:
+    e: _field_type,_field_line,_append_model,generate_models,main
+    _field_type(prop)
+    _field_line(name;prop;required)
+    _append_model(lines;schema_file)
+    generate_models()
+    main()
   wup/config.py:
-    e: find_config_file,_load_dotenv,load_config,_parse_project_config,_parse_watch_config,_parse_services_config,_parse_strategy_config,_normalize_testql_timeout,_parse_testql_extra_args,_normalize_testql_extra_args,_parse_testql_config,_parse_visual_diff_config,_parse_web_config,_parse_planfile_config,_parse_semcod_tools_config,validate_config,detect_watch_paths,get_default_config,save_config
+    e: find_config_file,_read_dotenv,_load_dotenv,load_config,_parse_project_config,_parse_watch_config,_parse_services_config,_parse_strategy_config,_normalize_testql_timeout,_parse_testql_extra_args,_normalize_testql_extra_args,_parse_testql_config,_parse_visual_diff_config,_parse_web_config,_parse_planfile_config,_parse_anomaly_detection_config,_parse_semcod_tools_config,validate_config,detect_watch_paths,get_default_config,save_config
     find_config_file(project_root)
-    _load_dotenv(project_root)
+    _read_dotenv(project_root)
+    _load_dotenv(project_root;environ)
     load_config(project_root;config_path)
     _parse_project_config(raw)
     _parse_watch_config(raw)
@@ -1048,22 +1061,23 @@ Usage::
     _normalize_testql_timeout(val)
     _parse_testql_extra_args(extra_args_raw)
     _normalize_testql_extra_args(extra_args_raw)
-    _parse_testql_config(raw)
-    _parse_visual_diff_config(raw)
-    _parse_web_config(raw)
-    _parse_planfile_config(raw)
+    _parse_testql_config(raw;environ)
+    _parse_visual_diff_config(raw;environ)
+    _parse_web_config(raw;environ)
+    _parse_planfile_config(raw;environ)
+    _parse_anomaly_detection_config(raw)
     _parse_semcod_tools_config(raw)
     validate_config(raw)
     detect_watch_paths(project_root)
     get_default_config(project_root)
     save_config(config;output_path)
+  wup/cli_scanner.py:
+    e: CLICommand,CLIPackage,CLIScanner
+    CLICommand:  # Represents a detected CLI command...
+    CLIPackage:  # Represents a detected CLI package...
+    CLIScanner: __init__(1),scan(0),_scan_setup_py(1),_scan_setup_cfg(1),_scan_pyproject_toml(1),_scan_main_modules(0),_parse_entry_points_dict(2),_add_entry_point(4),infer_command_args(1),_find_module_path(1),_get_help_arguments(1),to_dict(0)  # Scanner for detecting CLI commands in a project...
   packages/nlp2wup/src/nlp2wup/cli.py:
     e: main
-    main(argv)
-  packages/dsl2wup/src/dsl2wup/cli.py:
-    e: _main_legacy,_main_subcommand,main
-    _main_legacy(argv)
-    _main_subcommand(argv)
     main(argv)
   wup/assistant_validator.py:
     e: validate_config,generate_suggestions
@@ -1076,6 +1090,18 @@ Usage::
     e: _merge_endpoints,sync_testql_manifest
     _merge_endpoints(config_path;wup_config;suggested;project_path)
     sync_testql_manifest(project_root)
+  packages/cli2wup/src/cli2wup/cli.py:
+    e: run_shell,_print_result,_run_script,_run_command,main
+    run_shell()
+    _print_result(result)
+    _run_script(args)
+    _run_command(args)
+    main(argv)
+  packages/dsl2wup/src/dsl2wup/cli.py:
+    e: _main_legacy,_main_subcommand,main
+    _main_legacy(argv)
+    _main_subcommand(argv)
+    main(argv)
   wup/validate.py:
     e: validate_wup_file
     validate_wup_file(path)
@@ -1086,10 +1112,6 @@ Usage::
   wup/_yaml_detector.py:
     e: YAMLStructureDetector
     YAMLStructureDetector(BaseDetector): __init__(1),_load_yaml(1),_extract_structure(3),_snapshot_path(1),_compare_structures(3),_compare_dict_structures(3),detect(1),_generate_suggestions(1)  # Detect structural changes in YAML files...
-  wup/testing/handlers/health_handlers.py:
-    e: ServiceHealthProjection,register_health_handlers
-    ServiceHealthProjection: __init__(5),_load_initial_state(0),_save_state(0),handle_health_changed(1),handle_get_health(1)  # Maintains the materialized view of service health...
-    register_health_handlers(bus;health_state_path;event_store;planfile_reporter;browser_notifier;web_client)
   wup/discovery.py:
     e: Endpoint,SourceIndex,DiscoveryAdapter,FastAPIAdapter,FlaskAdapter,DjangoAdapter,ExpressAdapter,FastifyAdapter,HonoAdapter,NestJSAdapter,GoAdapter,OpenAPIAdapter,detect_frameworks,discover_endpoints
     Endpoint: as_dict(0)  # A discovered HTTP endpoint...
@@ -1106,6 +1128,24 @@ Usage::
     OpenAPIAdapter(DiscoveryAdapter): _load_spec(1),detect(1),scan(1)  # Extract paths from an OpenAPI/Swagger document (yaml or json...
     detect_frameworks(index)
     discover_endpoints(project_root;framework;index)
+  wup/testing/handlers/health_handlers.py:
+    e: ServiceHealthProjection,register_health_handlers
+    ServiceHealthProjection: __init__(5),_load_initial_state(0),_save_state(0),handle_health_changed(1),handle_get_health(1)  # Maintains the materialized view of service health...
+    register_health_handlers(bus;health_state_path;event_store;planfile_reporter;browser_notifier;web_client)
+  packages/dsl2wup/src/dsl2wup/handlers/command.py:
+    e: _read_content,_project_root,handle_map,handle_init,handle_generate,handle_patch,handle_sync,handle_init_cli,_query_handlers,_command_handlers,handle_adopt,handle_from_tokens
+    _read_content(path)
+    _project_root(cmd)
+    handle_map(cmd)
+    handle_init(cmd)
+    handle_generate(cmd)
+    handle_patch(cmd)
+    handle_sync(cmd)
+    handle_init_cli(cmd)
+    _query_handlers()
+    _command_handlers()
+    handle_adopt(cmd)
+    handle_from_tokens(line;tokens)
   packages/uri2wup/src/uri2wup/uri.py:
     e: _encode,_decode,uri_for_cmd,uri_for_block,is_wup_uri,parse_wup_uri
     _encode(value)
@@ -1114,11 +1154,6 @@ Usage::
     uri_for_block()
     is_wup_uri(uri)
     parse_wup_uri(uri)
-  packages/dsl2wup/src/dsl2wup/events.py:
-    e: DslEvent,EventStore,default_event_store
-    DslEvent: to_dict(0)
-    EventStore: __init__(1),append(2),replay(0)
-    default_event_store(manifest_file)
   wup/anomaly_detector.py:
     e: AnomalyDetector,quick_scan,scan_yaml_changes
     AnomalyDetector: __init__(2),_should_scan(1),scan_file(1),scan_directory(3),get_summary(1),print_report(1)  # Main anomaly detector combining multiple detection methods...
@@ -1136,6 +1171,17 @@ Usage::
     analyze_monorepo(project_path)
     simulate_monorepo()
     main()
+  packages/uri2wup/src/uri2wup/decode.py:
+    e: _dict_to_dsl,_command_from_params,_block_query,decode_uri
+    _dict_to_dsl(cmd)
+    _command_from_params(parts;params)
+    _block_query(uri;parsed)
+    decode_uri(uri)
+  packages/dsl2wup/src/dsl2wup/events.py:
+    e: DslEvent,EventStore,default_event_store
+    DslEvent: to_dict(0)
+    EventStore: __init__(1),append(2),replay(0)
+    default_event_store(manifest_file)
   packages/dsl2wup/src/dsl2wup/bus.py:
     e: _dispatch_cmd,_bytes_to_cmd,dispatch,execute_dsl_line,execute_dsl
     _dispatch_cmd(cmd)
@@ -1143,12 +1189,9 @@ Usage::
     dispatch(envelope)
     execute_dsl_line(line)
     execute_dsl(text)
-  wup/testql_cli_generator.py:
-    e: TestQLCLIGenerator
-    TestQLCLIGenerator: __init__(1),generate(2),_generate_smoke_scenario(2),_generate_command_scenario(3),generate_custom_scenario(3),print_summary(1)  # Generate TestQL scenarios for CLI command testing...
-  wup/cli_config_generator.py:
-    e: CLIConfigGenerator
-    CLIConfigGenerator: __init__(1),generate(2),_generate_config(2),_create_shell_service(1),_save_config(2),print_summary(1)  # Generate wup.yaml configuration for CLI/shell services...
+  wup/dependency_mapper.py:
+    e: DependencyMapper
+    DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing...
   wup/web_client.py:
     e: WebClient,_httpx_available,resolve_endpoint,_normalize
     WebClient: __init__(1),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wupbro backend.
@@ -1198,9 +1241,16 @@ O...
     print_service_health(health_path)
     check_manifest_stale_probes(manifest_path)
     main()
-  wup/dependency_mapper.py:
-    e: DependencyMapper
-    DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing...
+  wup/testql_cli_generator.py:
+    e: TestQLCLIGenerator
+    TestQLCLIGenerator: __init__(1),generate(2),_generate_smoke_scenario(2),_generate_command_scenario(3),generate_custom_scenario(3),print_summary(1)  # Generate TestQL scenarios for CLI command testing...
+  wup/bootstrap.py:
+    e: _watchdog_preflight,main
+    _watchdog_preflight()
+    main(argv)
+  wup/cli_config_generator.py:
+    e: CLIConfigGenerator
+    CLIConfigGenerator: __init__(1),generate(2),_generate_config(2),_create_shell_service(1),_save_config(2),print_summary(1)  # Generate wup.yaml configuration for CLI/shell services...
   packages/dsl2wup/src/dsl2wup/handlers/query.py:
     e: _project_root,handle_query,handle_validate,handle_resolve,handle_status,handle_endpoints,handle_health
     _project_root(cmd;default_file)
@@ -1220,6 +1270,13 @@ O...
     e: TestResultEventHandler,register_testing_event_handlers
     TestResultEventHandler: __init__(3),handle_test_failed(1),handle_test_passed(1)  # Handles test result events to update planfile reporter and w...
     register_testing_event_handlers(bus;planfile_reporter;web_client;console)
+  packages/uri2wup/src/uri2wup/cli.py:
+    e: _run_resolve,_run_decode,_run_query,_run_dispatch,main
+    _run_resolve(args)
+    _run_decode(args)
+    _run_query(args)
+    _run_dispatch(args)
+    main(argv)
   packages/rest2wup/src/rest2wup/cli.py:
     e: main
     main(argv)
@@ -1238,6 +1295,9 @@ O...
     Event(Message):  # Event indicates something happened...
     Query(Message):  # Query requests data without changing state...
     EventBus: __init__(0),subscribe(2),publish(1),execute(1),query(1)  # Simple in-memory event bus and command/query dispatcher...
+  wup/event_store.py:
+    e: EventStore
+    EventStore: __init__(1),append(1),read_all(0)  # Append-only store for domain events...
   wup/control.py:
     e: _result_dict,dispatch_validate,dispatch_query,dispatch_health,dispatch_map,dispatch_init,dispatch_sync,dispatch_generate,dispatch_status,dispatch_endpoints,dispatch_init_cli,dispatch_command
     _result_dict(line)
@@ -1252,22 +1312,26 @@ O...
     dispatch_endpoints(scenarios_dir)
     dispatch_init_cli()
     dispatch_command(command)
-  wup/event_store.py:
-    e: EventStore
-    EventStore: __init__(1),append(1),read_all(0)  # Append-only store for domain events...
-  packages/nlp2wup/src/nlp2wup/generate.py:
-    e: _extract_template,generate_from_nl
-    _extract_template(prompt)
-    generate_from_nl(prompt)
   packages/dsl2wup/src/dsl2wup/codec.py:
     e: encode_text,roundtrip_text,encode_protobuf,decode_protobuf
     encode_text(line)
     roundtrip_text(line)
     encode_protobuf(line)
     decode_protobuf(data)
+  examples/ci_cd_integration.py:
+    e: generate_github_actions,generate_gitlab_ci,show_ci_cd_demo,main
+    generate_github_actions()
+    generate_gitlab_ci()
+    show_ci_cd_demo()
+    main()
+  packages/nlp2wup/src/nlp2wup/generate.py:
+    e: _extract_template,generate_from_nl
+    _extract_template(prompt)
+    generate_from_nl(prompt)
   wup/cli_bridge.py:
-    e: _fail,run_map_deps,run_init,run_sync,run_generate,run_validate,run_status,run_endpoints,run_init_cli
-    _fail(result)
+    e: _result,_guard,run_map_deps,run_init,run_sync,run_generate,run_validate,run_status,run_endpoints,run_init_cli
+    _result(action;data)
+    _guard(action;operation)
     run_map_deps()
     run_init()
     run_sync()
@@ -1276,12 +1340,6 @@ O...
     run_status()
     run_endpoints()
     run_init_cli()
-  examples/ci_cd_integration.py:
-    e: generate_github_actions,generate_gitlab_ci,show_ci_cd_demo,main
-    generate_github_actions()
-    generate_gitlab_ci()
-    show_ci_cd_demo()
-    main()
   wup/__init__.py:
     e: __getattr__
     __getattr__(name)
@@ -1360,7 +1418,6 @@ O...
   goal.yaml:
   regix.yaml:
   local.dev.txt:
-  Makefile:
   koru.yaml:
   tree.txt:
   todo.txt:
@@ -1429,6 +1486,22 @@ O...
   wup/file_watcher/events/file_events.py:
     e: FileChanged
     FileChanged(Event):
+  wup/models/config.py:
+    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,PlanfileConfig,AnomalyDetectionConfig,SemcodToolConfig,SemcodToolsConfig,ProjectConfig,WupConfig
+    NotifyConfig:  # Notification configuration for a service...
+    ServiceTestConfig:  # Test configuration for a service (quick or detail)...
+    ServiceConfig:  # Configuration for a single service...
+    WatchConfig:  # Configuration for file watching...
+    TestStrategyConfig:  # Global test strategy configuration...
+    TestQLConfig:  # TestQL-specific configuration...
+    VisualDiffConfig:  # Configuration for visual DOM diff after file changes...
+    WebConfig:  # Configuration for sending events to wupbro backend...
+    PlanfileConfig:  # Configuration for creating planfile tickets from WUP failure...
+    AnomalyDetectionConfig:  # Configuration for fast anomaly detection without Playwright...
+    SemcodToolConfig:  # Optional Semcod ecosystem tool attached to WUP monitoring au...
+    SemcodToolsConfig:  # Optional Semcod ecosystem integrations (deta/regres/regix)...
+    ProjectConfig:  # Project metadata...
+    WupConfig:  # Main WUP configuration...
   wup/models/target.py:
     e: ServiceTestTarget
     ServiceTestTarget:  # A service and the endpoints that should be exercised for it...
@@ -1454,23 +1527,8 @@ O...
   testql-scenarios/cli-wup.testql.toon.yaml:
   testql-scenarios/generated-from-pytests.testql.toon.yaml:
   testql-scenarios/generated-cli-tests.testql.toon.yaml:
+  Makefile:
   pyproject.toml:
-  wup/models/config.py:
-    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,PlanfileConfig,AnomalyDetectionConfig,SemcodToolConfig,SemcodToolsConfig,ProjectConfig,WupConfig
-    NotifyConfig:  # Notification configuration for a service...
-    ServiceTestConfig:  # Test configuration for a service (quick or detail)...
-    ServiceConfig:  # Configuration for a single service...
-    WatchConfig:  # Configuration for file watching...
-    TestStrategyConfig:  # Global test strategy configuration...
-    TestQLConfig:  # TestQL-specific configuration...
-    VisualDiffConfig:  # Configuration for visual DOM diff after file changes...
-    WebConfig:  # Configuration for sending events to wupbro backend...
-    PlanfileConfig:  # Configuration for creating planfile tickets from WUP failure...
-    AnomalyDetectionConfig:  # Configuration for fast anomaly detection without Playwright...
-    SemcodToolConfig:  # Optional Semcod ecosystem tool attached to WUP monitoring au...
-    SemcodToolsConfig:  # Optional Semcod ecosystem integrations (deta/regres/regix)...
-    ProjectConfig:  # Project metadata...
-    WupConfig:  # Main WUP configuration...
 ```
 
 ### `project/logic.pl`
@@ -1480,7 +1538,7 @@ O...
 project_metadata('wup', '0.2.77', 'python').
 
 % ── Project Files ────────────────────────────────────────
-project_file('app.doql.less', 256, 'less').
+project_file('app.doql.less', 264, 'less').
 project_file('examples/c2004_monorepo_demo.py', 259, 'python').
 project_file('examples/ci_cd_integration.py', 340, 'python').
 project_file('examples/fastapi-app/app/__init__.py', 1, 'python').
@@ -1509,23 +1567,23 @@ project_file('packages/dsl2wup/src/dsl2wup/__init__.py', 7, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/bus.py', 80, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/cli.py', 109, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/codec.py', 36, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/codegen.py', 99, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/codegen.py', 71, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/engine.py', 9, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/events.py', 117, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/grammar.py', 157, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/handlers/command.py', 233, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/grammar.py', 154, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/handlers/command.py', 272, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/handlers/query.py', 138, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/models.py', 130, 'python').
-project_file('packages/dsl2wup/src/dsl2wup/pb_codec.py', 236, 'python').
+project_file('packages/dsl2wup/src/dsl2wup/pb_codec.py', 148, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/result.py', 29, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/schema_registry.py', 85, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/__init__.py', 1, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/command_pb2.py', 63, 'python').
 project_file('packages/dsl2wup/src/dsl2wup/v1/result_pb2.py', 40, 'python').
-project_file('packages/dsl2wup/tests/test_dsl2wup.py', 40, 'python').
+project_file('packages/dsl2wup/tests/test_dsl2wup.py', 38, 'python').
 project_file('packages/dsl2wup/tests/test_generate.py', 15, 'python').
 project_file('packages/dsl2wup/tests/test_health_paths.py', 19, 'python').
-project_file('packages/dsl2wup/tests/test_parity.py', 67, 'python').
+project_file('packages/dsl2wup/tests/test_parity.py', 66, 'python').
 project_file('packages/dsl2wup/tests/test_parity_across_adapters.py', 77, 'python').
 project_file('packages/dsl2wup/tests/test_protobuf.py', 18, 'python').
 project_file('packages/dsl2wup/tests/test_protobuf_extended.py', 21, 'python').
@@ -1536,53 +1594,55 @@ project_file('packages/mcp2wup/src/mcp2wup/cli.py', 25, 'python').
 project_file('packages/mcp2wup/src/mcp2wup/server.py', 150, 'python').
 project_file('packages/mcp2wup/tests/test_mcp2wup.py', 12, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/__init__.py', 8, 'python').
-project_file('packages/nlp2wup/src/nlp2wup/apply.py', 127, 'python').
+project_file('packages/nlp2wup/src/nlp2wup/apply.py', 168, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/cli.py', 44, 'python').
-project_file('packages/nlp2wup/src/nlp2wup/generate.py', 26, 'python').
+project_file('packages/nlp2wup/src/nlp2wup/generate.py', 25, 'python').
 project_file('packages/nlp2wup/src/nlp2wup/validate.py', 12, 'python').
-project_file('packages/nlp2wup/tests/test_apply.py', 16, 'python').
+project_file('packages/nlp2wup/tests/test_apply.py', 45, 'python').
 project_file('packages/rest2wup/src/rest2wup/__init__.py', 6, 'python').
 project_file('packages/rest2wup/src/rest2wup/app.py', 69, 'python').
 project_file('packages/rest2wup/src/rest2wup/cli.py', 29, 'python').
 project_file('packages/rest2wup/tests/test_rest2wup.py', 21, 'python').
 project_file('packages/uri2wup/src/uri2wup/__init__.py', 8, 'python').
-project_file('packages/uri2wup/src/uri2wup/cli.py', 63, 'python').
-project_file('packages/uri2wup/src/uri2wup/decode.py', 73, 'python').
+project_file('packages/uri2wup/src/uri2wup/cli.py', 73, 'python').
+project_file('packages/uri2wup/src/uri2wup/decode.py', 62, 'python').
 project_file('packages/uri2wup/src/uri2wup/nlp2uri.py', 49, 'python').
-project_file('packages/uri2wup/src/uri2wup/patch.py', 69, 'python').
-project_file('packages/uri2wup/src/uri2wup/query.py', 165, 'python').
+project_file('packages/uri2wup/src/uri2wup/patch.py', 92, 'python').
+project_file('packages/uri2wup/src/uri2wup/query.py', 154, 'python').
 project_file('packages/uri2wup/src/uri2wup/uri.py', 93, 'python').
 project_file('packages/uri2wup/tests/test_decode.py', 27, 'python').
-project_file('packages/uri2wup/tests/test_query.py', 20, 'python').
+project_file('packages/uri2wup/tests/test_patch.py', 29, 'python').
+project_file('packages/uri2wup/tests/test_query.py', 36, 'python').
 project_file('project.sh', 49, 'shell').
 project_file('scripts/run_probe_smoke.py', 89, 'python').
 project_file('tests/test_aql.py', 121, 'python').
-project_file('tests/test_assistant.py', 181, 'python').
+project_file('tests/test_assistant.py', 180, 'python').
 project_file('tests/test_auto_detection.py', 195, 'python').
+project_file('tests/test_bootstrap.py', 32, 'python').
 project_file('tests/test_cli_bridge.py', 36, 'python').
 project_file('tests/test_cli_filtering.py', 266, 'python').
 project_file('tests/test_control.py', 19, 'python').
 project_file('tests/test_discovery_adapters.py', 119, 'python').
-project_file('tests/test_e2e.py', 517, 'python').
+project_file('tests/test_e2e.py', 515, 'python').
 project_file('tests/test_endpoints_init_cli.py', 69, 'python').
 project_file('tests/test_genericity.py', 136, 'python').
 project_file('tests/test_health_summary_passed.py', 54, 'python').
-project_file('tests/test_monitoring_manifest.py', 73, 'python').
-project_file('tests/test_multi_project.py', 127, 'python').
+project_file('tests/test_monitoring_manifest.py', 72, 'python').
+project_file('tests/test_multi_project.py', 155, 'python').
 project_file('tests/test_oql.py', 105, 'python').
 project_file('tests/test_planfile_reporter_dedupe.py', 79, 'python').
 project_file('tests/test_probe_mutex.py', 39, 'python').
-project_file('tests/test_service_inference.py', 212, 'python').
+project_file('tests/test_service_inference.py', 210, 'python').
 project_file('tests/test_status_data.py', 35, 'python').
 project_file('tests/test_sync.py', 42, 'python').
-project_file('tests/test_testql_monitor.py', 221, 'python').
+project_file('tests/test_testql_monitor.py', 218, 'python').
 project_file('tests/test_testql_watcher.py', 597, 'python').
 project_file('tests/test_visual_diff_periodic_skip.py', 41, 'python').
-project_file('tests/test_visual_diff_progress.py', 57, 'python').
+project_file('tests/test_visual_diff_progress.py', 56, 'python').
 project_file('tests/test_watch_exclude.py', 35, 'python').
 project_file('tests/test_watch_no_paths_exit.py', 31, 'python').
 project_file('tests/test_web_client.py', 168, 'python').
-project_file('tests/test_wup.py', 1940, 'python').
+project_file('tests/test_wup.py', 1978, 'python').
 project_file('tests/test_wup_generate.py', 22, 'python').
 project_file('tree.sh', 2, 'shell').
 project_file('wup/__init__.py', 47, 'python').
@@ -1592,17 +1652,18 @@ project_file('wup/_hash_detector.py', 73, 'python').
 project_file('wup/_yaml_detector.py', 129, 'python').
 project_file('wup/anomaly_detector.py', 176, 'python').
 project_file('wup/anomaly_models.py', 36, 'python').
-project_file('wup/aql.py', 307, 'python').
-project_file('wup/assistant.py', 595, 'python').
+project_file('wup/aql.py', 309, 'python').
+project_file('wup/assistant.py', 585, 'python').
 project_file('wup/assistant_discovery.py', 100, 'python').
 project_file('wup/assistant_validator.py', 58, 'python').
+project_file('wup/bootstrap.py', 62, 'python').
 project_file('wup/bus.py', 66, 'python').
 project_file('wup/cli.py', 1080, 'python').
-project_file('wup/cli_bridge.py', 81, 'python').
+project_file('wup/cli_bridge.py', 195, 'python').
 project_file('wup/cli_config_generator.py', 224, 'python').
-project_file('wup/cli_scanner.py', 303, 'python').
-project_file('wup/config.py', 611, 'python').
-project_file('wup/control.py', 107, 'python').
+project_file('wup/cli_scanner.py', 302, 'python').
+project_file('wup/config.py', 585, 'python').
+project_file('wup/control.py', 128, 'python').
 project_file('wup/core.py', 741, 'python').
 project_file('wup/dependency_mapper.py', 178, 'python').
 project_file('wup/discovery.py', 280, 'python').
@@ -1622,7 +1683,7 @@ project_file('wup/planfile_reporter.py', 268, 'python').
 project_file('wup/status_data.py', 115, 'python').
 project_file('wup/sync.py', 71, 'python').
 project_file('wup/testing/events/health_events.py', 12, 'python').
-project_file('wup/testing/events/test_results.py', 23, 'python').
+project_file('wup/testing/events/test_results.py', 22, 'python').
 project_file('wup/testing/handlers/event_handlers.py', 56, 'python').
 project_file('wup/testing/handlers/health_handlers.py', 124, 'python').
 project_file('wup/testing/queries/health_queries.py', 8, 'python').
@@ -1697,7 +1758,10 @@ python_function('examples/webhook_notifications.py', 'create_discord_payload', 1
 python_function('examples/webhook_notifications.py', 'show_webhook_demo', 0, 4, 16).
 python_function('examples/webhook_notifications.py', 'main', 0, 3, 5).
 python_function('packages/cli2wup/src/cli2wup/cli.py', 'run_shell', 0, 9, 8).
-python_function('packages/cli2wup/src/cli2wup/cli.py', 'main', 1, 15, 17).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_print_result', 1, 4, 4).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_run_script', 1, 3, 4).
+python_function('packages/cli2wup/src/cli2wup/cli.py', '_run_command', 1, 2, 2).
+python_function('packages/cli2wup/src/cli2wup/cli.py', 'main', 1, 4, 13).
 python_function('packages/cli2wup/tests/test_cli2wup.py', 'test_cli_help', 0, 2, 1).
 python_function('packages/dsl2wup/src/dsl2wup/bus.py', '_dispatch_cmd', 1, 5, 12).
 python_function('packages/dsl2wup/src/dsl2wup/bus.py', '_bytes_to_cmd', 1, 3, 5).
@@ -1711,12 +1775,29 @@ python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'encode_text', 1, 2, 2)
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'roundtrip_text', 1, 3, 5).
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'encode_protobuf', 1, 1, 1).
 python_function('packages/dsl2wup/src/dsl2wup/codec.py', 'decode_protobuf', 1, 1, 1).
-python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'generate_models', 0, 15, 16).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_field_type', 1, 3, 3).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_field_line', 3, 10, 5).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', '_append_model', 2, 4, 13).
+python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'generate_models', 0, 3, 7).
 python_function('packages/dsl2wup/src/dsl2wup/codegen.py', 'main', 0, 1, 4).
 python_function('packages/dsl2wup/src/dsl2wup/events.py', 'default_event_store', 1, 2, 3).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'split_command', 1, 4, 3).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'pick_flag', 2, 3, 2).
-python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'parse_line', 1, 59, 7).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_flag_values', 2, 3, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_query', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_validate', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_resolve', 2, 1, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_health', 2, 3, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_patch', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_map', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_init', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_generate', 2, 2, 2).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_sync', 2, 3, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_adopt', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_endpoints', 2, 2, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_status', 2, 4, 1).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', '_parse_init_cli', 2, 4, 3).
+python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'parse_line', 1, 3, 4).
 python_function('packages/dsl2wup/src/dsl2wup/grammar.py', 'to_text', 1, 11, 6).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_read_content', 1, 1, 3).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_project_root', 1, 2, 4).
@@ -1726,8 +1807,10 @@ python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_gene
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_patch', 1, 3, 10).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_sync', 1, 4, 7).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_init_cli', 1, 4, 6).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_query_handlers', 0, 1, 0).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', '_command_handlers', 0, 1, 0).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_adopt', 1, 8, 13).
-python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_from_tokens', 2, 16, 17).
+python_function('packages/dsl2wup/src/dsl2wup/handlers/command.py', 'handle_from_tokens', 2, 6, 9).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', '_project_root', 2, 2, 4).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_query', 1, 4, 8).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_validate', 1, 5, 8).
@@ -1735,8 +1818,10 @@ python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_resolv
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_status', 1, 4, 8).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_endpoints', 1, 4, 5).
 python_function('packages/dsl2wup/src/dsl2wup/handlers/query.py', 'handle_health', 1, 5, 9).
-python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_set_body', 2, 16, 6).
-python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'envelope_to_dict', 1, 58, 5).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_canonical_verb', 1, 2, 0).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_set_body', 2, 7, 8).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', '_body_to_dict', 2, 10, 3).
+python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'envelope_to_dict', 1, 3, 7).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'encode_protobuf', 1, 1, 6).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'decode_protobuf', 1, 1, 3).
 python_function('packages/dsl2wup/src/dsl2wup/pb_codec.py', 'encode_text_to_protobuf', 1, 2, 3).
@@ -1774,29 +1859,46 @@ python_function('packages/mcp2wup/src/mcp2wup/server.py', '_require_fastmcp', 0,
 python_function('packages/mcp2wup/src/mcp2wup/server.py', 'create_server', 1, 1, 1).
 python_function('packages/mcp2wup/src/mcp2wup/server.py', 'run_server', 0, 1, 2).
 python_function('packages/mcp2wup/tests/test_mcp2wup.py', 'test_create_server', 0, 3, 1).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_intent', 1, 21, 2).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'to_dsl', 1, 24, 8).
-python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'apply_nl', 1, 5, 6).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_intent', 1, 4, 2).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_simple_command', 3, 2, 1).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_generated_command', 3, 3, 1).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', '_special_command', 5, 11, 5).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'to_dsl', 1, 11, 7).
+python_function('packages/nlp2wup/src/nlp2wup/apply.py', 'apply_nl', 1, 4, 8).
 python_function('packages/nlp2wup/src/nlp2wup/cli.py', 'main', 1, 9, 11).
 python_function('packages/nlp2wup/src/nlp2wup/generate.py', '_extract_template', 1, 3, 1).
 python_function('packages/nlp2wup/src/nlp2wup/generate.py', 'generate_from_nl', 1, 1, 2).
 python_function('packages/nlp2wup/src/nlp2wup/validate.py', 'validate_wup_config', 1, 1, 1).
 python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_validate', 0, 2, 2).
 python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_map', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_init_cli_is_not_misclassified_as_generate', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_to_dsl_patch_is_not_misclassified_as_query', 0, 2, 2).
+python_function('packages/nlp2wup/tests/test_apply.py', 'test_apply_patch_uses_supplied_content_without_fragment_file', 1, 3, 5).
 python_function('packages/rest2wup/src/rest2wup/app.py', 'create_app', 0, 1, 24).
 python_function('packages/rest2wup/src/rest2wup/cli.py', 'main', 1, 4, 8).
 python_function('packages/rest2wup/tests/test_rest2wup.py', 'test_health_endpoint', 0, 3, 4).
 python_function('packages/rest2wup/tests/test_rest2wup.py', 'test_post_dsl_health', 0, 2, 3).
-python_function('packages/uri2wup/src/uri2wup/cli.py', 'main', 1, 15, 13).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_resolve', 1, 3, 4).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_decode', 1, 1, 2).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_query', 1, 4, 4).
+python_function('packages/uri2wup/src/uri2wup/cli.py', '_run_dispatch', 1, 5, 5).
+python_function('packages/uri2wup/src/uri2wup/cli.py', 'main', 1, 3, 8).
 python_function('packages/uri2wup/src/uri2wup/decode.py', '_dict_to_dsl', 1, 7, 5).
-python_function('packages/uri2wup/src/uri2wup/decode.py', 'decode_uri', 1, 20, 8).
+python_function('packages/uri2wup/src/uri2wup/decode.py', '_command_from_params', 2, 7, 3).
+python_function('packages/uri2wup/src/uri2wup/decode.py', '_block_query', 2, 4, 2).
+python_function('packages/uri2wup/src/uri2wup/decode.py', 'decode_uri', 1, 4, 8).
 python_function('packages/uri2wup/src/uri2wup/nlp2uri.py', 'nlp2uri', 1, 4, 6).
 python_function('packages/uri2wup/src/uri2wup/nlp2uri.py', 'best_uri', 1, 2, 1).
 python_function('packages/uri2wup/src/uri2wup/patch.py', '_resolve_config_path', 2, 4, 5).
-python_function('packages/uri2wup/src/uri2wup/patch.py', 'patch_uri', 1, 17, 12).
+python_function('packages/uri2wup/src/uri2wup/patch.py', '_replace_at_path', 3, 10, 5).
+python_function('packages/uri2wup/src/uri2wup/patch.py', 'patch_uri', 1, 9, 12).
 python_function('packages/uri2wup/src/uri2wup/query.py', '_resolve_config_path', 2, 4, 5).
-python_function('packages/uri2wup/src/uri2wup/query.py', '_extract_block', 2, 14, 10).
-python_function('packages/uri2wup/src/uri2wup/query.py', 'query_uri', 1, 23, 24).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_extract_block', 2, 8, 3).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_runtime_block', 2, 6, 8).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_success', 5, 4, 7).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_query_context', 4, 7, 6).
+python_function('packages/uri2wup/src/uri2wup/query.py', '_query_data', 3, 5, 6).
+python_function('packages/uri2wup/src/uri2wup/query.py', 'query_uri', 1, 4, 7).
 python_function('packages/uri2wup/src/uri2wup/uri.py', '_encode', 1, 1, 1).
 python_function('packages/uri2wup/src/uri2wup/uri.py', '_decode', 1, 2, 1).
 python_function('packages/uri2wup/src/uri2wup/uri.py', 'uri_for_cmd', 1, 7, 4).
@@ -1805,7 +1907,9 @@ python_function('packages/uri2wup/src/uri2wup/uri.py', 'is_wup_uri', 1, 1, 2).
 python_function('packages/uri2wup/src/uri2wup/uri.py', 'parse_wup_uri', 1, 7, 6).
 python_function('packages/uri2wup/tests/test_decode.py', 'test_decode_cmd_query', 0, 4, 4).
 python_function('packages/uri2wup/tests/test_decode.py', 'test_decode_block_defaults_to_query', 0, 3, 3).
+python_function('packages/uri2wup/tests/test_patch.py', 'test_patch_nested_value_preserves_sibling_keys', 1, 4, 5).
 python_function('packages/uri2wup/tests/test_query.py', 'test_query_config_block', 1, 3, 3).
+python_function('packages/uri2wup/tests/test_query.py', 'test_query_nested_config_value', 1, 3, 3).
 python_function('scripts/run_probe_smoke.py', 'print_probe_plan', 1, 6, 5).
 python_function('scripts/run_probe_smoke.py', 'run_live_http_probes', 2, 4, 3).
 python_function('scripts/run_probe_smoke.py', 'run_quick_testql_dryrun', 2, 3, 3).
@@ -1840,6 +1944,8 @@ python_function('tests/test_auto_detection.py', 'test_cli_config_generator_creat
 python_function('tests/test_auto_detection.py', 'test_cli_config_generator_web_project_uses_default', 0, 4, 6).
 python_function('tests/test_auto_detection.py', 'test_auto_generate_config_detects_cli', 0, 4, 7).
 python_function('tests/test_auto_detection.py', 'test_auto_generate_config_web_uses_default', 0, 3, 6).
+python_function('tests/test_bootstrap.py', 'test_watchdog_preflight_reports_signal', 1, 3, 3).
+python_function('tests/test_bootstrap.py', 'test_main_stops_before_importing_cli_on_failed_watch_preflight', 2, 3, 3).
 python_function('tests/test_cli_bridge.py', 'test_bridge_init', 1, 3, 3).
 python_function('tests/test_cli_bridge.py', 'test_bridge_map_deps', 1, 3, 4).
 python_function('tests/test_cli_bridge.py', 'test_bridge_validate', 1, 2, 3).
@@ -1888,6 +1994,7 @@ python_function('tests/test_multi_project.py', 'test_detect_watch_paths_uses_exi
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_falls_back_when_nothing_matches', 1, 2, 1).
 python_function('tests/test_multi_project.py', 'test_detect_watch_paths_backend_frontend', 1, 3, 2).
 python_function('tests/test_multi_project.py', 'test_default_config_watches_only_real_dirs', 1, 2, 2).
+python_function('tests/test_multi_project.py', 'test_project_dotenv_is_resolved_without_cross_project_leakage', 2, 7, 4).
 python_function('tests/test_multi_project.py', 'test_discover_finds_subprojects', 1, 3, 3).
 python_function('tests/test_multi_project.py', 'test_discover_skips_vendor_and_hidden', 1, 3, 2).
 python_function('tests/test_multi_project.py', 'test_resolve_paths_dedupes', 1, 2, 4).
@@ -1934,7 +2041,7 @@ python_function('tests/test_testql_monitor.py', 'test_assign_firmware_service', 
 python_function('tests/test_testql_monitor.py', 'test_monitor_merges_config_and_service_map', 0, 5, 11).
 python_function('tests/test_testql_monitor.py', 'test_firmware_live_probe_prefers_oqlos_8202', 0, 2, 2).
 python_function('tests/test_testql_monitor.py', 'test_probes_for_service_ignores_non_health_extra_paths', 0, 3, 9).
-python_function('tests/test_testql_monitor.py', 'test_live_probe_failure_updates_health', 0, 4, 15).
+python_function('tests/test_testql_monitor.py', 'test_live_probe_failure_updates_health', 0, 4, 14).
 python_function('tests/test_testql_watcher.py', 'test_process_changed_file_creates_track_on_failure', 0, 5, 16).
 python_function('tests/test_testql_watcher.py', 'test_browser_event_file_is_written_without_service_url', 0, 5, 11).
 python_function('tests/test_testql_watcher.py', 'test_config_endpoints_use_base_url_from_yaml_config', 0, 3, 9).
@@ -1990,7 +2097,9 @@ python_function('wup/anomaly_detector.py', 'scan_yaml_changes', 2, 1, 3).
 python_function('wup/aql.py', '_resolve_path', 2, 13, 9).
 python_function('wup/aql.py', '_split_severity', 1, 4, 4).
 python_function('wup/aql.py', '_tokenize', 1, 4, 6).
-python_function('wup/aql.py', 'parse_rule', 1, 18, 11).
+python_function('wup/aql.py', '_rule_selector', 1, 4, 4).
+python_function('wup/aql.py', '_predicate_rule', 6, 14, 9).
+python_function('wup/aql.py', 'parse_rule', 1, 3, 6).
 python_function('wup/aql.py', '_coerce_number', 1, 2, 1).
 python_function('wup/aql.py', '_compare', 3, 4, 2).
 python_function('wup/aql.py', '_length_of', 1, 2, 2).
@@ -2003,6 +2112,8 @@ python_function('wup/assistant_discovery.py', 'auto_detect_services', 2, 7, 8).
 python_function('wup/assistant_discovery.py', 'detect_service_type', 2, 11, 5).
 python_function('wup/assistant_validator.py', 'validate_config', 2, 9, 3).
 python_function('wup/assistant_validator.py', 'generate_suggestions', 1, 6, 2).
+python_function('wup/bootstrap.py', '_watchdog_preflight', 0, 5, 3).
+python_function('wup/bootstrap.py', 'main', 1, 6, 5).
 python_function('wup/cli.py', '_load_watch_config', 4, 4, 3).
 python_function('wup/cli.py', '_print_watch_header', 5, 3, 1).
 python_function('wup/cli.py', '_refresh_monitoring_manifest', 3, 3, 3).
@@ -2028,18 +2139,20 @@ python_function('wup/cli.py', 'sync_testql', 4, 10, 19).
 python_function('wup/cli.py', 'assistant', 3, 8, 13).
 python_function('wup/cli.py', 'version', 0, 1, 2).
 python_function('wup/cli.py', 'init_cli', 5, 9, 13).
-python_function('wup/cli_bridge.py', '_fail', 1, 3, 2).
-python_function('wup/cli_bridge.py', 'run_map_deps', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_init', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_sync', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_generate', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_validate', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_status', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_endpoints', 0, 1, 1).
-python_function('wup/cli_bridge.py', 'run_init_cli', 0, 1, 1).
+python_function('wup/cli_bridge.py', '_result', 2, 3, 3).
+python_function('wup/cli_bridge.py', '_guard', 2, 3, 4).
+python_function('wup/cli_bridge.py', 'run_map_deps', 0, 2, 15).
+python_function('wup/cli_bridge.py', 'run_init', 0, 1, 9).
+python_function('wup/cli_bridge.py', 'run_sync', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_generate', 0, 2, 2).
+python_function('wup/cli_bridge.py', 'run_validate', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_status', 0, 3, 3).
+python_function('wup/cli_bridge.py', 'run_endpoints', 0, 1, 2).
+python_function('wup/cli_bridge.py', 'run_init_cli', 0, 1, 2).
 python_function('wup/config.py', 'find_config_file', 1, 3, 1).
-python_function('wup/config.py', '_load_dotenv', 1, 10, 6).
-python_function('wup/config.py', 'load_config', 2, 5, 8).
+python_function('wup/config.py', '_read_dotenv', 1, 10, 6).
+python_function('wup/config.py', '_load_dotenv', 2, 3, 3).
+python_function('wup/config.py', 'load_config', 2, 5, 9).
 python_function('wup/config.py', '_parse_project_config', 1, 2, 3).
 python_function('wup/config.py', '_parse_watch_config', 1, 1, 2).
 python_function('wup/config.py', '_parse_services_config', 1, 3, 5).
@@ -2047,16 +2160,17 @@ python_function('wup/config.py', '_parse_strategy_config', 1, 1, 2).
 python_function('wup/config.py', '_normalize_testql_timeout', 1, 3, 4).
 python_function('wup/config.py', '_parse_testql_extra_args', 1, 5, 5).
 python_function('wup/config.py', '_normalize_testql_extra_args', 1, 5, 5).
-python_function('wup/config.py', '_parse_testql_config', 1, 2, 6).
-python_function('wup/config.py', '_parse_visual_diff_config', 1, 6, 7).
-python_function('wup/config.py', '_parse_web_config', 1, 1, 3).
-python_function('wup/config.py', '_parse_planfile_config', 1, 5, 7).
+python_function('wup/config.py', '_parse_testql_config', 2, 3, 6).
+python_function('wup/config.py', '_parse_visual_diff_config', 2, 7, 7).
+python_function('wup/config.py', '_parse_web_config', 2, 2, 3).
+python_function('wup/config.py', '_parse_planfile_config', 2, 5, 7).
+python_function('wup/config.py', '_parse_anomaly_detection_config', 1, 1, 6).
 python_function('wup/config.py', '_parse_semcod_tools_config', 1, 9, 7).
-python_function('wup/config.py', 'validate_config', 1, 1, 10).
+python_function('wup/config.py', 'validate_config', 1, 2, 11).
 python_function('wup/config.py', 'detect_watch_paths', 1, 4, 1).
 python_function('wup/config.py', 'get_default_config', 1, 1, 6).
-python_function('wup/config.py', 'save_config', 2, 5, 13).
-python_function('wup/control.py', '_result_dict', 1, 1, 2).
+python_function('wup/config.py', 'save_config', 2, 1, 11).
+python_function('wup/control.py', '_result_dict', 1, 3, 3).
 python_function('wup/control.py', 'dispatch_validate', 1, 1, 1).
 python_function('wup/control.py', 'dispatch_query', 1, 3, 3).
 python_function('wup/control.py', 'dispatch_health', 0, 2, 2).
@@ -2303,6 +2417,7 @@ python_method('TestVisualDiffer', 'test_get_recent_diffs_filters_by_age', 0, 3, 
 python_class('tests/test_wup.py', 'TestConfigLoader').
 python_method('TestConfigLoader', 'test_get_default_config', 0, 5, 5).
 python_method('TestConfigLoader', 'test_save_and_load_config', 0, 5, 12).
+python_method('TestConfigLoader', 'test_save_and_load_preserves_every_non_default_section', 0, 6, 12).
 python_method('TestConfigLoader', 'test_load_config_from_yaml', 0, 9, 5).
 python_method('TestConfigLoader', 'test_load_config_auto_detect', 0, 2, 4).
 python_method('TestConfigLoader', 'test_load_config_no_file_returns_default', 0, 3, 4).
@@ -2692,6 +2807,7 @@ makefile_target('lint', 'Code quality').
 makefile_target('format', '').
 makefile_target('clean', 'Utilities').
 makefile_target('publish', 'Release helpers').
+makefile_target('publish-confirm', '').
 makefile_target('publish-test', '').
 makefile_target('version', '').
 
@@ -2737,7 +2853,7 @@ sumd_interface('cli', 'argparse').
 sumd_interface('cli', '').
 sumd_interface('web', '').
 sumd_workflow('install', 'manual').
-sumd_workflow_step('install', 1, 'echo "📦 Installing sumd..."').
+sumd_workflow_step('install', 1, 'echo "📦 Installing WUP..."').
 sumd_workflow_step('install', 2, 'if command -v uv > /dev/null 2>&1').
 sumd_workflow_step('install', 3, 'uv pip install -e .').
 sumd_workflow_step('install', 4, 'else \').
@@ -2745,7 +2861,7 @@ sumd_workflow_step('install', 5, 'pip install -e .').
 sumd_workflow_step('install', 6, 'fi').
 sumd_workflow_step('install', 7, 'echo "✅ Installation completed!"').
 sumd_workflow('install-dev', 'manual').
-sumd_workflow_step('install-dev', 1, 'echo "📦 Installing sumd with dev dependencies..."').
+sumd_workflow_step('install-dev', 1, 'echo "📦 Installing WUP with dev dependencies..."').
 sumd_workflow_step('install-dev', 2, 'if command -v uv > /dev/null 2>&1').
 sumd_workflow_step('install-dev', 3, 'uv pip install -e ".[dev]"').
 sumd_workflow_step('install-dev', 4, 'else \').
@@ -2754,30 +2870,34 @@ sumd_workflow_step('install-dev', 6, 'fi').
 sumd_workflow_step('install-dev', 7, 'echo "✅ Dev installation completed!"').
 sumd_workflow('test', 'manual').
 sumd_workflow_step('test', 1, 'echo "🧪 Running tests..."').
-sumd_workflow_step('test', 2, '.venv/bin/python -m pytest tests/ -v --tb=short').
+sumd_workflow_step('test', 2, '.venv/bin/python -m pytest tests/ packages/ -v --tb=short').
 sumd_workflow('test-cov', 'manual').
 sumd_workflow_step('test-cov', 1, 'echo "🧪 Running tests with coverage..."').
-sumd_workflow_step('test-cov', 2, '.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json').
+sumd_workflow_step('test-cov', 2, '.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json').
 sumd_workflow('lint', 'manual').
 sumd_workflow_step('lint', 1, 'echo "🔍 Running linting with ruff..."').
-sumd_workflow_step('lint', 2, '.venv/bin/python -m ruff check sumd/').
+sumd_workflow_step('lint', 2, '.venv/bin/python -m ruff check wup/').
 sumd_workflow_step('lint', 3, '.venv/bin/python -m ruff check tests/').
+sumd_workflow_step('lint', 4, '.venv/bin/python -m ruff check packages/').
 sumd_workflow('format', 'manual').
 sumd_workflow_step('format', 1, 'echo "📝 Formatting code with ruff..."').
-sumd_workflow_step('format', 2, '.venv/bin/python -m ruff format sumd/').
+sumd_workflow_step('format', 2, '.venv/bin/python -m ruff format wup/').
 sumd_workflow_step('format', 3, '.venv/bin/python -m ruff format tests/').
+sumd_workflow_step('format', 4, '.venv/bin/python -m ruff format packages/').
 sumd_workflow('clean', 'manual').
 sumd_workflow_step('clean', 1, 'echo "🧹 Cleaning temporary files..."').
 sumd_workflow_step('clean', 2, 'find . -type f -name "*.pyc" -delete').
 sumd_workflow_step('clean', 3, 'find . -type d -name "__pycache__" -delete').
 sumd_workflow('publish', 'manual').
-sumd_workflow_step('publish', 1, 'echo "📦 Publishing to PyPI..."').
+sumd_workflow_step('publish', 1, 'echo "📦 Building release artifacts (no upload)..."').
 sumd_workflow_step('publish', 2, 'command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build)').
 sumd_workflow_step('publish', 3, 'rm -rf dist/ build/ *.egg-info/').
 sumd_workflow_step('publish', 4, '.venv/bin/python -m build').
 sumd_workflow_step('publish', 5, '.venv/bin/twine check dist/*').
-sumd_workflow_step('publish', 6, 'echo "⚡ Ready to upload."').
-sumd_workflow_step('publish', 7, '.venv/bin/twine upload dist/*').
+sumd_workflow_step('publish', 6, 'echo "✅ Release artifacts are valid. Run \'make publish-confirm\' to upload."').
+sumd_workflow('publish-confirm', 'manual').
+sumd_workflow_step('publish-confirm', 1, 'echo "⚡ Uploading release artifacts to PyPI..."').
+sumd_workflow_step('publish-confirm', 2, '.venv/bin/twine upload dist/*').
 sumd_workflow('publish-test', 'manual').
 sumd_workflow_step('publish-test', 1, 'echo "📦 Publishing to TestPyPI..."').
 sumd_workflow_step('publish-test', 2, 'command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build)').
@@ -3014,68 +3134,68 @@ def init_cli(project, output_config, output_scenarios, merge, infer_args)  # CC=
 
 ## Call Graph
 
-*290 nodes · 307 edges · 57 modules · CC̄=4.7*
+*331 nodes · 352 edges · 59 modules · CC̄=4.2*
 
 ### Hubs (by degree)
 
 | Function | CC | in | out | total |
 |----------|----|----|-----|-------|
-| `_set_body` *(in packages.dsl2wup.src.dsl2wup.pb_codec)* | 16 ⚠ | 1 | 88 | **89** |
 | `show_ci_cd_demo` *(in examples.ci_cd_integration)* | 2 | 1 | 69 | **70** |
 | `show_webhook_demo` *(in examples.webhook_notifications)* | 4 | 1 | 68 | **69** |
 | `_run_with_mock_services` *(in examples.testql_demo)* | 6 | 2 | 60 | **62** |
-| `query_uri` *(in packages.uri2wup.src.uri2wup.query)* | 23 ⚠ | 3 | 49 | **52** |
-| `_parse_visual_diff_config` *(in wup.config)* | 6 | 1 | 48 | **49** |
+| `_parse_visual_diff_config` *(in wup.config)* | 7 | 1 | 49 | **50** |
 | `map_deps` *(in wup.cli)* | 12 ⚠ | 0 | 45 | **45** |
-| `parse_line` *(in packages.dsl2wup.src.dsl2wup.grammar)* | 59 ⚠ | 6 | 37 | **43** |
+| `create_app` *(in packages.rest2wup.src.rest2wup.app)* | 1 | 1 | 42 | **43** |
+| `testql_endpoints` *(in wup.cli)* | 6 | 0 | 43 | **43** |
+| `sync_testql` *(in wup.cli)* | 10 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/semcod/wup
 # generated in 0.16s
-# nodes: 290 | edges: 307 | modules: 57
-# CC̄=4.7
+# nodes: 331 | edges: 352 | modules: 59
+# CC̄=4.2
 
 HUBS[20]:
-  packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-    CC=16  in:1  out:88  total:89
   examples.ci_cd_integration.show_ci_cd_demo
     CC=2  in:1  out:69  total:70
   examples.webhook_notifications.show_webhook_demo
     CC=4  in:1  out:68  total:69
   examples.testql_demo._run_with_mock_services
     CC=6  in:2  out:60  total:62
-  packages.uri2wup.src.uri2wup.query.query_uri
-    CC=23  in:3  out:49  total:52
   wup.config._parse_visual_diff_config
-    CC=6  in:1  out:48  total:49
+    CC=7  in:1  out:49  total:50
   wup.cli.map_deps
     CC=12  in:0  out:45  total:45
-  packages.dsl2wup.src.dsl2wup.grammar.parse_line
-    CC=59  in:6  out:37  total:43
-  wup.cli.testql_endpoints
-    CC=6  in:0  out:43  total:43
-  packages.dsl2wup.src.dsl2wup.codegen.generate_models
-    CC=15  in:1  out:42  total:43
   packages.rest2wup.src.rest2wup.app.create_app
     CC=1  in:1  out:42  total:43
+  wup.cli.testql_endpoints
+    CC=6  in:0  out:43  total:43
   wup.cli.sync_testql
     CC=10  in:0  out:38  total:38
-  wup.aql.parse_rule
-    CC=18  in:1  out:33  total:34
   packages.dsl2wup.src.dsl2wup.events.EventStore.append
     CC=3  in:0  out:33  total:33
-  packages.dsl2wup.src.dsl2wup.grammar.to_text
-    CC=11  in:14  out:19  total:33
   packages.dsl2wup.src.dsl2wup.bus.dispatch
     CC=6  in:16  out:15  total:31
   wup.cli.status
     CC=8  in:0  out:31  total:31
+  wup.config._parse_testql_config
+    CC=3  in:1  out:29  total:30
   wup.cli._add_delta_events_lines
     CC=14  in:1  out:29  total:30
-  wup.config._parse_testql_config
-    CC=2  in:1  out:28  total:29
-  packages.dsl2wup.src.dsl2wup.grammar.pick_flag
-    CC=3  in:27  out:2  total:29
+  packages.dsl2wup.src.dsl2wup.cli._main_subcommand
+    CC=9  in:1  out:28  total:29
+  wup.init_cli.setup_cli_project
+    CC=9  in:2  out:26  total:28
+  packages.dsl2wup.src.dsl2wup.grammar.to_text
+    CC=11  in:9  out:19  total:28
+  wup.endpoints.discover_testql_endpoints
+    CC=5  in:2  out:26  total:28
+  examples.c2004_monorepo_demo.analyze_monorepo
+    CC=2  in:1  out:26  total:27
+  examples.visual_diff_demo.demo_snapshot_persistence
+    CC=3  in:1  out:26  total:27
+  packages.uri2wup.src.uri2wup.query.query_uri
+    CC=13  in:3  out:23  total:26
 
 MODULES:
   examples.c2004_monorepo_demo  [5 funcs]
@@ -3106,7 +3226,10 @@ MODULES:
   examples.webhook_notifications  [2 funcs]
     main  CC=3  out:7
     show_webhook_demo  CC=4  out:68
-  packages.cli2wup.src.cli2wup.cli  [1 funcs]
+  packages.cli2wup.src.cli2wup.cli  [4 funcs]
+    _print_result  CC=4  out:6
+    _run_command  CC=2  out:2
+    _run_script  CC=3  out:4
     run_shell  CC=9  out:12
   packages.dsl2wup.src.dsl2wup.bus  [5 funcs]
     _bytes_to_cmd  CC=3  out:5
@@ -3123,21 +3246,30 @@ MODULES:
     encode_protobuf  CC=1  out:1
     encode_text  CC=2  out:2
     roundtrip_text  CC=3  out:6
-  packages.dsl2wup.src.dsl2wup.codegen  [2 funcs]
-    generate_models  CC=15  out:42
+  packages.dsl2wup.src.dsl2wup.codegen  [5 funcs]
+    _append_model  CC=4  out:15
+    _field_line  CC=10  out:7
+    _field_type  CC=3  out:5
+    generate_models  CC=3  out:11
     main  CC=1  out:4
   packages.dsl2wup.src.dsl2wup.events  [2 funcs]
     append  CC=3  out:33
     default_event_store  CC=2  out:6
-  packages.dsl2wup.src.dsl2wup.grammar  [4 funcs]
-    parse_line  CC=59  out:37
-    pick_flag  CC=3  out:2
-    split_command  CC=4  out:4
-    to_text  CC=11  out:19
+  packages.dsl2wup.src.dsl2wup.grammar  [18 funcs]
+    _flag_values  CC=3  out:2
+    _parse_adopt  CC=2  out:1
+    _parse_endpoints  CC=2  out:1
+    _parse_generate  CC=2  out:3
+    _parse_health  CC=3  out:1
+    _parse_init  CC=2  out:1
+    _parse_init_cli  CC=4  out:3
+    _parse_map  CC=2  out:1
+    _parse_patch  CC=2  out:1
+    _parse_query  CC=2  out:1
   packages.dsl2wup.src.dsl2wup.handlers.command  [9 funcs]
     _project_root  CC=2  out:4
     _read_content  CC=1  out:3
-    handle_from_tokens  CC=16  out:21
+    handle_from_tokens  CC=6  out:14
     handle_generate  CC=4  out:11
     handle_init  CC=4  out:11
     handle_init_cli  CC=4  out:12
@@ -3152,14 +3284,16 @@ MODULES:
     handle_resolve  CC=4  out:9
     handle_status  CC=4  out:11
     handle_validate  CC=5  out:13
-  packages.dsl2wup.src.dsl2wup.pb_codec  [8 funcs]
-    _set_body  CC=16  out:88
+  packages.dsl2wup.src.dsl2wup.pb_codec  [10 funcs]
+    _body_to_dict  CC=10  out:3
+    _canonical_verb  CC=2  out:0
+    _set_body  CC=7  out:13
     decode_protobuf  CC=1  out:3
     decode_protobuf_to_text  CC=1  out:2
     encode_protobuf  CC=1  out:6
     encode_result_protobuf  CC=1  out:2
     encode_text_to_protobuf  CC=2  out:3
-    envelope_to_dict  CC=58  out:5
+    envelope_to_dict  CC=3  out:7
     result_to_pb  CC=4  out:4
   packages.dsl2wup.src.dsl2wup.schema_registry  [6 funcs]
     _load_schemas  CC=3  out:9
@@ -3175,10 +3309,13 @@ MODULES:
     _require_fastmcp  CC=2  out:1
     create_server  CC=1  out:1
     run_server  CC=1  out:2
-  packages.nlp2wup.src.nlp2wup.apply  [3 funcs]
-    _intent  CC=21  out:11
-    apply_nl  CC=5  out:6
-    to_dsl  CC=24  out:20
+  packages.nlp2wup.src.nlp2wup.apply  [6 funcs]
+    _generated_command  CC=3  out:1
+    _intent  CC=4  out:2
+    _simple_command  CC=2  out:1
+    _special_command  CC=11  out:5
+    apply_nl  CC=4  out:10
+    to_dsl  CC=11  out:11
   packages.nlp2wup.src.nlp2wup.generate  [2 funcs]
     _extract_template  CC=3  out:1
     generate_from_nl  CC=1  out:2
@@ -3188,19 +3325,29 @@ MODULES:
     create_app  CC=1  out:42
   packages.rest2wup.src.rest2wup.cli  [1 funcs]
     main  CC=4  out:9
-  packages.uri2wup.src.uri2wup.decode  [2 funcs]
+  packages.uri2wup.src.uri2wup.cli  [4 funcs]
+    _run_decode  CC=1  out:2
+    _run_dispatch  CC=5  out:6
+    _run_query  CC=4  out:4
+    _run_resolve  CC=3  out:4
+  packages.uri2wup.src.uri2wup.decode  [4 funcs]
+    _block_query  CC=4  out:2
+    _command_from_params  CC=7  out:6
     _dict_to_dsl  CC=7  out:7
-    decode_uri  CC=20  out:23
+    decode_uri  CC=4  out:9
   packages.uri2wup.src.uri2wup.nlp2uri  [2 funcs]
     best_uri  CC=2  out:1
     nlp2uri  CC=4  out:9
-  packages.uri2wup.src.uri2wup.patch  [2 funcs]
+  packages.uri2wup.src.uri2wup.patch  [3 funcs]
+    _replace_at_path  CC=10  out:11
     _resolve_config_path  CC=4  out:7
-    patch_uri  CC=17  out:21
-  packages.uri2wup.src.uri2wup.query  [3 funcs]
-    _extract_block  CC=14  out:21
+    patch_uri  CC=9  out:18
+  packages.uri2wup.src.uri2wup.query  [5 funcs]
+    _extract_block  CC=8  out:6
     _resolve_config_path  CC=4  out:7
-    query_uri  CC=23  out:49
+    _runtime_block  CC=6  out:13
+    _success  CC=4  out:7
+    query_uri  CC=13  out:23
   packages.uri2wup.src.uri2wup.uri  [6 funcs]
     _decode  CC=2  out:1
     _encode  CC=1  out:1
@@ -3217,17 +3364,17 @@ MODULES:
     run_quick_testql_dryrun  CC=3  out:4
   wup._ast_detector  [1 funcs]
     _snapshot_path  CC=1  out:3
-  wup.aql  [10 funcs]
+  wup.aql  [12 funcs]
     check_file  CC=11  out:21
     _coerce_number  CC=2  out:1
     _compare  CC=4  out:3
     _length_of  CC=2  out:2
     _passes  CC=11  out:9
+    _predicate_rule  CC=14  out:21
     _resolve_path  CC=13  out:13
+    _rule_selector  CC=4  out:6
     _split_severity  CC=4  out:5
     _tokenize  CC=4  out:11
-    _type_name  CC=7  out:5
-    parse_rule  CC=18  out:33
   wup.assistant  [5 funcs]
     _auto_detect_services  CC=1  out:1
     _detect_framework  CC=1  out:1
@@ -3241,6 +3388,9 @@ MODULES:
   wup.assistant_validator  [2 funcs]
     generate_suggestions  CC=6  out:5
     validate_config  CC=9  out:9
+  wup.bootstrap  [2 funcs]
+    _watchdog_preflight  CC=5  out:3
+    main  CC=6  out:5
   wup.cli  [20 funcs]
     _add_delta_events_lines  CC=14  out:29
     _add_failing_services_lines  CC=13  out:23
@@ -3252,30 +3402,32 @@ MODULES:
     _create_watcher  CC=2  out:6
     _discover_projects  CC=6  out:7
     _is_project_dir  CC=2  out:2
-  wup.cli_bridge  [8 funcs]
-    run_endpoints  CC=1  out:1
-    run_generate  CC=1  out:1
-    run_init  CC=1  out:1
-    run_init_cli  CC=1  out:1
-    run_map_deps  CC=1  out:1
-    run_status  CC=1  out:1
-    run_sync  CC=1  out:1
-    run_validate  CC=1  out:1
+  wup.cli_bridge  [10 funcs]
+    _guard  CC=3  out:6
+    _result  CC=3  out:4
+    run_endpoints  CC=1  out:2
+    run_generate  CC=2  out:2
+    run_init  CC=1  out:10
+    run_init_cli  CC=1  out:2
+    run_map_deps  CC=2  out:21
+    run_status  CC=3  out:3
+    run_sync  CC=1  out:2
+    run_validate  CC=1  out:2
   wup.cli_config_generator  [1 funcs]
     generate  CC=4  out:5
-  wup.config  [19 funcs]
-    _load_dotenv  CC=10  out:10
+  wup.config  [20 funcs]
+    _load_dotenv  CC=3  out:3
     _normalize_testql_extra_args  CC=5  out:10
     _normalize_testql_timeout  CC=3  out:4
+    _parse_anomaly_detection_config  CC=1  out:19
     _parse_planfile_config  CC=5  out:15
     _parse_project_config  CC=2  out:5
-    _parse_semcod_tools_config  CC=9  out:23
     _parse_services_config  CC=3  out:23
     _parse_strategy_config  CC=1  out:4
-    _parse_testql_config  CC=2  out:28
+    _parse_testql_config  CC=3  out:29
     _parse_testql_extra_args  CC=5  out:8
   wup.control  [12 funcs]
-    _result_dict  CC=1  out:2
+    _result_dict  CC=3  out:3
     dispatch_command  CC=1  out:1
     dispatch_endpoints  CC=1  out:1
     dispatch_generate  CC=3  out:1
@@ -3336,23 +3488,23 @@ MODULES:
     register_testing_event_handlers  CC=1  out:3
   wup.testing.handlers.health_handlers  [1 funcs]
     register_health_handlers  CC=1  out:3
-  wup.testql_monitor  [25 funcs]
+  wup.testql_monitor  [26 funcs]
     __init__  CC=2  out:3
     _add_config_endpoints  CC=11  out:14
     _add_scenario_probes  CC=5  out:5
     _add_service_map_probes  CC=5  out:5
     _build_port_map  CC=6  out:13
     _is_monitoring_probe  CC=1  out:1
+    _resolve_base_url  CC=4  out:6
     _assign_by_connect_backend  CC=4  out:4
     _assign_by_longest_token  CC=7  out:5
     _assign_by_path_prefix  CC=13  out:7
-    _assign_by_port_8100  CC=2  out:3
   wup.testql_watcher  [2 funcs]
     __init__  CC=13  out:17
     _get_config_endpoints_for_service  CC=10  out:7
   wup.validate  [1 funcs]
     validate_wup_file  CC=8  out:15
-  wup.visual_diff  [23 funcs]
+  wup.visual_diff  [22 funcs]
     __init__  CC=2  out:3
     _categorize_page_result  CC=7  out:12
     _check_page  CC=10  out:19
@@ -3370,40 +3522,20 @@ MODULES:
     resolve_endpoint  CC=3  out:3
 
 EDGES:
-  packages.cli2wup.src.cli2wup.cli.run_shell → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
   packages.rest2wup.src.rest2wup.cli.main → packages.rest2wup.src.rest2wup.app.create_app
   packages.rest2wup.src.rest2wup.app.create_app → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
   packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri → packages.uri2wup.src.uri2wup.uri.uri_for_block
   packages.uri2wup.src.uri2wup.nlp2uri.best_uri → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
-  packages.uri2wup.src.uri2wup.query._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.query._extract_block → wup.paths.health_state_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._resolve_config_path
-  packages.uri2wup.src.uri2wup.query.query_uri → packages.uri2wup.src.uri2wup.query._extract_block
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.decode.decode_uri → packages.uri2wup.src.uri2wup.decode._dict_to_dsl
   packages.uri2wup.src.uri2wup.uri.uri_for_cmd → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.uri_for_block → packages.uri2wup.src.uri2wup.uri._encode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri._decode
   packages.uri2wup.src.uri2wup.uri.parse_wup_uri → packages.uri2wup.src.uri2wup.uri.is_wup_uri
-  packages.uri2wup.src.uri2wup.patch._resolve_config_path → wup.config.find_config_file
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.uri.parse_wup_uri
-  packages.uri2wup.src.uri2wup.patch.patch_uri → packages.uri2wup.src.uri2wup.patch._resolve_config_path
   packages.nlp2wup.src.nlp2wup.validate.validate_wup_config → wup.validate.validate_wup_file
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → wup.generate.generate_wup_config
-  packages.nlp2wup.src.nlp2wup.generate.generate_from_nl → packages.nlp2wup.src.nlp2wup.generate._extract_template
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.nlp2wup.src.nlp2wup.apply._intent
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.to_dsl → packages.dsl2wup.src.dsl2wup.grammar.to_text
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply.to_dsl
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.dsl2wup.src.dsl2wup.bus.dispatch
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.uri2wup.src.uri2wup.nlp2uri.best_uri
-  packages.nlp2wup.src.nlp2wup.apply.apply_nl → packages.nlp2wup.src.nlp2wup.apply._intent
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.grammar.split_command
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.handlers.command.handle_from_tokens
   packages.dsl2wup.src.dsl2wup.bus._dispatch_cmd → packages.dsl2wup.src.dsl2wup.events.default_event_store
-  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf
+  packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.codec.decode_protobuf
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus._bytes_to_cmd → packages.dsl2wup.src.dsl2wup.grammar.parse_line
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.split_command
@@ -3412,14 +3544,34 @@ EDGES:
   packages.dsl2wup.src.dsl2wup.bus.dispatch → packages.dsl2wup.src.dsl2wup.grammar.to_text
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line → packages.dsl2wup.src.dsl2wup.bus.dispatch
   packages.dsl2wup.src.dsl2wup.bus.execute_dsl → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl_line
-  packages.dsl2wup.src.dsl2wup.cli._main_legacy → packages.dsl2wup.src.dsl2wup.bus.execute_dsl
-  packages.dsl2wup.src.dsl2wup.cli._main_subcommand → packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_legacy
-  packages.dsl2wup.src.dsl2wup.cli.main → packages.dsl2wup.src.dsl2wup.cli._main_subcommand
-  packages.dsl2wup.src.dsl2wup.events.EventStore.append → packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf
-  packages.dsl2wup.src.dsl2wup.pb_codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec._set_body
-  packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.envelope_to_dict
+  packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.all_schemas → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict → packages.dsl2wup.src.dsl2wup.schema_registry.schema_for_verb
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._load_schemas
+  packages.dsl2wup.src.dsl2wup.schema_registry.validate_schema_registry → packages.dsl2wup.src.dsl2wup.schema_registry._schema_verb_for
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.encode_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.parse_line
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.schema_registry.validate_command_dict
+  packages.dsl2wup.src.dsl2wup.codec.roundtrip_text → packages.dsl2wup.src.dsl2wup.grammar.to_text
+  packages.dsl2wup.src.dsl2wup.codec.encode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.encode_text_to_protobuf
+  packages.dsl2wup.src.dsl2wup.codec.decode_protobuf → packages.dsl2wup.src.dsl2wup.pb_codec.decode_protobuf_to_text
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.uri2wup.src.uri2wup.query.query_uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_query → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → wup.validate.validate_wup_file
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_validate → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.uri2wup.src.uri2wup.nlp2uri.nlp2uri
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_resolve → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → wup.status_data.collect_status_snapshot
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_status → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_endpoints → wup.endpoints.discover_testql_endpoints
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → packages.dsl2wup.src.dsl2wup.handlers.query._project_root
+  packages.dsl2wup.src.dsl2wup.handlers.query.handle_health → wup.paths.health_state_path
+  packages.mcp2wup.src.mcp2wup.cli.main → packages.mcp2wup.src.mcp2wup.server.run_server
+  packages.mcp2wup.src.mcp2wup.server.WupMCPServer.__post_init__ → packages.mcp2wup.src.mcp2wup.server._require_fastmcp
+  packages.mcp2wup.src.mcp2wup.server.run_server → packages.mcp2wup.src.mcp2wup.server.create_server
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._parse_port_mapping
+  wup.monitoring_manifest._extract_service_from_spec → wup.monitoring_manifest._extract_healthcheck_test
 ```
 
 ## Test Contracts

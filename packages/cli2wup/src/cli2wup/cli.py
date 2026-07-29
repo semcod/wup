@@ -36,6 +36,32 @@ def run_shell(*, default_file: str | None = None, json_out: bool = False) -> int
     return exit_code
 
 
+def _print_result(result: object, *, json_out: bool) -> None:
+    if json_out:
+        print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+        return
+    if result.error:
+        print(f"error: {result.error}", file=sys.stderr)
+    if result.output:
+        print(result.output.rstrip())
+
+
+def _run_script(args: argparse.Namespace) -> int:
+    results = execute_dsl(Path(args.script).read_text(encoding="utf-8"), default_file=args.file)
+    exit_code = 0
+    for result in results:
+        _print_result(result, json_out=args.json)
+        if not result.ok:
+            exit_code = 1
+    return exit_code
+
+
+def _run_command(args: argparse.Namespace) -> int:
+    result = execute_dsl_line(args.command, default_file=args.file)
+    _print_result(result, json_out=args.json)
+    return 0 if result.ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="cli2wup",
@@ -62,35 +88,9 @@ def main(argv: list[str] | None = None) -> int:
     parsed = argparse.Namespace(**vars(args))
     parsed.cmd = cmd
 
-    if parsed.cmd == "shell":
-        return run_shell(default_file=parsed.file, json_out=parsed.json)
-
-    if parsed.cmd == "run":
-        text = Path(parsed.script).read_text(encoding="utf-8")
-        results = execute_dsl(text, default_file=parsed.file)
-        exit_code = 0
-        for result in results:
-            if parsed.json:
-                print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
-            else:
-                if result.error:
-                    print(f"error: {result.error}", file=sys.stderr)
-                if result.output:
-                    print(result.output.rstrip())
-            if not result.ok:
-                exit_code = 1
-        return exit_code
-
-    if parsed.cmd == "exec":
-        result = execute_dsl_line(parsed.command, default_file=parsed.file)
-        if parsed.json:
-            print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
-        else:
-            if result.error:
-                print(f"error: {result.error}", file=sys.stderr)
-            if result.output:
-                print(result.output.rstrip())
-        return 0 if result.ok else 1
+    handlers = {"shell": lambda: run_shell(default_file=parsed.file, json_out=parsed.json), "run": lambda: _run_script(parsed), "exec": lambda: _run_command(parsed)}
+    if handler := handlers.get(parsed.cmd):
+        return handler()
 
     parser.print_help()
     return 1

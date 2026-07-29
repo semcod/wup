@@ -7,8 +7,9 @@ app {
 
 dependencies {
   runtime: "watchdog>=4.0.0, psutil>=5.9.0, rich>=13.0.0, typer>=0.9.0, pyyaml>=6.0";
-  dev: "pytest>=7.0.0, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
+  dev: "pytest>=7.0.0, pytest-cov>=5.0, ruff>=0.8, goal>=2.1.0, costs>=0.1.20, pfix>=0.1.60, uri2wup, dsl2wup, nlp2wup, cli2wup, mcp2wup, rest2wup, httpx>=0.27";
   visual: "playwright>=1.40,<2";
+  control: "dsl2wup>=0.1.0, uri2wup>=0.1.0";
 }
 
 entity[name="AdoptCommand"] {
@@ -114,7 +115,7 @@ interface[type="cli"] {
   framework: argparse;
 }
 interface[type="cli"] page[name="wup"] {
-  entry: wup.cli:app;
+  entry: wup.bootstrap:main;
 }
 
 interface[type="web"] {
@@ -124,7 +125,7 @@ interface[type="web"] {
 
 workflow[name="install"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd...";
+  step-1: run cmd=echo "📦 Installing WUP...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e .; \;
   step-4: run cmd=else \;
@@ -135,7 +136,7 @@ workflow[name="install"] {
 
 workflow[name="install-dev"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Installing sumd with dev dependencies...";
+  step-1: run cmd=echo "📦 Installing WUP with dev dependencies...";
   step-2: run cmd=if command -v uv > /dev/null 2>&1; then \;
   step-3: run cmd=uv pip install -e ".[dev]"; \;
   step-4: run cmd=else \;
@@ -147,27 +148,29 @@ workflow[name="install-dev"] {
 workflow[name="test"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --tb=short;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --tb=short;
 }
 
 workflow[name="test-cov"] {
   trigger: manual;
   step-1: run cmd=echo "🧪 Running tests with coverage...";
-  step-2: run cmd=.venv/bin/python -m pytest tests/ -v --cov=sumd --cov-report=term-missing --cov-report=json;
+  step-2: run cmd=.venv/bin/python -m pytest tests/ packages/ -v --cov=wup --cov-report=term-missing --cov-report=json;
 }
 
 workflow[name="lint"] {
   trigger: manual;
   step-1: run cmd=echo "🔍 Running linting with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff check sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff check wup/;
   step-3: run cmd=.venv/bin/python -m ruff check tests/;
+  step-4: run cmd=.venv/bin/python -m ruff check packages/;
 }
 
 workflow[name="format"] {
   trigger: manual;
   step-1: run cmd=echo "📝 Formatting code with ruff...";
-  step-2: run cmd=.venv/bin/python -m ruff format sumd/;
+  step-2: run cmd=.venv/bin/python -m ruff format wup/;
   step-3: run cmd=.venv/bin/python -m ruff format tests/;
+  step-4: run cmd=.venv/bin/python -m ruff format packages/;
 }
 
 workflow[name="clean"] {
@@ -182,13 +185,18 @@ workflow[name="clean"] {
 
 workflow[name="publish"] {
   trigger: manual;
-  step-1: run cmd=echo "📦 Publishing to PyPI...";
+  step-1: run cmd=echo "📦 Building release artifacts (no upload)...";
   step-2: run cmd=command -v .venv/bin/twine > /dev/null 2>&1 || (.venv/bin/pip install --upgrade twine build);
   step-3: run cmd=rm -rf dist/ build/ *.egg-info/;
   step-4: run cmd=.venv/bin/python -m build;
   step-5: run cmd=.venv/bin/twine check dist/*;
-  step-6: run cmd=echo "⚡ Ready to upload.";
-  step-7: run cmd=.venv/bin/twine upload dist/*;
+  step-6: run cmd=echo "✅ Release artifacts are valid. Run 'make publish-confirm' to upload.";
+}
+
+workflow[name="publish-confirm"] {
+  trigger: manual;
+  step-1: run cmd=echo "⚡ Uploading release artifacts to PyPI...";
+  step-2: run cmd=.venv/bin/twine upload dist/*;
 }
 
 workflow[name="publish-test"] {
@@ -204,7 +212,7 @@ workflow[name="version"] {
   trigger: manual;
   step-1: run cmd=echo "📦 Version information...";
   step-2: run cmd=cat VERSION;
-  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"sumd\")}')";
+  step-3: run cmd=.venv/bin/python -c "from importlib.metadata import version; print(f'Installed version: {version(\"wup\")}')";
 }
 
 workflow[name="wup:watch"] {

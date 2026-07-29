@@ -1,12 +1,12 @@
-# wup | 158f 21062L | json:16,yaml:12,txt:12,python:101,yml:2,shell:3,toml:7,proto:2 | 2026-07-29
+# wup | 159f 21216L | json:16,yaml:12,txt:12,python:102,yml:2,shell:3,toml:7,proto:2 | 2026-07-29
 # generated in 0.02s
-# stats: 608 func | 0 cls | 158 mod | CC̄=4.7 | critical:13 | cycles:0
-# alerts[5]: CC parse_line=59; CC envelope_to_dict=58; fan-out create_app=26; fan-out query_uri=26; fan-out EventStore.append=22
-# hotspots[5]: create_app fan=26; query_uri fan=26; EventStore.append fan=22; oql fan=21; main fan=19
-# evolution: CC̄ 5.0→4.7 (improved -0.3)
+# stats: 651 func | 0 cls | 159 mod | CC̄=4.2 | critical:0 | cycles:0
+# alerts[5]: fan-out create_app=26; fan-out EventStore.append=22; fan-out oql=21; fan-out TestQLWatcher._run_fleet_health_scenario=19; fan-out map_deps=19
+# hotspots[5]: create_app fan=26; EventStore.append fan=22; oql fan=21; map_deps fan=19; status fan=19
+# evolution: CC̄ 5.0→4.2 (improved -0.8)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[158]:
-  Makefile,96
+M[159]:
+  Makefile,101
   Taskfile.yml,32
   deps.json,4
   duplication.json,3481
@@ -54,14 +54,14 @@ M[158]:
   packages/dsl2wup/src/dsl2wup/bus.py,79
   packages/dsl2wup/src/dsl2wup/cli.py,108
   packages/dsl2wup/src/dsl2wup/codec.py,35
-  packages/dsl2wup/src/dsl2wup/codegen.py,98
+  packages/dsl2wup/src/dsl2wup/codegen.py,70
   packages/dsl2wup/src/dsl2wup/engine.py,8
   packages/dsl2wup/src/dsl2wup/events.py,116
-  packages/dsl2wup/src/dsl2wup/grammar.py,156
-  packages/dsl2wup/src/dsl2wup/handlers/command.py,232
+  packages/dsl2wup/src/dsl2wup/grammar.py,153
+  packages/dsl2wup/src/dsl2wup/handlers/command.py,271
   packages/dsl2wup/src/dsl2wup/handlers/query.py,137
   packages/dsl2wup/src/dsl2wup/models.py,129
-  packages/dsl2wup/src/dsl2wup/pb_codec.py,235
+  packages/dsl2wup/src/dsl2wup/pb_codec.py,147
   packages/dsl2wup/src/dsl2wup/result.py,28
   packages/dsl2wup/src/dsl2wup/schema/commands/adopt.schema.json,11
   packages/dsl2wup/src/dsl2wup/schema/commands/endpoints.schema.json,12
@@ -88,9 +88,9 @@ M[158]:
   packages/nlp2wup/local.dev.txt,10
   packages/nlp2wup/pyproject.toml,27
   packages/nlp2wup/src/nlp2wup/__init__.py,7
-  packages/nlp2wup/src/nlp2wup/apply.py,126
+  packages/nlp2wup/src/nlp2wup/apply.py,167
   packages/nlp2wup/src/nlp2wup/cli.py,43
-  packages/nlp2wup/src/nlp2wup/generate.py,25
+  packages/nlp2wup/src/nlp2wup/generate.py,24
   packages/nlp2wup/src/nlp2wup/validate.py,11
   packages/rest2wup/local.dev.txt,9
   packages/rest2wup/pyproject.toml,28
@@ -100,14 +100,14 @@ M[158]:
   packages/uri2wup/local.dev.txt,9
   packages/uri2wup/pyproject.toml,27
   packages/uri2wup/src/uri2wup/__init__.py,7
-  packages/uri2wup/src/uri2wup/cli.py,62
-  packages/uri2wup/src/uri2wup/decode.py,72
+  packages/uri2wup/src/uri2wup/cli.py,72
+  packages/uri2wup/src/uri2wup/decode.py,61
   packages/uri2wup/src/uri2wup/nlp2uri.py,48
-  packages/uri2wup/src/uri2wup/patch.py,68
-  packages/uri2wup/src/uri2wup/query.py,164
+  packages/uri2wup/src/uri2wup/patch.py,91
+  packages/uri2wup/src/uri2wup/query.py,147
   packages/uri2wup/src/uri2wup/uri.py,92
   project.sh,49
-  pyproject.toml,127
+  pyproject.toml,143
   regix.yaml,51
   scripts/run_probe_smoke.py,88
   testql-deps.json,311
@@ -116,7 +116,7 @@ M[158]:
   testql-scenarios/generated-cli-tests.testql.toon.yaml,20
   testql-scenarios/generated-from-pytests.testql.toon.yaml,82
   todo.txt,12
-  tree.txt,330
+  tree.txt,337
   wup/__init__.py,46
   wup/_ast_detector.py,124
   wup/_base_detector.py,18
@@ -124,17 +124,18 @@ M[158]:
   wup/_yaml_detector.py,128
   wup/anomaly_detector.py,175
   wup/anomaly_models.py,35
-  wup/aql.py,306
-  wup/assistant.py,594
+  wup/aql.py,308
+  wup/assistant.py,584
   wup/assistant_discovery.py,99
   wup/assistant_validator.py,57
+  wup/bootstrap.py,61
   wup/bus.py,65
   wup/cli.py,1079
-  wup/cli_bridge.py,80
+  wup/cli_bridge.py,194
   wup/cli_config_generator.py,223
-  wup/cli_scanner.py,302
-  wup/config.py,610
-  wup/control.py,106
+  wup/cli_scanner.py,301
+  wup/config.py,584
+  wup/control.py,127
   wup/core.py,740
   wup/dependency_mapper.py,177
   wup/discovery.py,279
@@ -165,86 +166,6 @@ M[158]:
   wup/visual_diff.py,638
   wup/web_client.py,185
 D:
-  packages/dsl2wup/src/dsl2wup/grammar.py:
-    e: split_command,pick_flag,parse_line,to_text
-    split_command(line)
-    pick_flag(tokens;flag)
-    parse_line(line)
-    to_text(cmd)
-  packages/dsl2wup/src/dsl2wup/pb_codec.py:
-    e: _set_body,envelope_to_dict,encode_protobuf,decode_protobuf,encode_text_to_protobuf,decode_protobuf_to_text,result_to_pb,encode_result_protobuf
-    _set_body(envelope;cmd)
-    envelope_to_dict(envelope)
-    encode_protobuf(cmd)
-    decode_protobuf(data)
-    encode_text_to_protobuf(line)
-    decode_protobuf_to_text(data)
-    result_to_pb(result)
-    encode_result_protobuf(result)
-  packages/nlp2wup/src/nlp2wup/apply.py:
-    e: ApplyResult,_intent,to_dsl,apply_nl
-    ApplyResult: to_dict(0)
-    _intent(prompt)
-    to_dsl(prompt)
-    apply_nl(prompt)
-  packages/uri2wup/src/uri2wup/query.py:
-    e: QueryResult,_resolve_config_path,_extract_block,query_uri
-    QueryResult: to_dict(0)
-    _resolve_config_path(project;file_param)
-    _extract_block(raw;parts)
-    query_uri(uri)
-  packages/uri2wup/src/uri2wup/decode.py:
-    e: _dict_to_dsl,decode_uri
-    _dict_to_dsl(cmd)
-    decode_uri(uri)
-  wup/aql.py:
-    e: AQLError,AQLRule,AQLEngine,CheckAQL,_resolve_path,_split_severity,_tokenize,parse_rule,_coerce_number,_compare,_length_of,_type_name,_passes,register_aql
-    AQLError(ValueError):  # Raised for malformed AQL rules...
-    AQLRule:
-    AQLEngine: __init__(1),_load(1),check_file(2)  # Evaluates AQL rules against a file's data, producing Anomaly...
-    CheckAQL(Query):  # Query message: evaluate AQL rules against a file via the eve...
-    _resolve_path(data;path)
-    _split_severity(tokens)
-    _tokenize(rule)
-    parse_rule(rule)
-    _coerce_number(value)
-    _compare(actual;op;expected)
-    _length_of(value)
-    _type_name(value)
-    _passes(rule;value)
-    register_aql(bus;project_root)
-  packages/uri2wup/src/uri2wup/patch.py:
-    e: PatchResult,_resolve_config_path,patch_uri
-    PatchResult: to_dict(0)
-    _resolve_config_path(project;file_param)
-    patch_uri(uri)
-  packages/dsl2wup/src/dsl2wup/handlers/command.py:
-    e: _read_content,_project_root,handle_map,handle_init,handle_generate,handle_patch,handle_sync,handle_init_cli,handle_adopt,handle_from_tokens
-    _read_content(path)
-    _project_root(cmd)
-    handle_map(cmd)
-    handle_init(cmd)
-    handle_generate(cmd)
-    handle_patch(cmd)
-    handle_sync(cmd)
-    handle_init_cli(cmd)
-    handle_adopt(cmd)
-    handle_from_tokens(line;tokens)
-  packages/cli2wup/src/cli2wup/cli.py:
-    e: run_shell,main
-    run_shell()
-    main(argv)
-  packages/uri2wup/src/uri2wup/cli.py:
-    e: main
-    main(argv)
-  packages/dsl2wup/src/dsl2wup/codegen.py:
-    e: generate_models,main
-    generate_models()
-    main()
-  wup/assistant.py:
-    e: WupAssistant,main
-    WupAssistant: __init__(1),_dispatch_menu_choice(2),run(2),_init_project(1),_detect_framework(0),_auto_detect_services(1),_detect_service_type(2),_configure_services(0),_add_service_interactive(0),_edit_service(1),_setup_watch(0),_configure_testql(0),_setup_web_dashboard(0),_setup_visual_diff(0),_setup_anomaly_detection(0),_review_and_validate(0),_validate_config(0),_generate_suggestions(0),_save_configuration(0),_save_draft(0),_load_draft(0),_config_to_dict(1),_quick_setup(1)  # Interactive configuration assistant...
-    main()
   wup/monitoring_manifest.py:
     e: DockerComposeService,_parse_port_mapping,_load_compose_yaml,_extract_healthcheck_test,_extract_service_from_spec,discover_docker_compose_services,_host_port_from_mapping,_connect_profile_rules,_map_docker_to_wup_service,_probe_row,_build_wup_service_dicts,_build_docker_rows,_build_scenario_rows,_artifact_row,_semcod_tool_row,discover_semcod_tools,build_monitoring_manifest,manifest_to_yaml_block,patch_wup_yaml_monitoring,load_monitoring_manifest_from_yaml,_service_summary_lines,_semcod_summary_lines,format_manifest_summary
     DockerComposeService:
@@ -284,6 +205,9 @@ D:
     parse(query)
     _parse_conditions(tokens;start;parsed)
     register_oql(bus;project_root)
+  wup/planfile_reporter.py:
+    e: PlanfileReporter
+    PlanfileReporter: __init__(3),report_failure(0),_ticket_is_closed(1),clear_service_stage(0),_build_ticket_cmd(3),_run_planfile(1),_retry_without_files(1),_create_ticket(0),_wait_for_planfile_store_ready(1),_load_dedupe(0),_save_dedupe(1),_fingerprint(-1),_parse_ticket_id(0),_files_option_unsupported(0),_ticket_name(-1),_ticket_description(-1)  # Create deduplicated planfile tickets for WUP-detected failur...
   wup/cli.py:
     e: _load_watch_config,_print_watch_header,_refresh_monitoring_manifest,_create_watcher,_is_project_dir,_discover_projects,_resolve_project_paths,_build_project_watcher,watch,_auto_generate_config,map_deps,_add_failing_services_lines,_add_delta_events_lines,_add_monitoring_manifest_lines,_add_visual_diff_lines,_build_status_panel,status,oql,aql,init,testql_endpoints,sync_testql,assistant,version,init_cli
     _load_watch_config(project_path;config_path;probe_interval;mode)
@@ -311,9 +235,28 @@ D:
     assistant(quick;template;project)
     version()
     init_cli(project;output_config;output_scenarios;merge;infer_args)
-  wup/planfile_reporter.py:
-    e: PlanfileReporter
-    PlanfileReporter: __init__(3),report_failure(0),_ticket_is_closed(1),clear_service_stage(0),_build_ticket_cmd(3),_run_planfile(1),_retry_without_files(1),_create_ticket(0),_wait_for_planfile_store_ready(1),_load_dedupe(0),_save_dedupe(1),_fingerprint(-1),_parse_ticket_id(0),_files_option_unsupported(0),_ticket_name(-1),_ticket_description(-1)  # Create deduplicated planfile tickets for WUP-detected failur...
+  wup/assistant.py:
+    e: WupAssistant,main
+    WupAssistant: __init__(1),_dispatch_menu_choice(2),run(2),_init_project(1),_detect_framework(0),_auto_detect_services(1),_detect_service_type(2),_configure_services(0),_add_service_interactive(0),_edit_service(1),_setup_watch(0),_configure_testql(0),_setup_web_dashboard(0),_setup_visual_diff(0),_setup_anomaly_detection(0),_review_and_validate(0),_validate_config(0),_generate_suggestions(0),_save_configuration(0),_save_draft(0),_load_draft(0),_config_to_dict(1),_quick_setup(1)  # Interactive configuration assistant...
+    main()
+  wup/aql.py:
+    e: AQLError,AQLRule,AQLEngine,CheckAQL,_resolve_path,_split_severity,_tokenize,_rule_selector,_predicate_rule,parse_rule,_coerce_number,_compare,_length_of,_type_name,_passes,register_aql
+    AQLError(ValueError):  # Raised for malformed AQL rules...
+    AQLRule:
+    AQLEngine: __init__(1),_load(1),check_file(2)  # Evaluates AQL rules against a file's data, producing Anomaly...
+    CheckAQL(Query):  # Query message: evaluate AQL rules against a file via the eve...
+    _resolve_path(data;path)
+    _split_severity(tokens)
+    _tokenize(rule)
+    _rule_selector(tokens)
+    _predicate_rule(selector;path;keyword;tokens;severity;raw)
+    parse_rule(rule)
+    _coerce_number(value)
+    _compare(actual;op;expected)
+    _length_of(value)
+    _type_name(value)
+    _passes(rule;value)
+    register_aql(bus;project_root)
   packages/dsl2wup/src/dsl2wup/schema_registry.py:
     e: _load_schemas,schema_for_verb,all_schemas,validate_command_dict,_schema_verb_for,validate_schema_registry
     _load_schemas()
@@ -346,6 +289,14 @@ D:
     _assign_by_longest_token(path_lower;services)
     _assign_by_path_prefix(path_lower;services)
     assign_probe_to_service(probe;services;port_map)
+  packages/uri2wup/src/uri2wup/query.py:
+    e: QueryResult,_resolve_config_path,_extract_block,_runtime_block,_success,query_uri
+    QueryResult: to_dict(0)
+    _resolve_config_path(project;file_param)
+    _extract_block(raw;parts)
+    _runtime_block(parts;project)
+    _success(uri;parts;data;output_fmt;file)
+    query_uri(uri)
   wup/testql_watcher.py:
     e: BrowserNotifier,TestQLWatcher
     BrowserNotifier: __init__(2),notify(1)  # Send watcher events to browser-facing service and local file...
@@ -368,9 +319,6 @@ Implements...
     detect_framework(project_root)
     auto_detect_services(project_root;framework)
     detect_service_type(name;path)
-  wup/testql_discovery.py:
-    e: TestQLEndpointDiscovery
-    TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files...
   wup/multi.py:
     e: MultiProjectWatcher
     MultiProjectWatcher: __init__(2),start_watching(0)  # Drive multiple watchers from one loop, one observer per proj...
@@ -401,15 +349,68 @@ Usage::
     _flatten(node;depth;max_depth)
     _diff_snapshots(old;new;max_depth;threshold_added;threshold_removed;threshold_changed)
     _resolve_base_url(cfg)
-  wup/cli_scanner.py:
-    e: CLICommand,CLIPackage,CLIScanner
-    CLICommand:  # Represents a detected CLI command...
-    CLIPackage:  # Represents a detected CLI package...
-    CLIScanner: __init__(1),scan(0),_scan_setup_py(1),_scan_setup_cfg(1),_scan_pyproject_toml(1),_scan_main_modules(0),_parse_entry_points_dict(2),_add_entry_point(4),infer_command_args(1),_find_module_path(1),_get_help_arguments(1),to_dict(0)  # Scanner for detecting CLI commands in a project...
+  packages/nlp2wup/src/nlp2wup/apply.py:
+    e: ApplyResult,_intent,_simple_command,_generated_command,_special_command,to_dsl,apply_nl
+    ApplyResult: to_dict(0)
+    _intent(prompt)
+    _simple_command(intent;explicit_file;project)
+    _generated_command(prompt;explicit_file;project)
+    _special_command(intent;prompt;explicit_file;file;project)
+    to_dsl(prompt)
+    apply_nl(prompt)
+  packages/dsl2wup/src/dsl2wup/grammar.py:
+    e: split_command,pick_flag,_flag_values,_parse_query,_parse_validate,_parse_resolve,_parse_health,_parse_patch,_parse_map,_parse_init,_parse_generate,_parse_sync,_parse_adopt,_parse_endpoints,_parse_status,_parse_init_cli,parse_line,to_text
+    split_command(line)
+    pick_flag(tokens;flag)
+    _flag_values(cmd;tokens)
+    _parse_query(rest;cmd)
+    _parse_validate(rest;cmd)
+    _parse_resolve(rest;cmd)
+    _parse_health(rest;cmd)
+    _parse_patch(rest;cmd)
+    _parse_map(rest;cmd)
+    _parse_init(rest;cmd)
+    _parse_generate(rest;cmd)
+    _parse_sync(rest;cmd)
+    _parse_adopt(rest;cmd)
+    _parse_endpoints(rest;cmd)
+    _parse_status(rest;cmd)
+    _parse_init_cli(rest;cmd)
+    parse_line(line)
+    to_text(cmd)
+  wup/testql_discovery.py:
+    e: TestQLEndpointDiscovery
+    TestQLEndpointDiscovery: __init__(2),discover_scenarios(0),parse_scenario_endpoints(1),infer_service_from_scenario(1),discover_all_endpoints(0),discover_via_testql_cli(1),to_dependency_map(0)  # Discover endpoints from TestQL scenario files...
+  packages/uri2wup/src/uri2wup/patch.py:
+    e: PatchResult,_resolve_config_path,_replace_at_path,patch_uri
+    PatchResult: to_dict(0)
+    _resolve_config_path(project;file_param)
+    _replace_at_path(raw;parts;fragment)
+    patch_uri(uri)
+  packages/dsl2wup/src/dsl2wup/pb_codec.py:
+    e: _canonical_verb,_set_body,_body_to_dict,envelope_to_dict,encode_protobuf,decode_protobuf,encode_text_to_protobuf,decode_protobuf_to_text,result_to_pb,encode_result_protobuf
+    _canonical_verb(verb)
+    _set_body(envelope;cmd)
+    _body_to_dict(verb;msg)
+    envelope_to_dict(envelope)
+    encode_protobuf(cmd)
+    decode_protobuf(data)
+    encode_text_to_protobuf(line)
+    decode_protobuf_to_text(data)
+    result_to_pb(result)
+    encode_result_protobuf(result)
+  packages/dsl2wup/src/dsl2wup/codegen.py:
+    e: _field_type,_field_line,_append_model,generate_models,main
+    _field_type(prop)
+    _field_line(name;prop;required)
+    _append_model(lines;schema_file)
+    generate_models()
+    main()
   wup/config.py:
-    e: find_config_file,_load_dotenv,load_config,_parse_project_config,_parse_watch_config,_parse_services_config,_parse_strategy_config,_normalize_testql_timeout,_parse_testql_extra_args,_normalize_testql_extra_args,_parse_testql_config,_parse_visual_diff_config,_parse_web_config,_parse_planfile_config,_parse_semcod_tools_config,validate_config,detect_watch_paths,get_default_config,save_config
+    e: find_config_file,_read_dotenv,_load_dotenv,load_config,_parse_project_config,_parse_watch_config,_parse_services_config,_parse_strategy_config,_normalize_testql_timeout,_parse_testql_extra_args,_normalize_testql_extra_args,_parse_testql_config,_parse_visual_diff_config,_parse_web_config,_parse_planfile_config,_parse_anomaly_detection_config,_parse_semcod_tools_config,validate_config,detect_watch_paths,get_default_config,save_config
     find_config_file(project_root)
-    _load_dotenv(project_root)
+    _read_dotenv(project_root)
+    _load_dotenv(project_root;environ)
     load_config(project_root;config_path)
     _parse_project_config(raw)
     _parse_watch_config(raw)
@@ -418,22 +419,23 @@ Usage::
     _normalize_testql_timeout(val)
     _parse_testql_extra_args(extra_args_raw)
     _normalize_testql_extra_args(extra_args_raw)
-    _parse_testql_config(raw)
-    _parse_visual_diff_config(raw)
-    _parse_web_config(raw)
-    _parse_planfile_config(raw)
+    _parse_testql_config(raw;environ)
+    _parse_visual_diff_config(raw;environ)
+    _parse_web_config(raw;environ)
+    _parse_planfile_config(raw;environ)
+    _parse_anomaly_detection_config(raw)
     _parse_semcod_tools_config(raw)
     validate_config(raw)
     detect_watch_paths(project_root)
     get_default_config(project_root)
     save_config(config;output_path)
+  wup/cli_scanner.py:
+    e: CLICommand,CLIPackage,CLIScanner
+    CLICommand:  # Represents a detected CLI command...
+    CLIPackage:  # Represents a detected CLI package...
+    CLIScanner: __init__(1),scan(0),_scan_setup_py(1),_scan_setup_cfg(1),_scan_pyproject_toml(1),_scan_main_modules(0),_parse_entry_points_dict(2),_add_entry_point(4),infer_command_args(1),_find_module_path(1),_get_help_arguments(1),to_dict(0)  # Scanner for detecting CLI commands in a project...
   packages/nlp2wup/src/nlp2wup/cli.py:
     e: main
-    main(argv)
-  packages/dsl2wup/src/dsl2wup/cli.py:
-    e: _main_legacy,_main_subcommand,main
-    _main_legacy(argv)
-    _main_subcommand(argv)
     main(argv)
   wup/assistant_validator.py:
     e: validate_config,generate_suggestions
@@ -446,6 +448,18 @@ Usage::
     e: _merge_endpoints,sync_testql_manifest
     _merge_endpoints(config_path;wup_config;suggested;project_path)
     sync_testql_manifest(project_root)
+  packages/cli2wup/src/cli2wup/cli.py:
+    e: run_shell,_print_result,_run_script,_run_command,main
+    run_shell()
+    _print_result(result)
+    _run_script(args)
+    _run_command(args)
+    main(argv)
+  packages/dsl2wup/src/dsl2wup/cli.py:
+    e: _main_legacy,_main_subcommand,main
+    _main_legacy(argv)
+    _main_subcommand(argv)
+    main(argv)
   wup/validate.py:
     e: validate_wup_file
     validate_wup_file(path)
@@ -456,10 +470,6 @@ Usage::
   wup/_yaml_detector.py:
     e: YAMLStructureDetector
     YAMLStructureDetector(BaseDetector): __init__(1),_load_yaml(1),_extract_structure(3),_snapshot_path(1),_compare_structures(3),_compare_dict_structures(3),detect(1),_generate_suggestions(1)  # Detect structural changes in YAML files...
-  wup/testing/handlers/health_handlers.py:
-    e: ServiceHealthProjection,register_health_handlers
-    ServiceHealthProjection: __init__(5),_load_initial_state(0),_save_state(0),handle_health_changed(1),handle_get_health(1)  # Maintains the materialized view of service health...
-    register_health_handlers(bus;health_state_path;event_store;planfile_reporter;browser_notifier;web_client)
   wup/discovery.py:
     e: Endpoint,SourceIndex,DiscoveryAdapter,FastAPIAdapter,FlaskAdapter,DjangoAdapter,ExpressAdapter,FastifyAdapter,HonoAdapter,NestJSAdapter,GoAdapter,OpenAPIAdapter,detect_frameworks,discover_endpoints
     Endpoint: as_dict(0)  # A discovered HTTP endpoint...
@@ -476,6 +486,24 @@ Usage::
     OpenAPIAdapter(DiscoveryAdapter): _load_spec(1),detect(1),scan(1)  # Extract paths from an OpenAPI/Swagger document (yaml or json...
     detect_frameworks(index)
     discover_endpoints(project_root;framework;index)
+  wup/testing/handlers/health_handlers.py:
+    e: ServiceHealthProjection,register_health_handlers
+    ServiceHealthProjection: __init__(5),_load_initial_state(0),_save_state(0),handle_health_changed(1),handle_get_health(1)  # Maintains the materialized view of service health...
+    register_health_handlers(bus;health_state_path;event_store;planfile_reporter;browser_notifier;web_client)
+  packages/dsl2wup/src/dsl2wup/handlers/command.py:
+    e: _read_content,_project_root,handle_map,handle_init,handle_generate,handle_patch,handle_sync,handle_init_cli,_query_handlers,_command_handlers,handle_adopt,handle_from_tokens
+    _read_content(path)
+    _project_root(cmd)
+    handle_map(cmd)
+    handle_init(cmd)
+    handle_generate(cmd)
+    handle_patch(cmd)
+    handle_sync(cmd)
+    handle_init_cli(cmd)
+    _query_handlers()
+    _command_handlers()
+    handle_adopt(cmd)
+    handle_from_tokens(line;tokens)
   packages/uri2wup/src/uri2wup/uri.py:
     e: _encode,_decode,uri_for_cmd,uri_for_block,is_wup_uri,parse_wup_uri
     _encode(value)
@@ -484,11 +512,6 @@ Usage::
     uri_for_block()
     is_wup_uri(uri)
     parse_wup_uri(uri)
-  packages/dsl2wup/src/dsl2wup/events.py:
-    e: DslEvent,EventStore,default_event_store
-    DslEvent: to_dict(0)
-    EventStore: __init__(1),append(2),replay(0)
-    default_event_store(manifest_file)
   wup/anomaly_detector.py:
     e: AnomalyDetector,quick_scan,scan_yaml_changes
     AnomalyDetector: __init__(2),_should_scan(1),scan_file(1),scan_directory(3),get_summary(1),print_report(1)  # Main anomaly detector combining multiple detection methods...
@@ -506,6 +529,17 @@ Usage::
     analyze_monorepo(project_path)
     simulate_monorepo()
     main()
+  packages/uri2wup/src/uri2wup/decode.py:
+    e: _dict_to_dsl,_command_from_params,_block_query,decode_uri
+    _dict_to_dsl(cmd)
+    _command_from_params(parts;params)
+    _block_query(uri;parsed)
+    decode_uri(uri)
+  packages/dsl2wup/src/dsl2wup/events.py:
+    e: DslEvent,EventStore,default_event_store
+    DslEvent: to_dict(0)
+    EventStore: __init__(1),append(2),replay(0)
+    default_event_store(manifest_file)
   packages/dsl2wup/src/dsl2wup/bus.py:
     e: _dispatch_cmd,_bytes_to_cmd,dispatch,execute_dsl_line,execute_dsl
     _dispatch_cmd(cmd)
@@ -513,12 +547,9 @@ Usage::
     dispatch(envelope)
     execute_dsl_line(line)
     execute_dsl(text)
-  wup/testql_cli_generator.py:
-    e: TestQLCLIGenerator
-    TestQLCLIGenerator: __init__(1),generate(2),_generate_smoke_scenario(2),_generate_command_scenario(3),generate_custom_scenario(3),print_summary(1)  # Generate TestQL scenarios for CLI command testing...
-  wup/cli_config_generator.py:
-    e: CLIConfigGenerator
-    CLIConfigGenerator: __init__(1),generate(2),_generate_config(2),_create_shell_service(1),_save_config(2),print_summary(1)  # Generate wup.yaml configuration for CLI/shell services...
+  wup/dependency_mapper.py:
+    e: DependencyMapper
+    DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing...
   wup/web_client.py:
     e: WebClient,_httpx_available,resolve_endpoint,_normalize
     WebClient: __init__(1),_headers(0),send_event(1),send_regression(5),send_pass(2),send_health_transition(3),send_visual_diff(3)  # Async event sink for the wupbro backend.
@@ -568,9 +599,16 @@ O...
     print_service_health(health_path)
     check_manifest_stale_probes(manifest_path)
     main()
-  wup/dependency_mapper.py:
-    e: DependencyMapper
-    DependencyMapper: __init__(1),build_from_codebase(1),_detect_framework(0),_infer_service(1),get_endpoints_for_file(1),get_endpoints_for_service(1),get_files_for_service(1),get_service_for_file(1),to_dict(0),save(1),load(1),build_from_testql_scenarios(2)  # Maps project dependencies for intelligent testing...
+  wup/testql_cli_generator.py:
+    e: TestQLCLIGenerator
+    TestQLCLIGenerator: __init__(1),generate(2),_generate_smoke_scenario(2),_generate_command_scenario(3),generate_custom_scenario(3),print_summary(1)  # Generate TestQL scenarios for CLI command testing...
+  wup/bootstrap.py:
+    e: _watchdog_preflight,main
+    _watchdog_preflight()
+    main(argv)
+  wup/cli_config_generator.py:
+    e: CLIConfigGenerator
+    CLIConfigGenerator: __init__(1),generate(2),_generate_config(2),_create_shell_service(1),_save_config(2),print_summary(1)  # Generate wup.yaml configuration for CLI/shell services...
   packages/dsl2wup/src/dsl2wup/handlers/query.py:
     e: _project_root,handle_query,handle_validate,handle_resolve,handle_status,handle_endpoints,handle_health
     _project_root(cmd;default_file)
@@ -590,6 +628,13 @@ O...
     e: TestResultEventHandler,register_testing_event_handlers
     TestResultEventHandler: __init__(3),handle_test_failed(1),handle_test_passed(1)  # Handles test result events to update planfile reporter and w...
     register_testing_event_handlers(bus;planfile_reporter;web_client;console)
+  packages/uri2wup/src/uri2wup/cli.py:
+    e: _run_resolve,_run_decode,_run_query,_run_dispatch,main
+    _run_resolve(args)
+    _run_decode(args)
+    _run_query(args)
+    _run_dispatch(args)
+    main(argv)
   packages/rest2wup/src/rest2wup/cli.py:
     e: main
     main(argv)
@@ -608,6 +653,9 @@ O...
     Event(Message):  # Event indicates something happened...
     Query(Message):  # Query requests data without changing state...
     EventBus: __init__(0),subscribe(2),publish(1),execute(1),query(1)  # Simple in-memory event bus and command/query dispatcher...
+  wup/event_store.py:
+    e: EventStore
+    EventStore: __init__(1),append(1),read_all(0)  # Append-only store for domain events...
   wup/control.py:
     e: _result_dict,dispatch_validate,dispatch_query,dispatch_health,dispatch_map,dispatch_init,dispatch_sync,dispatch_generate,dispatch_status,dispatch_endpoints,dispatch_init_cli,dispatch_command
     _result_dict(line)
@@ -622,22 +670,26 @@ O...
     dispatch_endpoints(scenarios_dir)
     dispatch_init_cli()
     dispatch_command(command)
-  wup/event_store.py:
-    e: EventStore
-    EventStore: __init__(1),append(1),read_all(0)  # Append-only store for domain events...
-  packages/nlp2wup/src/nlp2wup/generate.py:
-    e: _extract_template,generate_from_nl
-    _extract_template(prompt)
-    generate_from_nl(prompt)
   packages/dsl2wup/src/dsl2wup/codec.py:
     e: encode_text,roundtrip_text,encode_protobuf,decode_protobuf
     encode_text(line)
     roundtrip_text(line)
     encode_protobuf(line)
     decode_protobuf(data)
+  examples/ci_cd_integration.py:
+    e: generate_github_actions,generate_gitlab_ci,show_ci_cd_demo,main
+    generate_github_actions()
+    generate_gitlab_ci()
+    show_ci_cd_demo()
+    main()
+  packages/nlp2wup/src/nlp2wup/generate.py:
+    e: _extract_template,generate_from_nl
+    _extract_template(prompt)
+    generate_from_nl(prompt)
   wup/cli_bridge.py:
-    e: _fail,run_map_deps,run_init,run_sync,run_generate,run_validate,run_status,run_endpoints,run_init_cli
-    _fail(result)
+    e: _result,_guard,run_map_deps,run_init,run_sync,run_generate,run_validate,run_status,run_endpoints,run_init_cli
+    _result(action;data)
+    _guard(action;operation)
     run_map_deps()
     run_init()
     run_sync()
@@ -646,12 +698,6 @@ O...
     run_status()
     run_endpoints()
     run_init_cli()
-  examples/ci_cd_integration.py:
-    e: generate_github_actions,generate_gitlab_ci,show_ci_cd_demo,main
-    generate_github_actions()
-    generate_gitlab_ci()
-    show_ci_cd_demo()
-    main()
   wup/__init__.py:
     e: __getattr__
     __getattr__(name)
@@ -730,7 +776,6 @@ O...
   goal.yaml:
   regix.yaml:
   local.dev.txt:
-  Makefile:
   koru.yaml:
   tree.txt:
   todo.txt:
@@ -799,6 +844,22 @@ O...
   wup/file_watcher/events/file_events.py:
     e: FileChanged
     FileChanged(Event):
+  wup/models/config.py:
+    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,PlanfileConfig,AnomalyDetectionConfig,SemcodToolConfig,SemcodToolsConfig,ProjectConfig,WupConfig
+    NotifyConfig:  # Notification configuration for a service...
+    ServiceTestConfig:  # Test configuration for a service (quick or detail)...
+    ServiceConfig:  # Configuration for a single service...
+    WatchConfig:  # Configuration for file watching...
+    TestStrategyConfig:  # Global test strategy configuration...
+    TestQLConfig:  # TestQL-specific configuration...
+    VisualDiffConfig:  # Configuration for visual DOM diff after file changes...
+    WebConfig:  # Configuration for sending events to wupbro backend...
+    PlanfileConfig:  # Configuration for creating planfile tickets from WUP failure...
+    AnomalyDetectionConfig:  # Configuration for fast anomaly detection without Playwright...
+    SemcodToolConfig:  # Optional Semcod ecosystem tool attached to WUP monitoring au...
+    SemcodToolsConfig:  # Optional Semcod ecosystem integrations (deta/regres/regix)...
+    ProjectConfig:  # Project metadata...
+    WupConfig:  # Main WUP configuration...
   wup/models/target.py:
     e: ServiceTestTarget
     ServiceTestTarget:  # A service and the endpoints that should be exercised for it...
@@ -824,20 +885,5 @@ O...
   testql-scenarios/cli-wup.testql.toon.yaml:
   testql-scenarios/generated-from-pytests.testql.toon.yaml:
   testql-scenarios/generated-cli-tests.testql.toon.yaml:
+  Makefile:
   pyproject.toml:
-  wup/models/config.py:
-    e: NotifyConfig,ServiceTestConfig,ServiceConfig,WatchConfig,TestStrategyConfig,TestQLConfig,VisualDiffConfig,WebConfig,PlanfileConfig,AnomalyDetectionConfig,SemcodToolConfig,SemcodToolsConfig,ProjectConfig,WupConfig
-    NotifyConfig:  # Notification configuration for a service...
-    ServiceTestConfig:  # Test configuration for a service (quick or detail)...
-    ServiceConfig:  # Configuration for a single service...
-    WatchConfig:  # Configuration for file watching...
-    TestStrategyConfig:  # Global test strategy configuration...
-    TestQLConfig:  # TestQL-specific configuration...
-    VisualDiffConfig:  # Configuration for visual DOM diff after file changes...
-    WebConfig:  # Configuration for sending events to wupbro backend...
-    PlanfileConfig:  # Configuration for creating planfile tickets from WUP failure...
-    AnomalyDetectionConfig:  # Configuration for fast anomaly detection without Playwright...
-    SemcodToolConfig:  # Optional Semcod ecosystem tool attached to WUP monitoring au...
-    SemcodToolsConfig:  # Optional Semcod ecosystem integrations (deta/regres/regix)...
-    ProjectConfig:  # Project metadata...
-    WupConfig:  # Main WUP configuration...

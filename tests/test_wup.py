@@ -23,6 +23,7 @@ from wup.models.config import (
     ProjectConfig,
     PlanfileConfig,
     VisualDiffConfig,
+    AnomalyDetectionConfig,
 )
 from wup.testql_watcher import TestQLWatcher
 from wup.visual_diff import (
@@ -1313,6 +1314,43 @@ class TestConfigLoader:
             assert loaded_config.project.name == "test-project"
             assert len(loaded_config.services) == 1
             assert loaded_config.services[0].name == "users"
+
+    def test_save_and_load_preserves_every_non_default_section(self):
+        """Fields added to the dataclass schema must not disappear on save."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = WupConfig(
+                project=ProjectConfig(name="roundtrip", description="all fields"),
+                watch=WatchConfig(
+                    paths=["src/**"],
+                    exclude_patterns=["dist/**"],
+                    file_types=[".py", ".ts"],
+                ),
+                services=[ServiceConfig(
+                    name="worker",
+                    type="shell",
+                    cpu_throttle=0.25,
+                    notify=NotifyConfig(type="http", url="http://notify.invalid"),
+                )],
+                testql=TestQLConfig(quick_smoke_only=True),
+                visual_diff=VisualDiffConfig(run_on_periodic_probe=True),
+                anomaly_detection=AnomalyDetectionConfig(
+                    enabled=False,
+                    methods=["ast"],
+                    strict_mode=True,
+                    watch_paths=["schemas/**"],
+                    severity_threshold="high",
+                ),
+            )
+            config_path = Path(tmpdir) / "wup.yaml"
+
+            save_config(config, config_path)
+            loaded = load_config(Path(tmpdir), config_path)
+
+            assert loaded.watch.file_types == [".py", ".ts"]
+            assert loaded.services[0].type == "shell"
+            assert loaded.testql.quick_smoke_only is True
+            assert loaded.visual_diff.run_on_periodic_probe is True
+            assert loaded.anomaly_detection == config.anomaly_detection
     
     def test_load_config_from_yaml(self):
         """Test loading configuration from YAML file."""

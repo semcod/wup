@@ -4,7 +4,7 @@ from pathlib import Path
 
 from wup.cli_scanner import CLIScanner
 from wup.cli_config_generator import CLIConfigGenerator
-from wup.config import save_config, load_config
+from wup.config import load_config
 
 
 def test_cli_scanner_detects_from_pyproject_toml():
