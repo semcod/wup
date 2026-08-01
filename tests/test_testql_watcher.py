@@ -253,8 +253,11 @@ def test_planfile_reporter_creates_deduped_ticket(monkeypatch):
         assert calls[0][:3] == ["planfile", "ticket", "create"]
         assert "--label" in calls[0]
         assert "llm-ready" in calls[0]
-        assert "--files" in calls[0]
-        assert ".wup/tracks/one.json" in calls[0]
+        # Runtime evidence remains linked in the description but must not
+        # become Koru's source-edit scope in Planfile ``files``.
+        assert "--files" not in calls[0]
+        description = calls[0][calls[0].index("--description") + 1]
+        assert ".wup/tracks/one.json" in description
 
 
 def test_planfile_reporter_clears_dedupe_after_recovery(monkeypatch):
@@ -307,7 +310,7 @@ def test_planfile_reporter_retries_without_files_for_old_planfile_cli(monkeypatc
             status="failed",
             stage="detail",
             message="detail failed",
-            track_file=".wup/tracks/firmware_detail.json",
+            track_file="src/firmware.py",
         )
 
         assert ticket_id == "PLF-998"

@@ -50,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   roadmap toward a language-agnostic, AI-open design.
 
 ### Fixed
+- Planfile ticket IDs now support project-specific prefixes such as
+  `STARTER-074`, and WUP runtime diagnostics are linked in ticket descriptions
+  without becoming Koru's source-file edit scope.
 - **`deps.json` now works for JS/TS projects.** `_scan_js_endpoints` used
   `rglob("*.{js,ts,jsx,tsx}")`, which pathlib never brace-expands, so it matched
   zero files; it now iterates real extensions. Framework detection is
@@ -94,6 +97,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `collect_status_snapshot` (status_data), `_create_ticket` (planfile_reporter),
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
+
+## [0.2.81] - 2026-08-01
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+
+### Test
+- Update tests/test_planfile_reporter_dedupe.py
+- Update tests/test_testql_watcher.py
+
+### Other
+- Update wup/planfile_reporter.py
 
 ## [0.2.80] - 2026-08-01
 

@@ -137,9 +137,22 @@ class PlanfileReporter:
         ]
         for label in self.config.labels:
             cmd.extend(["--label", label])
-        if track_file:
+        # Koru treats Planfile ``files`` as the agent's allowed edit scope.
+        # WUP runtime evidence under .wup/.intent is not source code and must
+        # remain a description link rather than constraining the agent to edit
+        # diagnostics.json or a generated track file.
+        if track_file and not self._is_runtime_artifact(track_file):
             cmd.extend(["--files", track_file])
         return cmd
+
+    def _is_runtime_artifact(self, track_file: str) -> bool:
+        path = Path(track_file)
+        if path.is_absolute():
+            try:
+                path = path.resolve().relative_to(self.project_root.resolve())
+            except ValueError:
+                return False
+        return bool(path.parts and path.parts[0] in {".wup", ".intent"})
 
     def _run_planfile(self, cmd: list[str]) -> Optional[tuple[int, str, str]]:
         """Run a planfile command; return (returncode, stdout, stderr) or None on OS/timeout error."""
@@ -243,7 +256,11 @@ class PlanfileReporter:
 
     @staticmethod
     def _parse_ticket_id(text: str) -> Optional[str]:
-        match = re.search(r"\bPLF-\d+\b", text)
+        # Planfile projects choose their own ticket prefix (for example PLF,
+        # STARTER or API). Do not hard-code the default prefix: otherwise the
+        # ticket is created successfully but WUP persists it as ``unknown`` and
+        # can no longer inspect its lifecycle for recurrence deduplication.
+        match = re.search(r"\b[A-Z][A-Z0-9_]*-\d+\b", text, re.IGNORECASE)
         return match.group(0) if match else None
 
     @staticmethod

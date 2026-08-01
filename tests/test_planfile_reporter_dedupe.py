@@ -35,6 +35,13 @@ def _seed_dedupe(rep: PlanfileReporter, fingerprint_kwargs: dict, ticket_id: str
 FAIL = {"service": "svc", "status": "down", "stage": "probe", "message": "connection refused"}
 
 
+def test_parse_ticket_id_supports_project_specific_prefixes(tmp_path):
+    rep = _reporter(tmp_path)
+
+    assert rep._parse_ticket_id("✓ Created STARTER-074: intent failure") == "STARTER-074"
+    assert rep._parse_ticket_id("Created PLF-2") == "PLF-2"
+
+
 def test_open_ticket_still_mutes_recurrence(tmp_path, monkeypatch):
     rep = _reporter(tmp_path)
     _seed_dedupe(rep, FAIL, "PLF-1")
