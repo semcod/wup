@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 .idea/cli2wup.iml
+.intent/
 .idea/dsl2wup.iml
 .idea/mcp2wup.iml
 .idea/nlp2wup.iml

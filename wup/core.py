@@ -22,7 +22,7 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 from watchdog.observers.polling import PollingObserver
 
-from .config import load_config
+from .config import detect_watch_paths, load_config
 from .dependency_mapper import DependencyMapper
 from .models.config import WupConfig, ServiceConfig
 from .models.target import ServiceTestTarget
@@ -534,10 +534,12 @@ class WupWatcher:
         if self.config.watch.paths:
             # Use paths from config
             watch_paths = []
+            configured_paths = []
             for pattern in self.config.watch.paths:
                 # Handle exclusion patterns (starting with !)
                 if pattern.startswith("!"):
                     continue
+                configured_paths.append(pattern.rstrip("/"))
                 # Convert to absolute path
                 if "**" in pattern:
                     base_path = pattern.replace("**", "")
@@ -547,7 +549,32 @@ class WupWatcher:
                 abs_path = str(self.project_root / base_path)
                 if Path(abs_path).exists():
                     watch_paths.append(abs_path)
-            return watch_paths
+            if watch_paths:
+                return watch_paths
+
+            # Older auto-generated configs always contained app/src/routes.
+            # When the supplied root is a workspace and its projects live one
+            # level down, all three paths are invalid. Re-detect at runtime so
+            # ``wup watch .`` starts successfully without rewriting user config.
+            # Preserve the configuration error for deliberate custom paths;
+            # silently replacing a misspelled path with an unrelated detected
+            # directory would hide the user's mistake.
+            if set(configured_paths) != {"app/**", "src/**", "routes/**"}:
+                return []
+
+            detected_paths = []
+            for pattern in detect_watch_paths(self.project_root):
+                base_path = pattern.replace("**", "")
+                abs_path = self.project_root / base_path
+                if abs_path.exists():
+                    detected_paths.append(str(abs_path))
+            if detected_paths:
+                self.console.print(
+                    "[yellow]Configured watch paths do not exist; "
+                    "using auto-detected project subfolders.[/yellow]"
+                )
+                return detected_paths
+            return []
         
         # Fallback to default paths
         return [

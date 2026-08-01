@@ -58,6 +58,29 @@ def test_detect_watch_paths_backend_frontend(tmp_path: Path) -> None:
     assert "app/**" not in paths
 
 
+def test_detect_watch_paths_finds_source_dirs_in_project_subfolders(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "api" / "src").mkdir(parents=True)
+    (tmp_path / "worker" / "services").mkdir(parents=True)
+
+    assert detect_watch_paths(tmp_path) == ["api/src/**", "worker/services/**"]
+
+
+def test_detect_watch_paths_combines_root_and_project_subfolders(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+    (tmp_path / "worker" / "src").mkdir(parents=True)
+
+    assert detect_watch_paths(tmp_path) == ["src/**", "worker/src/**"]
+
+
+def test_detect_watch_paths_skips_nested_vendor_and_hidden_dirs(tmp_path: Path) -> None:
+    (tmp_path / "node_modules" / "package" / "src").mkdir(parents=True)
+    (tmp_path / ".cache" / "src").mkdir(parents=True)
+
+    assert detect_watch_paths(tmp_path) == ["app/**", "src/**", "routes/**"]
+
+
 def test_default_config_watches_only_real_dirs(tmp_path: Path) -> None:
     (tmp_path / "services").mkdir()
     cfg = get_default_config(tmp_path)
@@ -120,6 +143,25 @@ def test_resolve_paths_dedupes(tmp_path: Path) -> None:
 def test_prepare_observer_none_when_no_valid_paths(tmp_path: Path) -> None:
     watcher = _watcher(tmp_path, paths=["does-not-exist/**"])
     assert watcher.prepare_observer() is None
+
+
+def test_watcher_falls_back_to_source_dirs_in_project_subfolders(
+    tmp_path: Path,
+) -> None:
+    nested_src = tmp_path / "api" / "src"
+    nested_services = tmp_path / "worker" / "services"
+    nested_src.mkdir(parents=True)
+    nested_services.mkdir(parents=True)
+    watcher = _watcher(tmp_path, paths=["app/**", "src/**", "routes/**"])
+
+    assert watcher.build_watched_paths() == [str(nested_src), str(nested_services)]
+
+
+def test_watcher_does_not_replace_invalid_custom_paths(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+    watcher = _watcher(tmp_path, paths=["misspelled-source/**"])
+
+    assert watcher.build_watched_paths() == []
 
 
 def test_multi_watcher_returns_false_when_all_invalid(tmp_path: Path) -> None:

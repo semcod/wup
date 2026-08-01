@@ -19,6 +19,7 @@ from .models.target import ServiceTestTarget
 from wup.bus import bus
 from wup.testing.events.test_results import ScenarioFailed
 from .models.config import WupConfig, ServiceConfig, ServiceTestConfig
+from .intent_monitor import IntentAuditResult, Todo2CodeIntentMonitor
 from .visual_diff import VisualDiffer
 from .web_client import WebClient
 
@@ -127,6 +128,27 @@ class TestQLWatcher(WupWatcher):
 
         self._watch_work_lock = threading.Lock()
         self._normalize_fleet_health_entry()
+        self.intent_monitor = Todo2CodeIntentMonitor(
+            self.project_root,
+            self.config.intent_monitoring,
+            self._record_intent_audit,
+            console=self.console,
+        )
+
+    def _record_intent_audit(self, result: IntentAuditResult) -> None:
+        """Project todo2code diagnostics into the normal WUP health stream."""
+        self._record_health_transition(
+            service=f"{self.config.project.name}:intent",
+            status=result.status,
+            stage="intent",
+            message=result.message,
+            track_file=result.diagnostics_path,
+        )
+
+    def on_file_change(self, file_path: str) -> None:
+        """Schedule an intent audit as well as the normal service checks."""
+        self.intent_monitor.request_run()
+        super().on_file_change(file_path)
 
     def _normalize_fleet_health_entry(self) -> None:
         """Upgrade stale fleet ``down`` to ``degraded`` when health_scenario is non-strict."""
@@ -1011,3 +1033,4 @@ class TestQLWatcher(WupWatcher):
     def start_background_tasks(self) -> None:
         """Start the periodic TestQL/HTTP live-probe thread before watching."""
         self._start_periodic_probe_thread()
+        self.intent_monitor.start()

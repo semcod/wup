@@ -113,6 +113,13 @@ wup testql-endpoints /path/to/scenarios --output testql-deps.json
 Pass several project roots to watch them all at once in a single process. Each
 project keeps its own `wup.yaml`, dependency map, file observer and test queue.
 
+When the current directory is a workspace containing projects in immediate
+subfolders, plain `wup watch .` auto-detects their common source directories,
+for example `api/src`, `worker/services` and `frontend/app`. This also repairs
+the runtime behaviour of older auto-generated configs that still point only to
+missing root-level `app`, `src` and `routes` directories. The config file is not
+rewritten by this fallback.
+
 ```bash
 # Watch several projects at the same time
 wup watch ./service-a ./service-b ./service-c
@@ -131,6 +138,50 @@ path is resolved per project, so each project uses its own `deps.json`.
 
 > The live `--dashboard` and single `--config` options apply to single-project
 > runs only; when watching multiple projects each uses its own `wup.yaml`.
+
+### Continuous Intent Monitoring with todo2code
+
+WUP can run todo2code on startup, periodically and after debounced source-file
+changes. Diagnostics are projected into the regular service-health stream as
+`<project>:intent`: blocking findings produce `down`, review-required findings
+produce `degraded`, and a clean audit produces `up`.
+
+The integration is opt-in and deterministic by default, so merely installing
+WUP never starts paid LLM requests:
+
+```yaml
+intent_monitoring:
+  enabled: true
+  runner: cli
+  command:
+    - node
+    - /path/to/todo2code/dist/src/cli.js
+  interval_s: 300
+  debounce_s: 10
+  run_on_start: true
+  run_on_change: true
+  mode: deterministic
+  task_file: TASK.md
+  todo_file: TODO.md
+  changelog_file: CHANGELOG.md
+  docs:
+    - README.md
+    - docs/**/*.md
+  output_dir: .wup/intent
+  fail_severities:
+    - blocking
+    - review_required
+```
+
+Set `runner: python` to use the dependency-free `todo2code-sdk` bridge. Install
+it from todo2code's `sdk/python` directory and set `cli_path` to the built
+`dist/src/cli.js`. The Python package still delegates semantic processing to
+the canonical Node/TypeScript runtime.
+
+`mode: prefer-llm` or `mode: require-llm` enables LLM enrichment for NL and
+TODO/CHANGELOG. Documentation and final-summary LLM calls remain separately
+controlled by `docs_llm` and `summary_llm`. Use these modes deliberately: an
+audit may run after every debounce interval and therefore incur provider cost.
 
 ### Initialize Configuration
 
@@ -250,6 +301,8 @@ The generated `wup.yaml` includes:
 - **Metadata header**: Version, generation date, documentation links
 - **Dependencies info**: WUP version and optional wupbro dashboard
 - **Quick start guide**: Common commands to get started
+- **Detected watch paths**: Existing common source directories at the project
+  root and one level below it
 
 Example `wup.yaml`:
 

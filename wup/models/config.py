@@ -185,6 +185,33 @@ class SemcodToolsConfig:
 
 
 @dataclass
+class IntentMonitoringConfig:
+    """Continuous Intent-vs-Reality checks powered by todo2code."""
+
+    enabled: bool = False
+    runner: str = "cli"  # cli or python
+    command: List[str] = field(default_factory=lambda: ["t2c"])
+    cli_path: str = ""  # optional dist/src/cli.js path for the Python bridge
+    interval_s: int = 300
+    debounce_s: int = 10
+    timeout_s: int = 300
+    run_on_start: bool = True
+    run_on_change: bool = True
+    mode: str = "deterministic"  # deterministic, prefer-llm, require-llm
+    docs_llm: bool = False
+    summary_llm: bool = False
+    task_file: str = ""
+    todo_file: str = "TODO.md"
+    changelog_file: str = "CHANGELOG.md"
+    docs: List[str] = field(default_factory=lambda: ["README.md", "docs/**/*.md"])
+    output_dir: str = ".wup/intent"
+    fail_severities: List[str] = field(
+        default_factory=lambda: ["blocking", "review_required"]
+    )
+    fail_codes: List[str] = field(default_factory=list)
+
+
+@dataclass
 class ProjectConfig:
     """Project metadata."""
     name: str
@@ -204,3 +231,4 @@ class WupConfig:
     planfile: PlanfileConfig = field(default_factory=PlanfileConfig)
     anomaly_detection: AnomalyDetectionConfig = field(default_factory=AnomalyDetectionConfig)
     semcod_tools: SemcodToolsConfig = field(default_factory=SemcodToolsConfig)
+    intent_monitoring: IntentMonitoringConfig = field(default_factory=IntentMonitoringConfig)

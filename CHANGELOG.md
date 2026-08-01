@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Continuous todo2code Intent-vs-Reality monitoring.** The opt-in
+  `intent_monitoring` section runs deterministic or LLM-backed audits on
+  startup, periodically and after debounced file changes. Findings enter the
+  normal WUP health/event/Planfile stream as `<project>:intent`, and both the
+  todo2code CLI and its Python SDK bridge are supported.
 - **Pluggable endpoint-discovery adapters (`wup/discovery.py`).** `deps.json` is
   now built by per-ecosystem adapters — FastAPI, Flask, Django, NestJS, Express,
   Fastify, Hono, Go (gin/echo/net-http) and OpenAPI/Swagger — selected by repo
@@ -59,6 +64,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   always writing `app/src/routes`. This fixes `No valid paths to watch` on
   projects whose code lives under a different top-level folder (e.g. a monorepo
   module using `services/`).
+- `wup watch .` now detects source directories inside immediate project
+  subfolders (for example `api/src` and `worker/services`) through
+  `wup/config.py::detect_watch_paths`. Existing older auto-generated configs
+  whose `app/src/routes` paths do not exist fall back through
+  `wup/core.py::WupWatcher.build_watched_paths` instead of exiting with
+  `No valid paths to watch`; regression coverage lives in
+  `tests/test_multi_project.py`.
 
 - **Simultaneous multi-project watching.** `wup watch` now accepts several
   project directories and watches them at once in a single process
@@ -1554,4 +1566,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update .idea/.gitignore
 - Update drug/__init__.py
 - Update drug/core.py
-

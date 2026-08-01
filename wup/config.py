@@ -13,6 +13,7 @@ import yaml
 
 from .models.config import (
     AnomalyDetectionConfig,
+    IntentMonitoringConfig,
     NotifyConfig,
     PlanfileConfig,
     ProjectConfig,
@@ -438,6 +439,52 @@ def _parse_semcod_tools_config(raw: dict) -> SemcodToolsConfig:
     )
 
 
+def _parse_intent_monitoring_config(raw: dict) -> IntentMonitoringConfig:
+    intent_raw = raw.get("intent_monitoring", {})
+    if not isinstance(intent_raw, dict):
+        return IntentMonitoringConfig()
+
+    defaults = IntentMonitoringConfig()
+    command_raw = intent_raw.get("command", defaults.command)
+    if isinstance(command_raw, str):
+        command = [command_raw]
+    elif isinstance(command_raw, list):
+        command = [str(part) for part in command_raw if str(part)]
+    else:
+        command = defaults.command
+
+    docs_raw = intent_raw.get("docs", defaults.docs)
+    severities_raw = intent_raw.get("fail_severities", defaults.fail_severities)
+    codes_raw = intent_raw.get("fail_codes", defaults.fail_codes)
+    return IntentMonitoringConfig(
+        enabled=bool(intent_raw.get("enabled", defaults.enabled)),
+        runner=str(intent_raw.get("runner", defaults.runner)),
+        command=command or defaults.command,
+        cli_path=str(intent_raw.get("cli_path", defaults.cli_path)),
+        interval_s=max(0, int(intent_raw.get("interval_s", defaults.interval_s))),
+        debounce_s=max(0, int(intent_raw.get("debounce_s", defaults.debounce_s))),
+        timeout_s=max(1, int(intent_raw.get("timeout_s", defaults.timeout_s))),
+        run_on_start=bool(intent_raw.get("run_on_start", defaults.run_on_start)),
+        run_on_change=bool(intent_raw.get("run_on_change", defaults.run_on_change)),
+        mode=str(intent_raw.get("mode", defaults.mode)),
+        docs_llm=bool(intent_raw.get("docs_llm", defaults.docs_llm)),
+        summary_llm=bool(intent_raw.get("summary_llm", defaults.summary_llm)),
+        task_file=str(intent_raw.get("task_file", defaults.task_file)),
+        todo_file=str(intent_raw.get("todo_file", defaults.todo_file)),
+        changelog_file=str(intent_raw.get("changelog_file", defaults.changelog_file)),
+        docs=[str(item) for item in docs_raw]
+        if isinstance(docs_raw, list)
+        else defaults.docs,
+        output_dir=str(intent_raw.get("output_dir", defaults.output_dir)),
+        fail_severities=[str(item) for item in severities_raw]
+        if isinstance(severities_raw, list)
+        else defaults.fail_severities,
+        fail_codes=[str(item) for item in codes_raw]
+        if isinstance(codes_raw, list)
+        else defaults.fail_codes,
+    )
+
+
 def validate_config(
     raw: dict, *, environ: Mapping[str, str] | None = None
 ) -> WupConfig:
@@ -465,6 +512,7 @@ def validate_config(
         planfile=_parse_planfile_config(raw, effective_environ),
         anomaly_detection=_parse_anomaly_detection_config(raw),
         semcod_tools=_parse_semcod_tools_config(raw),
+        intent_monitoring=_parse_intent_monitoring_config(raw),
     )
 
 
@@ -485,18 +533,52 @@ _DEFAULT_SOURCE_DIRS = [
     "cmd",
 ]
 
+_WATCH_DISCOVERY_SKIP_DIRS = {
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    "__pycache__",
+    "dist",
+    "build",
+}
+
 
 def detect_watch_paths(project_root: Path) -> list:
     """
     Pick watch-path globs for a project by probing for common source directories.
 
     Returns ``["<dir>/**", ...]`` for every well-known source directory that
-    exists under ``project_root``. Falls back to the classic app/src/routes
-    guess only when none are found, so a brand-new project still gets a config.
+    exists directly under ``project_root``. For a directory containing several
+    projects, the same probe is also performed one level down (for example,
+    ``api/src/**`` and ``worker/app/**``). Hidden and vendor/build directories
+    are skipped. Falls back to the classic app/src/routes guess only when none
+    are found, so a brand-new project still gets a config.
     """
     found = [
         f"{name}/**" for name in _DEFAULT_SOURCE_DIRS if (project_root / name).is_dir()
     ]
+
+    # A common workspace layout is ``root/project/src``.  WUP used to only
+    # inspect ``root/src``, producing an unusable app/src/routes config for such
+    # workspaces. Limit discovery to one project level so we do not accidentally
+    # select vendored source trees deep inside dependencies.
+    try:
+        children = sorted(project_root.iterdir(), key=lambda path: path.name)
+    except OSError:
+        children = []
+
+    for child in children:
+        if (
+            not child.is_dir()
+            or child.name.startswith(".")
+            or child.name in _WATCH_DISCOVERY_SKIP_DIRS
+        ):
+            continue
+        for name in _DEFAULT_SOURCE_DIRS:
+            if (child / name).is_dir():
+                found.append(f"{child.name}/{name}/**")
+
     return found or ["app/**", "src/**", "routes/**"]
 
 
