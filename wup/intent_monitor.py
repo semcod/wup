@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import threading
@@ -13,6 +14,7 @@ from typing import Callable, Dict, List, Optional
 
 from rich.console import Console
 
+from .config import _read_dotenv
 from .models.config import IntentMonitoringConfig
 
 
@@ -145,6 +147,7 @@ class Todo2CodeIntentMonitor:
             text=True,
             timeout=self.config.timeout_s,
             check=False,
+            env=self._subprocess_environment(),
         )
         if completed.returncode != 0:
             detail = completed.stderr.strip() or completed.stdout.strip()
@@ -155,6 +158,17 @@ class Todo2CodeIntentMonitor:
         if not isinstance(payload, dict):
             raise ValueError("todo2code pipeline returned non-object JSON")
         return payload
+
+    def _subprocess_environment(self) -> dict[str, str]:
+        """Build a project-local environment without mutating ``os.environ``.
+
+        This keeps concurrent project watchers isolated while allowing the
+        todo2code CLI to receive model selection and an external env-file path
+        from ``.wup.env``. Explicit process variables retain precedence.
+        """
+        environment = _read_dotenv(self.project_root)
+        environment.update(os.environ)
+        return environment
 
     def _resolved_cli_command(self) -> List[str]:
         """Resolve a one-part JavaScript launcher to a direct Node invocation.

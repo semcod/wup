@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import types
 from pathlib import Path
@@ -105,6 +106,59 @@ def test_cli_monitor_resolves_single_javascript_launcher(tmp_path: Path, monkeyp
 
     assert result.status == "up"
     assert observed["command"][:2] == ["node", str(cli_path.resolve())]
+
+
+def test_cli_monitor_passes_project_dotenv_without_global_leakage(
+    tmp_path: Path, monkeypatch
+) -> None:
+    path = _diagnostics(tmp_path, [])
+    (tmp_path / ".wup.env").write_text(
+        "T2C_ENV_FILE=/secure/todo2code.env\n"
+        "OPENROUTER_MODEL=mistralai/codestral-2508\n",
+        encoding="utf-8",
+    )
+    observed = {}
+
+    def fake_run(command, **kwargs):
+        observed["env"] = kwargs["env"]
+        return SimpleNamespace(
+            returncode=0,
+            stdout=json.dumps({"diagnosticsPath": str(path)}),
+            stderr="",
+        )
+
+    monkeypatch.delenv("T2C_ENV_FILE", raising=False)
+    monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
+    monkeypatch.setattr("wup.intent_monitor.subprocess.run", fake_run)
+    monitor = Todo2CodeIntentMonitor(
+        tmp_path,
+        IntentMonitoringConfig(enabled=True, command=["t2c"]),
+        lambda result: None,
+    )
+
+    result = monitor.run_once()
+
+    assert result.status == "up"
+    assert observed["env"]["T2C_ENV_FILE"] == "/secure/todo2code.env"
+    assert observed["env"]["OPENROUTER_MODEL"] == "mistralai/codestral-2508"
+    assert "T2C_ENV_FILE" not in os.environ
+    assert "OPENROUTER_MODEL" not in os.environ
+
+
+def test_cli_monitor_process_environment_overrides_project_dotenv(
+    tmp_path: Path, monkeypatch
+) -> None:
+    (tmp_path / ".wup.env").write_text(
+        "OPENROUTER_MODEL=mistralai/codestral-2508\n", encoding="utf-8"
+    )
+    monkeypatch.setenv("OPENROUTER_MODEL", "process/model")
+    monitor = Todo2CodeIntentMonitor(
+        tmp_path, IntentMonitoringConfig(enabled=True), lambda result: None
+    )
+
+    environment = monitor._subprocess_environment()
+
+    assert environment["OPENROUTER_MODEL"] == "process/model"
 
 
 def test_monitor_filters_codes_and_maps_review_required_to_degraded(tmp_path: Path) -> None:

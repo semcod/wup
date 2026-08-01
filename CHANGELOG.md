@@ -50,6 +50,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   roadmap toward a language-agnostic, AI-open design.
 
 ### Fixed
+- Project-local `.wup.env` values are now passed to the todo2code CLI without
+  mutating global process state, so concurrent watchers can use isolated LLM
+  model settings and external secret files safely.
 - Planfile ticket IDs now support project-specific prefixes such as
   `STARTER-074`, and WUP runtime diagnostics are linked in ticket descriptions
   without becoming Koru's source-file edit scope.
