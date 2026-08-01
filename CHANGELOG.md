@@ -101,6 +101,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
 
+## [0.2.82] - 2026-08-01
+
+### Docs
+- Update README.md
+
 ## [0.2.81] - 2026-08-01
 
 ### Docs
