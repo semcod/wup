@@ -597,3 +597,45 @@ def test_quick_interrupt_does_not_create_failure_track():
 
         tracks = list((root / ".wup" / "tracks").glob("*.json"))
         assert tracks == []
+
+
+def test_run_quick_test_accepts_parent_service_test_target():
+    """WupWatcher.process_test_queue_once calls run_quick_test(ServiceTestTarget)."""
+    from wup.models.target import ServiceTestTarget
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        root = Path(tmpdir)
+        scenario_dir = root / "testql-scenarios"
+        scenario_dir.mkdir(parents=True, exist_ok=True)
+        (scenario_dir / "backend-smoke.testql.toon.yaml").write_text("name: smoke\n", encoding="utf-8")
+
+        cfg = WupConfig(
+            project=ProjectConfig(name="demo"),
+            services=[ServiceConfig(name="backend", paths=["backend/**"])],
+            watch=WatchConfig(),
+            testql=TestQLConfig(scenario_dir="testql-scenarios"),
+        )
+        watcher = TestQLWatcher(
+            project_root=str(root),
+            deps_file=str(root / "deps.json"),
+            scenarios_dir="testql-scenarios",
+            track_dir=".wup/tracks",
+            config=cfg,
+        )
+
+        async def skip_probes(service, endpoints):
+            return True
+
+        watcher._run_live_http_probes = skip_probes  # type: ignore[method-assign]
+        watcher._get_quick_scenarios = lambda service: []  # type: ignore[method-assign]
+
+        async def no_scenarios(service, merged):
+            return True
+
+        watcher._run_quick_test_no_scenarios = no_scenarios  # type: ignore[method-assign]
+
+        target = ServiceTestTarget(service="backend", endpoints=["http://127.0.0.1/health"])
+        assert asyncio.run(watcher.run_quick_test(target)) is True
+
+        watcher.test_queue.append(("quick", "backend", ["http://127.0.0.1/health"]))
+        asyncio.run(watcher.process_test_queue_once())

@@ -24,6 +24,13 @@ from .visual_diff import VisualDiffer
 from .web_client import WebClient
 
 
+def _coerce_service_endpoints(service, endpoints: Optional[List[str]] = None):
+    """Accept ServiceTestTarget (parent queue) or legacy (service, endpoints)."""
+    if isinstance(service, ServiceTestTarget):
+        return service.service, list(service.endpoints)
+    return service, list(endpoints or [])
+
+
 class BrowserNotifier:
     """Send watcher events to browser-facing service and local file."""
 
@@ -841,7 +848,10 @@ class TestQLWatcher(WupWatcher):
                 return False
         return True
 
-    async def run_quick_test(self, service: str, endpoints: List[str]) -> bool:
+    async def run_quick_test(
+        self, service: str | ServiceTestTarget, endpoints: Optional[List[str]] = None
+    ) -> bool:
+        service, endpoints = _coerce_service_endpoints(service, endpoints)
         merged_endpoints = self._merge_endpoints(service, endpoints)
 
         if not await self._run_live_http_probes(service, merged_endpoints):
@@ -893,7 +903,10 @@ class TestQLWatcher(WupWatcher):
                     }
                 )
 
-    async def run_detail_test(self, service: str, endpoints: List[str]) -> Dict:
+    async def run_detail_test(
+        self, service: str | ServiceTestTarget, endpoints: Optional[List[str]] = None
+    ) -> Dict:
+        service, endpoints = _coerce_service_endpoints(service, endpoints)
         merged_endpoints = list(endpoints)
         for configured_endpoint in self._get_config_endpoints_for_service(service):
             if configured_endpoint not in merged_endpoints:
