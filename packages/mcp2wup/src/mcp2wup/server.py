@@ -2,8 +2,19 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Any
+
+_MUTATION_ENV = "WUP_MCP_ALLOW_MUTATION"
+
+
+def _require_mutation(action: str) -> None:
+    enabled = os.getenv(_MUTATION_ENV, "").strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled:
+        raise PermissionError(
+            f"MCP mutation '{action}' is disabled; start the server with {_MUTATION_ENV}=1"
+        )
 
 
 def _require_fastmcp():
@@ -63,10 +74,12 @@ class WupMCPServer:
 
         @self.app.tool()
         def wup_map(project: str = ".", out: str = "deps.json", framework: str = "auto") -> dict[str, Any]:
+            _require_mutation("wup_map")
             return dispatch(f"MAP {project} OUT {out} FRAMEWORK {framework}").to_dict()
 
         @self.app.tool()
         def wup_sync(project: str = ".", file: str = "wup.yaml", merge_endpoints: bool = False) -> dict[str, Any]:
+            _require_mutation("wup_sync")
             line = f"SYNC {project} FILE {file}"
             if merge_endpoints:
                 line += " MERGE"
@@ -79,6 +92,7 @@ class WupMCPServer:
             out: str = "wup.yaml",
             template: str = "",
         ) -> dict[str, Any]:
+            _require_mutation("wup_generate")
             line = f'GENERATE "{hint}" OUT {out} PROJECT {project}'
             if template:
                 line += f" TEMPLATE {template}"
@@ -90,6 +104,7 @@ class WupMCPServer:
             out: str = "testql-deps.json",
             testql_bin: str = "testql",
         ) -> dict[str, Any]:
+            _require_mutation("wup_endpoints")
             return dispatch(f"ENDPOINTS {scenarios_dir} OUT {out} TESTQL_BIN {testql_bin}").to_dict()
 
         @self.app.tool()
@@ -99,6 +114,7 @@ class WupMCPServer:
             scenarios: str = "testql-scenarios",
             merge: bool = False,
         ) -> dict[str, Any]:
+            _require_mutation("wup_init_cli")
             line = f"INIT_CLI {project} OUT {out} SCENARIOS {scenarios}"
             if merge:
                 line += " MERGE"
@@ -106,15 +122,18 @@ class WupMCPServer:
 
         @self.app.tool()
         def wup_run_dsl(script: str, default_file: str = "") -> list[dict[str, Any]]:
+            _require_mutation("wup_run_dsl")
             results = execute_dsl(script, default_file=default_file or None)
             return [r.to_dict() for r in results]
 
         @self.app.tool()
         def wup_run_command(command: str, default_file: str = "") -> dict[str, Any]:
+            _require_mutation("wup_run_command")
             return execute_dsl_line(command, default_file=default_file or None).to_dict()
 
         @self.app.tool()
         def wup_run_command_pb(envelope_bytes: bytes, default_file: str = "") -> bytes:
+            _require_mutation("wup_run_command_pb")
             return encode_result_protobuf(dispatch(envelope_bytes, default_file=default_file or None))
 
         @self.app.tool()
@@ -127,10 +146,12 @@ class WupMCPServer:
 
         @self.app.tool()
         def wup_patch(uri: str, content: str, file: str = "", project: str = ".") -> dict[str, Any]:
+            _require_mutation("wup_patch")
             return patch_uri(uri, content=content, file=file or None, project=project).to_dict()
 
         @self.app.tool()
         def wup_apply_nl(prompt: str, file: str = "", project: str = ".") -> dict[str, Any]:
+            _require_mutation("wup_apply_nl")
             return apply_nl(prompt, file=file or None, project=project).to_dict()
 
     def run(self) -> None:
