@@ -596,6 +596,84 @@ def _build_status_panel(
 
 
 @app.command()
+def health(
+    config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
+    since: Optional[int] = typer.Option(None, "--since", help="Only show transitions newer than this unix timestamp"),
+    failed_only: bool = typer.Option(False, "--failed-only", help="Only services currently down/degraded"),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="No output; exit code only"),
+):
+    """Runtime service health snapshot (reads the shared watcher state).
+
+    Designed for LLM agents and scripts: stable JSON on stdout, exit code
+    reflects health (0 = all up, 1 = degraded, 2 = something down,
+    3 = no watcher state yet).
+    """
+    import json as json_mod
+
+    project_path = Path(".").resolve()
+    from .paths import health_events_path as _health_events_path
+    from .paths import health_state_path as _health_state_path
+
+    state = {}
+    state_path = _health_state_path(project_path)
+    if state_path.exists():
+        try:
+            state = json_mod.loads(state_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            state = {}
+
+    if since is not None:
+        events_path = _health_events_path(project_path)
+        recent = []
+        if events_path.exists():
+            for line in reversed(events_path.read_text(encoding="utf-8").splitlines()):
+                if not line.strip():
+                    continue
+                try:
+                    record = json_mod.loads(line)
+                except ValueError:
+                    continue
+                if int(record.get("timestamp", 0)) < since:
+                    break
+                recent.append(record)
+        payload = {
+            "project": project_path.name,
+            "since": since,
+            "transitions": list(reversed(recent)),
+            "state": state,
+        }
+    else:
+        payload = {
+            "project": project_path.name,
+            "state": state,
+        }
+
+    if failed_only:
+        payload["state"] = {
+            name: entry
+            for name, entry in payload["state"].items()
+            if str(entry.get("status", "")).lower() in ("down", "degraded")
+        }
+
+    statuses = {
+        str(entry.get("status", "")).lower()
+        for entry in payload["state"].values()
+    }
+    if "down" in statuses:
+        code = 2
+    elif "degraded" in statuses:
+        code = 1
+    elif not payload["state"]:
+        code = 3
+    else:
+        code = 0
+
+    if not quiet:
+        print(json_mod.dumps(payload, ensure_ascii=False, indent=2))
+    raise typer.Exit(code)
+
+
+@app.command()
 def status(
     deps_file: str = typer.Option("deps.json", "--deps", "-d", help="Path to dependency map file"),
     config: Optional[str] = typer.Option(None, "--config", "-C", help="Path to wup.yaml config file"),
