@@ -38,7 +38,10 @@ def test_discover_testql_endpoints(tmp_path: Path) -> None:
 def test_endpoints_via_bus(tmp_path: Path) -> None:
     scen = tmp_path / "scenarios"
     _write_scenario(scen)
-    result = dispatch(f"ENDPOINTS {scen} OUT {tmp_path / 'out.json'}")
+    result = dispatch(
+        f"ENDPOINTS {scen} OUT {tmp_path / 'out.json'}",
+        default_file=str(tmp_path / "app.doql.less"),
+    )
     assert result.ok
     assert (tmp_path / "out.json").exists()
 
@@ -50,7 +53,10 @@ def test_init_cli_via_bus(tmp_path: Path) -> None:
     )
     (tmp_path / "demo").mkdir()
     (tmp_path / "demo" / "__init__.py").write_text("def main(): pass\n", encoding="utf-8")
-    result = dispatch(f"INIT_CLI {tmp_path} OUT wup.yaml SCENARIOS testql-scenarios")
+    result = dispatch(
+        f"INIT_CLI {tmp_path} OUT wup.yaml SCENARIOS testql-scenarios",
+        default_file=str(tmp_path / "app.doql.less"),
+    )
     assert result.ok
     assert (tmp_path / "wup.yaml").exists()
     assert (tmp_path / "testql-scenarios").is_dir()

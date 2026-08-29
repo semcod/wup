@@ -29,6 +29,9 @@ def test_status_via_bus(tmp_path: Path) -> None:
         "project:\n  name: demo\nwatch:\n  paths: []\nservices:\n  - name: api\n    type: web\n",
         encoding="utf-8",
     )
-    result = dispatch(f"STATUS PROJECT {tmp_path} FILE wup.yaml")
+    result = dispatch(
+        f"STATUS PROJECT {tmp_path} FILE wup.yaml",
+        default_file=str(tmp_path / "app.doql.less"),
+    )
     assert result.ok
     assert result.data["project_name"] == "demo"

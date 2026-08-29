@@ -13,6 +13,8 @@ def test_dispatch_validate_shim(tmp_path: Path) -> None:
         "project:\n  name: demo\n  description: test\nwatch:\n  paths: []\nservices: []\n",
         encoding="utf-8",
     )
-    result = dispatch_validate(str(config), project=str(tmp_path))
+    result = dispatch_validate(
+        str(config), project=str(tmp_path), default_file=str(tmp_path / "app.doql.less")
+    )
     assert "ok" in result
     assert result["action"] == "validate"

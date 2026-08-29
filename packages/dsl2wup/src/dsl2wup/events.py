@@ -110,7 +110,9 @@ class EventStore:
 
 
 def default_event_store(manifest_file: str = "app.doql.less", *, prefer_pb: bool = True) -> EventStore:
-    stem = Path(manifest_file).stem.replace("app.", "")
+    manifest = Path(manifest_file)
+    stem = manifest.stem.replace("app.", "")
+    parent = manifest.parent
     if prefer_pb:
-        return EventStore(Path(f"app.{stem}.events.pb"), fmt="protobuf")
-    return EventStore(Path(f"app.{stem}.events.jsonl"), fmt="jsonl")
+        return EventStore(parent / f"app.{stem}.events.pb", fmt="protobuf")
+    return EventStore(parent / f"app.{stem}.events.jsonl", fmt="jsonl")

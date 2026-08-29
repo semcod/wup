@@ -18,8 +18,8 @@ from __future__ import annotations
 import statistics
 import time
 from collections import defaultdict, deque
-from dataclasses import dataclass, field
-from typing import Deque, Dict, List, Optional
+from dataclasses import dataclass
+from typing import Deque, Dict, Optional
 
 
 @dataclass
