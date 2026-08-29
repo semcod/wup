@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -641,21 +643,45 @@ class TestQLMonitor:
         *,
         max_count: int,
         timeout_s: float,
+        latency_tracker=None,
     ) -> Tuple[bool, str]:
-        """Probe up to max_count targets; return overall pass and failure reason."""
+        """Probe up to max_count targets concurrently; report pass and failures.
+
+        When *latency_tracker* is supplied, each probe timing is recorded and
+        latency regressions (vs the rolling baseline) are surfaced in the
+        failure reason so degradations are visible even when probes pass.
+        """
         if not probes:
             return True, ""
 
-        failed: List[str] = []
-        ordered = self._sort_probes_for_live(probes, service=service)
-        for probe in ordered[:max_count]:
+        ordered = self._sort_probes_for_live(probes, service=service)[:max_count]
+
+        def _run(probe: "ProbeTarget"):
+            started = time.monotonic()
             ok, detail = probe.probe(timeout_s=timeout_s)
-            if ok:
-                continue
-            failed.append(f"{probe.method} {probe.url} → {detail}")
+            return probe, ok, detail, (time.monotonic() - started) * 1000
+
+        from concurrent.futures import ThreadPoolExecutor
+
+        latency_warnings: List[str] = []
+        failed: List[str] = []
+        with ThreadPoolExecutor(max_workers=min(8, len(ordered) or 1)) as pool:
+            for probe, ok, detail, latency_ms in pool.map(_run, ordered):
+                if not ok:
+                    failed.append(f"{probe.method} {probe.url} → {detail}")
+                    continue
+                if latency_tracker is not None:
+                    anomaly = latency_tracker.record(probe.url, latency_ms)
+                    if anomaly is not None:
+                        latency_warnings.append(
+                            f"{probe.url} {anomaly.latency_ms:.0f} ms vs baseline "
+                            f"{anomaly.baseline_p95_ms:.0f} ms (×{anomaly.ratio:.1f})"
+                        )
 
         if failed:
             return False, "; ".join(failed[:3])
+        if latency_warnings:
+            return True, "; ".join(latency_warnings[:3])
         return True, "live probes passed"
 
     def suggested_endpoints_by_service(self) -> Dict[str, List[str]]:

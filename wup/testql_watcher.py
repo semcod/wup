@@ -663,8 +663,17 @@ class TestQLWatcher(WupWatcher):
             probes,
             max_count=self._quick_probe_limit(service),
             timeout_s=self._quick_probe_timeout(),
+            latency_tracker=self.latency_tracker,
         )
         if ok:
+            if reason and reason != "live probes passed":
+                self.console.print(f"[yellow]⏱ Latency anomaly: {reason}[/yellow]")
+                self._record_health_transition(
+                    service=service,
+                    status="degraded",
+                    stage="probe-latency",
+                    message=reason,
+                )
             return True
 
         self._record_health_transition(

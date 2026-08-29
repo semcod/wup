@@ -202,8 +202,10 @@ def test_file_change_uses_configured_services_when_inference_fails():
         tested_services = []
         watcher.schedule_quick_test = lambda s: tested_services.append(s)
         
-        # Trigger file change
+        # Trigger file change (event debounced per service)
         watcher.on_file_change(str(test_file))
-        
+        watcher._pending_event_times["my-service"] = 0  # force window elapsed
+        watcher._flush_pending_events()
+
         # Should test the configured service even though inference failed
         assert "my-service" in tested_services

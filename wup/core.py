@@ -92,6 +92,19 @@ class WupWatcher:
         self.dependency_mapper = DependencyMapper(str(self.project_root))
         self.changed_services: Set[str] = set()
         self.test_queue: deque = deque()
+
+        # Event-level debounce: a single editor save emits a cascade of
+        # watchdog events (modify + create + close). Aggregate per service
+        # within the debounce window instead of scheduling per event.
+        self._pending_events: Dict[str, List[str]] = defaultdict(list)
+        self._pending_event_times: Dict[str, float] = defaultdict(float)
+        from .realtime_anomalies import ChangeBurstDetector, LatencyTracker
+        self.burst_detector = ChangeBurstDetector()
+        self.latency_tracker = LatencyTracker()
+
+        # Offline drift detection (hash/AST) for changed files. Lazy import
+        # keeps CLI startup unchanged when anomaly scanning is not exercised.
+        self._anomaly_detector = None
         self.last_test_times: Dict[str, float] = defaultdict(float)
         self.console = Console()
         self.planfile_reporter = PlanfileReporter(
@@ -289,6 +302,44 @@ class WupWatcher:
         endpoints = self.dependency_mapper.get_endpoints_for_service(service)
         self.test_queue.appendleft(("detail", service, endpoints))
 
+    def _flush_pending_events(self) -> None:
+        """Schedule quick tests for services whose debounce window elapsed."""
+        now = time.time()
+        for service in list(self._pending_events):
+            last_seen = self._pending_event_times.get(service, 0)
+            if now - last_seen < self.debounce_seconds:
+                continue
+            files = self._pending_events.pop(service)
+            self._pending_event_times.pop(service, None)
+            if self.should_test(service):
+                self.console.print(
+                    f"[yellow]📝 {len(files)} change(s) debounced → Service: {service}[/yellow]"
+                )
+                self.schedule_quick_test(service)
+                self._scan_drift(files)
+
+    def _scan_drift(self, files: List[str]) -> None:
+        """Hash/AST drift scan for changed files; report high-severity findings."""
+        try:
+            if self._anomaly_detector is None:
+                from .anomaly_detector import AnomalyDetector
+                self._anomaly_detector = AnomalyDetector(self.project_root)
+            for file_path in files:
+                for result in self._anomaly_detector.scan_file(file_path):
+                    if result.severity in ("high", "critical"):
+                        self.console.print(
+                            f"[red]🚨 Drift [{result.detector}] {result.file_path}: "
+                            f"{result.message}[/red]"
+                        )
+                        self.planfile_reporter.report_failure(
+                            service="drift",
+                            status=result.severity,
+                            stage="anomaly",
+                            message=f"{result.file_path}: {result.message}",
+                        )
+        except Exception as exc:  # noqa: BLE001
+            self.console.print(f"[dim]Drift scan skipped: {exc}[/dim]")
+
     async def process_test_queue_once(self):
         if not self.test_queue or not await self.cpu_ok():
             return
@@ -319,6 +370,21 @@ class WupWatcher:
         except Exception:
             return True
     
+    def _probe_endpoint(self, endpoint: str):
+        """Synchronous HEAD probe; returns (endpoint, ok, status, latency_ms, err)."""
+        started = time.monotonic()
+        try:
+            req = urllib.request.Request(endpoint, method="HEAD")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                latency_ms = (time.monotonic() - started) * 1000
+                return endpoint, resp.status < 400, resp.status, latency_ms, None
+        except urllib.error.HTTPError as http_err:
+            latency_ms = (time.monotonic() - started) * 1000
+            return endpoint, False, http_err.code, latency_ms, None
+        except Exception as exc:  # noqa: BLE001
+            latency_ms = (time.monotonic() - started) * 1000
+            return endpoint, False, None, latency_ms, exc
+
     async def run_quick_test(self, target: ServiceTestTarget) -> bool:
         """
         Run a quick test for a service (smoke test).
@@ -336,18 +402,34 @@ class WupWatcher:
             self.console.print(f"[yellow]⚠ No endpoints configured for {service}, skipping quick test[/yellow]")
             return True
 
+        loop = asyncio.get_running_loop()
+        results = await asyncio.gather(*(
+            loop.run_in_executor(None, self._probe_endpoint, endpoint)
+            for endpoint in endpoints
+        ))
         passed = True
-        for endpoint in endpoints:
-            try:
-                req = urllib.request.Request(endpoint, method="HEAD")
-                with urllib.request.urlopen(req, timeout=10) as resp:
-                    if resp.status >= 400:
-                        self.console.print(f"[red]✗ {endpoint} → HTTP {resp.status}[/red]")
-                        passed = False
-                    else:
-                        self.console.print(f"[green]✓ {endpoint} → HTTP {resp.status}[/green]")
-            except Exception as e:
-                self.console.print(f"[red]✗ {endpoint} → {e}[/red]")
+        for endpoint, ok, status, latency_ms, err in results:
+            if ok:
+                self.console.print(f"[green]✓ {endpoint} → HTTP {status} ({latency_ms:.0f} ms)[/green]")
+                anomaly = self.latency_tracker.record(endpoint, latency_ms)
+                if anomaly is not None:
+                    self.console.print(
+                        f"[yellow]⏱ Latency anomaly: {endpoint} "
+                        f"{anomaly.latency_ms:.0f} ms vs baseline "
+                        f"{anomaly.baseline_p95_ms:.0f} ms "
+                        f"(×{anomaly.ratio:.1f})[/yellow]"
+                    )
+                    self.planfile_reporter.report_failure(
+                        service=service,
+                        status="degraded",
+                        stage="quick",
+                        message=f"Latency regression on {endpoint}: "
+                                f"{anomaly.latency_ms:.0f} ms vs baseline "
+                                f"{anomaly.baseline_p95_ms:.0f} ms",
+                    )
+            else:
+                detail = f"HTTP {status}" if status else str(err)
+                self.console.print(f"[red]✗ {endpoint} → {detail}[/red]")
                 passed = False
 
         if passed:
@@ -491,8 +573,8 @@ class WupWatcher:
         for svc in self.config.services:
             if self.should_test(svc.name):
                 self.changed_services.add(svc.name)
-                self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {svc.name}[/yellow]")
-                self.schedule_quick_test(svc.name)
+                self._pending_events[svc.name].append(str(rel_path))
+                self._pending_event_times[svc.name] = time.time()
 
     def on_file_change(self, file_path: str):
         """
@@ -519,10 +601,19 @@ class WupWatcher:
         
         if not service or not service_matches_config:
             self._notify_all_configured_services(rel_path)
-        elif service and self.should_test(service):
-            self.changed_services.add(service)
-            self.console.print(f"[yellow]📝 Changed: {rel_path} → Service: {service}[/yellow]")
-            self.schedule_quick_test(service)
+            return
+
+        burst = self.burst_detector.record(service)
+        if burst is not None:
+            self.console.print(
+                f"[red]⚡ Change burst: {burst.events} events for "
+                f"'{service}' in {burst.window_s:.0f}s — runaway generator "
+                "or sync loop?[/red]"
+            )
+
+        self.changed_services.add(service)
+        self._pending_events[service].append(str(rel_path))
+        self._pending_event_times[service] = time.time()
     
     def build_watched_paths(self) -> List[str]:
         """
@@ -676,6 +767,7 @@ class WupWatcher:
 
         try:
             while True:
+                self._flush_pending_events()
                 asyncio.run(self.process_test_queue_once())
                 time.sleep(1)
         except KeyboardInterrupt:

@@ -689,13 +689,15 @@ class TestIntegrationWorkflow:
                 "/api/users/create"
             ]
             
-            # Simulate file change
+            # Simulate file change (debounced per service)
             file_path = str(Path(tmpdir) / "app" / "users" / "routes.py")
             watcher.on_file_change(file_path)
-            
+            watcher._pending_event_times["users"] = 0  # force window elapsed
+            watcher._flush_pending_events()
+
             # Verify service was detected
             assert "users" in watcher.changed_services
-            
+
             # Verify test was scheduled
             assert len(watcher.test_queue) == 1
             test_type, service_name, endpoints = watcher.test_queue[0]
