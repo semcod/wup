@@ -648,6 +648,7 @@ def health(
             "state": state,
         }
 
+    has_state = bool(state)
     if failed_only:
         payload["state"] = {
             name: entry
@@ -663,7 +664,7 @@ def health(
         code = 2
     elif "degraded" in statuses:
         code = 1
-    elif not payload["state"]:
+    elif not has_state:
         code = 3
     else:
         code = 0

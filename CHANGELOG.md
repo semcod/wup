@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`wup health --failed-only` exit code.** When every service is up, the
+  filtered snapshot was empty and fell into the "no watcher state" branch,
+  returning exit 3 instead of 0. The `has_state` check now distinguishes
+  "filter removed everything" from "watcher never wrote state".
+
 ### Added
 - **Continuous todo2code Intent-vs-Reality monitoring.** The opt-in
   `intent_monitoring` section runs deterministic or LLM-backed audits on
