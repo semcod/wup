@@ -564,7 +564,7 @@ def test_quick_pass_actions_prefer_config_endpoints_for_visual_diff():
         assert differ.calls == [("backend", ["http://localhost:8101/api/v3/health"])]
 
 
-def test_quick_interrupt_does_not_create_failure_track():
+def test_quick_interrupt_keeps_watcher_active_without_failure_track():
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
         scenario_dir = root / "testql-scenarios"
@@ -592,8 +592,7 @@ def test_quick_interrupt_does_not_create_failure_track():
             stderr="",
         )
 
-        with pytest.raises(KeyboardInterrupt):
-            asyncio.run(watcher.run_quick_test("connect-config", []))
+        assert asyncio.run(watcher.run_quick_test("connect-config", [])) is False
 
         tracks = list((root / ".wup" / "tracks").glob("*.json"))
         assert tracks == []

@@ -579,7 +579,11 @@ class TestQLWatcher(WupWatcher):
         if result.returncode == 0:
             return True
         if self._is_interrupted_result(result):
-            raise KeyboardInterrupt
+            self.console.print(
+                f"[yellow]Quick TestQL interrupted for {service} "
+                f"({scenario.name}, rc={result.returncode}); watcher remains active[/yellow]"
+            )
+            return False
 
         reason = self._summarize_testql_failure(result)
         track_path = self._write_track(service=service, stage="quick",
