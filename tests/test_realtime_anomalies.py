@@ -15,7 +15,12 @@ class TestLatencyTracker:
             assert tracker.record("/ep", 10.0) is None
 
     def test_flags_spike_over_baseline(self):
-        tracker = LatencyTracker(min_samples=5, ratio_threshold=3.0, absolute_floor_ms=50.0)
+        tracker = LatencyTracker(
+            min_samples=5,
+            ratio_threshold=3.0,
+            absolute_floor_ms=50.0,
+            confirm_samples=1,
+        )
         for _ in range(5):
             tracker.record("/ep", 20.0)
         anomaly = tracker.record("/ep", 200.0)
@@ -29,6 +34,81 @@ class TestLatencyTracker:
             tracker.record("/ep", 5.0)
         # ratio is huge but latency (15ms) is under the 50ms floor
         assert tracker.record("/ep", 15.0) is None
+
+    def test_no_ratio_flag_for_trivial_baseline_blip(self):
+        # Dev-host reality: idle endpoint at ~1 ms, ordinary load blip at
+        # 74 ms. Ratio is meaningless there and must not flag (PLF-2229).
+        tracker = LatencyTracker(min_samples=5, confirm_samples=1)
+        for _ in range(5):
+            tracker.record("/ep", 1.0)
+        assert tracker.record("/ep", 74.0) is None
+        assert tracker.record("/ep", 120.0) is None
+
+    def test_trivial_baseline_flags_on_sustained_absolute_slowness(self):
+        tracker = LatencyTracker(
+            min_samples=5,
+            baseline_floor_ms=10.0,
+            slow_absolute_ms=300.0,
+            confirm_samples=3,
+        )
+        for _ in range(5):
+            tracker.record("/ep", 1.0)
+        assert tracker.record("/ep", 800.0) is None
+        assert tracker.record("/ep", 800.0) is None
+        anomaly = tracker.record("/ep", 800.0)
+        assert anomaly is not None
+        assert anomaly.latency_ms == 800.0
+
+    def test_sustained_blip_below_slow_absolute_never_flags(self):
+        tracker = LatencyTracker(
+            min_samples=5,
+            baseline_floor_ms=10.0,
+            slow_absolute_ms=300.0,
+            confirm_samples=3,
+        )
+        for _ in range(5):
+            tracker.record("/ep", 2.0)
+        for _ in range(10):
+            assert tracker.record("/ep", 120.0) is None
+
+    def test_ratio_anomaly_needs_consecutive_confirmation(self):
+        tracker = LatencyTracker(
+            min_samples=5,
+            ratio_threshold=3.0,
+            absolute_floor_ms=50.0,
+            confirm_samples=3,
+        )
+        for _ in range(5):
+            tracker.record("/ep", 20.0)
+        assert tracker.record("/ep", 200.0) is None
+        # single fast sample resets the streak
+        assert tracker.record("/ep", 20.0) is None
+        assert tracker.record("/ep", 200.0) is None
+        assert tracker.record("/ep", 200.0) is None
+        anomaly = tracker.record("/ep", 200.0)
+        assert anomaly is not None
+        assert anomaly.ratio >= 3.0
+
+    def test_reports_once_per_episode_then_rearms(self):
+        tracker = LatencyTracker(
+            min_samples=5,
+            ratio_threshold=3.0,
+            absolute_floor_ms=50.0,
+            confirm_samples=2,
+        )
+        for _ in range(5):
+            tracker.record("/ep", 20.0)
+        assert tracker.record("/ep", 200.0) is None
+        first = tracker.record("/ep", 220.0)
+        assert first is not None
+        # sustained slowness: no further reports until latency recovers
+        assert tracker.record("/ep", 240.0) is None
+        assert tracker.record("/ep", 260.0) is None
+        # recovery re-arms the tracker
+        assert tracker.record("/ep", 20.0) is None
+        assert tracker.record("/ep", 200.0) is None
+        second = tracker.record("/ep", 200.0)
+        assert second is not None
 
     def test_baseline_unlearned_until_min_samples(self):
         tracker = LatencyTracker(min_samples=5)

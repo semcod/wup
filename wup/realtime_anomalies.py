@@ -43,6 +43,18 @@ class LatencyTracker:
     Keeps the last ``window`` samples per endpoint. Until ``min_samples``
     samples exist the endpoint is considered unlearned (no anomalies), so the
     tracker never flags fresh endpoints on their first slow response.
+
+    Three gates keep the signal high on noisy dev hosts (containers, reverse
+    proxies, builds running next to the fleet), where 50-150 ms blips on a
+    ~1 ms idle endpoint are routine and a bare ratio test is pure noise
+    amplification (e.g. ×71.5 for 74 ms vs 1 ms):
+
+    - the ratio gate only applies when the baseline itself is meaningful
+      (``baseline_floor_ms``);
+    - endpoints with a trivial baseline still flag on sustained absolute
+      slowness (``slow_absolute_ms``);
+    - a violation needs ``confirm_samples`` consecutive offending samples and
+      is reported once per sustained episode, then re-arms.
     """
 
     def __init__(
@@ -51,33 +63,53 @@ class LatencyTracker:
         min_samples: int = 8,
         ratio_threshold: float = 3.0,
         absolute_floor_ms: float = 50.0,
+        baseline_floor_ms: float = 10.0,
+        slow_absolute_ms: float = 300.0,
+        confirm_samples: int = 3,
     ):
         self._samples: Dict[str, Deque[float]] = defaultdict(
             lambda: deque(maxlen=window)
         )
+        self._violation_streaks: Dict[str, int] = defaultdict(int)
         self.min_samples = min_samples
         self.ratio_threshold = ratio_threshold
         self.absolute_floor_ms = absolute_floor_ms
+        self.baseline_floor_ms = baseline_floor_ms
+        self.slow_absolute_ms = slow_absolute_ms
+        self.confirm_samples = max(1, confirm_samples)
+
+    def _violates(self, baseline: float, latency_ms: float) -> bool:
+        """True when a sample invalidates the established baseline."""
+        if latency_ms < self.absolute_floor_ms:
+            return False
+        if baseline < self.baseline_floor_ms:
+            # Trivial baseline: the ratio amplifies host noise, not
+            # regressions — require sustained absolute slowness instead.
+            return latency_ms >= self.slow_absolute_ms
+        return latency_ms / baseline >= self.ratio_threshold
 
     def record(self, endpoint: str, latency_ms: float) -> Optional[LatencyAnomaly]:
-        """Record a sample; return an anomaly when it violates the baseline."""
+        """Record a sample; return an anomaly when the baseline is violated.
+
+        A violation must persist for ``confirm_samples`` consecutive samples;
+        the anomaly is reported once per sustained episode and the tracker
+        re-arms after latency returns under the thresholds.
+        """
         samples = self._samples[endpoint]
         anomaly: Optional[LatencyAnomaly] = None
         if len(samples) >= self.min_samples:
             baseline = statistics.median(samples)
-            # Only meaningful when the baseline itself is fast enough that a
-            # ratio spike represents a real user-visible slowdown.
-            if (
-                baseline > 0
-                and latency_ms >= self.absolute_floor_ms
-                and latency_ms / baseline >= self.ratio_threshold
-            ):
-                anomaly = LatencyAnomaly(
-                    endpoint=endpoint,
-                    latency_ms=latency_ms,
-                    baseline_p95_ms=baseline,
-                    ratio=latency_ms / baseline,
-                )
+            if self._violates(baseline, latency_ms):
+                self._violation_streaks[endpoint] += 1
+                if self._violation_streaks[endpoint] == self.confirm_samples:
+                    anomaly = LatencyAnomaly(
+                        endpoint=endpoint,
+                        latency_ms=latency_ms,
+                        baseline_p95_ms=baseline,
+                        ratio=latency_ms / baseline,
+                    )
+            else:
+                self._violation_streaks[endpoint] = 0
         samples.append(latency_ms)
         return anomaly
 

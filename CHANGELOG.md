@@ -107,6 +107,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `_select_scenarios_for_service` (testql_watcher). Also removed a dead
   web-service branch in scenario selection.
 
+## [0.2.83] - 2026-09-11
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_realtime_anomalies.py
+
+### Other
+- Update .subactor/leases/ticket-001--local-ci-publication.json
+- Update VERSION
+- Update uv.lock
+- Update wup/realtime_anomalies.py
+
 ## [0.2.82] - 2026-08-01
 
 ### Docs

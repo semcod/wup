@@ -1,0 +1,17 @@
+{
+  "schema": "wellmanifest.worktrees/v5",
+  "kind": "layout-record",
+  "repository": "semcod/wup",
+  "repositoryName": "wup",
+  "ticket": "ticket-001",
+  "slug": "local-ci-publication",
+  "branch": "ticket/001-local-ci-publication",
+  "pathStyle": "posix",
+  "primaryCheckout": "/home/tom/github/semcod/wup",
+  "worktreesRoot": "/home/tom/github/semcod/wup/.worktrees",
+  "worktreePath": "/home/tom/github/semcod/wup/.worktrees/ticket-001--local-ci-publication",
+  "leaseRoot": "/home/tom/github/semcod/wup/.subactor/leases",
+  "leasePath": "/home/tom/github/semcod/wup/.subactor/leases/ticket-001--local-ci-publication.json",
+  "linkMode": "relative",
+  "minimumGitVersion": "2.51.0"
+}
