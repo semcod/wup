@@ -185,6 +185,7 @@ def _build_project_watcher(
     track_dir: str,
     quick_limit: int,
     probe_interval: Optional[int],
+    verbose: bool,
     print_header: bool = True,
 ) -> WupWatcher:
     """Prepare a single project: auto-config, load, refresh manifest, build watcher."""
@@ -202,6 +203,20 @@ def _build_project_watcher(
 
     if print_header:
         _print_watch_header(wup_config, cpu_throttle, debounce, cooldown, config_path)
+
+    if verbose:
+        console.print("[bold]Verbose configuration:[/bold]")
+        console.print(f"[dim]Project root: {project_path}[/dim]")
+        console.print(f"[dim]Watch paths: {', '.join(wup_config.watch.paths) or 'none'}[/dim]")
+        console.print(
+            f"[dim]Exclude patterns: {', '.join(wup_config.watch.exclude_patterns) or 'none'}[/dim]"
+        )
+        console.print(f"[dim]Scenarios: {effective_scenarios_dir}[/dim]")
+        console.print(f"[dim]Services: {len(wup_config.services)}[/dim]")
+        for service in wup_config.services:
+            paths = ", ".join(service.paths) or "none"
+            console.print(f"  [cyan]{service.name}[/cyan] [{service.type}] paths: {paths}")
+        console.print()
 
     cfg_path = config_path if config_path and config_path.exists() else find_config_file(project_path)
     _refresh_monitoring_manifest(project_path, wup_config, cfg_path)
@@ -237,6 +252,12 @@ def watch(
     debounce: int = typer.Option(2, "--debounce", "-b", help="Debounce time in seconds"),
     cooldown: int = typer.Option(300, "--cooldown", "-t", help="Test cooldown in seconds"),
     dashboard: bool = typer.Option(False, "--dashboard", help="Enable live dashboard"),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Show detailed startup and service configuration information",
+    ),
     mode: str = typer.Option(
         "testql",
         "--mode",
@@ -309,6 +330,7 @@ def watch(
             track_dir=track_dir,
             quick_limit=quick_limit,
             probe_interval=probe_interval,
+            verbose=verbose,
         )
         for project_path in project_paths
     ]
