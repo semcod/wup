@@ -36,3 +36,21 @@ def test_periodic_probe_skipped_when_watch_lock_held() -> None:
     output = watcher.console.file.getvalue()
     assert "skipped" in output.lower()
     assert watcher._periodic_probe_in_progress is False
+
+
+def test_initial_periodic_probe_runs_in_worker_thread() -> None:
+    watcher = _minimal_watcher()
+    watcher.config.testql.probe_interval_s = 60
+    called = threading.Event()
+    worker_threads = []
+
+    def record_probe_thread() -> None:
+        worker_threads.append(threading.current_thread())
+        called.set()
+
+    watcher._run_periodic_probes_once = record_probe_thread
+    watcher._start_periodic_probe_thread()
+
+    assert called.wait(timeout=1)
+    assert worker_threads
+    assert worker_threads[0] is not threading.current_thread()

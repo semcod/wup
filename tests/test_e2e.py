@@ -28,6 +28,26 @@ def run_wup_command(args, cwd=None, timeout=30, capture_output=True, text=True):
 
 class TestE2ECLI:
     """End-to-end tests for CLI commands."""
+
+    def test_cli_watch_verbose_and_dive_commands(self):
+        """Verify detailed watch diagnostics are exposed by the CLI."""
+        watch_help = run_wup_command(
+            [sys.executable, "-m", "wup.cli", "watch", "--help"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        assert watch_help.returncode == 0
+        assert "--verbose" in watch_help.stdout
+
+        dive_help = run_wup_command(
+            [sys.executable, "-m", "wup.cli", "dive", "--help"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        assert dive_help.returncode == 0
+        assert "detailed TestQL watch" in dive_help.stdout
     
     def test_cli_init_creates_config_file(self):
         """Test that wup init creates a wup.yaml configuration file."""
