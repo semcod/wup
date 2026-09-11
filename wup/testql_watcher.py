@@ -1047,11 +1047,16 @@ class TestQLWatcher(WupWatcher):
             return
 
         def loop() -> None:
+            # Keep the initial probe in this worker thread as well.  The
+            # dashboard owns the main asyncio loop, so calling the synchronous
+            # probe runner directly from ``start_background_tasks`` would make
+            # its internal asyncio.run(...) fail with "asyncio.run() cannot be
+            # called from a running event loop".
+            self._run_periodic_probes_once()
             while True:
                 time.sleep(interval)
                 self._run_periodic_probes_once()
 
-        self._run_periodic_probes_once()
         self._probe_thread = threading.Thread(target=loop, daemon=True)
         self._probe_thread.start()
         self.console.print(f"[green]Live probes enabled (every {interval}s)[/green]")

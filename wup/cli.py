@@ -358,6 +358,34 @@ def watch(
         raise typer.Exit(1)
 
 
+@app.command()
+def dive(
+    projects: Optional[List[str]] = typer.Argument(
+        None,
+        help="One or more project root directories (default: current directory)",
+    ),
+):
+    """Run a detailed TestQL watch with verbose service diagnostics."""
+    watch(
+        projects=list(projects) if projects else ["."],
+        deps_file="deps.json",
+        cpu_throttle=0.8,
+        debounce=2,
+        cooldown=300,
+        dashboard=False,
+        mode="testql",
+        scenarios_dir=None,
+        testql_bin="testql",
+        browser_service_url=None,
+        track_dir=".wup/tracks",
+        quick_limit=3,
+        probe_interval=60,
+        discover=False,
+        config=None,
+        verbose=True,
+    )
+
+
 def _auto_generate_config(project_path: Path, mode: str):
     """Auto-generate wup.yaml based on project detection."""
     from .cli_scanner import CLIScanner
