@@ -16,8 +16,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-mcp = ["mcp>=1.0"]
-dev = ["pytest>=8.0", "mcp>=1.0"]
+mcp = ["mcp>=1.0,<2"]
+dev = ["pytest>=8.0", "mcp>=1.0,<2"]
 
 [project.scripts]
 mcp2wup = "mcp2wup.cli:main"
