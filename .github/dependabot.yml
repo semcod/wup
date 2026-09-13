@@ -1,0 +1,43 @@
+version: 2
+updates:
+- package-ecosystem: uv
+  directory: /
+  schedule:
+    interval: cron
+    cronjob: 22 4 * * *
+    timezone: Europe/Warsaw
+  open-pull-requests-limit: 1
+  versioning-strategy: increase-if-necessary
+  allow:
+  - dependency-name: cli2wup
+    dependency-type: all
+  - dependency-name: costs
+    dependency-type: all
+  - dependency-name: dsl2wup
+    dependency-type: all
+  - dependency-name: goal
+    dependency-type: all
+  - dependency-name: mcp2wup
+    dependency-type: all
+  - dependency-name: nlp2wup
+    dependency-type: all
+  - dependency-name: rest2wup
+    dependency-type: all
+  - dependency-name: uri2wup
+    dependency-type: all
+  - dependency-name: wup
+    dependency-type: all
+  groups:
+    internal-packages:
+      patterns:
+      - cli2wup
+      - costs
+      - dsl2wup
+      - goal
+      - mcp2wup
+      - nlp2wup
+      - rest2wup
+      - uri2wup
+      - wup
+  commit-message:
+    prefix: "chore(deps)"
