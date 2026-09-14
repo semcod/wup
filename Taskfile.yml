@@ -27,19 +27,29 @@ tasks:
       - uv run --no-sync wup map-deps
 
   test:
-    desc: "Run WUP pytest test suite"
+    desc: "Run complete WUP and workspace pytest suite (Python 3.10+)"
     cmds:
       - uv run --no-default-groups --group test pytest
+
+  test:root:
+    desc: "Run WUP root pytest suite compatible with Python 3.10"
+    cmds:
+      - uv run --no-default-groups --group test-root pytest tests --ignore=tests/test_status_data.py --ignore=tests/test_endpoints_init_cli.py
 
   lint:
     desc: "Run the locked Ruff quality check"
     cmds:
-      - uv run --no-default-groups --group test ruff check .
+      - uv run --no-default-groups --group test-root ruff check .
 
   deps:test:
-    desc: "Install only the reproducible test lane"
+    desc: "Install the complete reproducible WUP and workspace test lane (Python 3.11+)"
     cmds:
       - uv sync --locked --no-default-groups --group test
+
+  deps:test-root:
+    desc: "Install the reproducible WUP root test lane (Python 3.10+)"
+    cmds:
+      - uv sync --locked --no-default-groups --group test-root
 
   deps:automation:
     desc: "Install optional Goal, Koru and cost tooling"

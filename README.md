@@ -555,15 +555,21 @@ wup/
 
 ### Running Tests
 
-The locked `test` group is the local and protected-CI test lane. It deliberately
-excludes Goal, Koru and `costs`, which are optional automation tools and would
-otherwise make a networkless test image unnecessarily large.
+The locked `test` group runs the complete WUP plus workspace suite on Python
+3.10+. It deliberately excludes Goal, Koru and `costs`, which are optional
+automation tools and would otherwise make a networkless test image unnecessarily
+large. Use `test-root` for the smaller WUP-only suite.
 
 ```bash
 # Prepare and run the complete test lane
 uv sync --locked --no-default-groups --group test
 uv run --no-default-groups --group test pytest -q
 uv run --no-default-groups --group test ruff check .
+
+# Run the Python 3.10-compatible WUP root lane
+uv sync --locked --no-default-groups --group test-root
+uv run --no-default-groups --group test-root pytest tests \
+  --ignore=tests/test_status_data.py --ignore=tests/test_endpoints_init_cli.py
 
 # Run a specific suite or coverage
 uv run --no-default-groups --group test pytest tests/test_wup.py -v
@@ -573,8 +579,10 @@ uv run --no-default-groups --group test pytest tests/ --cov=wup
 uv sync --locked --no-default-groups --group automation
 ```
 
-For `pip` users, `pip install -e '.[dev]'` installs the same lightweight test
-tooling; `pip install -e '.[automation]'` adds the optional automation tools.
+For `pip` users, `pip install -e '.[dev]'` installs the Python
+3.10-compatible test tooling; `pip install -e '.[dev-workspace]'` adds the
+local workspace packages. `pip install -e '.[automation]'` adds the
+optional automation tools.
 
 The Wellmanifest adoption scope and the current protected-CI evidence are
 recorded in [docs/WELLMANIFEST_ADOPTION.md](docs/WELLMANIFEST_ADOPTION.md).
