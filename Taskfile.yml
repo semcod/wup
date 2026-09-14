@@ -30,3 +30,8 @@ tasks:
     desc: "Run WUP pytest test suite"
     cmds:
       - poetry run pytest
+
+  wup:service:install:
+    desc: "Install and start the persistent WUP TestQL watcher"
+    cmds:
+      - ./scripts/install-wup-watcher-service.sh

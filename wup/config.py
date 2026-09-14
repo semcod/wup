@@ -378,6 +378,12 @@ def _parse_planfile_config(raw: dict, environ: Mapping[str, str]) -> PlanfileCon
     labels = (
         [str(label) for label in labels_raw] if isinstance(labels_raw, list) else []
     )
+    integrations_raw = planfile_raw.get("integrations", [])
+    integrations = (
+        [str(name).strip() for name in integrations_raw if str(name).strip()]
+        if isinstance(integrations_raw, list)
+        else []
+    )
     return PlanfileConfig(
         enabled=planfile_enabled,
         command=planfile_raw.get("command", "planfile"),
@@ -386,6 +392,9 @@ def _parse_planfile_config(raw: dict, environ: Mapping[str, str]) -> PlanfileCon
         source=planfile_raw.get("source", "wup"),
         dedupe_file=planfile_raw.get("dedupe_file", ".wup/planfile-tickets.json"),
         labels=labels or ["koru", "llm-ready", "wup", "auto-diag"],
+        integrations=integrations,
+        sync_on_change=bool(planfile_raw.get("sync_on_change", False)),
+        complete_on_recovery=bool(planfile_raw.get("complete_on_recovery", False)),
     )
 
 

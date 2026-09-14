@@ -661,3 +661,26 @@ Licensed under Apache-2.0.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### TestQL → Planfile → GitHub incidents
+
+The repository watcher is configured in `wup.yaml` and runs the existing
+`cli-wup.testql.toon.yaml` and `cli-smoke.testql.toon.yaml` scenarios. A failed
+health transition creates one deduplicated Planfile ticket with the `github`
+integration. Planfile immediately publishes only tickets tagged for that
+integration; historical tickets without that tag remain local. When the same
+service and stage recover, WUP completes the incident ticket and publishes the
+resolved state.
+
+Install the persistent watcher for the current user with:
+
+```bash
+./scripts/install-wup-watcher-service.sh
+systemctl --user status wup-watcher.service
+journalctl --user -u wup-watcher.service -f
+```
+
+Agents take the next runnable item with `planfile ticket next --format json`.
+The GitHub target is configured as `semcod/wup` in
+`.planfile/integrations.oql.planfile.yaml`; credentials are read from the
+existing `gh auth` session and are never written to the repository.

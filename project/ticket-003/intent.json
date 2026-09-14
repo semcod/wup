@@ -1,0 +1,26 @@
+{
+  "ticket": "ticket-003",
+  "summary": "Automate TestQL failure reporting through Planfile and GitHub",
+  "allowedPaths": [
+    ".gitignore",
+    ".ifuri/repair/TODO.md",
+    ".planfile/integrations.oql.planfile.yaml",
+    "README.md",
+    "Taskfile.yml",
+    "scripts/install-wup-watcher-service.sh",
+    "tests/test_planfile_reporter_dedupe.py",
+    "tests/test_wup.py",
+    "tests/test_wup_repo_automation.py",
+    "wup.yaml",
+    "wup/config.py",
+    "wup/models/config.py",
+    "wup/planfile_reporter.py",
+    "project/ticket-003/**"
+  ],
+  "forbiddenPaths": [
+    ".env",
+    ".github/workflows/**"
+  ],
+  "authorization": "SESSION_EXECUTION_AUTHORIZATION",
+  "outcome": "WUP continuously verifies its TestQL scenarios and records deduplicated, recoverable incidents for Planfile and GitHub."
+}
