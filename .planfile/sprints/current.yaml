@@ -34,6 +34,7 @@ sprint:
       - planfile
       - github-sync
       - regression
+      - 'priority: high'
       name: Fix GitHub synchronization after Planfile ticket archival
       priority: high
       source:
@@ -48,3 +49,53 @@ sprint:
           key: semcod/wup#8
           url: https://github.com/semcod/wup/issues/8
       updated_at: '2026-09-14T15:34:28.976328Z'
+    PLF-088:
+      acceptance_criteria: []
+      backend: github
+      blocked_by: []
+      blocks: []
+      children: []
+      contract_version: planfile.ticket/v1
+      created_at: '2026-09-14T15:45:40.546507Z'
+      description: 'The deployed OneDev profile for semcod/wup runs only the locked-manifest
+        gate. PR #5 at 730fb747b104224265e3caf62f7be692c06e9581 fails exact merge-result
+        validation with LOCKED_MANIFEST_DIFF_SCOPE_MISMATCH because it changes application
+        code and refreshes pyproject.toml/uv.lock. The profile also pins the old main
+        digests, so it cannot validate dependency updates.\n\nAcceptance criteria:\n1.
+        Replace or extend the WUP local verification profile with a protected, networkless
+        exact-merge-result suite that covers the repository''s supported Python matrix
+        and required dependency lock checks.\n2. Keep the profile''s scope and immutable
+        dependency inputs explicit; do not use a mutable host checkout or a self-reported
+        status.\n3. Deploy the profile through the OneDev configuration process and
+        obtain a successful canary status for a deliberately valid WUP PR.\n4. Add
+        a regression test for the profile and document the supported change classes.'
+      dsl: SODL/1 id=evt_2213bd980e21f69abac63323 event_hash=67885b4e0a7e9f3c698d351b216f58d22c95b9d45ecf5a4db0dd4c78a55940af
+        timestamp=2026-09-14T15%3A45%3A40.546507%2B00%3A00 kind=task source=planfile.ticket
+        ticket_id=PLF-088 actor=onedev-local-ci-audit oql=ticket.create uri=planfile%3A%2F%2Ftickets%2FPLF-088%2Fcommand%2Fcreate
+        mode=apply status=open correlation_id=PLF-088 causation_id=- input_hash=0854c50bb1d0e50ab6eef91f768337aae060339c68e50ff947122a1d8f2178b3
+        receipt_ref=- replayable=true data=eyJwYXlsb2FkIjp7ImFjY2VwdGFuY2VfY3JpdGVyaWEiOltdLCJibG9ja2VkX2J5IjpbXSwiYmxvY2tzIjpbXSwiY2hpbGRyZW4iOltdLCJjb250cmFjdF92ZXJzaW9uIjoicGxhbmZpbGUudGlja2V0L3YxIiwiY3JlYXRlZF9hdCI6IjIwMjYtMDktMTRUMTU6NDU6NDAuNTQ2NTA3WiIsImRlc2NyaXB0aW9uIjoiVGhlIGRlcGxveWVkIE9uZURldiBwcm9maWxlIGZvciBzZW1jb2Qvd3VwIHJ1bnMgb25seSB0aGUgbG9ja2VkLW1hbmlmZXN0IGdhdGUuIFBSICM1IGF0IDczMGZiNzQ3YjEwNDIyNDI2NWUzY2FmNjJmN2JlNjkyYzA2ZTk1ODEgZmFpbHMgZXhhY3QgbWVyZ2UtcmVzdWx0IHZhbGlkYXRpb24gd2l0aCBMT0NLRURfTUFOSUZFU1RfRElGRl9TQ09QRV9NSVNNQVRDSCBiZWNhdXNlIGl0IGNoYW5nZXMgYXBwbGljYXRpb24gY29kZSBhbmQgcmVmcmVzaGVzIHB5cHJvamVjdC50b21sL3V2LmxvY2suIFRoZSBwcm9maWxlIGFsc28gcGlucyB0aGUgb2xkIG1haW4gZGlnZXN0cywgc28gaXQgY2Fubm90IHZhbGlkYXRlIGRlcGVuZGVuY3kgdXBkYXRlcy5cXG5cXG5BY2NlcHRhbmNlIGNyaXRlcmlhOlxcbjEuIFJlcGxhY2Ugb3IgZXh0ZW5kIHRoZSBXVVAgbG9jYWwgdmVyaWZpY2F0aW9uIHByb2ZpbGUgd2l0aCBhIHByb3RlY3RlZCwgbmV0d29ya2xlc3MgZXhhY3QtbWVyZ2UtcmVzdWx0IHN1aXRlIHRoYXQgY292ZXJzIHRoZSByZXBvc2l0b3J5J3Mgc3VwcG9ydGVkIFB5dGhvbiBtYXRyaXggYW5kIHJlcXVpcmVkIGRlcGVuZGVuY3kgbG9jayBjaGVja3MuXFxuMi4gS2VlcCB0aGUgcHJvZmlsZSdzIHNjb3BlIGFuZCBpbW11dGFibGUgZGVwZW5kZW5jeSBpbnB1dHMgZXhwbGljaXQ7IGRvIG5vdCB1c2UgYSBtdXRhYmxlIGhvc3QgY2hlY2tvdXQgb3IgYSBzZWxmLXJlcG9ydGVkIHN0YXR1cy5cXG4zLiBEZXBsb3kgdGhlIHByb2ZpbGUgdGhyb3VnaCB0aGUgT25lRGV2IGNvbmZpZ3VyYXRpb24gcHJvY2VzcyBhbmQgb2J0YWluIGEgc3VjY2Vzc2Z1bCBjYW5hcnkgc3RhdHVzIGZvciBhIGRlbGliZXJhdGVseSB2YWxpZCBXVVAgUFIuXFxuNC4gQWRkIGEgcmVncmVzc2lvbiB0ZXN0IGZvciB0aGUgcHJvZmlsZSBhbmQgZG9jdW1lbnQgdGhlIHN1cHBvcnRlZCBjaGFuZ2UgY2xhc3Nlcy4iLCJmaWxlcyI6WyIucGxhbmZpbGUvc3ByaW50cy9jdXJyZW50LnlhbWwiXSwiaWQiOiJQTEYtMDg4IiwiaW50ZWdyYXRpb24iOlsiZ2l0aHViIl0sImxhYmVscyI6WyJsb2NhbC1jaSIsIm9uZWRldiIsInJlZ3Jlc3Npb24iXSwibmFtZSI6IlByb3ZpZGUgYSBmdWxsIGxvY2FsIENJIHByb2ZpbGUgZm9yIFdVUCBjb2RlIGFuZCBkZXBlbmRlbmN5IGNoYW5nZXMiLCJwcmlvcml0eSI6ImhpZ2giLCJzb3VyY2UiOnsiY29udGV4dCI6e30sInRpbWVzdGFtcCI6IjIwMjYtMDktMTRUMTU6NDU6NDAuNTEwMzA2WiIsInRvb2wiOiJvbmVkZXYtbG9jYWwtY2ktYXVkaXQifSwic3ByaW50IjoiY3VycmVudCIsInN0YXR1cyI6Im9wZW4iLCJzeW5jIjp7fSwidXBkYXRlZF9hdCI6IjIwMjYtMDktMTRUMTU6NDU6NDAuNTQ2NTEyWiJ9fQ
+      external_id: '9'
+      files:
+      - .planfile/sprints/current.yaml
+      history: []
+      id: PLF-088
+      integration:
+      - github
+      labels:
+      - local-ci
+      - onedev
+      - regression
+      name: Provide a full local CI profile for WUP code and dependency changes
+      priority: high
+      source:
+        context: {}
+        timestamp: '2026-09-14T15:45:40.510306Z'
+        tool: onedev-local-ci-audit
+      sprint: current
+      status: open
+      sync:
+        github:
+          id: '9'
+          key: semcod/wup#9
+          url: https://github.com/semcod/wup/issues/9
+      updated_at: '2026-09-14T15:45:40.546512Z'
