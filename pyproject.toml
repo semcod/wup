@@ -36,7 +36,6 @@ dev = [
     "ruff>=0.8",
     "goal>=2.1.0; python_version >= '3.12'",
     "costs>=0.1.20",
-    "pfix>=0.1.60; python_version >= '3.10'",
     "uri2wup",
     "dsl2wup",
     "nlp2wup",
@@ -60,7 +59,6 @@ dev = [
     "ruff>=0.8",
     "goal>=2.1.0",
     "costs>=0.1.20",
-    "pfix>=0.1.60",
     "uri2wup",
     "dsl2wup",
     "nlp2wup",
@@ -112,22 +110,6 @@ wup = "wup.bootstrap:main"
 [project.urls]
 Homepage = "https://github.com/semcod/wup"
 Repository = "https://github.com/semcod/wup"
-
-[tool.pfix]
-# Self-healing Python configuration
-model = "openrouter/qwen/qwen3-coder-next"
-auto_apply = true
-auto_install_deps = true
-auto_restart = false
-max_retries = 3
-create_backups = false
-git_auto_commit = false
-
-[tool.pfix.runtime_todo]
-enabled = true
-todo_file = "TODO.md"
-min_severity = "low"
-deduplicate = true
 
 [tool.costs]
 # AI Cost tracking configuration

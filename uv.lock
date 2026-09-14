@@ -5,8 +5,8 @@ resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
     "python_full_version >= '3.14' and sys_platform != 'win32'",
     "python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform == 'win32'",
-    "python_full_version < '3.12' and sys_platform == 'win32'",
     "python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform != 'win32'",
+    "python_full_version < '3.12' and sys_platform == 'win32'",
     "python_full_version < '3.12' and sys_platform != 'win32'",
 ]
 
@@ -1677,8 +1677,8 @@ mcp = [
 [package.metadata]
 requires-dist = [
     { name = "dsl2wup", editable = "packages/dsl2wup" },
-    { name = "mcp", marker = "extra == 'dev'", specifier = ">=1.0" },
-    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0" },
+    { name = "mcp", marker = "extra == 'dev'", specifier = ">=1.0,<2" },
+    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0,<2" },
     { name = "nlp2wup", editable = "packages/nlp2wup" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "uri2wup", editable = "packages/uri2wup" },
@@ -2158,7 +2158,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess", marker = "sys_platform != 'win32'" },
+    { name = "ptyprocess" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
@@ -3563,7 +3563,6 @@ dev = [
     { name = "httpx" },
     { name = "mcp2wup" },
     { name = "nlp2wup" },
-    { name = "pfix" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "rest2wup" },
@@ -3583,7 +3582,6 @@ dev = [
     { name = "httpx" },
     { name = "mcp2wup" },
     { name = "nlp2wup" },
-    { name = "pfix" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "rest2wup" },
@@ -3601,7 +3599,6 @@ requires-dist = [
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27" },
     { name = "mcp2wup", marker = "extra == 'dev'", editable = "packages/mcp2wup" },
     { name = "nlp2wup", marker = "extra == 'dev'", editable = "packages/nlp2wup" },
-    { name = "pfix", marker = "python_full_version >= '3.10' and extra == 'dev'", specifier = ">=0.1.60" },
     { name = "playwright", marker = "extra == 'visual'", specifier = ">=1.40,<2" },
     { name = "psutil", specifier = ">=5.9.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
@@ -3626,7 +3623,6 @@ dev = [
     { name = "httpx", specifier = ">=0.27" },
     { name = "mcp2wup", editable = "packages/mcp2wup" },
     { name = "nlp2wup", editable = "packages/nlp2wup" },
-    { name = "pfix", specifier = ">=0.1.60" },
     { name = "pytest", specifier = ">=7.0.0" },
     { name = "pytest-cov", specifier = ">=5.0" },
     { name = "rest2wup", editable = "packages/rest2wup" },
