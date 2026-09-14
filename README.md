@@ -576,6 +576,9 @@ uv sync --locked --no-default-groups --group automation
 For `pip` users, `pip install -e '.[dev]'` installs the same lightweight test
 tooling; `pip install -e '.[automation]'` adds the optional automation tools.
 
+The Wellmanifest adoption scope and the current protected-CI evidence are
+recorded in [docs/WELLMANIFEST_ADOPTION.md](docs/WELLMANIFEST_ADOPTION.md).
+
 ### Goal wrapper (local `.venv`)
 
 When `goal` is installed globally, it may inherit another project's `VIRTUAL_ENV`.
