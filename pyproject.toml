@@ -35,6 +35,7 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.8",
     "goal>=2.1.0; python_version >= '3.12'",
+    "koru>=0.1.461; python_version >= '3.12'",
     "costs>=0.1.20",
     "uri2wup",
     "dsl2wup",
@@ -66,6 +67,7 @@ dev = [
     "mcp2wup",
     "rest2wup",
     "httpx>=0.27",
+    "koru>=0.1.461 ; python_full_version >= '3.12'",
 ]
 
 [tool.uv.workspace]

@@ -2,7 +2,7 @@
 set -e
 clear
 
-VENV="venv"
+VENV=".venv"
 PIP="$VENV/bin/pip"
 
 if [ ! -f "$PIP" ]; then
@@ -41,7 +41,6 @@ $VENV/bin/sumd .
 $VENV/bin/sumr .
 
 
-pip install -U goal
 $PIP install goal --upgrade --quiet
 
 bash ./tree.sh

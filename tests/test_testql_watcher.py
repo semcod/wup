@@ -7,8 +7,6 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import Mock
 
-import pytest
-
 from wup.testql_watcher import TestQLWatcher
 from wup.models.config import (
     PlanfileConfig,
