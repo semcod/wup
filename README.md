@@ -555,17 +555,26 @@ wup/
 
 ### Running Tests
 
+The locked `test` group is the local and protected-CI test lane. It deliberately
+excludes Goal, Koru and `costs`, which are optional automation tools and would
+otherwise make a networkless test image unnecessarily large.
+
 ```bash
-# Run all tests
-python3 -m pytest tests/ -v
+# Prepare and run the complete test lane
+uv sync --locked --no-default-groups --group test
+uv run --no-default-groups --group test pytest -q
+uv run --no-default-groups --group test ruff check .
 
-# Run specific suite
-python3 -m pytest tests/test_wup.py -v
-python3 -m pytest tests/test_testql_watcher.py -v
+# Run a specific suite or coverage
+uv run --no-default-groups --group test pytest tests/test_wup.py -v
+uv run --no-default-groups --group test pytest tests/ --cov=wup
 
-# Run with coverage
-python3 -m pytest tests/ --cov=wup
+# Opt into ticket/LLM/cost automation when it is needed
+uv sync --locked --no-default-groups --group automation
 ```
+
+For `pip` users, `pip install -e '.[dev]'` installs the same lightweight test
+tooling; `pip install -e '.[automation]'` adds the optional automation tools.
 
 ### Goal wrapper (local `.venv`)
 
