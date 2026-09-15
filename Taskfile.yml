@@ -56,6 +56,11 @@ tasks:
     cmds:
       - uv sync --locked --no-default-groups --group automation
 
+  refactoring:ticket:
+    desc: "Preview or create a local Planfile triage ticket linked to a canonical refactoring plan"
+    cmds:
+      - uv run --no-sync python scripts/plan_refactoring_ticket.py --help
+
   wup:service:install:
     desc: "Install and start the persistent WUP TestQL watcher"
     cmds:
