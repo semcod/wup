@@ -7,7 +7,7 @@ name = "uri2wup"
 version = "0.1.0"
 description = "wup:// URI addressing, query and patch for WUP config"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = "Apache-2.0"
 dependencies = [
     "wup>=0.2.0",

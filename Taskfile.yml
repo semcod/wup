@@ -4,29 +4,64 @@ tasks:
   wup:watch:
     desc: "Watch project for file changes and run WUP regression tests"
     cmds:
-      - poetry run wup watch
+      - uv run --no-sync wup watch
 
   wup:status:
     desc: "Show dependency map status and configuration"
     cmds:
-      - poetry run wup status
+      - uv run --no-sync wup status
 
   wup:sync:
     desc: "Discover monitoring targets and update wup.yaml manifest"
     cmds:
-      - poetry run wup sync-testql . --write
+      - uv run --no-sync wup sync-testql . --write
 
   wup:endpoints:
     desc: "Verify TestQL scenarios and discover endpoints"
     cmds:
-      - poetry run wup testql-endpoints
+      - uv run --no-sync wup testql-endpoints
 
   wup:map:
     desc: "Build dependency map from codebase"
     cmds:
-      - poetry run wup map-deps
+      - uv run --no-sync wup map-deps
 
   test:
-    desc: "Run WUP pytest test suite"
+    desc: "Run complete WUP and workspace pytest suite (Python 3.10+)"
     cmds:
-      - poetry run pytest
+      - uv run --no-default-groups --group test pytest
+
+  test:root:
+    desc: "Run WUP root pytest suite compatible with Python 3.10"
+    cmds:
+      - uv run --no-default-groups --group test-root pytest tests --ignore=tests/test_status_data.py --ignore=tests/test_endpoints_init_cli.py
+
+  lint:
+    desc: "Run the locked Ruff quality check"
+    cmds:
+      - uv run --no-default-groups --group test-root ruff check .
+
+  deps:test:
+    desc: "Install the complete reproducible WUP and workspace test lane (Python 3.11+)"
+    cmds:
+      - uv sync --locked --no-default-groups --group test
+
+  deps:test-root:
+    desc: "Install the reproducible WUP root test lane (Python 3.10+)"
+    cmds:
+      - uv sync --locked --no-default-groups --group test-root
+
+  deps:automation:
+    desc: "Install optional Goal, Koru and cost tooling"
+    cmds:
+      - uv sync --locked --no-default-groups --group automation
+
+  refactoring:ticket:
+    desc: "Preview or create a local Planfile triage ticket linked to a canonical refactoring plan"
+    cmds:
+      - uv run --no-sync python scripts/plan_refactoring_ticket.py --help
+
+  wup:service:install:
+    desc: "Install and start the persistent WUP TestQL watcher"
+    cmds:
+      - ./scripts/install-wup-watcher-service.sh

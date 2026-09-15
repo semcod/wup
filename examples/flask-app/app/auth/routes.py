@@ -29,5 +29,4 @@ def profile():
 
 @auth_bp.route("/password", methods=["PUT"])
 def change_password():
-    data = request.get_json() or {}
     return jsonify({"message": "Password updated"})

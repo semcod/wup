@@ -555,17 +555,37 @@ wup/
 
 ### Running Tests
 
+The locked `test` group runs the complete WUP plus workspace suite on Python
+3.10+. It deliberately excludes Goal, Koru and `costs`, which are optional
+automation tools and would otherwise make a networkless test image unnecessarily
+large. Use `test-root` for the smaller WUP-only suite.
+
 ```bash
-# Run all tests
-python3 -m pytest tests/ -v
+# Prepare and run the complete test lane
+uv sync --locked --no-default-groups --group test
+uv run --no-default-groups --group test pytest -q
+uv run --no-default-groups --group test ruff check .
 
-# Run specific suite
-python3 -m pytest tests/test_wup.py -v
-python3 -m pytest tests/test_testql_watcher.py -v
+# Run the Python 3.10-compatible WUP root lane
+uv sync --locked --no-default-groups --group test-root
+uv run --no-default-groups --group test-root pytest tests \
+  --ignore=tests/test_status_data.py --ignore=tests/test_endpoints_init_cli.py
 
-# Run with coverage
-python3 -m pytest tests/ --cov=wup
+# Run a specific suite or coverage
+uv run --no-default-groups --group test pytest tests/test_wup.py -v
+uv run --no-default-groups --group test pytest tests/ --cov=wup
+
+# Opt into ticket/LLM/cost automation when it is needed
+uv sync --locked --no-default-groups --group automation
 ```
+
+For `pip` users, `pip install -e '.[dev]'` installs the Python
+3.10-compatible test tooling; `pip install -e '.[dev-workspace]'` adds the
+local workspace packages. `pip install -e '.[automation]'` adds the
+optional automation tools.
+
+The Wellmanifest adoption scope and the current protected-CI evidence are
+recorded in [docs/WELLMANIFEST_ADOPTION.md](docs/WELLMANIFEST_ADOPTION.md).
 
 ### Goal wrapper (local `.venv`)
 
@@ -661,3 +681,26 @@ Licensed under Apache-2.0.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### TestQL → Planfile → GitHub incidents
+
+The repository watcher is configured in `wup.yaml` and runs the existing
+`cli-wup.testql.toon.yaml` and `cli-smoke.testql.toon.yaml` scenarios. A failed
+health transition creates one deduplicated Planfile ticket with the `github`
+integration. Planfile immediately publishes only tickets tagged for that
+integration; historical tickets without that tag remain local. When the same
+service and stage recover, WUP completes the incident ticket and publishes the
+resolved state.
+
+Install the persistent watcher for the current user with:
+
+```bash
+./scripts/install-wup-watcher-service.sh
+systemctl --user status wup-watcher.service
+journalctl --user -u wup-watcher.service -f
+```
+
+Agents take the next runnable item with `planfile ticket next --format json`.
+The GitHub target is configured as `semcod/wup` in
+`.planfile/integrations.oql.planfile.yaml`; credentials are read from the
+existing `gh auth` session and are never written to the repository.

@@ -1612,6 +1612,9 @@ visual_diff:
                     source="wup-watch",
                     dedupe_file=".wup/pf.json",
                     labels=["koru", "llm-ready", "wup", "visual"],
+                    integrations=["github"],
+                    sync_on_change=True,
+                    complete_on_recovery=True,
                 ),
             )
             config_path = Path(tmpdir) / "wup.yaml"
@@ -1626,6 +1629,9 @@ visual_diff:
             assert pf.source == "wup-watch"
             assert pf.dedupe_file == ".wup/pf.json"
             assert pf.labels == ["koru", "llm-ready", "wup", "visual"]
+            assert pf.integrations == ["github"]
+            assert pf.sync_on_change is True
+            assert pf.complete_on_recovery is True
 
     def test_load_config_planfile_env_override(self, monkeypatch):
         """Env can enable planfile ticket creation without editing wup.yaml."""

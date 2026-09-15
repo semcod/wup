@@ -1,92 +1,82 @@
-# WUP Configuration for CLI Testing
-# Generated automatically by wup init-cli
-# Project: c2004
-
+# WUP configuration for this repository.  Keep TestQL scenarios and the Planfile
+# incident queue in the same repository so an observed regression becomes a runnable ticket.
 project:
-  name: c2004
-  description: Auto-generated config for c2004
+  name: wup
+  description: WUP regression watcher and Planfile incident queue
+
 watch:
   paths:
-  - wup/**
+    - wup/**
+    - packages/**
+    - pyproject.toml
+    - Taskfile.yml
   exclude_patterns:
-  - '*.md'
-  - '*.txt'
-  - tests/**
-  - node_modules/**
-  file_types: []
+    - '*.md'
+    - '*.txt'
+    - tests/**
+    - node_modules/**
+    - .planfile/**
+    - .wup/**
+
 services:
-- name: iter1-api
-  type: web
-  paths: []
-  root: ''
-  quick_tests:
-    scope: read
-    max_endpoints: 3
-  detail_tests:
-    scope: all
-    max_endpoints: 10
-- name: iter1-shell
-  type: shell
-  paths: []
-  root: ''
-  quick_tests:
-    scope: all
-    max_endpoints: 3
-  detail_tests:
-    scope: all
-    max_endpoints: 10
-- name: iter7-auto
-  type: web
-  paths: []
-  root: ''
-  quick_tests:
-    scope: read,write
-    max_endpoints: 5
-  detail_tests:
-    scope: all
-    max_endpoints: 10
-- name: iter7-shell
-  type: shell
-  paths: []
-  root: ''
-  quick_tests:
-    scope: all
-    max_endpoints: 5
-  detail_tests:
-    scope: all
-    max_endpoints: 10
-- name: wup-shell
-  type: shell
-  paths: []
-  root: /home/tom/github/semcod/wup
-  quick_tests:
-    scope: all
-    max_endpoints: 1
-  detail_tests:
-    scope: all
-    max_endpoints: 2
+  - name: wup-shell
+    type: shell
+    root: .
+    paths:
+      - wup/**
+      - packages/**
+      - pyproject.toml
+      - Taskfile.yml
+    quick_tests:
+      scope: all
+      max_endpoints: 1
+      scenario: cli-wup.testql.toon.yaml
+    detail_tests:
+      scope: all
+      max_endpoints: 1
+      scenario: cli-smoke.testql.toon.yaml
+
 test_strategy:
   quick:
     debounce_s: 2
     max_queue: 5
-    timeout_s: 10
+    timeout_s: 15
   detail:
     debounce_s: 10
     max_queue: 1
-    timeout_s: 30
+    timeout_s: 45
+
 testql:
   scenario_dir: testql-scenarios
-  smoke_scenario: iter1-api-v3-smoke.testql.toon.yaml
+  smoke_scenario: cli-smoke.testql.toon.yaml
+  health_scenario: cli-smoke.testql.toon.yaml
+  health_scenario_strict: true
   output_format: json
-  probe_interval_s: 0
+  # TestQL expects milliseconds. The old implicit value was 10 ms.
+  extra_args: ["--timeout", "10000"]
+  probe_interval_s: 60
+
+planfile:
+  enabled: true
+  command: planfile
+  sprint: current
+  priority: high
+  source: wup
+  dedupe_file: .wup/planfile-tickets.json
+  labels: [koru, llm-ready, wup, auto-diag]
+  # Only tickets marked for GitHub are synchronized; historical tickets
+  # without this integration remain local.
+  integrations: [github]
+  sync_on_change: true
+  complete_on_recovery: true
 
 # BEGIN WUP MONITORING MANIFEST (auto-generated — do not edit; run: wup sync-testql --write)
 monitoring:
-  generated_at: '2026-07-10T10:48:38Z'
+  generated_at: '2026-09-14T13:59:40Z'
   generated_by: wup sync-testql --write (or wup watch startup)
   how_to_refresh: wup sync-testql . --write
   probe_interval_s: 60
-  health_scenario: ''
+  health_scenario: cli-smoke.testql.toon.yaml
   base_url: (set testql.base_url or WUP_BASE_URL)
   endpoint_discovery: true
   scenario_dir: testql-scenarios
@@ -96,28 +86,12 @@ monitoring:
     enabled: false
     tools: {}
   wup_services:
-    iter1-api:
-      wup_paths: []
-      docker: []
-      live_probes: []
-      testql_dry_run_scenarios: []
-    iter1-shell:
-      wup_paths: []
-      docker: []
-      live_probes: []
-      testql_dry_run_scenarios: []
-    iter7-auto:
-      wup_paths: []
-      docker: []
-      live_probes: []
-      testql_dry_run_scenarios: []
-    iter7-shell:
-      wup_paths: []
-      docker: []
-      live_probes: []
-      testql_dry_run_scenarios: []
     wup-shell:
-      wup_paths: []
+      wup_paths:
+      - wup/**
+      - packages/**
+      - pyproject.toml
+      - Taskfile.yml
       docker: []
       live_probes: []
       testql_dry_run_scenarios: []

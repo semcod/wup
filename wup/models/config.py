@@ -150,6 +150,9 @@ class PlanfileConfig:
         "wup",
         "auto-diag",
     ])
+    integrations: List[str] = field(default_factory=list)
+    sync_on_change: bool = False
+    complete_on_recovery: bool = False
 
 
 @dataclass
