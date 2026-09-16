@@ -380,7 +380,8 @@ __marimo__/
 .github/
 .idea/
 .nlp2dsl/
-.planfile/
+.planfile/*
+!.planfile/integrations.oql.planfile.yaml
 .vscode/
 .wup/
 .wupbro/

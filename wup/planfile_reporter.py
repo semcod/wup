@@ -107,17 +107,62 @@ class PlanfileReporter:
         return str(ticket.get("status", "")).strip().lower() in {"done", "canceled", "cancelled"}
 
     def clear_service_stage(self, *, service: str, stage: str) -> None:
-        """Allow a future recurrence to create a fresh ticket after recovery."""
+        """Resolve the ticket and allow a later recurrence to create a new one."""
         if not self.enabled or not self.dedupe_path.exists():
             return
         dedupe = self._load_dedupe()
-        remaining = {
+        matched = {
             key: value for key, value in dedupe.items()
-            if value.get("service") != service or value.get("stage") != stage
+            if value.get("service") == service and value.get("stage") == stage
         }
-        if len(remaining) == len(dedupe):
+        if not matched:
             return
-        self._save_dedupe(remaining)
+
+        removable = set(matched)
+        if self.config.complete_on_recovery:
+            removable = set()
+            for fingerprint, value in matched.items():
+                ticket_id = str(value.get("ticket_id") or "").strip()
+                if not ticket_id or self._ticket_is_closed(ticket_id):
+                    removable.add(fingerprint)
+                elif self._complete_recovered_ticket(ticket_id, service, stage):
+                    removable.add(fingerprint)
+
+        if removable:
+            self._save_dedupe({key: value for key, value in dedupe.items() if key not in removable})
+
+    def _complete_recovered_ticket(self, ticket_id: str, service: str, stage: str) -> bool:
+        """Close the incident ticket once its exact health signal recovers."""
+        note = f"WUP recovered: service={service}, stage={stage}."
+        outcome = self._run_planfile([
+            self.config.command, "ticket", "complete", ticket_id, "--note", note,
+        ])
+        if outcome is None:
+            return False
+        returncode, _stdout, stderr = outcome
+        if returncode != 0:
+            self.console.print(
+                f"[yellow]planfile ticket recovery completion failed for {ticket_id}: {stderr or f'rc={returncode}'}[/yellow]"
+            )
+            return False
+        self._sync_configured_integrations()
+        return True
+
+    def _sync_configured_integrations(self) -> None:
+        """Publish only tickets explicitly assigned to configured integrations."""
+        if not self.config.sync_on_change:
+            return
+        for integration in self.config.integrations:
+            outcome = self._run_planfile([
+                self.config.command, "sync", integration, ".", "--direction", "to",
+            ])
+            if outcome is None:
+                continue
+            returncode, _stdout, stderr = outcome
+            if returncode != 0:
+                self.console.print(
+                    f"[yellow]planfile {integration} sync failed: {stderr or f'rc={returncode}'}[/yellow]"
+                )
 
     def _build_ticket_cmd(self, name: str, description: str, track_file: str) -> list[str]:
         """Assemble the `planfile ticket create` argv."""
@@ -137,6 +182,10 @@ class PlanfileReporter:
         ]
         for label in self.config.labels:
             cmd.extend(["--label", label])
+        for integration in self.config.integrations:
+            cmd.extend(["--integration", integration])
+        if self.config.sync_on_change and self.config.integrations:
+            cmd.append("--sync")
         # Koru treats Planfile ``files`` as the agent's allowed edit scope.
         # WUP runtime evidence under .wup/.intent is not source code and must
         # remain a description link rather than constraining the agent to edit

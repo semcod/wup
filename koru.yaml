@@ -54,6 +54,11 @@ when:
       - koru scan --apply --project .
       - koru scan --apply --semcod-artifacts --project .
 
+  refactoring_ticket:
+    description: Create a deduplicated local triage ticket only after a canonical refactoring plan exists.
+    commands:
+      - task refactoring:ticket
+
   autonomous_outer_loop:
     description: >
       Unattended cycle (scan → queue → optional autopilot). Tune flags with
