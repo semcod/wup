@@ -395,6 +395,9 @@ def _parse_planfile_config(raw: dict, environ: Mapping[str, str]) -> PlanfileCon
         integrations=integrations,
         sync_on_change=bool(planfile_raw.get("sync_on_change", False)),
         complete_on_recovery=bool(planfile_raw.get("complete_on_recovery", False)),
+        refile_cooldown_seconds=float(
+            planfile_raw.get("refile_cooldown_seconds", 86400.0)
+        ),
     )
 
 

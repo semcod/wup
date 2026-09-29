@@ -7,6 +7,7 @@ import json
 import re
 import subprocess
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -44,16 +45,15 @@ class PlanfileReporter:
 
         fingerprint = self._fingerprint(service=service, status=status, stage=stage, message=message)
         dedupe = self._load_dedupe()
-        existing = dedupe.get(fingerprint)
-        if existing:
-            # A registry entry only mutes the recurrence while its ticket is
-            # still open — a regression after the ticket was closed (done or
-            # canceled) must file a fresh ticket, otherwise the failure is
-            # silently invisible forever (stale entries survive watcher
-            # restarts, so clear_service_stage alone does not cover this).
-            existing_id = existing.get("ticket_id")
-            if existing_id and not self._ticket_is_closed(existing_id):
-                return existing_id
+        muted_ticket = self._signature_mute(
+            dedupe,
+            fingerprint=fingerprint,
+            service=service,
+            stage=stage,
+            status=status,
+        )
+        if muted_ticket:
+            return muted_ticket
 
         name = self._ticket_name(service=service, stage=stage, status=status)
         description = self._ticket_description(
@@ -80,13 +80,17 @@ class PlanfileReporter:
         self.console.print(f"[yellow]🧾 WUP created planfile ticket {ticket_id}: {name}[/yellow]")
         return ticket_id
 
-    def _ticket_is_closed(self, ticket_id: str) -> bool:
-        """True when the deduped ticket is done/canceled (regression may re-file).
+    # Planfile terminal statuses (TicketStatus normalization + store
+    # TERMINAL_STATUSES). Terminal tickets are immutable — a ``closed_at``
+    # observation recorded in the dedupe entry stays valid forever.
+    _CLOSED_STATUSES = {"done", "canceled", "cancelled", "closed", "failed", "blocked"}
 
-        Conservative on any error (planfile missing, ticket gone, bad JSON):
-        treat the ticket as still open so dedupe keeps muting — a wrong True
-        would spam duplicate tickets, a wrong False only delays a re-file.
-        """
+    @classmethod
+    def _status_is_closed(cls, status: Any) -> bool:
+        return str(status or "").strip().lower() in cls._CLOSED_STATUSES
+
+    def _lookup_ticket(self, ticket_id: str) -> Optional[dict[str, Any]]:
+        """Return the ticket payload from `planfile ticket show`, or None on any error."""
         try:
             result = subprocess.run(
                 [self.config.command, "ticket", "show", ticket_id, "--format", "json"],
@@ -96,15 +100,104 @@ class PlanfileReporter:
                 timeout=15,
             )
         except (OSError, subprocess.TimeoutExpired):
-            return False
+            return None
         if result.returncode != 0:
-            return False
+            return None
         try:
             payload = json.loads(result.stdout or "{}")
         except ValueError:
+            return None
+        if not isinstance(payload, dict):
+            return None
+        ticket = payload.get("ticket", payload)
+        return ticket if isinstance(ticket, dict) else None
+
+    def _ticket_is_closed(self, ticket_id: str) -> bool:
+        """True when the deduped ticket is done/canceled (regression may re-file).
+
+        Conservative on any error (planfile missing, ticket gone, bad JSON):
+        treat the ticket as still open so dedupe keeps muting — a wrong True
+        would spam duplicate tickets, a wrong False only delays a re-file.
+        """
+        ticket = self._lookup_ticket(ticket_id)
+        if ticket is None:
             return False
-        ticket = payload.get("ticket", payload) if isinstance(payload, dict) else {}
-        return str(ticket.get("status", "")).strip().lower() in {"done", "canceled", "cancelled"}
+        return self._status_is_closed(ticket.get("status"))
+
+    @staticmethod
+    def _parse_instant(value: Any) -> Optional[float]:
+        if not value:
+            return None
+        try:
+            parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.timestamp()
+
+    def _signature_mute(
+        self,
+        dedupe: dict[str, dict[str, Any]],
+        *,
+        fingerprint: str,
+        service: str,
+        stage: str,
+        status: str,
+    ) -> Optional[str]:
+        """Return an existing ticket id that should mute this failure, or None.
+
+        The registry keys dedupe on the exact failure fingerprint
+        (service+status+stage+message), but the message carries volatile
+        details (latency values, timestamps), so the same incident used to
+        file sibling tickets under fresh fingerprints. Two mute rules apply to
+        every entry sharing the ``(service, stage, status)`` signature:
+
+        - an entry whose ticket is still open (or unreadable) always mutes;
+        - an entry whose ticket reached a terminal status mutes until
+          ``refile_cooldown_seconds`` have elapsed since the close, so a
+          chronically flapping probe does not open a ticket per event.
+
+        Once a ticket is observed closed its ``closed_at`` is cached in the
+        entry — terminal planfile statuses are immutable, so the observation
+        never goes stale and future events skip the ``ticket show`` call.
+        """
+        now = time.time()
+        cooldown = float(getattr(self.config, "refile_cooldown_seconds", 0.0) or 0.0)
+        changed = False
+        latest_closed: tuple[float, str] | None = None
+        entries = sorted(dedupe.items(), key=lambda item: item[0] != fingerprint)
+        for fp, value in entries:
+            if not isinstance(value, dict):
+                continue
+            same_signature = (
+                value.get("service") == service
+                and value.get("stage") == stage
+                and value.get("status") == status
+            )
+            if not same_signature and fp != fingerprint:
+                continue
+            ticket_id = str(value.get("ticket_id") or "").strip()
+            if not ticket_id:
+                continue
+            closed_at = self._parse_instant(value.get("closed_at"))
+            if closed_at is None:
+                ticket = self._lookup_ticket(ticket_id)
+                if ticket is None or not self._status_is_closed(ticket.get("status")):
+                    # Open (or conservatively unreadable) ticket still mutes.
+                    return ticket_id
+                closed_at = self._parse_instant(ticket.get("updated_at")) or now
+                value["closed_at"] = datetime.fromtimestamp(
+                    closed_at, tz=timezone.utc
+                ).isoformat()
+                changed = True
+            if latest_closed is None or closed_at > latest_closed[0]:
+                latest_closed = (closed_at, ticket_id)
+        if changed:
+            self._save_dedupe(dedupe)
+        if latest_closed is not None and now - latest_closed[0] < cooldown:
+            return latest_closed[1]
+        return None
 
     def clear_service_stage(self, *, service: str, stage: str) -> None:
         """Resolve the ticket and allow a later recurrence to create a new one."""

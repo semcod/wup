@@ -1,0 +1,18 @@
+{
+  "ticket": "ticket-004",
+  "summary": "Throttle WUP Planfile incident re-filing: dedupe by failure signature, not only exact message fingerprint",
+  "allowedPaths": [
+    "project/ticket-004/**",
+    "tests/test_planfile_reporter_dedupe.py",
+    "wup/config.py",
+    "wup/models/config.py",
+    "wup/planfile_reporter.py",
+    "wup.yaml"
+  ],
+  "forbiddenPaths": [
+    ".env",
+    ".github/workflows/**"
+  ],
+  "authorization": "SESSION_EXECUTION_AUTHORIZATION",
+  "outcome": "WUP mutes duplicate incident tickets while any ticket for the same service/stage/status signature is open, and suppresses immediate re-filing after a signature ticket was closed until refile_cooldown_seconds elapse."
+}
