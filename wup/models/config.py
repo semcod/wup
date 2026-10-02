@@ -153,6 +153,11 @@ class PlanfileConfig:
     integrations: List[str] = field(default_factory=list)
     sync_on_change: bool = False
     complete_on_recovery: bool = False
+    # Seconds after a signature ticket reaches a terminal status during which a
+    # recurrence of the same (service, stage, status) failure is still muted.
+    # 0 disables the cooldown and re-files immediately, restoring the previous
+    # behaviour where only exact fingerprints were deduplicated.
+    refile_cooldown_seconds: float = 86400.0
 
 
 @dataclass

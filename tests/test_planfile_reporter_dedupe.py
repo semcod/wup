@@ -62,7 +62,12 @@ def test_closed_ticket_refiles_fresh_ticket(tmp_path, monkeypatch):
     def fake_run(cmd, **kwargs):
         calls.append(list(cmd))
         if "show" in cmd:
-            return SimpleNamespace(returncode=0, stdout=json.dumps({"id": "PLF-1", "status": "done"}), stderr="")
+            # Closed long ago — beyond the default refile cooldown.
+            return SimpleNamespace(
+                returncode=0,
+                stdout=json.dumps({"id": "PLF-1", "status": "done", "updated_at": "2020-01-01T00:00:00Z"}),
+                stderr="",
+            )
         return SimpleNamespace(returncode=0, stdout="✓ Created PLF-2: [AUTO-DIAG] wup-svc probe down", stderr="")
 
     monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
@@ -134,6 +139,88 @@ def test_recovery_keeps_dedupe_entry_when_completion_fails(tmp_path, monkeypatch
     rep.clear_service_stage(service="svc", stage="probe")
 
     assert [value["ticket_id"] for value in json.loads(rep.dedupe_path.read_text(encoding="utf-8")).values()] == ["PLF-1"]
+
+
+def test_open_sibling_mutes_when_message_differs(tmp_path, monkeypatch):
+    """A different failure message must not spawn a sibling ticket while an
+    open ticket for the same (service, stage, status) signature exists —
+    volatile message details otherwise defeat the fingerprint."""
+    rep = _reporter(tmp_path)
+    # Seed under a DIFFERENT message fingerprint but the same signature.
+    seed = dict(FAIL, message="latency 812 ms > 500 ms")
+    fingerprint = rep._fingerprint(**seed)
+    rep.dedupe_path.parent.mkdir(parents=True, exist_ok=True)
+    rep.dedupe_path.write_text(
+        json.dumps({fingerprint: {"ticket_id": "PLF-7", "service": "svc", "stage": "probe", "status": "down"}}),
+        encoding="utf-8",
+    )
+
+    def fake_run(cmd, **kwargs):
+        assert "show" in cmd
+        return SimpleNamespace(returncode=0, stdout=json.dumps({"id": "PLF-7", "status": "open"}), stderr="")
+
+    monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
+    assert rep.report_failure(**dict(FAIL, message="latency 904 ms > 500 ms")) == "PLF-7"
+
+
+def test_recently_closed_ticket_mutes_within_cooldown(tmp_path, monkeypatch):
+    """A flapping probe whose ticket just closed stays muted for the
+    cooldown window instead of re-filing on the next event."""
+    rep = _reporter(tmp_path)
+    _seed_dedupe(rep, FAIL, "PLF-1")
+
+    def fake_run(cmd, **kwargs):
+        assert "show" in cmd
+        return SimpleNamespace(
+            returncode=0,
+            stdout=json.dumps({"id": "PLF-1", "status": "done", "updated_at": "2099-01-01T00:00:00Z"}),
+            stderr="",
+        )
+
+    monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
+    assert rep.report_failure(**FAIL) == "PLF-1"
+
+
+def test_observed_close_is_cached_and_skips_later_lookup(tmp_path, monkeypatch):
+    """A recorded closed_at is terminal truth: no `ticket show` is needed to
+    keep muting within the cooldown."""
+    rep = _reporter(tmp_path)
+    fingerprint = rep._fingerprint(**FAIL)
+    rep.dedupe_path.parent.mkdir(parents=True, exist_ok=True)
+    rep.dedupe_path.write_text(
+        json.dumps({
+            fingerprint: {
+                "ticket_id": "PLF-9",
+                "service": "svc",
+                "stage": "probe",
+                "status": "down",
+                "closed_at": "2099-01-01T00:00:00+00:00",
+            }
+        }),
+        encoding="utf-8",
+    )
+
+    def fake_run(cmd, **kwargs):
+        raise AssertionError("no planfile call expected for a cached close")
+
+    monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
+    assert rep.report_failure(**FAIL) == "PLF-9"
+
+
+def test_zero_cooldown_refiles_immediately_after_close(tmp_path, monkeypatch):
+    """refile_cooldown_seconds=0 restores the pre-throttle semantics: a closed
+    ticket re-files on the next failure event."""
+    rep = PlanfileReporter(tmp_path, PlanfileConfig(enabled=True, command="planfile", refile_cooldown_seconds=0))
+    _seed_dedupe(rep, FAIL, "PLF-1")
+
+    def fake_run(cmd, **kwargs):
+        if "show" in cmd:
+            return SimpleNamespace(returncode=0, stdout=json.dumps({"id": "PLF-1", "status": "done"}), stderr="")
+        return SimpleNamespace(returncode=0, stdout="✓ Created PLF-2: [AUTO-DIAG] wup-svc probe down", stderr="")
+
+    monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
+    monkeypatch.setattr(rep, "_wait_for_planfile_store_ready", lambda timeout_s=30.0: True)
+    assert rep.report_failure(**FAIL) == "PLF-2"
 
 
 def test_show_error_keeps_muting_conservatively(tmp_path, monkeypatch):
