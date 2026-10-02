@@ -1,9 +1,9 @@
 import json
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
-from wup.testing.events.health_events import ServiceHealthChanged
+from wup.testing.events.health_events import ServiceHealthChanged, ServiceHealthObserved
 from wup.testing.queries.health_queries import GetServiceHealth
 from wup.event_store import EventStore
 
@@ -40,9 +40,8 @@ class ServiceHealthProjection:
             json.dumps(self.state, indent=2), encoding="utf-8"
         )
 
-    def handle_health_changed(self, event: ServiceHealthChanged) -> None:
-        """Update projection and notify external systems when health changes."""
-        # Update projection state
+    def handle_health_observed(self, event: Union[ServiceHealthObserved, ServiceHealthChanged]) -> None:
+        """Refresh evidence and liveness without emitting a health transition."""
         self.state[event.service] = {
             "status": event.status,
             "updated_at": int(time.time()),
@@ -51,6 +50,10 @@ class ServiceHealthProjection:
             "track_file": event.track_file,
         }
         self._save_state()
+
+    def handle_health_changed(self, event: ServiceHealthChanged) -> None:
+        """Update projection and notify external systems when health changes."""
+        self.handle_health_observed(event)
 
         # Save to event store
         self.event_store.append(event)
@@ -119,5 +122,6 @@ def register_health_handlers(
         health_state_path, event_store, planfile_reporter, browser_notifier, web_client
     )
     bus.subscribe(ServiceHealthChanged, projection.handle_health_changed)
+    bus.subscribe(ServiceHealthObserved, projection.handle_health_observed)
     bus.subscribe(GetServiceHealth, projection.handle_get_health)
     return projection

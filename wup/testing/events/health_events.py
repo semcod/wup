@@ -2,6 +2,14 @@ from dataclasses import dataclass
 from wup.bus import Event
 
 @dataclass
+class ServiceHealthObserved(Event):
+    service: str
+    status: str
+    stage: str
+    message: str
+    track_file: str
+
+@dataclass
 class ServiceHealthChanged(Event):
     service: str
     status: str
