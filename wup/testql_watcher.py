@@ -196,14 +196,18 @@ class TestQLWatcher(WupWatcher):
         message: str = "",
         track_file: Optional[str] = None,
     ) -> None:
-        from wup.testing.events.health_events import ServiceHealthChanged
+        from wup.testing.events.health_events import ServiceHealthChanged, ServiceHealthObserved
         from wup.testing.queries.health_queries import GetServiceHealth
         from wup.bus import bus
         
         previous = bus.query(GetServiceHealth(service))
         previous_status = previous.get("status", "unknown")
         
-        if previous_status == status and previous.get("stage") == stage and previous.get("message") == message and previous.get("track_file") == track_file:
+        if previous_status == status and previous.get("stage") == stage and previous.get("message") == message:
+            bus.publish(ServiceHealthObserved(
+                service=service, status=status, stage=stage,
+                message=message, track_file=track_file or "",
+            ))
             return
             
         bus.publish(ServiceHealthChanged(
