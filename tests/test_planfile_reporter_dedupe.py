@@ -13,6 +13,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from wup import planfile_reporter as reporter_mod
 from wup.models.config import PlanfileConfig
 from wup.planfile_reporter import PlanfileReporter
@@ -232,3 +234,21 @@ def test_show_error_keeps_muting_conservatively(tmp_path, monkeypatch):
 
     monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
     assert rep.report_failure(**FAIL) == "PLF-1"
+
+
+@pytest.mark.parametrize("status", ["blocked", "failed"])
+def test_mutable_terminal_status_is_not_cached_as_irreversibly_closed(tmp_path, monkeypatch, status):
+    """Planfile permits retrying blocked/failed; only done/canceled cannot reopen."""
+    rep = _reporter(tmp_path)
+    _seed_dedupe(rep, FAIL, "PLF-1")
+    observed = []
+    def fake_run(cmd, **kwargs):
+        assert "show" in cmd, "must not create a sibling for a retryable incident"
+        observed.append(cmd)
+        return SimpleNamespace(returncode=0, stdout=json.dumps({"id": "PLF-1", "status": status,
+                              "updated_at": "2020-01-01T00:00:00Z"}), stderr="")
+    monkeypatch.setattr(reporter_mod.subprocess, "run", fake_run)
+    assert rep.report_failure(**FAIL) == "PLF-1"
+    assert rep.report_failure(**FAIL) == "PLF-1"
+    assert len(observed) == 2
+    assert all("closed_at" not in entry for entry in json.loads(rep.dedupe_path.read_text()).values())
