@@ -80,10 +80,9 @@ class PlanfileReporter:
         self.console.print(f"[yellow]🧾 WUP created planfile ticket {ticket_id}: {name}[/yellow]")
         return ticket_id
 
-    # Planfile terminal statuses (TicketStatus normalization + store
-    # TERMINAL_STATUSES). Terminal tickets are immutable — a ``closed_at``
-    # observation recorded in the dedupe entry stays valid forever.
-    _CLOSED_STATUSES = {"done", "canceled", "cancelled", "closed", "failed", "blocked"}
+    # Only IMMUTABLE_TERMINAL_STATUSES may be cached forever. Planfile's
+    # broader TERMINAL_STATUSES includes blocked/failed, which may be retried.
+    _CLOSED_STATUSES = {"done", "canceled", "cancelled", "closed"}
 
     @classmethod
     def _status_is_closed(cls, status: Any) -> bool:
