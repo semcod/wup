@@ -43,6 +43,15 @@ def _watchdog_preflight() -> tuple[bool, str]:
 
 
 def main(argv: Sequence[str] | None = None) -> int | None:
+    try:
+        from .autoupdate import check_for_updates
+        check_for_updates("wup")
+    except Exception:
+        try:
+            from wup.autoupdate import check_for_updates
+            check_for_updates("wup")
+        except Exception:
+            pass
     args = list(sys.argv[1:] if argv is None else argv)
     if args and args[0] == "watch" and not os.environ.get("WUP_SKIP_RUNTIME_PREFLIGHT"):
         ok, detail = _watchdog_preflight()

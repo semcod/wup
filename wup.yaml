@@ -72,7 +72,7 @@ planfile:
 
 # BEGIN WUP MONITORING MANIFEST (auto-generated — do not edit; run: wup sync-testql --write)
 monitoring:
-  generated_at: '2026-09-14T13:59:40Z'
+  generated_at: '2026-10-07T07:25:48Z'
   generated_by: wup sync-testql --write (or wup watch startup)
   how_to_refresh: wup sync-testql . --write
   probe_interval_s: 60
