@@ -1,8 +1,0 @@
-integrations:
-  github:
-    repo: semcod/wup
-    default_labels:
-    - planfile
-    - managed
-    - wup
-    - auto-diag
