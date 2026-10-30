@@ -7,7 +7,7 @@ import time
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 from urllib import error, request
 from urllib.parse import urlparse
 
@@ -644,6 +644,7 @@ class TestQLMonitor:
         max_count: int,
         timeout_s: float,
         latency_tracker=None,
+        successful_endpoints: Optional[Set[str]] = None,
     ) -> Tuple[bool, str]:
         """Probe up to max_count targets concurrently; report pass and failures.
 
@@ -670,6 +671,8 @@ class TestQLMonitor:
                 if not ok:
                     failed.append(f"{probe.method} {probe.url} → {detail}")
                     continue
+                if successful_endpoints is not None:
+                    successful_endpoints.add(probe.url)
                 if latency_tracker is not None:
                     anomaly = latency_tracker.record(probe.url, latency_ms)
                     if anomaly is not None:

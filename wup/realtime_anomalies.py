@@ -119,6 +119,21 @@ class LatencyTracker:
             return None
         return statistics.median(samples)
 
+    def is_recovered(self, endpoint: str, *, baseline_ms: float) -> bool:
+        """Require learned, non-violating evidence against the incident baseline.
+
+        No new anomaly is not recovery: an ongoing episode reports only once,
+        and a restarted tracker may learn a slower baseline than the incident.
+        The caller must additionally establish that this endpoint was just probed.
+        """
+        samples = self._samples.get(endpoint)
+        return bool(
+            samples
+            and len(samples) >= self.min_samples
+            and self._violation_streaks.get(endpoint, 0) == 0
+            and not self._violates(baseline_ms, samples[-1])
+        )
+
 
 class ChangeBurstDetector:
     """Flags event bursts per service (runaway generators, sync loops)."""

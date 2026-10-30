@@ -9,7 +9,7 @@ import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import yaml
 from rich.console import Console
@@ -198,7 +198,10 @@ class PlanfileReporter:
             return latest_closed[1]
         return None
 
-    def clear_service_stage(self, *, service: str, stage: str) -> None:
+    def clear_service_stage(
+        self, *, service: str, stage: str,
+        latency_recovery: Optional[Callable[[str, float], bool]] = None,
+    ) -> None:
         """Resolve the ticket and allow a later recurrence to create a new one."""
         if not self.enabled or not self.dedupe_path.exists():
             return
@@ -207,6 +210,17 @@ class PlanfileReporter:
             key: value for key, value in dedupe.items()
             if value.get("service") == service and value.get("stage") == stage
         }
+        if latency_recovery is not None:
+            # A passing quick scenario says nothing about the original latency
+            # incident. Bind recovery to every URL/baseline in its own evidence.
+            if stage != "probe-latency":
+                return
+            matched = {
+                key: value for key, value in matched.items()
+                if self._latency_incident_recovered(
+                    str(value.get("ticket_id") or ""), latency_recovery
+                )
+            }
         if not matched:
             return
 
@@ -222,6 +236,32 @@ class PlanfileReporter:
 
         if removable:
             self._save_dedupe({key: value for key, value in dedupe.items() if key not in removable})
+
+    def _latency_incident_recovered(
+        self, ticket_id: str, recovery: Callable[[str, float], bool],
+    ) -> bool:
+        if not ticket_id:
+            return False
+        outcome = self._run_planfile([
+            self.config.command, "ticket", "show", ticket_id, "--format", "json",
+        ])
+        if outcome is None or outcome[0] != 0:
+            return False
+        try:
+            payload = json.loads(outcome[1])
+            ticket = payload.get("ticket", payload)
+            description = ticket["description"]
+            summary = description.split("Failure summary:\n", 1)[1].split("\n", 1)[0]
+        except (ValueError, TypeError, KeyError, AttributeError, IndexError):
+            return False
+        for part in summary.split("; "):
+            match = re.fullmatch(
+                r"(https?://\S+) \d+(?:\.\d+)? ms vs baseline "
+                r"(\d+(?:\.\d+)?) ms \(×\d+(?:\.\d+)?\)", part,
+            )
+            if match is None or not recovery(match[1], float(match[2])):
+                return False
+        return True
 
     def _complete_recovered_ticket(self, ticket_id: str, service: str, stage: str) -> bool:
         """Close the incident ticket once its exact health signal recovers."""
