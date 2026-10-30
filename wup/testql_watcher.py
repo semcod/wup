@@ -666,14 +666,25 @@ class TestQLWatcher(WupWatcher):
         if not probes:
             return True
 
+        successful_endpoints: Set[str] = set()
         ok, reason = self.monitor.run_probes(
             service,
             probes,
             max_count=self._quick_probe_limit(service),
             timeout_s=self._quick_probe_timeout(),
             latency_tracker=self.latency_tracker,
+            successful_endpoints=successful_endpoints,
         )
         if ok:
+            if successful_endpoints:
+                self.planfile_reporter.clear_service_stage(
+                    service=service,
+                    stage="probe-latency",
+                    latency_recovery=lambda endpoint, baseline: (
+                        endpoint in successful_endpoints
+                        and self.latency_tracker.is_recovered(endpoint, baseline_ms=baseline)
+                    ),
+                )
             if reason and reason != "live probes passed":
                 self.console.print(f"[yellow]⏱ Latency anomaly: {reason}[/yellow]")
                 self._record_health_transition(

@@ -8,6 +8,7 @@ ani dostępu do sekretów. Stan publikacji i walidacji jest raportowany osobno.
 
 - [Adopcja wellmanifest/docs w WUP](information/wellmanifest-docs-adoption.md)
 - [Adopcja polityki Wellmanifest local CI](WELLMANIFEST_ADOPTION.md)
+- [Recovery of probe latency incidents](information/probe-latency-recovery.md)
 
 ## Plany refaktoryzacji
 
