@@ -13,7 +13,11 @@ discovery stays fast and dependency-free.
 from __future__ import annotations
 
 import json
+import os
 import re
+import stat
+import sys
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Tuple
@@ -39,30 +43,76 @@ class Endpoint:
 
 
 class SourceIndex:
+    """Discover source without retaining generated trees or unbounded text.
+
+    Small extension groups are cached across adapters. Larger groups are
+    streamed again, so a cache budget never silently truncates discovery.
     """
-    Reads and caches project source files once, so every adapter's detect() and
-    scan() reuse the same content instead of re-walking the tree.
-    """
+
+    EXCLUDED_DIRS = frozenset({
+        ".git", ".worktrees", ".subactor", ".planfile", ".koru", ".wup",
+        ".venv", "venv", "node_modules", "__pycache__", ".cache",
+        ".pytest_cache", ".ruff_cache", ".mypy_cache", "dist", "build",
+        "target", "vendor",
+    })
+    MAX_FILE_BYTES = 2 * 1024 * 1024
+    MAX_CACHE_BYTES = 16 * 1024 * 1024
 
     def __init__(self, project_root: Path):
         self.project_root = Path(project_root)
         self._cache: Dict[str, List[Tuple[str, str]]] = {}
+        self._cache_bytes = 0
+        self._oversized_warned = False
 
-    def _read_ext(self, ext: str) -> List[Tuple[str, str]]:
+    def _read_ext(self, ext: str) -> Iterator[Tuple[str, str]]:
         if ext in self._cache:
-            return self._cache[ext]
+            yield from self._cache[ext]
+            return
         items: List[Tuple[str, str]] = []
-        if self.project_root.exists():
-            for path in self.project_root.rglob(f"*{ext}"):
-                if not path.is_file():
+        size = 0
+        cacheable = True
+        for directory, dirs, filenames in os.walk(self.project_root, followlinks=False):
+            # Prune before descent; filtering after rglob still walks every
+            # dependency, recovery archive and linked checkout.
+            dirs[:] = sorted(d for d in dirs if d not in self.EXCLUDED_DIRS
+                             and not (Path(directory) / d).is_symlink())
+            for name in sorted(filenames):
+                if not name.endswith(ext):
                     continue
+                path = Path(directory) / name
                 try:
-                    content = path.read_text()
-                except (UnicodeDecodeError, PermissionError, OSError):
+                    if path.is_symlink() or not path.is_file():
+                        continue
+                    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+                    with os.fdopen(os.open(path, flags), "rb") as stream:
+                        info = os.fstat(stream.fileno())
+                        if not stat.S_ISREG(info.st_mode):
+                            continue
+                        # The bounded read also handles growth after fstat.
+                        data = stream.read(self.MAX_FILE_BYTES + 1) if info.st_size <= self.MAX_FILE_BYTES else None
+                    if data is None or len(data) > self.MAX_FILE_BYTES:
+                        if not self._oversized_warned:
+                            warnings.warn("WUP discovery skipped source files larger than "
+                                          f"{self.MAX_FILE_BYTES} bytes; endpoint coverage may be incomplete.",
+                                          RuntimeWarning, stacklevel=2)
+                            self._oversized_warned = True
+                        continue
+                    content = data.decode("utf-8")
+                except (UnicodeDecodeError, OSError):
                     continue
-                items.append((str(path.relative_to(self.project_root)), content))
-        self._cache[ext] = items
-        return items
+                item = (str(path.relative_to(self.project_root)), content)
+                if cacheable:
+                    size += sum(sys.getsizeof(value) for value in item) + sys.getsizeof(item) + 16
+                    if self._cache_bytes + size <= self.MAX_CACHE_BYTES:
+                        items.append(item)
+                    else:
+                        cacheable = False
+                        items.clear()
+                yield item
+        # Never cache a partial generator consumed by contains()/any().
+        if cacheable:
+            self._cache[ext] = items
+            self._cache_bytes += size
 
     def files(self, extensions: Tuple[str, ...]) -> Iterator[Tuple[str, str]]:
         """Yield (relative_path, content) for every file with one of the extensions."""
